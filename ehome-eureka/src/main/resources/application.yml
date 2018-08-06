@@ -1,0 +1,19 @@
+#服务启动端口号
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka_server1 #当前项目的对外调用访问的名称
+
+eureka:
+  instance:
+    hostname: localhost #主机名 目前只能写localhost 否则报错
+  server:
+    enable-self-preservation: false #是否要设置成保护模式
+  client:
+    registerWithEureka: false  #表示是否将自己注册到Eureka Server，默认为true
+    fetchRegistry: false #表示是否从Eureka Server获取注册信息，默认为true。因为这是一个单点的Eureka Server，不需要同步其他的Eureka Server节点的数据，故而设为false。
+    serviceUrl:
+      #defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/ #设置与Eureka Server交互的地址，查询服务和注册服务都需要依赖这个地址。默认是http://localhost:8761/eureka ；多个地址可使用 , 分隔。
+      defaultZone: http://192.168.1.160:8761/eureka/

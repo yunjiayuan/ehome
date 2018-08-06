@@ -1,0 +1,124 @@
+package com.busi.utils;
+
+/**
+ * 常量类
+ * author：SunTianJie
+ * create time：2018/6/5 13:36
+ */
+public class Constants {
+    /**activeMQ消息服务常量配置 开始**/
+    public static final String MSG_ID ="msg_id_";
+//    public static final int MSG_TIME_OUT_SECOND_30 =30;/30秒有效期
+    public static final int MSG_TIME_OUT_MINUTE_10 =60*10;//10分钟有效期
+//    public static final int MSG_TIME_OUT_HOUR_1 =60*60;//1小时有效期
+//    public static final int MSG_TIME_OUT_DAY_7 =60*60*24*7;//七天有效期
+    public static final String MSG_REGISTER_MQ ="msg_register_mq";//注册队列名称
+
+    /**activeMQ消息服务常量配置 结束**/
+
+    /** 省市区参数 开始**/
+    public static final int DSY_PROVINCE = 34;
+    public static final String DSY_CITY = "1,17,9,14,21,14,9,18,11,18,13,17,14,9,13,11,14,12,5,8,17,11,10,1,21,1,7,18,17,11,1,9,3,3";
+    public static final String DSY_DISTRICT = "16,12,7,5,5,8,8,10,4,6,8,7,4,5,3,8,7,4,13,7,10,9,5,12,12,6,11,5,7,8,3,2,7,8,8,9,7,8,7,4,6,3,32,5,12,6,5,7,5,6,8,8,7,3,10,10,4,5,9,4,24,3,12,4,7,4,17,5,11,4,6,10,12,4,7,6,6,8,10,4,16,12,8,10,14,11,9,8,10,10,10,4,11,10,11,12,10,9,8,12,16,7,18,25,16,11,19,11,11,7,23,14,19,17,9,5,1,10,10,15,13,10,6,9,12,10,6,12,10,10,5,6,9,3,18,8,6,9,9,10,4,13,8,10,17,3,8,10,6,5,8,1,1,8,2,1,13,1,6,9,7,13,9,9,11,12,12,5,12,5,8,6,11,9,4,9,5,6,10,9,4,6,5,7,8,7,8,7,13,8,11,5,6,8,11,9,7,6,11,18,13,4,12,9,5,12,2,10,3,7,6,7,10,6,7,7,6,7,7,4,13,7,6,3,7,9,12,8,9,13,8,3,11,12,6,5,3,4,6,3,6,4,6,5,5,4,7,6,7,11,5,9,10,12,2,8,12,12,4,6,4,12,12,6,8,11,10,5,11,17,13,6,10,14,3,13,10,12,11,7,4,11,13,14,13,12,19,13,4,19,7,6,18,5,7,11,17,6,9,9,5,5,5,8,10,4,6,7,18,7,11,8,7,10,18,12,9,1,9,3,7,3,8,12,4,4,2,1,3,8,1,10,7,7,5,10,12,5,3,13,14,5,8,4,9,1,8,3,9,11,10,13,5,7,9,9,11,6,9,11,4,6,40,12,38,7,29,37,4,2,29,13,5,2,1,4,5,9";
+    public static final int[] PRO_INFO_ARRAY = {0,11,12,24,18,27,21,19,4,15,8,16,17,7,9,13,6,28,29,25,14,5,23,2,20,1,26,30,22,10,3,33,32,31};//内存中用户省简称转换ID对照表
+    /**省市区参数 结束**/
+
+    /**门牌号靓号规则 开始**/
+    public static final String ABAB ="(\\d\\d)\\1+$";
+    public static final String AABB = "^(?:(\\d)\\1)+$";
+    public static final String ABCABC = "^(\\d\\d\\d)\\1+$";
+    public static final String ABABAB = "(\\d\\d)\\1+$";
+    public static final String AABBCC = "^(?:(\\d)\\1)+$";
+    public static final String AAABBB = "^(?:(\\d)\\1\\1)+$";
+    public static final String ABC = "(.*?(123)|(234)|(345)|(567)|(678)|(789).*)";
+    public static final String ABCD = "(.*?(1234)|(2345)|(3456)|(5678)|(6789).*)";
+    public static final String ABCDE = "(.*?(12345)|(23456)|(34567)|(56789).*)";
+    public static final String ABCDEF = "(.*?(123456)|(234567)|(345678).*)";
+    public static final String ABCDEFG = "(.*?(1234567)|(2345678)|(3456789).*)";
+    public static final String ABCDEFGH = "(.*?(12345678)|(23456789).*)";
+    public static final String ABCDEFGHI = "(.*?(123456789).*)";
+    public static final String AAA = "^(?:(\\d)\\1\\1).*$";
+    public static final String AAAA = "^(?:(\\d)\\1\\1\\1).*$";
+    public static final String AAAAA = "^(?:(\\d)\\1\\1\\1\\1).*$";
+    public static final String AAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1).*$";
+    public static final String AAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1).*$";
+    public static final String AAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1).*$";
+    public static final String AAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1).*$";
+    public static final String AAAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1\\1).*$";
+    public static final String AAAAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1).*$";
+    public static final String LOVE = "^[0-9]*(521|520|1314|9421|921|1711)";
+    public static final String PHONE = "0?(13|14|15|17|18|19)[0-9]{9}";
+    public static final String BRITHDAY = "^(19|20)\\\\d{2}(1[0-2]|0?[1-9])(0?[1-9]|[1-2][0-9]|3[0-1])$";
+    public static final String[] PRETTY_NUMBER_ARRAY ={ABAB,AABB,ABCABC,ABABAB,AABBCC,AAABBB,AAA,AAAA,AAAAA,AAAAAA,AAAAAAA,AAAAAAAA,AAAAAAAAA,AAAAAAAAAA,AAAAAAAAAAA,ABC,ABCD,ABCDE,ABCDEF,ABCDEFG,ABCDEFGH,ABCDEFGHI,LOVE,PHONE,BRITHDAY};
+    /**门牌号靓号规则 结束**/
+
+    /** 用户相关配置 开始**/
+    public static final int USER_TIME_OUT =60*60*24*7;//用户对象在缓存中的生命周期 7天有效期
+    /**用户相关配置 结束**/
+
+    /** 请求接口白名单 开始**/
+    public static final String REQUEST_WHITE_LIST ="login-api/createCode,login-api/login,login-api/checkCode,login-api/registerByHouseNumber,login-api/registerByPhone,login-api/findVersion";//白名单接口 服务端将不会验证token权限
+    /** 请求接口白名单 结束**/
+
+    /** 短信平台配置 开始**/
+    public static final String SENDURLPATH = "http://smsapi.c123.cn/OpenPlatform/OpenApi?";
+    public static final String ACTION = "sendOnce";
+    public static final String AC = "1001@501173720001";//用户账号
+    public static final String AUTHKEY = "B01D84CD215ACD2D1BAA68BA83F98326";//认证密钥
+    public static final String CGID = "52";//通道组编号
+    public static final String CSID = "101";//签名编号
+    /** 短信平台配置 结束**/
+
+    /** 附近的人配置 开始**/
+    public static final int RADIUS = 10000;//附近的人半径范围 单位M
+    public static final int LIMIT = 200;//附近的人查询的人数
+    /** 附近的人配置 结束**/
+
+    /** 七牛云存储配置 开始**/
+    public static final String QINIU_ACCESSKEY = "yQ6ITsQeI8O8e4089UPjcuspGpfBhzYGXg9hl7t9";
+    public static final String QINIU_SECRETKEY = "jubopEJl_xqoca6qllBCnBlF3ViFCWyTe0bkeGK9";
+    public static final String QINIU_BUCKET = "ehome";//空间名
+    /** 七牛云存储配置 结束**/
+
+    /** 随便走走 各地串串配置 开始**/
+    public static final int WALK_LIMIT_COUNT_USER = 30;//普通用户每天30次
+    public static final int WALK_LIMIT_COUNT_MEMBER = 100;//普通会员用户每天30次
+    public static final int WALK_LIMIT_COUNT_SENIOR_MEMBER = 10000;//高级会员 元老级会员 创世元老级会员用户每天10000次
+    /** 随便走走 各地串串配置 结束**/
+
+    /** redis配置 开始**/
+    //redis 0库相关key配置(USER)
+    public static final String REDIS_KEY_VERSION = "version_";//版本号key
+    public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
+    public static final String REDIS_KEY_USER = "user_";//用户实体key
+    public static final String REDIS_KEY_PHONENUMBER = "phoneNumber";//手机号与用户ID对应关系
+    public static final String REDIS_KEY_OTHERNUMBER = "otherNumber";//第三方平台账号与用户ID对应关系
+    public static final String REDIS_KEY_HOUSENUMBER = "houseNumber";//门牌号与用户ID对应关系
+    public static final String REDIS_KEY_REGISTER_CREATECODE_COUNT = "register_createCode_count";//获取验证码次数统计
+    public static final String REDIS_KEY_LOGIN_ERROR_COUNT = "login_error_count";//登录错误记录
+    public static final String REDIS_KEY_QINIU_TOKEN = "qiniu_token";//七牛token
+    public static final String REDIS_KEY_USER_DETAILED = "user_detailed_";//用户详细信息对应关系
+    public static final String REDIS_KEY_USERFRIENDLIST = "userFriendList_";//用户好友信息对应关系
+    public static final String REDIS_KEY_USERFRIENDGROUP = "userFriendGroup_";//用户好友分组对应关系
+    public static final String REDIS_KEY_USER_POSITION_LIST = "user_position";//用户位置关系记录
+    public static final String REDIS_KEY_USER_POSITION = "user_position_";//用户位置实体对应
+    public static final String REDIS_KEY_USER_HEADNOTES = "user_headNotes_";//用户主界面房间封面及欢迎视频对照关系
+    public static final String REDIS_KEY_USER_HEADALBUN = "user_headAlbum_";//用户个人资料界面的九张头像相册对照关系
+    public static final String REDIS_KEY_USER_WALK_LIMIT = "user_walk_limit";//用户随便走走 各地串串记录对照关系
+    public static final String REDIS_KEY_USER_VISIT_TODAY_COUNT = "user_visit_todayCount";//今日访问
+    public static final String REDIS_KEY_USER_VISIT_TOTAL_COUNT = "user_visit_totalCount";//总访问量
+    public static final String REDIS_KEY_USER_VISIT = "user_visit_";//访问量记录关系表
+    public static final String REDIS_KEY_USER_JURISDICTION = "user_jurisdiction_";//用户权限关系
+    public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)
+    public static final String REDIS_KEY_IPS_LOVEANDFRIEND = "ips_loveAndFriend_";//userId与婚恋交友对象关系对照
+
+    //redis 1库相关key配置(IPS)
+
+
+    //redis 2库相关key配置(EBLOG)
+
+
+    /** redis配置 结束**/
+
+}
+
