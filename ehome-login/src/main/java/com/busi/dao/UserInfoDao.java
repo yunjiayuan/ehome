@@ -159,7 +159,7 @@ public interface UserInfoDao {
     @Update("<script>" +
             "update userInfo set"+
             " head=#{head}" +
-            " graffitiHead=''" +
+            " graffitiHead=\"\"" +
             " where userId=#{userId}"+
             "</script>")
     int updateUserHead(UserInfo userInfo);

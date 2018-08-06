@@ -18,7 +18,7 @@ public interface UserHeadAlbumDao {
      * @param userHeadAlbum
      * @return
      */
-    @Insert("insert into userHeadAlbum(userId,image1,image2,image3,image4,image5,image6,image7,image8,image9) values (#{userId},#{image1},#{image2},#{image3},#{image4},#{image5},#{image6},#{image7},#{image8},#{image9})")
+    @Insert("insert into userHeadAlbum(userId,imageUrl) values (#{userId},#{imageUrl})")
     @Options(useGeneratedKeys = true)
     int add(UserHeadAlbum userHeadAlbum);
 
