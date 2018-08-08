@@ -111,6 +111,7 @@ public class Constants {
     public static final String REDIS_KEY_USER_JURISDICTION = "user_jurisdiction_";//用户权限关系
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)
     public static final String REDIS_KEY_IPS_LOVEANDFRIEND = "ips_loveAndFriend_";//userId与婚恋交友对象关系对照
+    public static final String REDIS_KEY_IPS_OTHERPOSTS = "ips_otherPosts_";//userId与其他公告对象关系对照
 
     //redis 1库相关key配置(IPS)
 
