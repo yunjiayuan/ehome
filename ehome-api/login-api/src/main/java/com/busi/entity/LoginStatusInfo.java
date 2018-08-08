@@ -24,7 +24,9 @@ public class LoginStatusInfo {
 
   private String clientSystemModel;//设备系统型号 如IOS10.3.1 安卓4.1.3
 
-  private long appVersion;//客户端设备的APP版本号
+  private String serverVersion;//服务端的版本号
+
+  private String appVersion;//客户端设备的APP版本号
 
   private String ip;//客户端登录设备的IP
 
