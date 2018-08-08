@@ -41,16 +41,18 @@ public class LoginStatusInfoService implements MessageAdapter {
             if(!CommonUtils.checkFull(clientInfo)){
                 array = clientInfo.split("/");
             }
-            if(array!=null&&array.length==4){
+            if(array!=null&&array.length==5){
                 loginStatusInfo.setClientType(array[0]);
                 loginStatusInfo.setClientModel(array[1]);
                 loginStatusInfo.setClientSystemModel(array[2]);
-                loginStatusInfo.setAppVersion(Integer.parseInt(array[3]));
+                loginStatusInfo.setServerVersion(array[3]);
+                loginStatusInfo.setAppVersion(array[4]);
             }else{
                 loginStatusInfo.setClientType(clientInfo);
                 loginStatusInfo.setClientModel(clientInfo);
                 loginStatusInfo.setClientSystemModel(clientInfo);
-                loginStatusInfo.setAppVersion(0);
+                loginStatusInfo.setServerVersion(clientInfo);
+                loginStatusInfo.setAppVersion(clientInfo);
             }
 
             loginStatusInfoControllerFegin.addLoginStatusInfo(loginStatusInfo);//fegin调用新增操作

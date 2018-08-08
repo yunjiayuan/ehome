@@ -129,10 +129,11 @@ public class RegisterController extends BaseController implements RegisterApiCon
         String sendMsg = root.toJSONString();
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         mqProducer.sendMsg(activeMQQueue,sendMsg);
-        //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端
+        //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端 环信账号改成用户ID
         Map<String,String> im_map = new HashMap<>();
         im_map.put("proType",newUserInfo.getProType()+"");
         im_map.put("houseNumber",newUserInfo.getHouseNumber()+"");
+        im_map.put("myId",newUserInfo.getUserId()+"");
         im_map.put("password",newUserInfo.getIm_password());//环信密码
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",im_map);
     }
@@ -352,10 +353,10 @@ public class RegisterController extends BaseController implements RegisterApiCon
         String sendMsg = root.toJSONString();
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         mqProducer.sendMsg(activeMQQueue,sendMsg);
-        //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端
+        //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端 环信账号改成用户ID
         Map<String,String> im_map = new HashMap<>();
-        im_map.put("proType",newUserInfo.getProType()+"");
-        im_map.put("houseNumber",newUserInfo.getHouseNumber()+"");
+//        im_map.put("proType",newUserInfo.getProType()+"");
+//        im_map.put("houseNumber",newUserInfo.getHouseNumber()+"");
         im_map.put("password",newUserInfo.getIm_password());//环信密码
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",im_map);
     }
@@ -495,6 +496,7 @@ public class RegisterController extends BaseController implements RegisterApiCon
         if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
             //更新缓存 自己修改自己的用户信息 不考虑并发问题
             redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"head",userInfo.getHead(),Constants.USER_TIME_OUT);
+            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"graffitiHead","",Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }

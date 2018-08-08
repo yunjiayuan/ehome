@@ -54,7 +54,9 @@ public class UserHeadAlbumController extends BaseController implements UserHeadA
             //缓存中没有 查询数据库
             userHeadAlbum = userHeadAlbumService.findUserHeadAlbumById(userId);
             if(userHeadAlbum==null){//数据库中不存在
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+                userHeadAlbum = new UserHeadAlbum();
+                userHeadAlbum.setUserId(userId);
+//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
             }else{
                 userHeadAlbum.setRedisStatus(1);//数据库中已有对应记录
             }

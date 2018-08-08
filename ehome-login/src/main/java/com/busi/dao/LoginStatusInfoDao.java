@@ -20,7 +20,7 @@ public interface LoginStatusInfoDao {
      * @param loginStatusInfo
      * @return
      */
-    @Insert("insert into loginStatusInfo(id,userId,clientType,clientModel,clientSystemModel,appVersion,ip,time) values (#{id},#{userId},#{clientType},#{clientModel},#{clientSystemModel},#{appVersion},#{ip},#{time})")
+    @Insert("insert into loginStatusInfo(id,userId,clientType,clientModel,clientSystemModel,serverVersion,appVersion,ip,time) values (#{id},#{userId},#{clientType},#{clientModel},#{clientSystemModel},#{serverVersion},#{appVersion},#{ip},#{time})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int add(LoginStatusInfo loginStatusInfo);
 
