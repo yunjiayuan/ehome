@@ -70,13 +70,14 @@ public class LoveAndFriends {
   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
   private Date releaseTime;//发布时间
 
-  @Max(value = 3, message = "审核参数有误")
-  @Min(value= 1 ,message= "审核参数有误")
+//  @Max(value = 3, message = "审核参数有误")
+//  @Min(value= 1 ,message= "审核参数有误")
   private int auditType;//审核标志：1审核中，2通过，3未通过
 
-  @Max(value = 3, message = "删除参数有误")
-  @Min(value= 1 ,message= "删除参数有误")
+//  @Max(value = 3, message = "删除参数有误")
+//  @Min(value= 1 ,message= "删除参数有误")
   private int deleteType;//删除标志：1未删除，2用户删除，3管理人员删除
 
+  private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
 }
