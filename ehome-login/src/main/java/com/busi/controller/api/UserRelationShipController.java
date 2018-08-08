@@ -162,10 +162,10 @@ public class UserRelationShipController extends BaseController implements UserRe
             //缓存中不存在 查询数据库 并同步到缓存中
             groupPageBean  = userFriendGroupService.findList(CommonUtils.getMyId(),1, 100);
             groupList = groupPageBean.getList();
-            redisUtils.pushList(Constants.REDIS_KEY_USERFRIENDGROUP+CommonUtils.getMyId(),groupPageBean.getList(),Constants.USER_TIME_OUT);
-        }
-        if(groupList==null){
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"好友分组数据异常",new JSONObject());
+            if(groupList==null){
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"好友分组数据异常",new JSONObject());
+            }
+            redisUtils.pushList(Constants.REDIS_KEY_USERFRIENDGROUP+CommonUtils.getMyId(),groupList,Constants.USER_TIME_OUT);
         }
         //查询好友数据
         PageBean<UserRelationShip> pageBean;
@@ -210,12 +210,14 @@ public class UserRelationShipController extends BaseController implements UserRe
                 }
             }
             //按中文名称排序
-            Collections.sort(firendList, new ComparatorUserFriendGroup()) ;
+            Collections.sort(firendList, new ComparatorUserFriendGroup());
             map.put("groupId", userFriendGroup.getId());
             map.put("groupName", userFriendGroup.getGroupName());
             map.put("userList",firendList);
             newList.add(map);
         }
+        //清除缓存中的好友信息  防止并发
+        redisUtils.expire(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0);
         //更新到缓存
         redisUtils.pushList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),newList);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,newList);
@@ -262,7 +264,7 @@ public class UserRelationShipController extends BaseController implements UserRe
         }
         userRelationShipService.moveFriend(userRelationShip);
         //清除缓存中的分组信息
-        redisUtils.expire(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0);
+        redisUtils.expire(Constants.REDIS_KEY_USERFRIENDLIST+userRelationShip.getUserId(),0);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }

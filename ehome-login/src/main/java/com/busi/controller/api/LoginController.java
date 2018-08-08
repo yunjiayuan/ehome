@@ -54,6 +54,9 @@ public class LoginController extends BaseController implements LoginApiControlle
         if(CommonUtils.checkFull(clientId)){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"clientId参数有误",new JSONObject());
         }
+        if(loginType<0||loginType>2){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"loginType参数有误",new JSONObject());
+        }
         Object userId = null;
         UserInfo userInfo = null;
         if(loginType==1){//手机
@@ -146,9 +149,10 @@ public class LoginController extends BaseController implements LoginApiControlle
             if(userInfo==null){
                 userInfo = userInfoService.findUserById(Long.parseLong(userId.toString()));
             }
-            //将用户信息存入缓存中 无论缓存中是否已有 直接覆盖
+            if(userInfo==null){//数据库也没有
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"账号不存在",new JSONObject());
+            }
             userMap = CommonUtils.objectToMap(userInfo);
-            redisUtils.hmset(Constants.REDIS_KEY_USER+userId,userMap,Constants.USER_TIME_OUT);
         }
         //添加暴力密码限制
         String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_LOGIN_ERROR_COUNT,userId+""));
@@ -172,8 +176,9 @@ public class LoginController extends BaseController implements LoginApiControlle
         //存储登录信息
         String loginKey = userId + clientId + System.currentTimeMillis() + CommonUtils.getRandom(6,0);//生成token
         String token = CommonUtils.strToMD5(loginKey,16);
-        redisUtils.hset(Constants.REDIS_KEY_USER+userId,"clientId",clientId);
-        redisUtils.hset(Constants.REDIS_KEY_USER+userId,"token",token);
+        userMap.put("clientId",clientId);
+        userMap.put("token",token);
+        redisUtils.hmset(Constants.REDIS_KEY_USER+userId,userMap,Constants.USER_TIME_OUT);
 
         //调用MQ同步用户登录信息
         JSONObject root = new JSONObject();
@@ -204,8 +209,8 @@ public class LoginController extends BaseController implements LoginApiControlle
             qiuniu_token = obj.toString();
         }
         map.put("qiniu_token",qiuniu_token);
-        map.put("proType",userMap.get("proType"));
-        map.put(Constants.REDIS_KEY_HOUSENUMBER,userMap.get(Constants.REDIS_KEY_HOUSENUMBER));
+//        map.put("proType",userMap.get("proType"));
+//        map.put(Constants.REDIS_KEY_HOUSENUMBER,userMap.get(Constants.REDIS_KEY_HOUSENUMBER));
         map.put("im_password",userMap.get("im_password"));//环信的登录密码
         if(accountStatus==1){//未激活
             return returnData(StatusCode.CODE_ACCOUNT_NOT_ACTIVATED.CODE_VALUE,"该账号未激活",map);
