@@ -76,7 +76,7 @@ public interface LoveAndFriendsDao {
      * 根据userId查询用户婚恋交友信息
      * @param userId
      */
-    @Select("select * from loveAndFriends where userId = #{userId}")
+    @Select("select * from loveAndFriends where userId = #{userId} and auditType = 2 and deleteType = 1")
     LoveAndFriends findUserById(@Param("userId") long userId);
 
     /***
