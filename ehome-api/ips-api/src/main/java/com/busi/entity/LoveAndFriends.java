@@ -23,12 +23,12 @@ public class LoveAndFriends {
   private long userId;//用户Id
 
   @Length(max = 30, message = "标题最多可输入30字")
-  private String title;//标题
+  private String title;//标题  5 10（5）   >15(10)  20
 
   @Length(max = 140, message = "内容最多可输入140字")
-  private String content;//内容
+  private String content;//内容   30（2） 50（5） >100(10)
 
-  private String imgUrl;//图片地址
+  private String imgUrl;//图片地址  一张（5） >3张（10）
 
   @Max(value = 2, message = "性别参数有误，未找到指定的性别选项")
   @Min(value= 1 ,message= "性别参数有误，未找到指定的性别选项")
