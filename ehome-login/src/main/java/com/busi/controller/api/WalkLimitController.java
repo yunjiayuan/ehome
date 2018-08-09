@@ -3,7 +3,6 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.ReturnData;
-import com.busi.entity.UserInfo;
 import com.busi.entity.UserMembership;
 import com.busi.service.UserMembershipService;
 import com.busi.utils.CommonUtils;
@@ -12,8 +11,6 @@ import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.naming.InsufficientResourcesException;
 import java.util.*;
 
 /**
@@ -52,8 +49,9 @@ public class WalkLimitController extends BaseController implements WalkLimitApiC
             //更新缓存
             redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP+CommonUtils.getMyId(),memberMap,Constants.USER_TIME_OUT);
         }
+        int memberShipStatus = 0;
         if(memberMap.get("memberShipStatus")!=null&&!CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())){
-            int memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
+            memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
             if(memberShipStatus==1){//普通会员
                 numLimit = Constants.WALK_LIMIT_COUNT_MEMBER;
             }else if(memberShipStatus>1){//高级以上
@@ -70,8 +68,13 @@ public class WalkLimitController extends BaseController implements WalkLimitApiC
             int serverCount = Integer.parseInt(obj.toString());
             if(serverCount>=numLimit){
                 //此处需要判断会员级别
-                return returnData(StatusCode.CODE_WALK_FEED_FULL.CODE_VALUE,"很抱歉，您今天的随便走走和各地串串次数已用尽,成为会员可获取更多次数!",new JSONObject());
-//                return returnData(StatusCode.CODE_MEMBER_WALK_FEED_FULL.CODE_VALUE,"很抱歉，您今天的随便走走和各地串串次数已用尽,成为高级会员可获得无限次数!",new JSONObject());
+                if(memberShipStatus==0){//普通用户
+                    return returnData(StatusCode.CODE_WALK_FEED_FULL.CODE_VALUE,"很抱歉，您今天的随便走走和各地串串次数已用尽,成为会员可获取更多次数!",new JSONObject());
+                }else if(memberShipStatus==1){//普通会员
+                    return returnData(StatusCode.CODE_MEMBER_WALK_FEED_FULL.CODE_VALUE,"很抱歉，您今天的随便走走和各地串串次数已用尽,成为高级会员可获得无限次数!",new JSONObject());
+                }else{
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"很抱歉，您今天的随便走走和各地串串次数已用尽,明天再来试试吧!",new JSONObject());
+                }
             }
             serverCount++;
             redisUtils.hset(Constants.REDIS_KEY_USER_WALK_LIMIT,CommonUtils.getMyId()+"",serverCount,second);

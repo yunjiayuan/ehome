@@ -228,7 +228,10 @@ public enum StatusCode {
 	CODE_TADAY_GREET_ERROR(471,"今日已经问候过"),
 	
 	//家医馆
-	CODE_COLLECTED_HOSPITAL_ERROR(481,"用户家医馆已存在")
+	CODE_COLLECTED_HOSPITAL_ERROR(481,"用户家医馆已存在"),
+
+	//涂鸦次数graffiti
+	CODE_GRAFFITI_FEED_FULL(491,"涂鸦次数已用尽")
 	
 	;
 	/*-----------业务状态码------------*/
