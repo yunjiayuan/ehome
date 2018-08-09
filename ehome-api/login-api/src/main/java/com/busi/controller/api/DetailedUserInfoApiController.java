@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 
 /**
- * 此处编写本类功能说明
+ * 用户详细信息接口文档
  * author：SunTianJie
  * create time：2018/7/19 14:32
  */

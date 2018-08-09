@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 /**
- * 发起群相关接口
+ * 群组相关接口
  * author：SunTianJie
  * create time：2018/8/1 11:04
  */

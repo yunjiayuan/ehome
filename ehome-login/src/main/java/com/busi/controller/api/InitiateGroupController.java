@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 此处编写本类功能说明
+ * 群组相关接口
  * author：SunTianJie
  * create time：2018/8/1 11:07
  */

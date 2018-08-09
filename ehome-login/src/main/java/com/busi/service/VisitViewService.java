@@ -42,7 +42,6 @@ public class VisitViewService {
      * @param userId
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
     public VisitView findVisitView(long userId){
         return  visitViewDao.findVisitView(userId);
     }

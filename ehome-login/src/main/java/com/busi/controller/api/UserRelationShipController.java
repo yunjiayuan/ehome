@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.ComparatorUserFriendGroup;
-import com.busi.service.UserFriendGroupService;
-import com.busi.service.UserInfoService;
-import com.busi.service.UserRelationShipService;
+import com.busi.service.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
@@ -39,6 +36,9 @@ public class UserRelationShipController extends BaseController implements UserRe
     @Autowired
     UserFriendGroupService userFriendGroupService;
 
+    @Autowired
+    UserMembershipService userMembershipService;
+
     /***
      * 新增好友关系接口
      * @param userRelationShip
@@ -54,6 +54,68 @@ public class UserRelationShipController extends BaseController implements UserRe
         if(CommonUtils.getMyId()!=userRelationShip.getUserId()){//与当前登录者身份不符
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误，与当前登录者ID不符，无权限操作",new JSONObject());
         }
+        //获取当前用户的会员等级 根据用户会员等级 获取好友最大次数
+        int userCount =  Constants.USER_FRIEND_COUNT;
+        Map<String,Object> userMemberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP+userRelationShip.getUserId());
+        if(userMemberMap==null||userMemberMap.size()<=0){
+            //缓存中没有用户对象信息 查询数据库
+            UserMembership userMembership = userMembershipService.findUserMembership(userRelationShip.getUserId());
+            if(userMembership==null){
+                userMembership = new UserMembership();
+                userMembership.setUserId(CommonUtils.getMyId());
+            }else{
+                userMembership.setRedisStatus(1);//数据库中已有对应记录
+            }
+            userMemberMap = CommonUtils.objectToMap(userMembership);
+            //更新缓存
+            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP+userRelationShip.getUserId(),userMemberMap,Constants.USER_TIME_OUT);
+        }
+        if(userMemberMap.get("memberShipStatus")!=null&&!CommonUtils.checkFull(userMemberMap.get("memberShipStatus").toString())){
+            int memberShipStatus = Integer.parseInt(userMemberMap.get("memberShipStatus").toString());
+            if(memberShipStatus==1){//普通会员
+                userCount = Constants.USER_FRIEND_COUNT_MEMBER;
+            }else if(memberShipStatus>1){//高级以上
+                userCount = Constants.USER_FRIEND_COUNT_SENIOR_MEMBER;
+            }
+        }
+        if(redisUtils.getListSize(Constants.REDIS_KEY_USERFRIENDLIST+userRelationShip.getUserId())>=userCount){
+            return returnData(StatusCode.CODE_MY_FRIENDS_COUNT_FULL.CODE_VALUE,"您当前好友个数已达到上线，开通或升级会员获取添加更多好友权限!",new JSONObject());
+        }
+
+        //获取对方用户的会员等级 根据用户会员等级 获取好友最大次数
+        int firendCount =  Constants.USER_FRIEND_COUNT;
+        Map<String,Object> firendMemberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP+userRelationShip.getFriendId());
+        if(firendMemberMap==null||firendMemberMap.size()<=0){
+            //缓存中没有用户对象信息 查询数据库
+            UserMembership userMembership = userMembershipService.findUserMembership(userRelationShip.getFriendId());
+            if(userMembership==null){
+                userMembership = new UserMembership();
+                userMembership.setUserId(CommonUtils.getMyId());
+            }else{
+                userMembership.setRedisStatus(1);//数据库中已有对应记录
+            }
+            firendMemberMap = CommonUtils.objectToMap(userMembership);
+            //更新缓存
+            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP+userRelationShip.getFriendId(),firendMemberMap,Constants.USER_TIME_OUT);
+        }
+        if(firendMemberMap.get("memberShipStatus")!=null&&!CommonUtils.checkFull(firendMemberMap.get("memberShipStatus").toString())){
+            int memberShipStatus = Integer.parseInt(firendMemberMap.get("memberShipStatus").toString());
+            if(memberShipStatus==1){//普通会员
+                firendCount = Constants.USER_FRIEND_COUNT_MEMBER;
+            }else if(memberShipStatus>1){//高级以上
+                firendCount = Constants.USER_FRIEND_COUNT_SENIOR_MEMBER;
+            }
+        }
+        //查看对方缓存中是否存在好友列表
+        List firendList = null;
+        firendList = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
+        if(firendList==null||firendList.size()<=0){//缓存不中存在 证明好友申请 已经超过7天 按过期处理
+            return returnData(StatusCode.CODE_FRIENDS_APPLY_NOT_EXIST.CODE_VALUE,"该好友申请已过期，请重新添加!",new JSONObject());
+        }
+        if(firendList.size()>=firendCount){
+            return returnData(StatusCode.CODE_USER_FRIENDS_COUNT_FULL.CODE_VALUE,"对方好友个数已达到上线，无法添加!",new JSONObject());
+        }
+
         //验证是否已存在好友关系
         boolean isFriend = false;//是否为好友 0不是好友  1是好友
         //判断自己是否与该用户是好友关系
@@ -152,6 +214,8 @@ public class UserRelationShipController extends BaseController implements UserRe
         List list = null;
         list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
         if(list!=null&&list.size()>0){//缓存中存在 直接返回
+            //每次查询好友列表时 都延长生命周期
+            redisUtils.expire(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),Constants.USER_TIME_OUT);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,list);
         }
         //缓存中不存在 查询数据库 并同步到缓存中

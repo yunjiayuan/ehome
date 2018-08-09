@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UserInfo;
+import com.busi.entity.UserMembership;
+import com.busi.service.UserMembershipService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
@@ -25,6 +27,9 @@ public class WalkLimitController extends BaseController implements WalkLimitApiC
     @Autowired
     RedisUtils redisUtils;
 
+    @Autowired
+    UserMembershipService userMembershipService;
+
     /***
      * 获取随便走走 各地串串的 目标用户ID
      * @return
@@ -33,6 +38,28 @@ public class WalkLimitController extends BaseController implements WalkLimitApiC
     public ReturnData walk() {
         //获取会员等级 根据用户会员等级 获取最大次数 后续添加
         int numLimit =  Constants.WALK_LIMIT_COUNT_USER;
+        Map<String,Object> memberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP+CommonUtils.getMyId() );
+        if(memberMap==null||memberMap.size()<=0){
+            //缓存中没有用户对象信息 查询数据库
+            UserMembership userMembership = userMembershipService.findUserMembership(CommonUtils.getMyId());
+            if(userMembership==null){
+                userMembership = new UserMembership();
+                userMembership.setUserId(CommonUtils.getMyId());
+            }else{
+                userMembership.setRedisStatus(1);//数据库中已有对应记录
+            }
+            memberMap = CommonUtils.objectToMap(userMembership);
+            //更新缓存
+            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP+CommonUtils.getMyId(),memberMap,Constants.USER_TIME_OUT);
+        }
+        if(memberMap.get("memberShipStatus")!=null&&!CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())){
+            int memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
+            if(memberShipStatus==1){//普通会员
+                numLimit = Constants.WALK_LIMIT_COUNT_MEMBER;
+            }else if(memberShipStatus>1){//高级以上
+                numLimit = Constants.WALK_LIMIT_COUNT_SENIOR_MEMBER;
+            }
+        }
         //计算当前时间 到 今天晚上12点的秒数差
         long second = CommonUtils.getCurrentTimeTo_12();
         //和缓存中的记录比较是否到达上线
