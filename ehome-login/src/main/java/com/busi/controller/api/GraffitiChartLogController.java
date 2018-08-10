@@ -3,12 +3,10 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.GraffitiChartLog;
-import com.busi.entity.PageBean;
-import com.busi.entity.ReturnData;
-import com.busi.entity.UserInfo;
+import com.busi.entity.*;
 import com.busi.service.GraffitiChartLogService;
 import com.busi.service.UserInfoService;
+import com.busi.service.UserMembershipService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
@@ -40,6 +38,9 @@ public class GraffitiChartLogController extends BaseController implements Graffi
     @Autowired
     UserInfoService userInfoService;
 
+    @Autowired
+    UserMembershipService userMembershipService;
+
     /***
      * 新增用户涂鸦头像接口
      * @param graffitiChartLog
@@ -56,9 +57,45 @@ public class GraffitiChartLogController extends BaseController implements Graffi
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误，自己不能给自己涂鸦",new JSONObject());
         }
 
-        //验证会员信息和次数限制
-
-
+        //计算当前时间 到 今天晚上12点的秒数差
+        long second = CommonUtils.getCurrentTimeTo_12();
+        //和缓存中的记录比较是否到达上线
+        Object obj = redisUtils.hget(Constants.REDIS_KEY_USER_GRAFFITI_LIMIT,CommonUtils.getMyId()+"");
+        if(obj==null||CommonUtils.checkFull(obj.toString())){//今天第一次访问
+            redisUtils.hset(Constants.REDIS_KEY_USER_GRAFFITI_LIMIT,CommonUtils.getMyId()+"",1,second);
+        }else{//已有记录 比较是否达到上限
+            int serverCount = Integer.parseInt(obj.toString());
+            //验证会员信息和次数限制
+            int graffitiCount =  Constants.GRAFFITI_COUNT_USER;
+            Map<String,Object> memberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP+graffitiChartLog.getUserId());
+            if(memberMap==null||memberMap.size()<=0){
+                //缓存中没有用户对象信息 查询数据库
+                UserMembership userMembership = userMembershipService.findUserMembership(graffitiChartLog.getUserId());
+                if(userMembership==null){
+                    userMembership = new UserMembership();
+                    userMembership.setUserId(graffitiChartLog.getUserId());
+                }else{
+                    userMembership.setRedisStatus(1);//数据库中已有对应记录
+                }
+                memberMap = CommonUtils.objectToMap(userMembership);
+                //更新缓存
+                redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP+graffitiChartLog.getUserId(),memberMap,Constants.USER_TIME_OUT);
+            }
+            int memberShipStatus = 0;
+            if(memberMap.get("memberShipStatus")!=null&&!CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())){
+                memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
+                if(memberShipStatus==1){//普通会员
+                    graffitiCount = Constants.GRAFFITI_COUNT_MEMBER;
+                }else if(memberShipStatus>1){//高级以上
+                    graffitiCount = Constants.GRAFFITI_COUNT_SENIOR_MEMBER;
+                }
+            }
+            if(serverCount>=graffitiCount){
+                return returnData(StatusCode.CODE_GRAFFITI_FEED_FULL.CODE_VALUE,"很抱歉，您今天的涂鸦次数已用尽,成为会员或升级会员级别可获取更多次数!",new JSONObject());
+            }
+            serverCount++;
+            redisUtils.hset(Constants.REDIS_KEY_USER_GRAFFITI_LIMIT,CommonUtils.getMyId()+"",serverCount,second);
+        }
         //开始修改
         UserInfo userInfo = new UserInfo();
         userInfo.setUserId(graffitiChartLog.getMyId());

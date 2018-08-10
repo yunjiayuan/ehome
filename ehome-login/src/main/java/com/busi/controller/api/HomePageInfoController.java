@@ -5,6 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.UserInfoService;
 import com.busi.service.UserJurisdictionService;
+import com.busi.service.UserMembershipService;
 import com.busi.service.UserRelationShipService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
@@ -37,6 +38,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
 
     @Autowired
     UserJurisdictionService userJurisdictionService;
+
+    @Autowired
+    UserMembershipService userMembershipService;
 
     /***
      * 获取指定用户ID的家主页信息
@@ -135,8 +139,33 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         }
         homePageInfo.setIsFriend(isFriend);
         //获取要访问用户的会员信息
-        homePageInfo.setMembershipLevel(0);//用户当前会员状态  1：普通会员  2：vip高级会员  3：元老级会员  4：创始元老级会员
-        homePageInfo.setMemberLevel(0);//会员等级  1：一级  2：二级 3...
+        Map<String,Object> membershipMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP+userId );
+        if(membershipMap==null||membershipMap.size()<=0){
+            //缓存中没有用户对象信息 查询数据库
+            UserMembership userMembership = userMembershipService.findUserMembership(userId);
+            if(userMembership==null){
+                userMembership = new UserMembership();
+                userMembership.setUserId(userId);
+            }else{
+                userMembership.setRedisStatus(1);//数据库中已有对应记录
+            }
+            membershipMap = CommonUtils.objectToMap(userMembership);
+            //更新缓存
+            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP+userId,membershipMap,Constants.USER_TIME_OUT);
+        }
+        if(membershipMap.get("memberShipStatus")!=null&&!CommonUtils.checkFull(membershipMap.get("memberShipStatus").toString())){
+            int memberShipStatus = Integer.parseInt(membershipMap.get("memberShipStatus").toString());
+            int initiatorMembershipLevel = 0;
+            if(memberShipStatus==4&&membershipMap.get("initiatorMembershipLevel")!=null&&!CommonUtils.checkFull(membershipMap.get("initiatorMembershipLevel").toString())){//创始元老级会员
+                initiatorMembershipLevel = Integer.parseInt(membershipMap.get("initiatorMembershipLevel").toString());
+            }
+            homePageInfo.setMembershipLevel(memberShipStatus);//用户当前会员状态  1：普通会员  2：vip高级会员  3：元老级会员  4：创始元老级会员
+            homePageInfo.setMemberLevel(initiatorMembershipLevel);//会员等级  1：一级  2：二级 3...
+        }else{
+            homePageInfo.setMembershipLevel(0);//用户当前会员状态  1：普通会员  2：vip高级会员  3：元老级会员  4：创始元老级会员
+            homePageInfo.setMemberLevel(0);//会员等级  1：一级  2：二级 3...
+        }
+
         //获取要访问用户的是否有被涂鸦过
         if(userMap.get("graffitiHead")==null||CommonUtils.checkFull(userMap.get("graffitiHead").toString())){
             homePageInfo.setHead(userMap.get("head").toString());//头像

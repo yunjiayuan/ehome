@@ -60,8 +60,8 @@ public class VisitViewController extends BaseController implements VisitViewApiC
             if(v!=null){//之前已有过访问量 加载到内存
                 visitMap = CommonUtils.objectToMap(v);
                 redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),visitMap,Constants.USER_TIME_OUT);//7天 此对象只是用来做过期处理的判断 里面参数内容不是准确的
-                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),v.getTotalVisitCount(),second);//更新今日访问量的生命周期 到今天晚上12点失效
-                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),v.getTodayVisitCount(),Constants.USER_TIME_OUT);//Constants.USER_TIME_OUT
+                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),v.getTotalVisitCount(),Constants.USER_TIME_OUT);//Constants.USER_TIME_OUT
+                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),v.getTodayVisitCount(),second);//更新今日访问量的生命周期 到今天晚上12点失效
             }else{
                 v = new VisitView();
                 v.setUserId(visitView.getUserId());

@@ -18,7 +18,7 @@ public class VersionService {
     private VersionDao versionDao;
 
     /***
-     * 更新
+     * 更新版本号信息
      * @param version
      * @return
      */
@@ -28,11 +28,10 @@ public class VersionService {
     }
 
     /***
-     * 更新
+     * 查询版本号信息
      * @param clientType 客户端类型 1：安卓 2 ：IOS
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
     public Version findVersion(int clientType){
         return  versionDao.findVersion(clientType);
     }

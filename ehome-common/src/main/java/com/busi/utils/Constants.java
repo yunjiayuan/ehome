@@ -86,6 +86,18 @@ public class Constants {
     public static final int WALK_LIMIT_COUNT_SENIOR_MEMBER = 10000;//高级会员 元老级会员 创世元老级会员用户每天10000次
     /** 随便走走 各地串串配置 结束**/
 
+    /** 涂鸦次数限制配置 开始**/
+    public static final int GRAFFITI_COUNT_USER = 10;//普通用户每天10次
+    public static final int GRAFFITI_COUNT_MEMBER = 20;//普通会员用户每天20次
+    public static final int GRAFFITI_COUNT_SENIOR_MEMBER = 100;//高级会员 元老级会员 创世元老级会员用户每天100次
+    /** 涂鸦次数限制配置 结束**/
+
+    /** 好友上线个数配置 开始**/
+    public static final int USER_FRIEND_COUNT = 500;//普通用户
+    public static final int USER_FRIEND_COUNT_MEMBER = 800;//普通会员
+    public static final int USER_FRIEND_COUNT_SENIOR_MEMBER = 1000;//高级会员 元老级会员 创世元老级会员
+    /** 好友上线个数配置 结束**/
+
     /** redis配置 开始**/
     //redis 0库相关key配置(USER)
     public static final String REDIS_KEY_VERSION = "version_";//版本号key
@@ -105,6 +117,7 @@ public class Constants {
     public static final String REDIS_KEY_USER_HEADNOTES = "user_headNotes_";//用户主界面房间封面及欢迎视频对照关系
     public static final String REDIS_KEY_USER_HEADALBUN = "user_headAlbum_";//用户个人资料界面的九张头像相册对照关系
     public static final String REDIS_KEY_USER_WALK_LIMIT = "user_walk_limit";//用户随便走走 各地串串记录对照关系
+    public static final String REDIS_KEY_USER_GRAFFITI_LIMIT = "user_graffiti_limit";//涂鸦次数记录对照关系
     public static final String REDIS_KEY_USER_VISIT_TODAY_COUNT = "user_visit_todayCount";//今日访问
     public static final String REDIS_KEY_USER_VISIT_TOTAL_COUNT = "user_visit_totalCount";//总访问量
     public static final String REDIS_KEY_USER_VISIT = "user_visit_";//访问量记录关系表
@@ -112,6 +125,7 @@ public class Constants {
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)
     public static final String REDIS_KEY_IPS_LOVEANDFRIEND = "ips_loveAndFriend_";//userId与婚恋交友对象关系对照
     public static final String REDIS_KEY_IPS_OTHERPOSTS = "ips_otherPosts_";//userId与其他公告对象关系对照
+    public static final String REDIS_KEY_USERMEMBERSHIP = "userMembership_";//userId与用户会员信息对象的关系对照
 
     //redis 1库相关key配置(IPS)
 

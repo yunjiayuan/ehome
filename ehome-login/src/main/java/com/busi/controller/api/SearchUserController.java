@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 此处编写本类功能说明
+ * 找人相关接口 如精确 条件 附近的人功能等
  * author：SunTianJie
  * create time：2018/7/11 13:14
  */

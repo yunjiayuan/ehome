@@ -42,7 +42,6 @@ public class UserJurisdictionService {
      * @param userId
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
     public UserJurisdiction findUserJurisdiction(long userId){
         return  userJurisdictionDao.findUserJurisdiction(userId);
     }

@@ -423,8 +423,8 @@ public class RegisterController extends BaseController implements RegisterApiCon
             userMap.put("totalVisitCount",visitView.getTotalVisitCount());//设置总访问量
             //更新缓存
             redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),Constants.USER_TIME_OUT);//7天 此对象只是用来做过期处理的判断 里面参数内容不是准确的
-            redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),visitView.getTotalVisitCount(),CommonUtils.getCurrentTimeTo_12());//更新今日访问量的生命周期 到今天晚上12点失效
-            redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),visitView.getTodayVisitCount(),Constants.USER_TIME_OUT);
+            redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),visitView.getTotalVisitCount(),Constants.USER_TIME_OUT);//更新今日访问量的生命周期 到今天晚上12点失效
+            redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),visitView.getTodayVisitCount(),CommonUtils.getCurrentTimeTo_12());
         }else{//缓存中存在
             Object todayObj = redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+userId);
             if(todayObj==null){//处理当天访问量失效的问题
