@@ -24,10 +24,10 @@ public class OtherPosts {
     private long userId ;   //用户ID
 
     @Length(max = 30, message = "标题最多可输入30字")
-    private String title ;   //标题
+    private String title;//标题 （评分标准：字数<=5为5分  >=10为10分  >=15为20分(推荐)  >=20为30分 ）
 
     @Length(max = 140, message = "内容最多可输入140字")
-    private String content ;   //内容
+    private String content;//内容 （评分标准：字数<=20为5分  >=50为10分  >=80为20分(推荐)  >=100为30分 ）
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date refreshTime ;   //刷新时间
@@ -44,5 +44,7 @@ public class OtherPosts {
     private int deleteType ;   //删除标志:1未删除,2用户删除,3管理员删除
 
     private long seeNumber ;  //浏览次数
+
+    private int fraction;//公告分数
 
 }

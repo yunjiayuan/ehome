@@ -23,12 +23,12 @@ public class LoveAndFriends {
   private long userId;//用户Id
 
   @Length(max = 30, message = "标题最多可输入30字")
-  private String title;//标题  5 10（5）   >15(10)  20
+  private String title;//标题 （评分标准：字数<=5为5分  >=10为10分  >=15为20分(推荐)  >=20为30分 ）
 
   @Length(max = 140, message = "内容最多可输入140字")
-  private String content;//内容   30（2） 50（5） >100(10)
+  private String content;//内容 （评分标准：字数<=20为5分  >=50为10分  >=80为20分(推荐)  >=100为30分 ）
 
-  private String imgUrl;//图片地址  一张（5） >3张（10）
+  private String imgUrl;//图片地址，最多九张 （评分标准：个数1为15分  >=3为30分(推荐)  >=6为40分）
 
   @Max(value = 2, message = "性别参数有误，未找到指定的性别选项")
   @Min(value= 1 ,message= "性别参数有误，未找到指定的性别选项")
@@ -79,5 +79,7 @@ public class LoveAndFriends {
   private int deleteType;//删除标志：1未删除，2用户删除，3管理人员删除
 
   private String delImgUrls;//将要删除的图片地址组合 “,”分隔
+
+  private int fraction;//公告分数
 
 }

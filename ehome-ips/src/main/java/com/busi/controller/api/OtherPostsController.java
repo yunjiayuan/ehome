@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Map;
@@ -48,8 +49,40 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //计算公告分数
+        int fraction = 0;//公告分数
+        int num = CommonUtils.getStringLengsByByte(otherPosts.getTitle());//标题
+        int num2 = CommonUtils.getStringLengsByByte(otherPosts.getContent());//内容
+
+        if (num <= 5 * 2) {
+            fraction += 5;
+        }
+        if (num > 5 * 2 && num <= 10 * 2) {
+            fraction += 10;
+        }
+        if (num > 10 * 2 && num <= 20 * 2) {
+            fraction += 20;
+        }
+        if (num > 20 * 2) {
+            fraction += 30;
+        }
+
+        if (num2 <= 20 * 2) {
+            fraction += 5;
+        }
+        if (num2 > 20 * 2 && num2 <= 50 * 2) {
+            fraction += 10;
+        }
+        if (num2 > 50 * 2 && num2 <= 80 * 2) {
+            fraction += 20;
+        }
+        if (num2 > 80 * 2) {
+            fraction += 30;
+        }
+
         otherPosts.setAuditType(2);
         otherPosts.setDeleteType(1);
+        otherPosts.setFraction(fraction);
         otherPosts.setAddTime(new Date());
         otherPosts.setRefreshTime(new Date());
         otherPostsService.add(otherPosts);
@@ -66,16 +99,16 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
      * @return
      */
     @Override
-    public ReturnData delOther(@PathVariable long id,@PathVariable long userId) {
+    public ReturnData delOther(@PathVariable long id, @PathVariable long userId) {
         //验证参数
-        if (userId <= 0 || id <=0) {
+        if (userId <= 0 || id <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //验证删除权限
         if (CommonUtils.getMyId() != userId) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + userId + "]的婚恋交友信息", new JSONObject());
         }
-        otherPostsService.del(id,userId);
+        otherPostsService.del(id, userId);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -96,6 +129,38 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         if (CommonUtils.getMyId() != otherPosts.getUserId()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + otherPosts.getUserId() + "]的其他公告信息", new JSONObject());
         }
+        //计算公告分数
+        int fraction = 0;//公告分数
+        int num = CommonUtils.getStringLengsByByte(otherPosts.getTitle());//标题
+        int num2 = CommonUtils.getStringLengsByByte(otherPosts.getContent());//内容
+
+        if (num <= 5 * 2) {
+            fraction += 5;
+        }
+        if (num > 5 * 2 && num <= 10 * 2) {
+            fraction += 10;
+        }
+        if (num > 10 * 2 && num <= 20 * 2) {
+            fraction += 20;
+        }
+        if (num > 20 * 2) {
+            fraction += 30;
+        }
+
+        if (num2 <= 20 * 2) {
+            fraction += 5;
+        }
+        if (num2 > 20 * 2 && num2 <= 50 * 2) {
+            fraction += 10;
+        }
+        if (num2 > 50 * 2 && num2 <= 80 * 2) {
+            fraction += 20;
+        }
+        if (num2 > 80 * 2) {
+            fraction += 30;
+        }
+
+        otherPosts.setFraction(fraction);
         otherPosts.setRefreshTime(new Date());
         otherPostsService.update(otherPosts);
 
@@ -106,13 +171,14 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
 
     /**
      * 查询
+     *
      * @param id
      * @return
      */
     @Override
     public ReturnData getOther(@PathVariable long id) {
         //验证参数
-        if (id <=0) {
+        if (id <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
@@ -130,14 +196,14 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
     }
 
     /***
-     * 条件查询接口
+     * 分页查询接口
      * @param userId  用户ID
      * @param page   页码 第几页 起始值1
      * @param count  每页条数
      * @return
      */
     @Override
-    public ReturnData findOtherList (@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findOtherList(@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
