@@ -3,10 +3,10 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.SearchGoods;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
-import com.busi.entity.OtherPosts;
-import com.busi.service.OtherPostsService;
+import com.busi.service.SearchGoodsService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
@@ -16,42 +16,42 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Map;
 
-
 /**
- * @program: 其他公告
+ * @program: 寻人寻物失物招领
  * @author: ZHaoJiaJie
- * @create: 2018-08-02 13:39
+ * @create: 2018-08-10 15:01
  */
 
 @RestController
-public class OtherPostsController extends BaseController implements OtherPostsApiController {
-
-    @Autowired
-    OtherPostsService otherPostsService;
+public class SearchGoodsController extends BaseController implements SearchGoodsApiController {
 
     @Autowired
     RedisUtils redisUtils;
 
+    @Autowired
+    SearchGoodsService searchGoodsService;
+
     /***
      * 新增
-     * @param otherPosts
+     * @param searchGoods
      * @param bindingResult
      * @return
      */
     @Override
-    public ReturnData addOther(@Valid @RequestBody OtherPosts otherPosts, BindingResult bindingResult) {
+    public ReturnData addMatter(@Valid @RequestBody SearchGoods searchGoods, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //计算公告分数
         int fraction = 0;//公告分数
-        int num = CommonUtils.getStringLengsByByte(otherPosts.getTitle());//标题
-        int num2 = CommonUtils.getStringLengsByByte(otherPosts.getContent());//内容
+        int num = CommonUtils.getStringLengsByByte(searchGoods.getTitle());//标题
+        int num2 = CommonUtils.getStringLengsByByte(searchGoods.getContent());//内容
 
         if (num <= 5 * 2) {
             fraction += 5;
@@ -79,15 +79,15 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
             fraction += 30;
         }
 
-        otherPosts.setAuditType(2);
-        otherPosts.setDeleteType(1);
-        otherPosts.setFraction(fraction);
-        otherPosts.setAddTime(new Date());
-        otherPosts.setRefreshTime(new Date());
-        otherPostsService.add(otherPosts);
+        searchGoods.setAuditType(2);
+        searchGoods.setDeleteType(1);
+        searchGoods.setFraction(fraction);
+        searchGoods.setAddTime(new Date());
+        searchGoods.setRefreshTime(new Date());
+        searchGoodsService.add(searchGoods);
 
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + otherPosts.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -98,7 +98,7 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
      * @return
      */
     @Override
-    public ReturnData delOther(@PathVariable long id, @PathVariable long userId) {
+    public ReturnData delMatter(@PathVariable long id, @PathVariable long userId) {
         //验证参数
         if (userId <= 0 || id <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
@@ -107,37 +107,37 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         if (CommonUtils.getMyId() != userId) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + userId + "]的婚恋交友信息", new JSONObject());
         }
-        //查询数据库
-        OtherPosts posts = otherPostsService.findUserById(id);
+        // 查询数据库
+        SearchGoods posts = searchGoodsService.findUserById(id);
         if (posts == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         posts.setDeleteType(2);
-        otherPostsService.update(posts);
+        searchGoodsService.update(posts);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + id, 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 更新
-     * @param otherPosts
+     * @param searchGoods
      * @return
      */
     @Override
-    public ReturnData updateOther(@Valid @RequestBody OtherPosts otherPosts, BindingResult bindingResult) {
+    public ReturnData updateMatter(@Valid @RequestBody SearchGoods searchGoods, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证修改人权限
-        if (CommonUtils.getMyId() != otherPosts.getUserId()) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + otherPosts.getUserId() + "]的其他公告信息", new JSONObject());
+        if (CommonUtils.getMyId() != searchGoods.getUserId()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + searchGoods.getUserId() + "]的其他公告信息", new JSONObject());
         }
         //计算公告分数
         int fraction = 0;//公告分数
-        int num = CommonUtils.getStringLengsByByte(otherPosts.getTitle());//标题
-        int num2 = CommonUtils.getStringLengsByByte(otherPosts.getContent());//内容
+        int num = CommonUtils.getStringLengsByByte(searchGoods.getTitle());//标题
+        int num2 = CommonUtils.getStringLengsByByte(searchGoods.getContent());//内容
 
         if (num <= 5 * 2) {
             fraction += 5;
@@ -165,12 +165,12 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
             fraction += 30;
         }
 
-        otherPosts.setFraction(fraction);
-        otherPosts.setRefreshTime(new Date());
-        otherPostsService.update(otherPosts);
+        searchGoods.setFraction(fraction);
+        searchGoods.setRefreshTime(new Date());
+        searchGoodsService.update(searchGoods);
 
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + otherPosts.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -181,44 +181,63 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
      * @return
      */
     @Override
-    public ReturnData getOther(@PathVariable long id) {
+    public ReturnData getMatter(@PathVariable long id) {
         //验证参数
         if (id <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> otherPostsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_OTHERPOSTS + id);
+        Map<String, Object> otherPostsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_SEARCHGOODS + id);
         if (otherPostsMap == null || otherPostsMap.size() <= 0) {
-            OtherPosts posts = otherPostsService.findUserById(id);
+            SearchGoods posts = searchGoodsService.findUserById(id);
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
-            redisUtils.hmset(Constants.REDIS_KEY_IPS_OTHERPOSTS + id, otherPostsMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, otherPostsMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }
 
     /***
-     * 分页查询接口
-     * @param userId  用户ID
-     * @param page   页码 第几页 起始值1
-     * @param count  每页条数
+     * 分页查询
+     * @param province  省
+     * @param city  市
+     * @param district  区
+     * @param beginAge  开始年龄
+     * @param endAge  结束年龄
+     * @param missingSex  失踪人性别:1男,2女
+     * @param searchType  查找类别:0不限 ,1寻人,2寻物,3失物招领
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
      * @return
      */
     @Override
-    public ReturnData findOtherList(@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findMatterList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int beginAge, @PathVariable int endAge, @PathVariable int missingSex, @PathVariable int searchType, @PathVariable int page, @PathVariable int count) {
+        //验证地区正确性
+        if(!CommonUtils.checkProvince_city_district(0,province,city,district)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"省、市、区参数不匹配",new JSONObject());
+        }
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        if (userId < 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+        if (missingSex < 0 || missingSex > 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "missingSex参数有误", new JSONObject());
+        }
+        if (searchType < 0 || searchType > 3) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "searchType参数有误", new JSONObject());
+        }
+        if (beginAge <= 0 || beginAge > endAge) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "searchType参数有误", new JSONObject());
+        }
+        if (endAge <= 0 || endAge < beginAge) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "searchType参数有误", new JSONObject());
         }
         //开始查询
-        PageBean<OtherPosts> pageBean;
-        pageBean = otherPostsService.findList(userId, page, count);
+        PageBean<SearchGoods> pageBean;
+        pageBean = searchGoodsService.findList(province, city, district, beginAge, endAge, missingSex, searchType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

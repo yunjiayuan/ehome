@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface IPS_HomeApiController{
     /***
      * home推荐分页查询
-     * @param page  页码 第几页 起始值1
-     * @param count 每页条数
+     * @param userId  用户ID
      * @return
      */
-    @GetMapping("findHomeList/{page}/{count}")
-    ReturnData findHomeList(@PathVariable int page, @PathVariable int count);
+    @GetMapping("findHomeList/{userId}")
+    ReturnData findHomeList(@PathVariable int userId);
 
 }
 

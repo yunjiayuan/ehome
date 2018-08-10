@@ -18,8 +18,8 @@ public interface OtherPostsDao {
      * @param otherPosts
      * @return
      */
-    @Insert("insert into otherPosts(userId,title,content,refreshTime,addTime,auditType,deleteType) " +
-            "values (#{userId},#{title},#{content},#{refreshTime},#{addTime},#{auditType},#{deleteType})")
+    @Insert("insert into otherPosts(userId,title,content,refreshTime,addTime,auditType,deleteType,fraction) " +
+            "values (#{userId},#{title},#{content},#{refreshTime},#{addTime},#{auditType},#{deleteType},#{fraction})")
     @Options(useGeneratedKeys = true)
     int add(OtherPosts otherPosts);
 

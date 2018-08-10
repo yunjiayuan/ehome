@@ -24,15 +24,14 @@ public class IPS_HomeController  extends BaseController implements IPS_HomeApiCo
 
     /***
      * 分页查询接口
-     * @param page   页码 第几页 起始值1
-     * @param count  每页条数
+     * @param userId   用户ID
      * @return
      */
     @Override
-    public ReturnData findHomeList(@PathVariable int page, @PathVariable int count) {
+    public ReturnData findHomeList(@PathVariable long userId) {
         //验证参数
-        if (page < 0 || count <= 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        if (userId <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
         //开始查询
         List list = null;

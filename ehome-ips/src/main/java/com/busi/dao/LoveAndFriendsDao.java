@@ -18,8 +18,8 @@ public interface LoveAndFriendsDao {
      * @param loveAndFriends
      * @return
      */
-    @Insert("insert into loveAndFriends(userId,title,content,imgUrl,sex,age,stature,education,marriage,income,locationProvince,locationCity,locationDistrict,refreshTime,releaseTime,auditType,deleteType) " +
-            "values (#{userId},#{title},#{content},#{imgUrl},#{sex},#{age},#{stature},#{education},#{marriage},#{income},#{locationProvince},#{locationCity},#{locationDistrict},#{refreshTime},#{releaseTime},#{auditType},#{deleteType})")
+    @Insert("insert into loveAndFriends(userId,title,content,imgUrl,sex,age,stature,education,marriage,income,locationProvince,locationCity,locationDistrict,refreshTime,releaseTime,auditType,deleteType,fraction) " +
+            "values (#{userId},#{title},#{content},#{imgUrl},#{sex},#{age},#{stature},#{education},#{marriage},#{income},#{locationProvince},#{locationCity},#{locationDistrict},#{refreshTime},#{releaseTime},#{auditType},#{deleteType},#{fraction})")
     @Options(useGeneratedKeys = true)
     int add(LoveAndFriends loveAndFriends);
 
@@ -73,11 +73,11 @@ public interface LoveAndFriendsDao {
     int update(LoveAndFriends loveAndFriends);
 
     /***
-     * 根据userId查询用户婚恋交友信息
-     * @param userId
+     * 根据Id查询用户婚恋交友信息
+     * @param id
      */
-    @Select("select * from loveAndFriends where userId = #{userId} and auditType = 2 and deleteType = 1")
-    LoveAndFriends findUserById(@Param("userId") long userId);
+    @Select("select * from loveAndFriends where id = #{id} and auditType = 2 and deleteType = 1")
+    LoveAndFriends findUserById(@Param("userId") long id);
 
     /***
      * 分页条件查询 默认按时间降序排序
