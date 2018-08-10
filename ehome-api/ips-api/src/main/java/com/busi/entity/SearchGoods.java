@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.Date;
@@ -19,7 +20,7 @@ public class SearchGoods {
 
     private long id; // 主键
 
-    @Min(value= 1 ,message= "userId参数有误")
+    @Min(value = 1, message = "userId参数有误")
     private long userId; // 用户ID
 
     private int searchType; // 查找类别:1寻人,2寻物,3失物招领
@@ -34,7 +35,7 @@ public class SearchGoods {
     private String missingTime; // 失踪时间
 
     @Length(max = 30, message = "标题最多可输入30字")
-        private String title; // 标题
+    private String title; // 标题
 
     @Length(max = 140, message = "内容最多可输入140字")
     private String content; // 内容
@@ -46,17 +47,17 @@ public class SearchGoods {
     private String contactsPhone; // 联系人电话
 
     @Max(value = 2, message = "性别参数有误，未找到指定的性别选项")
-    @Min(value= 1 ,message= "性别参数有误，未找到指定的性别选项")
+    @Min(value = 1, message = "性别参数有误，未找到指定的性别选项")
     private int missingSex; // 失踪人性别:1男,2女
 
     private int age;      //年龄
 
     private String imgUrl;//图片地址
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date refreshTime; // 刷新时间
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime; // 添加时间
 
     private int auditType; // 审核标志:1审核中,2通过,3未通过
