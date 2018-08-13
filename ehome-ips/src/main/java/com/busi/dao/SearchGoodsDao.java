@@ -20,9 +20,9 @@ public interface SearchGoodsDao {
      * @return
      */
     @Insert("insert into searchGoods(userId,title,content,refreshTime,addTime,auditType,deleteType,searchType,goodsName,missingPlace," +
-            "missingDate,missingTime,contactsName,contactsPhone,missingSex,age,imgUrl,province,city,district,longitude,latitude) " +
+            "missingDate,missingTime,contactsName,contactsPhone,missingSex,age,imgUrl,province,city,district,longitude,latitude,fraction,seeNumber) " +
             "values (#{userId},#{title},#{content},#{refreshTime},#{addTime},#{auditType},#{deleteType},#{searchType},#{goodsName},#{missingPlace}," +
-            "#{missingDate},#{missingTime},#{contactsName},#{contactsPhone},#{missingSex},#{age},#{imgUrl},#{province},#{city},#{district},#{longitude},#{latitude})")
+            "#{missingDate},#{missingTime},#{contactsName},#{contactsPhone},#{missingSex},#{age},#{imgUrl},#{province},#{city},#{district},#{longitude},#{latitude},#{fraction},#{seeNumber})")
     @Options(useGeneratedKeys = true)
     int add(SearchGoods searchGoods);
 
@@ -81,11 +81,12 @@ public interface SearchGoodsDao {
             "<if test=\"latitude > 0\">" +
             " latitude=#{latitude}," +
             "</if>" +
-            " userId=#{userId}" +
+            " deleteType=#{deleteType}," +
+            " afficheStatus=#{afficheStatus}," +
             " province=#{province}," +
             " city=#{city}," +
             " district=#{district}" +
-            " where id=#{id}" +
+            " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(SearchGoods searchGoods);
 

@@ -11,7 +11,7 @@ public interface IPS_HomeApiController{
      * @return
      */
     @GetMapping("findHomeList/{userId}")
-    ReturnData findHomeList(@PathVariable int userId);
+    ReturnData findHomeList(@PathVariable long userId);
 
 }
 

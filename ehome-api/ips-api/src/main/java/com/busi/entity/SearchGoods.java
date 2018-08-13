@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.Date;
@@ -79,4 +78,6 @@ public class SearchGoods {
     private double latitude;  // 北纬
 
     private int fraction;//公告分数
+
+    private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 }

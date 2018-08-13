@@ -45,8 +45,8 @@ public interface OtherPostsDao {
             "<if test=\"content != null and content != ''\">"+
             " content=#{content}," +
             "</if>" +
-            " userId=#{userId}"+
-            " where id=#{id}"+
+            " deleteType=#{deleteType}" +
+            " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(OtherPosts otherPosts);
 
