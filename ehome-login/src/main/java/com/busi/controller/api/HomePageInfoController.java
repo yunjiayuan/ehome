@@ -168,7 +168,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
 
         //获取要访问用户的是否有被涂鸦过
         if(userMap.get("graffitiHead")==null||CommonUtils.checkFull(userMap.get("graffitiHead").toString())){
-            homePageInfo.setHead(userMap.get("head").toString());//头像
+            if(userMap.get("head")!=null){
+                homePageInfo.setHead(userMap.get("head").toString());//头像
+            }
         }else{
             homePageInfo.setHead(userMap.get("graffitiHead").toString());//头像
             homePageInfo.setGraffitiStatus(1);//涂鸦状态 0当前用户未被涂鸦过 1当前用户已被涂鸦
@@ -176,7 +178,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         //设置其他信息
         homePageInfo.setProType(Integer.parseInt(userMap.get("proType").toString()));//省简称ID
         homePageInfo.setHouseNumber(Long.parseLong(userMap.get("houseNumber").toString()));//门牌号
-        homePageInfo.setName(userMap.get("name").toString());//昵称
+        if(userMap.get("name")!=null){
+            homePageInfo.setName(userMap.get("name").toString());//昵称
+        }
         homePageInfo.setSex(Integer.parseInt(userMap.get("sex").toString()));//性别
         homePageInfo.setIsNewUser(Integer.parseInt(userMap.get("isNewUser").toString()));//是否为新用户  0新用户 1已领新人红包(老用户)
         homePageInfo.setWelcomeInfoStatus(Integer.parseInt(userMap.get("welcomeInfoStatus").toString()));//系统欢迎消息状态 0表示未发送  1表示已发送
