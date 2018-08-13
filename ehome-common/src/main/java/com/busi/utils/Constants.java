@@ -126,6 +126,7 @@ public class Constants {
     public static final String REDIS_KEY_IPS_LOVEANDFRIEND = "ips_loveAndFriend_";//userId与婚恋交友对象关系对照
     public static final String REDIS_KEY_IPS_OTHERPOSTS = "ips_otherPosts_";//userId与其他公告对象关系对照
     public static final String REDIS_KEY_USERMEMBERSHIP = "userMembership_";//userId与用户会员信息对象的关系对照
+    public static final String REDIS_KEY_IPS_SEARCHGOODS = "ips_searchGoods";//userId与寻人寻物失物招领对象的关系对照
 
     //redis 1库相关key配置(IPS)
 
