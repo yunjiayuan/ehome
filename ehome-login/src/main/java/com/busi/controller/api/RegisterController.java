@@ -24,6 +24,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -308,21 +309,34 @@ public class RegisterController extends BaseController implements RegisterApiCon
         UserInfo newUserInfo = new UserInfo();
         newUserInfo.setUserId(userInfo.getUserId());
         newUserInfo.setName(userInfo.getName());
+        userMap.put("name",newUserInfo.getName());
         newUserInfo.setSex(userInfo.getSex());
+        userMap.put("sex",newUserInfo.getSex());
         newUserInfo.setBirthday(userInfo.getBirthday());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = sdf.format(newUserInfo.getBirthday());
+        userMap.put("birthday",date);
         newUserInfo.setCountry(userInfo.getCountry());
+        userMap.put("country",newUserInfo.getCountry());
         newUserInfo.setProvince(userInfo.getProvince());
+        userMap.put("province",newUserInfo.getProvince());
         newUserInfo.setCity(userInfo.getCity());
+        userMap.put("city",newUserInfo.getCity());
         newUserInfo.setDistrict(userInfo.getDistrict());
+        userMap.put("district",newUserInfo.getDistrict());
         newUserInfo.setIdCard(userInfo.getIdCard());
-        newUserInfo.setTime(new Date());
+        userMap.put("idCard",newUserInfo.getIdCard());
         newUserInfo.setAccessRights(1);
+        userMap.put("accessRights",newUserInfo.getAccessRights());
         newUserInfo.setProType(Constants.PRO_INFO_ARRAY[userInfo.getProvince()]);
+        userMap.put("proType",newUserInfo.getProType());
         //生成默认头像
         Random random = new Random();
         newUserInfo.setHead("image/head/defaultHead/defaultHead_"+random.nextInt(20)+"_225x225.jpg");
+        userMap.put("head",newUserInfo.getHead());
         //生成门牌号
         newUserInfo.setHouseNumber(CommonUtils.getHouseNumber(newUserInfo.getProType(),redisUtils));
+        userMap.put("houseNumber",newUserInfo.getHouseNumber());
         //处理密码问题
         if(userInfo.getType()==1){//第三方平台完善资料 设置新密码
             newUserInfo.setPassword(userInfo.getPassword());
@@ -331,16 +345,24 @@ public class RegisterController extends BaseController implements RegisterApiCon
             newUserInfo.setPassword((String)redisUtils.hget(Constants.REDIS_KEY_USER+userInfo.getUserId(),"password"));
             newUserInfo.setIm_password((String)redisUtils.hget(Constants.REDIS_KEY_USER+userInfo.getUserId(),"im_password"));//环信密码
         }
+        userMap.put("password",newUserInfo.getPassword());
+        userMap.put("im_password",newUserInfo.getIm_password());
         newUserInfo.setAccountStatus(0);//改成已激活
+        userMap.put("accountStatus",newUserInfo.getAccountStatus());
         //写入数据库
         userInfoService.perfectUserInfo(newUserInfo);
-        //删除缓存中的用户对象和相关对应关系  重新登录时 会重新加载到缓存中
-        redisUtils.delKey(Constants.REDIS_KEY_USER+userInfo.getUserId());
-        if(userInfo.getType()==1){//第三方平台完善资料
-            redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER,String.valueOf(userMap.get("otherPlatformType"))+"_"+String.valueOf(userMap.get("otherPlatformKey")));
-        }else{//手机号完善资料
-            redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER,String.valueOf(userMap.get("phone")));
-        }
+        //修改缓存中的用户信息
+        redisUtils.hmset(Constants.REDIS_KEY_USER+newUserInfo.getUserId(),userMap,Constants.USER_TIME_OUT);
+        //更新缓存中 门牌号与用户ID 的对应关系表
+        redisUtils.hset(Constants.REDIS_KEY_HOUSENUMBER,newUserInfo.getProType()+"_"+newUserInfo.getHouseNumber(),newUserInfo.getUserId());
+
+//        //删除缓存中的用户对象和相关对应关系  重新登录时 会重新加载到缓存中
+//        redisUtils.delKey(Constants.REDIS_KEY_USER+userInfo.getUserId());
+//        if(userInfo.getType()==1){//第三方平台完善资料
+//            redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER,String.valueOf(userMap.get("otherPlatformType"))+"_"+String.valueOf(userMap.get("otherPlatformKey")));
+//        }else{//手机号完善资料
+//            redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER,String.valueOf(userMap.get("phone")));
+//        }
         //调用activeMQ消息系统 同步门牌号记录表
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
