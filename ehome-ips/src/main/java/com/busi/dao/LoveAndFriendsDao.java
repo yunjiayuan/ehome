@@ -65,10 +65,11 @@ public interface LoveAndFriendsDao {
             "<if test=\"income >= 1 \">"+
             " income=#{income}," +
             "</if>" +
+            " deleteType=#{deleteType}," +
             " locationProvince=#{locationProvince}," +
             " locationCity=#{locationCity}," +
             " locationDistrict=#{locationDistrict}" +
-            " where userId=#{userId}"+
+            " where id=#id and userId=#{userId}"+
             "</script>")
     int update(LoveAndFriends loveAndFriends);
 
@@ -77,7 +78,14 @@ public interface LoveAndFriendsDao {
      * @param id
      */
     @Select("select * from loveAndFriends where id = #{id} and auditType = 2 and deleteType = 1")
-    LoveAndFriends findUserById(@Param("userId") long id);
+    LoveAndFriends findUserById(@Param("id") long id);
+
+    /***
+     * 根据Id查询用户婚恋交友信息
+     * @param userId
+     */
+    @Select("select * from loveAndFriends where userId = #{userId} and auditType = 2 and deleteType = 1")
+    LoveAndFriends findByIdUser(@Param("userId") long userId);
 
     /***
      * 分页条件查询 默认按时间降序排序

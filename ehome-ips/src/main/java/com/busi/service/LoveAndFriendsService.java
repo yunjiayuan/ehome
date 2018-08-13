@@ -53,12 +53,21 @@ public class LoveAndFriendsService {
     }
 
     /***
-     * 根据ID查询userInfo信息
+     * 根据ID查询
      * @param id
      * @return
      */
     public LoveAndFriends findUserById(long id){
         return loveAndFriendsDao.findUserById(id);
+    }
+
+    /***
+     * 根据userId查询
+     * @param userId
+     * @return
+     */
+    public LoveAndFriends findByIdUser(long userId){
+        return loveAndFriendsDao.findByIdUser(userId);
     }
 
     /***
