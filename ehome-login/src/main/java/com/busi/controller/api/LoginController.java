@@ -225,6 +225,10 @@ public class LoginController extends BaseController implements LoginApiControlle
      */
     @Override
     public ReturnData loginOut(@PathVariable long myId) {
+        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+myId );
+        if(userMap==null||userMap.size()<=0){
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }
         redisUtils.hset(Constants.REDIS_KEY_USER+myId,"clientId","");
         redisUtils.hset(Constants.REDIS_KEY_USER+myId,"token","");
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
