@@ -54,6 +54,16 @@ public class SearchGoodsService {
     }
 
     /***
+     * 更新
+     * @param searchGoods
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateDel(SearchGoods searchGoods){
+        return  searchGoodsDao.updateDel(searchGoods);
+    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return

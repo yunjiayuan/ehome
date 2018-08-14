@@ -69,9 +69,21 @@ public interface LoveAndFriendsDao {
             " locationProvince=#{locationProvince}," +
             " locationCity=#{locationCity}," +
             " locationDistrict=#{locationDistrict}" +
-            " where id=#id and userId=#{userId}"+
+            " where id=#{id} and userId=#{userId}"+
             "</script>")
     int update(LoveAndFriends loveAndFriends);
+
+    /***
+     * 更新婚恋交友删除状态
+     * @param loveAndFriends
+     * @return
+     */
+    @Update("<script>" +
+            "update loveAndFriends set"+
+            " deleteType=#{deleteType}" +
+            " where id=#{id} and userId=#{userId}"+
+            "</script>")
+    int updateDel(LoveAndFriends loveAndFriends);
 
     /***
      * 根据Id查询用户婚恋交友信息

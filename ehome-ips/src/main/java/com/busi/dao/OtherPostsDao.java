@@ -51,10 +51,22 @@ public interface OtherPostsDao {
     int update(OtherPosts otherPosts);
 
     /***
+     * 更新删除状态
+     * @param otherPosts
+     * @return
+     */
+    @Update("<script>" +
+            "update otherPosts set"+
+            " deleteType=#{deleteType}" +
+            " where id=#{id} and userId=#{userId}"+
+            "</script>")
+    int updateDel(OtherPosts otherPosts);
+
+    /***
      * 根据Id查询用户其他公告信息
      * @param id
      */
-    @Select("select * from otherPosts where id=#{id}")
+    @Select("select * from otherPosts where id=#{id} and deleteType=1 and auditType=2")
     OtherPosts findUserById(@Param("id") long id);
 
     /***
