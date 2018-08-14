@@ -77,12 +77,20 @@ public interface RegisterApiController {
     ReturnData updateUserHead (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 
     /***
-     * 修改用户访问权限接口
+     * 修改用户访问权限接口 停用
      * @param userInfo
      * @return
      */
     @PutMapping("updateUserAccessRights")
     ReturnData updateUserAccessRights (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
+
+    /***
+     * 修改新用户系统欢迎消息状态接口
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateWelcomeInfoStatus")
+    ReturnData updateWelcomeInfoStatus ();
 
 //    /***
 //     * 测试fegin被调用

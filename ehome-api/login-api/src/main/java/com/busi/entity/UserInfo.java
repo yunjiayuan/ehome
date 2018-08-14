@@ -44,6 +44,8 @@ public class UserInfo {
 	@Pattern(regexp="[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{2,10}",message = "名字格式有误，长度为2-10，并且不能包含非法字符")
 	private String name; // 姓名 中文 英文 数字 简单字符组合
 
+	@Max(value = 2, message = "sex参数有误，超出指定范围")
+	@Min(value= 0 ,message= "sex参数有误，超出指定范围")
 	private int sex; // 性别
 
 	@JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
@@ -69,6 +71,8 @@ public class UserInfo {
 	@Min(value= 0 ,message= "婚姻参数有误，未找到指定的婚姻选项")
     private int maritalStatus;  //婚姻 "0":"无","1":"已婚","2":"未婚","3":"离异","4":"丧偶"
 
+	@Max(value = 56, message = "nation参数有误，超出指定范围")
+	@Min(value= 0 ,message= "nation参数有误，超出指定范围")
     private int nation;         //民族 "0":"请选择 1 汉族2 蒙古族3 回族4 藏族5 维吾尔族6 苗族7 彝族8 壮族9 布依族10 朝鲜族11 满族12 侗族13 瑶族14 白族15 土家族16 哈尼族17 哈萨克族18 傣族19 黎族20 傈僳族21 佤族22 畲族23 高山族24 拉祜族25 水族26 东乡族27 纳西族28 景颇族29 柯尔克孜族30 土族31 达斡尔族32 仫佬族33 羌族34 布朗族35 撒拉族36 毛南族37 仡佬族38 锡伯族39 阿昌族40 普米族41 塔吉克族42 怒族43 乌孜别克族44 俄罗斯族45 鄂温克族46 德昂族47 保安族48 裕固族49 京族50 塔塔尔族51 独龙族52 鄂伦春族53 赫哲族54 门巴族55 珞巴族56 基诺族
 
 	@Length(min = 0, max = 140, message = "座右铭最多只能输入140个字")
@@ -111,8 +115,12 @@ public class UserInfo {
 
 	private int otherPlatformType;//第三方平台类型 1：QQ，2：微信，3：新浪微博
 
+	@Max(value = 1, message = "isNewUser参数有误，超出指定范围")
+	@Min(value= 0 ,message= "isNewUser参数有误，超出指定范围")
 	private int isNewUser;//是否为领取新人红包的标识  0默认新用户未领取 1已领新人红包(老用户)
 
+	@Max(value = 1, message = "welcomeInfoStatus参数有误，超出指定范围")
+	@Min(value= 0 ,message= "welcomeInfoStatus参数有误，超出指定范围")
 	private int welcomeInfoStatus;//系统欢迎消息状态 0表示未发送  1表示已发送
 
 	@Max(value = 3, message = "访问权限参数有误，超出指定范围")

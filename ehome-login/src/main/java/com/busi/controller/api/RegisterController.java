@@ -549,6 +549,26 @@ public class RegisterController extends BaseController implements RegisterApiCon
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
+    /***
+     * 修改新用户系统欢迎消息状态接口
+     * @return
+     */
+    @Override
+    public ReturnData updateWelcomeInfoStatus() {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(CommonUtils.getMyId());
+        userInfo.setWelcomeInfoStatus(1);//修改为已发送
+        //开始修改
+        userInfoService.updateWelcomeInfoStatus(userInfo);
+        //更新缓存数据
+        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userInfo.getUserId());
+        if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"welcomeInfoStatus",userInfo.getWelcomeInfoStatus(),Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
 //    @Override
 //    public ReturnData testFegin(@PathVariable Integer id) {
 //        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"nihao",new JSONObject());

@@ -68,8 +68,10 @@ public class WebLogAspect {
 		if("POST".equals(request.getMethod())||"PUT".equals(request.getMethod())){
 			String bodys = "";
 			Object[] bodyArray = joinPoint.getArgs();
-			Object jsonObj = JSON.toJSON(bodyArray[0]);
-			bodys = jsonObj.toString();
+			if(bodyArray!=null&&bodyArray.length>0){
+				Object jsonObj = JSON.toJSON(bodyArray[0]);
+				bodys = jsonObj.toString();
+			}
 //			for(int i=0;i<bodyArray.length;i++){
 //				if(bodyArray[i]!=null){
 //

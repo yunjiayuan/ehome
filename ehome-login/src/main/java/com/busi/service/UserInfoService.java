@@ -113,6 +113,16 @@ public class UserInfoService {
     }
 
     /***
+     * 修改新用户系统欢迎消息状态接口
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateWelcomeInfoStatus(UserInfo userInfo){
+        return  userInfoDao.updateWelcomeInfoStatus(userInfo);
+    }
+
+    /***
      * 完善资料
      * @param userInfo
      * @return
