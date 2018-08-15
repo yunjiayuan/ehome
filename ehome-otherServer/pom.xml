@@ -11,5 +11,12 @@
 
     <artifactId>ehome-otherServer</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.ehome</groupId>
+            <artifactId>otherServer-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>
