@@ -113,7 +113,7 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         posts.setDeleteType(2);
-        otherPostsService.update(posts);
+        otherPostsService.updateDel(posts);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

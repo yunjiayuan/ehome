@@ -153,7 +153,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         posts.setDeleteType(2);
-        searchGoodsService.update(posts);
+        searchGoodsService.updateDel(posts);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -173,6 +173,11 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         //验证修改人权限
         if (CommonUtils.getMyId() != searchGoods.getUserId()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + searchGoods.getUserId() + "]的公告信息", new JSONObject());
+        }
+        // 查询数据库
+        SearchGoods posts = searchGoodsService.findUserById(searchGoods.getId());
+        if (posts == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         //计算公告分数
         int num3 = 0;//图片
@@ -354,7 +359,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         posts.setAfficheStatus(afficheStatus);
-        searchGoodsService.update(posts);
+        searchGoodsService.updateStatus(posts);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

@@ -26,8 +26,8 @@ public interface LoveAndFriendsApiController {
      * @Description: 删除
      * @return:
      */
-    @DeleteMapping("delLove/{userId}")
-    ReturnData delLove(@PathVariable long userId);
+    @DeleteMapping("delLove/{id}/{userId}")
+    ReturnData delLove(@PathVariable long id,@PathVariable long userId);
 
     /**
      * @Description: 更新
@@ -40,11 +40,11 @@ public interface LoveAndFriendsApiController {
     /**
      * 查询
      *
-     * @param userId
+     * @param id
      * @return
      */
-    @GetMapping("getLove/{userId}")
-    ReturnData getLove(@PathVariable long userId);
+    @GetMapping("getLove/{id}")
+    ReturnData getLove(@PathVariable long id);
 
     /***
      * 分页条件查询

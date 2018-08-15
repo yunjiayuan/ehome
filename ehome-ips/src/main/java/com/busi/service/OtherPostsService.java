@@ -54,6 +54,16 @@ public class OtherPostsService {
     }
 
     /***
+     * 更新
+     * @param otherPosts
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateDel(OtherPosts otherPosts){
+        return  otherPostsDao.updateDel(otherPosts);
+    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return

@@ -91,10 +91,34 @@ public interface SearchGoodsDao {
     int update(SearchGoods searchGoods);
 
     /***
+     * 更新删除状态
+     * @param searchGoods
+     * @return
+     */
+    @Update("<script>" +
+            "update searchGoods set"+
+            " deleteType=#{deleteType}" +
+            " where id=#{id} and userId=#{userId}"+
+            "</script>")
+    int updateDel(SearchGoods searchGoods);
+
+    /***
+     * 更新公告状态
+     * @param searchGoods
+     * @return
+     */
+    @Update("<script>" +
+            "update searchGoods set"+
+            " afficheStatus=#{afficheStatus}" +
+            " where id=#{id} and userId=#{userId}"+
+            "</script>")
+    int updateStatus(SearchGoods searchGoods);
+
+    /***
      * 根据Id查询用户寻人寻物失物招领信息
      * @param id
      */
-    @Select("select * from searchGoods where id=#{id}")
+    @Select("select * from searchGoods where id=#{id} and deleteType=1 and auditType=2")
     SearchGoods findUserById(@Param("id") long id);
 
 
@@ -113,15 +137,15 @@ public interface SearchGoodsDao {
     @Select("<script>" +
             "select * from searchGoods" +
             " where 1=1" +
-            "<if test=\"searchType > 0 '\">" +
+            "<if test=\"searchType > 0 \">" +
             " and searchType = #{searchType}" +
             "</if>" +
-            "<if test=\"beginAge > 0 \">"+
-            " and beginAge = #{beginAge}"+
-            "</if>" +
-            "<if test=\"endAge >= beginAge and endAge > 0 \">"+
-            " and endAge = #{endAge} "+
-            "</if>" +
+//            "<if test=\"beginAge > 0 \">"+
+//            " and beginAge = #{beginAge}"+
+//            "</if>" +
+//            "<if test=\"endAge >= beginAge and endAge > 0 \">"+
+//            " and age = #{endAge} "+
+//            "</if>" +
             "<if test=\"missingSex != 0 \">"+
             " and missingSex = #{missingSex}" +
             "</if>" +
@@ -134,10 +158,12 @@ public interface SearchGoodsDao {
             "<if test=\"district != -1 \">"+
             " and district = #{district}" +
             "</if>" +
+            " and age >= #{beginAge}" +
+            " and #{endAge} >= age" +
             " and auditType = 2" +
             " and deleteType = 1" +
             " order by refreshTime desc" +
             "</script>")
-    List<SearchGoods> findList(@Param("province") long province,@Param("city") long city,@Param("district") long district,@Param("beginAge") long beginAge,@Param("endAge") long endAge,@Param("missingSex") long missingSex,@Param("searchType") long searchType);
+    List<SearchGoods> findList(@Param("province") int province,@Param("city") int city,@Param("district") int district,@Param("beginAge") int beginAge,@Param("endAge") int endAge,@Param("missingSex") int missingSex,@Param("searchType") int searchType);
 
 }

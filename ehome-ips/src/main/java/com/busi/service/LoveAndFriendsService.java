@@ -53,6 +53,16 @@ public class LoveAndFriendsService {
     }
 
     /***
+     * 更新删除状态
+     * @param loveAndFriends
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateDel(LoveAndFriends loveAndFriends){
+        return  loveAndFriendsDao.updateDel(loveAndFriends);
+    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return
