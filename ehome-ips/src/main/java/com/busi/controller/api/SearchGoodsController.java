@@ -359,7 +359,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         posts.setAfficheStatus(afficheStatus);
-        searchGoodsService.update(posts);
+        searchGoodsService.updateStatus(posts);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

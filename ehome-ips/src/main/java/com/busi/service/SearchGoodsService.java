@@ -54,13 +54,23 @@ public class SearchGoodsService {
     }
 
     /***
-     * 更新
+     * 更新删除状态
      * @param searchGoods
      * @return
      */
     @Transactional(rollbackFor={RuntimeException.class, Exception.class})
     public int updateDel(SearchGoods searchGoods){
         return  searchGoodsDao.updateDel(searchGoods);
+    }
+
+    /***
+     * 更新公告状态
+     * @param searchGoods
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateStatus(SearchGoods searchGoods){
+        return  searchGoodsDao.updateStatus(searchGoods);
     }
 
     /***

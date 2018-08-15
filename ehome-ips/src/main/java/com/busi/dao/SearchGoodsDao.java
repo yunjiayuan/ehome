@@ -103,6 +103,18 @@ public interface SearchGoodsDao {
     int updateDel(SearchGoods searchGoods);
 
     /***
+     * 更新公告状态
+     * @param searchGoods
+     * @return
+     */
+    @Update("<script>" +
+            "update searchGoods set"+
+            " afficheStatus=#{afficheStatus}" +
+            " where id=#{id} and userId=#{userId}"+
+            "</script>")
+    int updateStatus(SearchGoods searchGoods);
+
+    /***
      * 根据Id查询用户寻人寻物失物招领信息
      * @param id
      */
