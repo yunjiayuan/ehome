@@ -99,6 +99,9 @@ zuul:
     api-f:
           path: /otherServer-api/** #其他服务 反向代理 对外访问路径
           service-id: otherServer #配置服务名称 实现负载均衡
+    api-g:
+          path: /paymentServer-api/** #支付服务 反向代理 对外访问路径
+          service-id: paymentServer #配置服务名称 实现负载均衡
 
 hystrix: #设置超时 三个时间最好保持一致
   threadpool:
