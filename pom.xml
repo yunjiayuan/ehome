@@ -20,6 +20,7 @@
         <module>ehome-ips</module>
         <module>ehome-activity</module>
         <module>ehome-otherServer</module>
+        <module>ehome-paymentServer</module>
     </modules>
 
     <packaging>pom</packaging>
