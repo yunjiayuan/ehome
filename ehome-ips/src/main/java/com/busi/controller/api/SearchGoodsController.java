@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Map;
@@ -109,8 +110,8 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         searchGoodsService.add(searchGoods);
 
         //新增home
-        IPS_Home ipsHome = new IPS_Home();
         if (fraction > 70) {
+            IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(searchGoods.getId());
             ipsHome.setTitle(searchGoods.getTitle());
             ipsHome.setUserId(searchGoods.getUserId());
@@ -226,8 +227,8 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             fraction += 30;
         }
         //新增home
-        IPS_Home ipsHome = new IPS_Home();
         if (fraction > 70) {
+            IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(searchGoods.getId());
             ipsHome.setTitle(searchGoods.getTitle());
             ipsHome.setUserId(searchGoods.getUserId());
