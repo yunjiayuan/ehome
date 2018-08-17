@@ -53,9 +53,9 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库（是否已发布过）
-        LoveAndFriends andFriends;
         Map<String, Object> loveAndFriendsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId());
         if (loveAndFriendsMap == null || loveAndFriendsMap.size() <= 0) {
+            LoveAndFriends andFriends;
             andFriends = loveAndFriendsService.findByIdUser(loveAndFriends.getUserId());
             if (andFriends == null) {
                 //符合推荐规则 添加到缓存home列表中
@@ -117,8 +117,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
                 redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + CommonUtils.getMyId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
                 //新增home
-                IPS_Home ipsHome = new IPS_Home();
                 if (fraction > 70) {
+                    IPS_Home ipsHome = new IPS_Home();
                     ipsHome.setInfoId(loveAndFriends.getId());
                     ipsHome.setTitle(loveAndFriends.getTitle());
                     ipsHome.setUserId(loveAndFriends.getUserId());
@@ -150,7 +150,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
      * @return
      */
     @Override
-    public ReturnData delLove(@PathVariable long id ,@PathVariable long userId ) {
+    public ReturnData delLove(@PathVariable long id, @PathVariable long userId) {
         //验证参数
         if (id <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数ID有误", new JSONObject());
@@ -239,8 +239,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             fraction += 30;
         }
 
-        IPS_Home ipsHome = new IPS_Home();
         if (fraction >= 70) {
+            IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(loveAndFriends.getId());
             ipsHome.setTitle(loveAndFriends.getTitle());
             ipsHome.setUserId(loveAndFriends.getUserId());
