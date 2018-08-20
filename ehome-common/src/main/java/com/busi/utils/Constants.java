@@ -122,18 +122,19 @@ public class Constants {
     public static final String REDIS_KEY_USER_VISIT_TOTAL_COUNT = "user_visit_totalCount";//总访问量
     public static final String REDIS_KEY_USER_VISIT = "user_visit_";//访问量记录关系表
     public static final String REDIS_KEY_USER_JURISDICTION = "user_jurisdiction_";//用户权限关系
+    public static final String REDIS_KEY_USERMEMBERSHIP = "userMembership_";//userId与用户会员信息对象的关系对照
+    public static final String REDIS_KEY_PAYMENT_PURSEINFO = "payment_purse_";//userId与钱包对象的关系对照
+
+    //redis 1库相关key配置(IPS)
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)
     public static final String REDIS_KEY_IPS_LOVEANDFRIEND = "ips_loveAndFriend_";//userId与婚恋交友对象关系对照
     public static final String REDIS_KEY_IPS_OTHERPOSTS = "ips_otherPosts_";//userId与其他公告对象关系对照
-    public static final String REDIS_KEY_USERMEMBERSHIP = "userMembership_";//userId与用户会员信息对象的关系对照
     public static final String REDIS_KEY_IPS_SEARCHGOODS = "ips_searchGoods_";//userId与寻人寻物失物招领对象的关系对照
-    public static final String REDIS_KEY_PAYMENT_PURSEINFO = "payment_purse_";//userId与钱包对象的关系对照
-    public static final String REDIS_KEY_IPS_TASK = "ips_task_";//userId与任务对象的关系对照
 
-    //redis 1库相关key配置(IPS)
+    //redis 2库相关key配置(otherServer)
+    public static final String REDIS_KEY_IPS_TASK = "task_";//userId与任务对象的关系对照
 
-
-    //redis 2库相关key配置(EBLOG)
+    //redis 3库相关key配置(EBLOG)
 
 
     /** redis配置 结束**/
