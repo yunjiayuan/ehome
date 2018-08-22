@@ -1,13 +1,8 @@
 package com.busi.controller.api;
 
-import com.busi.entity.Purse;
 import com.busi.entity.ReturnData;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import javax.validation.Valid;
 
 /**
  * 钱包相关接口
@@ -23,5 +18,14 @@ public interface PurseApiController {
      */
     @GetMapping("findPurseInfo/{userId}")
     ReturnData findPurseInfo(@PathVariable long userId);
+
+    /***
+     * 查询互动用户双方钱包家点信息
+     * @param myId     当前登录用户ID
+     * @param userId   好友用户ID
+     * @return
+     */
+    @GetMapping("findHomePointInfo/{myId}/{userId}")
+    ReturnData findHomePointInfo(@PathVariable long myId,@PathVariable long userId);
 
 }

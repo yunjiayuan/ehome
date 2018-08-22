@@ -26,7 +26,7 @@ public class PurseChangingLogController extends BaseController implements PurseC
 
 
     /***
-     * 查询用户钱包信息
+     * 查询用户钱包交易明细信息
      * @param userId    将要查询的用户ID
      * @param currencyType 交易支付类型 -1所有 0钱(真实人民币),1家币,2家点
      * @param tradeType 交易类型-1所有 0充值 1提现,2转账转入,3转账转出,4红包转入,5红包转出,6 点子转入,7点子转出,8悬赏转入,9悬赏转出,10兑换转入,11兑换支出,12红包退款,13二手购买转出,14二手出售转入,15家厨房转出,16家厨房转入,17购买会员支出
