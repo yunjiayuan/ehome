@@ -140,7 +140,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在", new JSONObject());
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -170,7 +170,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         andFriends.setDeleteType(2);
         loveAndFriendsService.updateDel(andFriends);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + id, 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -190,7 +190,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + loveAndFriends.getUserId() + "]的婚恋交友信息", new JSONObject());
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId(), 0);
 
         //符合推荐规则 添加到缓存home列表中
         int num3 = 0;//图片
@@ -298,38 +298,73 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             }
             //放入缓存
             loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
-            redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + id, loveAndFriendsMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", loveAndFriendsMap);
     }
 
     /***
      * 条件查询接口
-     * @param sex  性别:0不限，1男，2女
-     * @param income  收入:0不限，1（<3000），2（3000-5000），3（5000-7000），4（7000-9000），5（9000-12000），6（12000-15000），7（15000-20000），8（>20000）
+     * @param screen  暂定按性别查询:0不限，1男，2女
+     * @param sort   0刷新时间，1年龄，2收入
      * @param page   页码 第几页 起始值1
      * @param count  每页条数
      * @return
      */
     @Override
-    public ReturnData findListLove(@PathVariable int sex, @PathVariable int income, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findListLove(@PathVariable int screen, @PathVariable int sort, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        if (sex < 1 || sex > 2) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "性别参数有误", new JSONObject());
+        if (screen < 0 || screen > 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "screen参数有误", new JSONObject());
         }
-        if (income < 1 || income > 5) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "收入参数有误", new JSONObject());
+        if (sort < 0 || sort > 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "sort参数有误", new JSONObject());
+        }
+        String sortField = null;
+        if (sort == 1) {
+            sortField = "age";
+        } else if (sort == 2) {
+            sortField = "income";
+        } else {
+            sortField = "refreshTime";
         }
         //开始查询
         PageBean<LoveAndFriends> pageBean;
-        pageBean = loveAndFriendsService.findList(sex, income, page, count);
+        pageBean = loveAndFriendsService.findList(screen, sortField, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+    }
+
+    /**
+     * 查询是否已发布过
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public ReturnData publishedLove(@PathVariable long userId) {
+        //验证参数
+        if (userId <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数id有误", new JSONObject());
+        }
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> loveAndFriendsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + userId);
+        if (loveAndFriendsMap == null || loveAndFriendsMap.size() <= 0) {
+            LoveAndFriends loveAndFriends = loveAndFriendsService.findByIdUser(userId);
+            if (loveAndFriends == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            } else {
+                //放入缓存
+                loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
+                redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
+            }
+        }
+        return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在", new JSONObject());
     }
 
 }

@@ -101,24 +101,21 @@ public interface LoveAndFriendsDao {
 
     /***
      * 分页条件查询 默认按时间降序排序
-     * @param sex
-     * @param income
+     * @param screen
+     * @param sort
      * @return
      */
 //    @Select("select * from loveAndFriends where auditType = 2 and deleteType = 1 order by refreshTime")
     @Select("<script>" +
             "select * from loveAndFriends" +
             " where 1=1" +
-            "<if test=\"sex > 0\">"+
-            " and sex=#{sex}" +
-            "</if>" +
-            "<if test=\"income > 0\">"+
-            " and income=#{income}" +
+            "<if test=\"screen != 0 \">"+
+            " and sex=#{screen}" +
             "</if>" +
             " and auditType = 2"+
             " and deleteType = 1"+
-            " order by refreshTime desc" +
+            " order by #{sort} desc" +
             "</script>")
-    List<LoveAndFriends> findList(@Param("sex") long sex, @Param("income") long income);
+    List<LoveAndFriends> findList(@Param("screen") int screen, @Param("sort") String sort);
 
 }
