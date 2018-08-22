@@ -111,7 +111,7 @@ public class ConsumerDistribute {
                 case "6"://表示同步任务系统
                     messageAdapter = taskService;
                     break;
-                case "7"://表示同步图片删除
+                case "7"://表示同步钱包余额和交易明细
                     messageAdapter = purseService;
                     break;
                 default://异常
