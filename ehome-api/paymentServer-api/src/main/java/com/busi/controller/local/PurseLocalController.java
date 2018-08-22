@@ -19,6 +19,6 @@ public interface PurseLocalController {
      * @return
      */
     @PutMapping("updatePurseInfo")
-    ReturnData updatePurseInfo(@Valid @RequestBody Purse purse);
+    ReturnData updatePurseInfo(@RequestBody Purse purse);
 
 }

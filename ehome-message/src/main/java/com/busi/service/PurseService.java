@@ -40,7 +40,7 @@ public class PurseService implements MessageAdapter {
             int currencyType = Integer.parseInt(body.getString("currencyType"));
             //交易金额
             Double tradeMoney = Double.parseDouble(body.getString("tradeMoney"));
-            if(userId<0||tradeType<0||tradeType>19||currencyType<0||currencyType>2||tradeMoney<=0){
+            if(userId<0||tradeType<0||tradeType>19||currencyType<0||currencyType>2){
                 log.info("消息服务平台处理用户更新钱包余额功能并更新钱包明细操作失败，参数有误："+body.toJSONString());
                 return;
             }

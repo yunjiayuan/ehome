@@ -28,7 +28,7 @@ public class PurseChangingLogLController extends BaseController implements Purse
      * @return
      */
     @Override
-    public ReturnData addPurseChangingLog(@Valid @RequestBody PurseChangingLog purseChangingLog) {
+    public ReturnData addPurseChangingLog(@RequestBody PurseChangingLog purseChangingLog) {
         //验证参数格式
 //        if(bindingResult.hasErrors()){
 //            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
