@@ -333,7 +333,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             maritalstatus = userInfoCache.getMaritalStatus();
 //            monthlyPay = userInfoCache.getMonthlyPay();
         } else {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "服务端计算婚恋交友匹配度错误，用户[\" + myId + \"]缓存中数据异常！", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "服务端计算婚恋交友匹配度错误，用户 ["+ CommonUtils.getMyId() +"]缓存中数据异常！", new JSONObject());
         }
         // 开始计算 左上角匹配度 suntj 20161019
         if (loveAndFriends.getSex() != sex) {// 匹配性别 （30%）
