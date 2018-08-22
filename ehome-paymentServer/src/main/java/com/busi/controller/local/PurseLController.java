@@ -37,15 +37,15 @@ public class PurseLController extends BaseController implements PurseLocalContro
      * @return
      */
     @Override
-    public ReturnData updatePurseInfo(@Valid @RequestBody Purse purse, BindingResult bindingResult) {
-        //验证参数格式
-        if(bindingResult.hasErrors()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
-        }
-        //验证修改人权限
-        if(CommonUtils.getMyId()!=purse.getUserId()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+purse.getUserId()+"]的钱包信息",new JSONObject());
-        }
+    public ReturnData updatePurseInfo(@Valid @RequestBody Purse purse) {
+//        //验证参数格式
+//        if(bindingResult.hasErrors()){
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+//        }
+//        //验证修改人权限
+//        if(CommonUtils.getMyId()!=purse.getUserId()){
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+purse.getUserId()+"]的钱包信息",new JSONObject());
+//        }
         //判断缓存中和数据库中是否存在 以判断是新增还是更新
         Map<String,Object> purseMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PURSEINFO+purse.getUserId() );
         if(purseMap==null||purseMap.size()<=0){
@@ -67,7 +67,10 @@ public class PurseLController extends BaseController implements PurseLocalContro
             }
         }
         //缓存中存在 则更新
-        purse.setTime(new Date());
+//        purse.setTime(new Date());
+        purse.setHomePoint(Long.parseLong(purseMap.get("homePoint").toString())+purse.getHomePoint());
+        purse.setHomeCoin(Long.parseLong(purseMap.get("homeCoin").toString())+purse.getHomeCoin());
+        purse.setSpareMoney(Double.parseDouble(purseMap.get("spareMoney").toString())+purse.getSpareMoney());
         purseInfoService.updatePurseInfo(purse);
         //使缓存中的用户钱包信息失效  查询时会重新加载
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PURSEINFO+purse.getUserId(),0);
