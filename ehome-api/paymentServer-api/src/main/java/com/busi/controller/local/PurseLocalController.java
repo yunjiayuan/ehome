@@ -2,7 +2,6 @@ package com.busi.controller.local;
 
 import com.busi.entity.Purse;
 import com.busi.entity.ReturnData;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
@@ -20,6 +19,6 @@ public interface PurseLocalController {
      * @return
      */
     @PutMapping("updatePurseInfo")
-    ReturnData updatePurseInfo(@Valid @RequestBody Purse purse, BindingResult bindingResult);
+    ReturnData updatePurseInfo(@Valid @RequestBody Purse purse);
 
 }
