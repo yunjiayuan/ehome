@@ -31,15 +31,15 @@ public class PurseChangingLogLController extends BaseController implements Purse
      * @return
      */
     @Override
-    public ReturnData addPurseChangingLog(@Valid @RequestBody PurseChangingLog purseChangingLog, BindingResult bindingResult) {
+    public ReturnData addPurseChangingLog(@Valid @RequestBody PurseChangingLog purseChangingLog) {
         //验证参数格式
-        if(bindingResult.hasErrors()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
-        }
+//        if(bindingResult.hasErrors()){
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+//        }
         //验证修改人权限
-        if(CommonUtils.getMyId()!=purseChangingLog.getUserId()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限新增用户["+purseChangingLog.getUserId()+"]的钱包明细信息",new JSONObject());
-        }
+//        if(CommonUtils.getMyId()!=purseChangingLog.getUserId()){
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限新增用户["+purseChangingLog.getUserId()+"]的钱包明细信息",new JSONObject());
+//        }
         //开始新增
         purseChangingLog.setTime(new Date());
         purseChangingLogService.addPurseChangingLog(purseChangingLog);

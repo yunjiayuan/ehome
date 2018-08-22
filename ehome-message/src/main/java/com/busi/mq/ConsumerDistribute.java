@@ -37,7 +37,13 @@ public class ConsumerDistribute {
     @Autowired
     private VisitViewService visitViewService;//访问量业务
     @Autowired
-    private ImageDeleteLogService imageDeleteLogService;
+    private ImageDeleteLogService imageDeleteLogService;//图片删除记录
+    @Autowired
+    private PurseService purseService;//钱包
+//    @Autowired
+//    private PurseChangingLogService purseChangingLogService;//钱包明细记录  移到钱包service中
+    @Autowired
+    private TaskService taskService;//任务系统
 
     /***
      * 监听消息
@@ -53,7 +59,7 @@ public class ConsumerDistribute {
      *    }
      * }
      * interfaceType 0:表示发送手机短信  1:表示发送邮件  2:表示新用户注册转发 3:表示用户登录时同步登录信息
-     *               4:表示用户访问量信息同步 5:表示同步图片删除 6:同步任务系统 ...
+     *               4:表示用户访问量信息同步 5:表示同步图片删除 6:同步任务系统 7:表示更新钱包余额和钱包明细...
      * content 中的内容，根据具体业务自定义
      * @param json
      * @param textMessage
@@ -101,6 +107,12 @@ public class ConsumerDistribute {
                     break;
                 case "5"://表示同步图片删除
                     messageAdapter = imageDeleteLogService;
+                    break;
+                case "6"://表示同步任务系统
+                    messageAdapter = taskService;
+                    break;
+                case "7"://表示同步图片删除
+                    messageAdapter = purseService;
                     break;
                 default://异常
                     log.info("消息服务平台操作失败，请求参数有误interfaceType:" + interfaceType);
