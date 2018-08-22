@@ -46,7 +46,7 @@ public class SearchGoods {
     private String contactsPhone; // 联系人电话
 
     @Max(value = 2, message = "性别参数有误，未找到指定的性别选项")
-    @Min(value = 1, message = "性别参数有误，未找到指定的性别选项")
+    @Min(value = 0, message = "性别参数有误，未找到指定的性别选项")
     private int missingSex; // 失踪人性别:1男,2女
 
     private int age;      //年龄

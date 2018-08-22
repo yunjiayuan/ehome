@@ -82,17 +82,17 @@ public class LoveAndFriendsService {
 
     /***
      * 分页条件查询
-     * @param sex   性别:0不限，1男，2女
-     * @param income 收入:0不限，1（<3000），2（3000-5000），3（5000-7000），4（7000-9000），5（9000-12000），6（12000-15000），7（15000-20000），8（>20000）
+     * @param screen   性别:0不限，1男，2女
+     * @param sort   默认0刷新时间，1年龄，2收入
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<LoveAndFriends> findList(int sex, int income, int page, int count) {
+    public PageBean<LoveAndFriends> findList(int screen, String sort, int page, int count) {
 
         List<LoveAndFriends> list;
         Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = loveAndFriendsDao.findList(sex,income);
+        list = loveAndFriendsDao.findList(screen,sort);
 
         return PageUtils.getPageBean(p,list);
     }

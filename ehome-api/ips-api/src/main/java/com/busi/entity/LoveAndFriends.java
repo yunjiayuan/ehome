@@ -31,28 +31,28 @@ public class LoveAndFriends {
   private String imgUrl;//图片地址，最多九张 （评分标准：个数1为15分  >=3为30分(推荐)  >=6为40分）
 
   @Max(value = 2, message = "性别参数有误，未找到指定的性别选项")
-  @Min(value= 1 ,message= "性别参数有误，未找到指定的性别选项")
-  private int sex;//性别：1男，2女
+  @Min(value= 0 ,message= "性别参数有误，未找到指定的性别选项")
+  private int sex;//性别：0不限，1男，2女
 
-  @Max(value = 6, message = "年龄参数有误，未找到指定的年龄选项")
-  @Min(value= 1 ,message= "年龄参数有误，未找到指定的年龄选项")
-  private int age;//年龄：1(18-29)，2（30—39），3（40-49），4（50-59），5（60-69）,6(>=70)
+  @Max(value = 5, message = "年龄参数有误，未找到指定的年龄选项")
+  @Min(value= 0 ,message= "年龄参数有误，未找到指定的年龄选项")
+  private int age;//年龄：0不限，1(<18)，2（18—22），3（23-26），4（27-35），5（>35）
 
-  @Max(value = 7, message = "身高参数有误，未找到指定的身高选项")
-  @Min(value= 1 ,message= "身高参数有误，未找到指定的身高选项")
-  private int stature;//身高(单位：cm)：1（<=139），2（140-149），3（150-159），4（160-169），5（170-179）,6(180-189),7(>=190)
+  @Max(value = 5, message = "身高参数有误，未找到指定的身高选项")
+  @Min(value= 0 ,message= "身高参数有误，未找到指定的身高选项")
+  private int stature;//身高(单位：cm)：0不限，1（140-160），2（161-170），3（171-175），4（176-180），5（>181）
 
-  @Max(value = 8, message = "学历参数有误，未找到指定的学历选项")
-  @Min(value= 1 ,message= "学历参数有误，未找到指定的学历选项")
-  private int education;//学历:1中专,2专科,3本科,4双学士,5硕士,6博士,7博士后,8其他
+  @Max(value = 5, message = "学历参数有误，未找到指定的学历选项")
+  @Min(value= 0 ,message= "学历参数有误，未找到指定的学历选项")
+  private int education;//学历:0不限，1小学，2中专，3大专，4本科，5硕士
 
   @Max(value = 4, message = "婚姻参数有误，未找到指定的婚姻选项")
-  @Min(value= 1 ,message= "婚姻参数有误，未找到指定的婚姻选项")
-  private int marriage;//婚姻：1已婚,2未婚,3离异,4丧偶
+  @Min(value= 0 ,message= "婚姻参数有误，未找到指定的婚姻选项")
+  private int marriage;//婚姻：0不限，1已婚，2未婚，3离异，4丧偶
 
-  @Max(value = 5, message = "收入参数有误，未找到指定的收入选项")
-  @Min(value= 1 ,message= "收入参数有误，未找到指定的收入选项")
-  private int income;//收入：0不限，1(<2000),2(2000-4999）,3（5000-9999）,4（10000-29999）,5（>30000）
+  @Max(value = 8, message = "收入参数有误，未找到指定的收入选项")
+  @Min(value= 0 ,message= "收入参数有误，未找到指定的收入选项")
+  private int income;//收入：收入:0不限，1（<3000），2（3000-5000），3（5000-7000），4（7000-9000），5（9000-12000），6（12000-15000），7（15000-20000），8（>20000）
 
   private int locationProvince;//所在省份
 

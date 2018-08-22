@@ -54,6 +54,10 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //验证地区
+        if (!CommonUtils.checkProvince_city_district(0, searchGoods.getProvince(), searchGoods.getCity(), searchGoods.getDistrict())) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
+        }
         //计算公告分数
         int num3 = 0;//图片
         int fraction = 0;//公告分数
@@ -308,10 +312,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
      */
     @Override
     public ReturnData findMatterList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int beginAge, @PathVariable int endAge, @PathVariable int missingSex, @PathVariable int searchType, @PathVariable int page, @PathVariable int count) {
-        //验证地区正确性
-        if (!CommonUtils.checkProvince_city_district(0, province, city, district)) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
-        }
+
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
