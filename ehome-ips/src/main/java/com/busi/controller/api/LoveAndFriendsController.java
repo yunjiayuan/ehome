@@ -3,11 +3,10 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.IPS_Home;
-import com.busi.entity.PageBean;
-import com.busi.entity.ReturnData;
-import com.busi.entity.LoveAndFriends;
+import com.busi.entity.*;
+import com.busi.service.DetailedUserInfoService;
 import com.busi.service.LoveAndFriendsService;
+import com.busi.service.UserInfoService;
 import com.busi.utils.*;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-
 import com.busi.mq.MqProducer;
 
 
@@ -33,6 +31,12 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
     @Autowired
     LoveAndFriendsService loveAndFriendsService;
+
+    @Autowired
+    DetailedUserInfoService detailedUserInfoService;
+
+    @Autowired
+    UserInfoService userInfoService;
 
     @Autowired
     RedisUtils redisUtils;
@@ -290,16 +294,104 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数id有误", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
+        LoveAndFriends loveAndFriends = null;
         Map<String, Object> loveAndFriendsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + id);
         if (loveAndFriendsMap == null || loveAndFriendsMap.size() <= 0) {
-            LoveAndFriends loveAndFriends = loveAndFriendsService.findUserById(id);
+            loveAndFriends = loveAndFriendsService.findUserById(id);
             if (loveAndFriends == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
-            //放入缓存
-            loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
-            redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
         }
+        // 计算匹配度
+        int matching = 0;// 匹配度总值
+        int sex = 0;// 性别
+        int age = 0;// 开始年龄
+        int province = -1;// 省
+        int city = -1;// 市
+        int district = -1;// 区
+        int studyrank = 0;// 学历
+        int maritalstatus = 0;// 婚否
+        int height = 0;// 身高
+        int monthlyPay = 0; // 月薪
+        DetailedUserInfo ua = null;
+        ua = detailedUserInfoService.findUserDetailedById(CommonUtils.getMyId());
+        if (ua != null) {
+            height = ua.getHeight();
+        }
+        UserInfo userInfoCache = userInfoService.findUserById(CommonUtils.getMyId());
+        if (userInfoCache != null) {
+            SimpleDateFormat formatter = new SimpleDateFormat(
+                    "yyyy-MM-dd");
+            String userbirthday = formatter.format(userInfoCache
+                    .getBirthday());
+            age = CommonUtils.getAge(userbirthday);
+            sex = userInfoCache.getSex();
+            province = userInfoCache.getProvince();
+            city = userInfoCache.getCity();
+            district = userInfoCache.getDistrict();
+            studyrank = userInfoCache.getStudyRank();
+            maritalstatus = userInfoCache.getMaritalStatus();
+//            monthlyPay = userInfoCache.getMonthlyPay();
+        } else {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "服务端计算婚恋交友匹配度错误，用户[\" + myId + \"]缓存中数据异常！", new JSONObject());
+        }
+        // 开始计算 左上角匹配度 suntj 20161019
+        if (loveAndFriends.getSex() != sex) {// 匹配性别 （30%）
+            matching += 30;
+        }
+        if (loveAndFriends.getAge() == 1) {// 匹配年龄 （10%）
+            if (age >= 18 && age <= 29) {// 18-29
+                matching += 10;
+            }
+        } else if (loveAndFriends.getAge() == 2) { // 30-39
+            if (age >= 30 && age <= 39) {
+                matching += 10;
+            }
+        } else if (loveAndFriends.getAge() == 3) {// 40-49
+            if (age >= 40 && age <= 49) {
+                matching += 10;
+            }
+        } else if (loveAndFriends.getAge() == 4) {// 50-59
+            if (age >= 50 && age <= 59) {
+                matching += 10;
+            }
+        } else if (loveAndFriends.getAge() == 5) {// 60-69
+            if (age >= 60 && age <= 69) {
+                matching += 10;
+            }
+        } else {
+            if (age >= 70) {// 70岁以上
+                matching += 10;
+            }
+        }
+        if (loveAndFriends.getLocationProvince() == province) {// 匹配省市区 （省4%
+            // 市4% 县2%
+            // 总共10%）
+            matching += 4;
+            if (loveAndFriends.getLocationCity() == city) {
+                matching += 4;
+                if (loveAndFriends.getLocationDistrict() == district) {
+                    matching += 2;
+                }
+            }
+        }
+        if (loveAndFriends.getEducation() == studyrank) {// 匹配学历 （10%）
+            matching += 10;
+        }
+        if (loveAndFriends.getMarriage() == maritalstatus) {// 匹配婚姻状况 （20%）
+            matching += 10;
+        }
+        if (loveAndFriends.getIncome() == monthlyPay) {// 匹配收入 （10%）
+            matching += 10;
+        }
+        if (loveAndFriends.getStature() == height) {// 匹配身高 （10%）
+            matching += 10;
+        }
+        loveAndFriends.setMatching(matching + "%");// 设置匹配度
+        //放入缓存
+        loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", loveAndFriendsMap);
     }
 
@@ -364,7 +456,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
             }
         }
-        return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在", new JSONObject());
+        Object loveId = loveAndFriendsMap.get("id");
+        return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在! infoId:"+Long.valueOf(String.valueOf(loveId)), new JSONObject());
     }
 
 }
