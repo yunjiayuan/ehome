@@ -39,4 +39,25 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 删除图片 调用MQ同步删除
+     * @param userId       图片主人ID
+     * @param delImageUrls 将要删除的图片地址组合，逗号分隔
+     */
+    public void sendDeleteImageMQ(long userId,String delImageUrls){
+
+        //调用MQ同步 图片到图片删除记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "5");//interfaceType 5删除图片
+        JSONObject content = new JSONObject();
+        content.put("delImageUrls",delImageUrls);
+        content.put("userId",userId);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
 }
