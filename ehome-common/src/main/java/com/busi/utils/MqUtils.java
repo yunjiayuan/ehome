@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class MqUtils {
 
     @Autowired
-    MqProducer mqProducer;
+    MQProducer MQProducer;
 
     /***
      * 更新钱包余额和钱包明细
@@ -37,6 +37,6 @@ public class MqUtils {
         root.put("content", content);
         String sendMsg = root.toJSONString();
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
-        mqProducer.sendMsg(activeMQQueue,sendMsg);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
 }

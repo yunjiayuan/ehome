@@ -12,7 +12,7 @@ import javax.jms.Destination;
  * create time：2018/6/28 9:40
  */
 @Component
-public class MqProducer {
+public class MQProducer {
 
     @Autowired
     private JmsMessagingTemplate jmsMessagingTemplate;
