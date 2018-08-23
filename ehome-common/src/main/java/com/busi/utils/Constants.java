@@ -124,6 +124,7 @@ public class Constants {
     public static final String REDIS_KEY_USER_JURISDICTION = "user_jurisdiction_";//用户权限关系
     public static final String REDIS_KEY_USERMEMBERSHIP = "userMembership_";//userId与用户会员信息对象的关系对照
     public static final String REDIS_KEY_PAYMENT_PURSEINFO = "payment_purse_";//userId与钱包对象的关系对照
+    public static final String REDIS_KEY_PAYMENT_PAYKEY = "payment_payKey_";//userId与钱包对象的关系对照
 
     //redis 1库相关key配置(IPS)
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)
