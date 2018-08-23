@@ -51,7 +51,7 @@ public class TaskService {
      * @param sortTask  任务id
      * @return
      */
-    public Task findUserById(long sortTask,long userId,int taskType){
+    public Task findUserById(long userId,int taskType,long sortTask){
 
         return taskDao.findUserById(userId,taskType,sortTask);
     }
@@ -81,7 +81,7 @@ public class TaskService {
      */
     public PageBean<TaskList> findTaskList(int page, int count) {
 
-        List<Task> list;
+        List<TaskList> list;
         Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
         list = taskDao.findTaskList();
 

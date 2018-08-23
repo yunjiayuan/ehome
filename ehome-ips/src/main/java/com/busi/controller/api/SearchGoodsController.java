@@ -7,12 +7,8 @@ import com.busi.entity.IPS_Home;
 import com.busi.entity.SearchGoods;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
-import com.busi.mq.MqProducer;
 import com.busi.service.SearchGoodsService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -37,7 +33,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
     RedisUtils redisUtils;
 
     @Autowired
-    MqProducer mqProducer;
+    MqUtils mqUtils;
 
     @Autowired
     SearchGoodsService searchGoodsService;
@@ -254,17 +250,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
 
         if (!CommonUtils.checkFull(searchGoods.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
-            JSONObject root = new JSONObject();
-            JSONObject header = new JSONObject();
-            header.put("interfaceType", "5");//interfaceType 0 表示发送手机短信  1表示发送邮件  2表示新用户注册转发 3表示用户登录时同步登录信息 4表示新增访问量 5删除图片
-            JSONObject content = new JSONObject();
-            content.put("delImageUrls", searchGoods.getDelImgUrls());
-            content.put("userId", searchGoods.getUserId());
-            root.put("header", header);
-            root.put("content", content);
-            String sendMsg = root.toJSONString();
-            ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
-            mqProducer.sendMsg(activeMQQueue, sendMsg);
+            mqUtils.sendDeleteImageMQ(searchGoods.getUserId(), searchGoods.getDelImgUrls());
         }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);

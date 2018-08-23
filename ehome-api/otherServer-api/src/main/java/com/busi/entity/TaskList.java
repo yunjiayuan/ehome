@@ -17,7 +17,7 @@ public class TaskList {
 
   private int taskType;	//任务类型：0、一次性任务   1 、每日任务
 
-  private int taskId;   //任务ID
+  private long taskId;   //任务ID
 
   private String taskContent;
 

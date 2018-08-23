@@ -1,6 +1,7 @@
 package com.busi.dao;
 
 import com.busi.entity.Task;
+import com.busi.entity.TaskList;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface TaskDao {
      * @return
      */
     @Insert("insert into task(userId,taskStatus,taskType,sortTask,time) " +
-            "values (#{userId},#{taskStatus},#{taskType},#{sortTask},#{sortTask})")
+            "values (#{userId},#{taskStatus},#{taskType},#{sortTask},#{time})")
     @Options(useGeneratedKeys = true)
     int add(Task task);
 
@@ -34,10 +35,10 @@ public interface TaskDao {
             " taskStatus=#{taskStatus}" +
             " where 1=1" +
             "<if test=\"taskType == 0\">" +
-            " and taskType=0" +
+            " and taskType=#{taskType}" +
             "</if>" +
             "<if test=\"taskType == 1\">" +
-            " and trunc(time) = trunc(sysdate) and taskType=1" +
+            " and TO_DAYS(time)=TO_DAYS(NOW()) and taskType=#{taskType}" +
             "</if>" +
             " and sortTask=#{sortTask} " +
             " and taskStatus=1" +
@@ -55,10 +56,10 @@ public interface TaskDao {
             "select * from task" +
             " where 1=1" +
             "<if test=\"taskType == 0\">" +
-            " and taskType=0" +
+            " and taskType=#{taskType}" +
             "</if>" +
             "<if test=\"taskType == 1\">" +
-            " and trunc(time) = trunc(sysdate) and taskType=1" +
+            " and TO_DAYS(time)=TO_DAYS(NOW()) and taskType=#{taskType}" +
             "</if>" +
             " and sortTask=#{sortTask} " +
             " and userId=#{userId}" +
@@ -68,20 +69,20 @@ public interface TaskDao {
     /***
      * 分页查询
      * @param userId  用户ID
-     * @param taskType  任务类型：0、一次性任务   1 、每日任务
+     * @param taskType  任务类型：-1默认全部 0、一次性任务   1 、每日任务
      * @return
      */
     @Select("<script>" +
             "select * from task" +
             " where 1=1" +
             "<if test=\"taskType == -1\">" +
-            " and ((trunc(time) = trunc(sysdate) and taskType=1) or (taskType = 0))" +
+            " and ((TO_DAYS(time)=TO_DAYS(NOW()) and taskType=1) or taskType = 0)" +
             "</if>" +
             "<if test=\"taskType == 0\">" +
-            " and taskType=0" +
+            " and taskType=#{taskType}" +
             "</if>" +
             "<if test=\"taskType == 1\">" +
-            " and trunc(time) = trunc(sysdate) and taskType=1" +
+            " and TO_DAYS(time)=TO_DAYS(NOW()) and taskType=#{taskType}" +
             "</if>" +
             " and userId=#{userId}" +
             "</script>")
@@ -94,6 +95,6 @@ public interface TaskDao {
     @Select("<script>" +
             "select * from taskList" +
             "</script>")
-    List<Task> findTaskList();
+    List<TaskList> findTaskList();
 
 }

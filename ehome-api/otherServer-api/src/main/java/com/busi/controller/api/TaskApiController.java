@@ -36,11 +36,11 @@ public interface TaskApiController {
 
     /**
      * 更新任务状态
-     * @param id
+     * @param sortTask
      * @param userId
      * @param taskType  任务类型：0、一次性任务   1 、每日任务
      * @return
      */
-    @GetMapping("updateTaskState/{id}/{userId}/{taskType}")
-    ReturnData updateTaskState(@PathVariable long id, @PathVariable long userId, @PathVariable int taskType);
+    @GetMapping("updateTaskState/{userId}/{taskType}/{sortTask}")
+    ReturnData updateTaskState(@PathVariable long userId, @PathVariable int taskType, @PathVariable long sortTask);
 }

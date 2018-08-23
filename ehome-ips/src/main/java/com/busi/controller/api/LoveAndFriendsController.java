@@ -14,12 +14,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import com.busi.mq.MqProducer;
 
 
 /**
@@ -43,7 +43,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
     RedisUtils redisUtils;
 
     @Autowired
-    MqProducer mqProducer;
+    MqUtils mqUtils;
 
     /***
      * 新增
@@ -267,17 +267,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
         if (!CommonUtils.checkFull(loveAndFriends.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
-            JSONObject root = new JSONObject();
-            JSONObject header = new JSONObject();
-            header.put("interfaceType", "5");//interfaceType 0 表示发送手机短信  1表示发送邮件  2表示新用户注册转发 3表示用户登录时同步登录信息 4表示新增访问量 5删除图片
-            JSONObject content = new JSONObject();
-            content.put("delImageUrls", loveAndFriends.getDelImgUrls());
-            content.put("userId", loveAndFriends.getUserId());
-            root.put("header", header);
-            root.put("content", content);
-            String sendMsg = root.toJSONString();
-            ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
-            mqProducer.sendMsg(activeMQQueue, sendMsg);
+            mqUtils.sendDeleteImageMQ(loveAndFriends.getUserId(), loveAndFriends.getDelImgUrls());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -334,9 +324,10 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             maritalstatus = userInfoCache.getMaritalStatus();
 //            monthlyPay = userInfoCache.getMonthlyPay();
         } else {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "服务端计算婚恋交友匹配度错误，用户 ["+ CommonUtils.getMyId() +"]缓存中数据异常！", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "服务端计算婚恋交友匹配度错误，用户 [" + CommonUtils.getMyId() + "]缓存中数据异常！", new JSONObject());
         }
         // 开始计算 左上角匹配度 suntj 20161019
+        loveAndFriends = loveAndFriendsService.findUserById(id);
         if (loveAndFriends.getSex() != sex) {// 匹配性别 （30%）
             matching += 30;
         }
@@ -458,8 +449,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             }
         }
         Map<String, String> idMap = new HashMap<>();
-        idMap.put("infoId",loveAndFriendsMap.get("id").toString());
-        return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "您已发布过婚恋交友的公告，您需要修改之前的公告信息吗？",idMap);
+        idMap.put("infoId", loveAndFriendsMap.get("id").toString());
+        return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "您已发布过婚恋交友的公告，您需要修改之前的公告信息吗？", idMap);
     }
 
 }
