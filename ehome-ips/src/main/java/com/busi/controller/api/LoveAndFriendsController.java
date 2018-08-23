@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import com.busi.mq.MqProducer;
 
@@ -456,8 +457,9 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
             }
         }
-        Object loveId = loveAndFriendsMap.get("id");
-        return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在! infoId:"+Long.valueOf(String.valueOf(loveId)), new JSONObject());
+        Map<String, String> idMap = new HashMap<>();
+        idMap.put("infoId",loveAndFriendsMap.get("id").toString());
+        return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "您已发布过婚恋交友的公告，您需要修改之前的公告信息吗？",idMap);
     }
 
 }
