@@ -4,11 +4,8 @@ import com.busi.controller.BaseController;
 import com.busi.entity.PurseChangingLog;
 import com.busi.entity.ReturnData;
 import com.busi.service.PurseChangingLogService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
@@ -31,7 +28,7 @@ public class PurseChangingLogLController extends BaseController implements Purse
      * @return
      */
     @Override
-    public ReturnData addPurseChangingLog(@Valid @RequestBody PurseChangingLog purseChangingLog) {
+    public ReturnData addPurseChangingLog(@RequestBody PurseChangingLog purseChangingLog) {
         //验证参数格式
 //        if(bindingResult.hasErrors()){
 //            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());

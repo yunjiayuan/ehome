@@ -10,9 +10,10 @@ import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.smartcardio.CommandAPDU;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class PurseLController extends BaseController implements PurseLocalContro
      * @return
      */
     @Override
-    public ReturnData updatePurseInfo(@Valid @RequestBody Purse purse) {
+    public ReturnData updatePurseInfo(@RequestBody Purse purse) {
 //        //验证参数格式
 //        if(bindingResult.hasErrors()){
 //            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
@@ -57,6 +58,7 @@ public class PurseLController extends BaseController implements PurseLocalContro
                 redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PURSEINFO+purse.getUserId(),0);
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
             }
+            purseMap = CommonUtils.objectToMap(p);
         }else{//缓存中存在 判断是否为空对象
             if(Integer.parseInt(purseMap.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
                 purse.setTime(new Date());

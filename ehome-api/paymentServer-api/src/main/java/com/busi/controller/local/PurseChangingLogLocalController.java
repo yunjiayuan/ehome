@@ -20,6 +20,6 @@ public interface PurseChangingLogLocalController {
      * @return
      */
     @PostMapping("addPurseChangingLog")
-    ReturnData addPurseChangingLog(@Valid @RequestBody PurseChangingLog purseChangingLog);
+    ReturnData addPurseChangingLog(@RequestBody PurseChangingLog purseChangingLog);
 
 }

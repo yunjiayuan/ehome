@@ -761,6 +761,26 @@ public class CommonUtils {
 	}
 
 	/**
+	 * 已登录用户获取，当前登录用户的token
+	 * @return
+	 */
+	public static String getToken(){
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = attributes.getRequest();
+		return request.getHeader("token");
+	}
+
+	/**
+	 * 已登录用户获取，当前登录用户的myId
+	 * @return
+	 */
+	public static String getClientId(){
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = attributes.getRequest();
+		return request.getHeader("clientId");
+	}
+
+	/**
 	 * 获取七牛的token
 	 * @return
 	 */

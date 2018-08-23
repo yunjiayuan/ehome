@@ -38,7 +38,8 @@ public class PurseService implements MessageAdapter {
             int tradeType = Integer.parseInt(body.getString("tradeType"));
             //交易支付类型 0钱(真实人民币),1家币,2家点
             int currencyType = Integer.parseInt(body.getString("currencyType"));
-
+            //交易金额
+            Double tradeMoney = Double.parseDouble(body.getString("tradeMoney"));
             if(userId<0||tradeType<0||tradeType>19||currencyType<0||currencyType>2){
                 log.info("消息服务平台处理用户更新钱包余额功能并更新钱包明细操作失败，参数有误："+body.toJSONString());
                 return;
@@ -48,28 +49,12 @@ public class PurseService implements MessageAdapter {
             PurseChangingLog purseChangingLog = new PurseChangingLog();
             purse.setUserId(userId);
             if(currencyType==1){//家币
-                //交易金额
-                long tradeMoney = Long.parseLong(body.getString("tradeMoney"));
-                if(tradeMoney<=0){
-                    log.info("消息服务平台处理用户更新钱包余额功能并更新钱包明细操作失败，参数有误："+body.toJSONString());
-                    return;
-                }
-                purse.setHomeCoin(tradeMoney);
+                purse.setHomeCoin(tradeMoney.longValue());
                 purseChangingLog.setTradeMoney(tradeMoney);
             }else if(currencyType==2){//家点
-                long tradeMoney = Long.parseLong(body.getString("tradeMoney"));
-                if(tradeMoney<=0){
-                    log.info("消息服务平台处理用户更新钱包余额功能并更新钱包明细操作失败，参数有误："+body.toJSONString());
-                    return;
-                }
-                purse.setHomePoint(tradeMoney);
+                purse.setHomePoint(tradeMoney.longValue());
                 purseChangingLog.setTradeMoney(tradeMoney);
             }else{//钱
-                double tradeMoney = Double.parseDouble(body.getString("tradeMoney"));
-                if(tradeMoney<=0){
-                    log.info("消息服务平台处理用户更新钱包余额功能并更新钱包明细操作失败，参数有误："+body.toJSONString());
-                    return;
-                }
                 purse.setSpareMoney(tradeMoney);
                 purseChangingLog.setTradeMoney(tradeMoney);
             }
