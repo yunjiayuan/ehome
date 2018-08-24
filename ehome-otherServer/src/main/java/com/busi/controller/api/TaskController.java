@@ -50,9 +50,9 @@ public class TaskController extends BaseController implements TaskApiController 
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库（是否已完成）
-        Task task2 = null;
         List list = redisUtils.getList(Constants.REDIS_KEY_IPS_TASK + task.getUserId(), 0, -1);
         if (list == null || list.size() <= 0) {
+            Task task2 = null;
             task2 = taskService.findUserById(task.getUserId(), task.getTaskType(), task.getSortTask());
             if (task2 == null) {
                 task.setTaskStatus(1);
@@ -62,18 +62,20 @@ public class TaskController extends BaseController implements TaskApiController 
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "该任务已完成", new JSONObject());
             }
         } else {
-            task2 = taskService.findUserById(task.getUserId(), task.getTaskType(), task.getSortTask());
             for (int i = 0; i < list.size(); i++) {
-                Task t = (Task) list.get(i);
-                if (t.getTaskType() == task2.getTaskType()) {
-                    if (t.getSortTask() == task2.getSortTask()) {
+                TaskList t = (TaskList) list.get(i);
+                if (t.getTaskType() == task.getTaskType()&&t.getTaskId() == task.getSortTask()) {
+                    if(t.getTaskStatus()==0){
+                        //新增
+                        task.setTaskStatus(1);
+                        task.setTime(new Date());
+                        taskService.add(task);
+                    }else{
                         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "该任务已完成", new JSONObject());
                     }
+                    break;
                 }
             }
-            task.setTaskStatus(1);
-            task.setTime(new Date());
-            taskService.add(task);
         }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_TASK + task.getUserId() + task.getTaskType() + task.getSortTask(), 0);
