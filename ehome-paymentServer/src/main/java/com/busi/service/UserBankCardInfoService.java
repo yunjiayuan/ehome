@@ -36,5 +36,14 @@ public class UserBankCardInfoService {
         return userBankCardInfoDao.findUserBankCardInfo(userId);
     }
 
+    /***
+     * 检测银行卡信息是否存在
+     * @param bankCard
+     * @return
+     */
+    public UserBankCardInfo findUserBankCardInfoByBankCard(String bankCard){
+        return userBankCardInfoDao.findUserBankCardInfoByBankCard(bankCard);
+    }
+
 
 }

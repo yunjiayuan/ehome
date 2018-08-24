@@ -23,4 +23,5 @@ public class PursePayPassword {
   @Length(min=6,max = 6, message = "payCode参数超出合法范围")
   private String payCode;//支付加盐码
 
+  private int redisStatus;//该对象在缓存中的存在形式  0空对象 无数据库对应数据  1数据已有对应数据  与数据无关字段
 }

@@ -4,7 +4,6 @@ import com.busi.entity.Purse;
 import com.busi.entity.ReturnData;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import javax.validation.Valid;
 
 /**
  * 钱包相关接口(通过fegin本地内部调用)

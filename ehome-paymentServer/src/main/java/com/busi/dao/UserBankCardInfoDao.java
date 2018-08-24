@@ -29,4 +29,13 @@ public interface UserBankCardInfoDao {
     @Select("select * from userBankCardInfo where userId = #{userId}")
     UserBankCardInfo findUserBankCardInfo(@Param("userId") long userId);
 
+    /***
+     * 检测银行卡信息是否存在
+     * @param bankCard
+     */
+    @Select("select * from userBankCardInfo where bankCard = #{bankCard}")
+    UserBankCardInfo findUserBankCardInfoByBankCard(@Param("bankCard") String bankCard);
+
+
+
 }
