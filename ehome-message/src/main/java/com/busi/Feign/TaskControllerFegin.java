@@ -1,7 +1,7 @@
 package com.busi.Feign;
 
 
-import com.busi.controller.api.TaskApiController;
+import com.busi.controller.local.TaskLocalController;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +17,6 @@ import org.springframework.stereotype.Component;
  */
 @FeignClient("otherServer")
 @Component
-public interface TaskControllerFegin extends TaskApiController {
+public interface TaskControllerFegin extends TaskLocalController {
 
 }

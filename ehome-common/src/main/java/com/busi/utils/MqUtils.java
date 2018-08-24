@@ -60,4 +60,27 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 新增任务 任务系统同步
+     * @param userId   当期用户ID
+     * @param taskType 任务类型 0、一次性任务   1 、每日任务
+     * @param sortTask 任务ID
+     */
+    public void sendTaskMQ(long userId,int taskType,long sortTask){
+
+        //调用MQ同步 图片到图片删除记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "6");//interfaceType 5同步任务系统
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("taskType",taskType);
+        content.put("sortTask",sortTask);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
 }

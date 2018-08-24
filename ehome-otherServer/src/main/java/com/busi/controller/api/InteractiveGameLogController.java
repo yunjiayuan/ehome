@@ -107,7 +107,8 @@ public class InteractiveGameLogController extends BaseController implements Inte
         //更新双方游戏结果记录
         interactiveGameLogService.addInteractiveGameLog(interactiveGameLog);
         //更新任务系统
-
+        mqUtils.sendTaskMQ(interactiveGameLog.getMyId(),1,8);
+        mqUtils.sendTaskMQ(interactiveGameLog.getUserId(),1,8);
         //返回胜负接口
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", interactiveGameLog);
     }
