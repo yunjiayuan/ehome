@@ -79,7 +79,7 @@ public class TaskController extends BaseController implements TaskApiController 
             }
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_TASK + task.getUserId() + task.getTaskType() + task.getSortTask(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_TASK + task.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -191,7 +191,7 @@ public class TaskController extends BaseController implements TaskApiController 
             taskService.update(task);
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + task.getUserId() + task.getTaskType() + task.getSortTask(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + task.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

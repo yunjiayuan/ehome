@@ -65,7 +65,7 @@ public class TaskLController extends BaseController implements TaskLocalControll
             }
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_TASK + task.getUserId() + task.getTaskType() + task.getSortTask(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_TASK + task.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
