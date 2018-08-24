@@ -309,10 +309,10 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         if (searchType < 0 || searchType > 3) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "searchType参数有误", new JSONObject());
         }
-        if (beginAge <= 0 || beginAge > endAge) {
+        if (beginAge < 0 || beginAge > endAge) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "beginAge参数有误", new JSONObject());
         }
-        if (endAge <= 0 || endAge < beginAge) {
+        if (endAge < 0 || endAge < beginAge) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "endAge参数有误", new JSONObject());
         }
         //开始查询
