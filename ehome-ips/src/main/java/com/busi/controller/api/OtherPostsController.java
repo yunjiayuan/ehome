@@ -7,10 +7,7 @@ import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.entity.OtherPosts;
 import com.busi.service.OtherPostsService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +32,10 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    MqUtils mqUtils;
+
 
     /***
      * 新增
@@ -85,6 +86,9 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         otherPosts.setAddTime(new Date());
         otherPosts.setRefreshTime(new Date());
         otherPostsService.add(otherPosts);
+
+        //新增任务
+        mqUtils.sendTaskMQ(otherPosts.getUserId(),1,3);
 
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + otherPosts.getId(), 0);

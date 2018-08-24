@@ -8,13 +8,11 @@ import com.busi.service.DetailedUserInfoService;
 import com.busi.service.LoveAndFriendsService;
 import com.busi.service.UserInfoService;
 import com.busi.utils.*;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -138,6 +136,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
                     redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome.getInfoId() + "_" + ipsHome.getAfficheType(), Constants.USER_TIME_OUT);
                 }
+                //新增任务
+                mqUtils.sendTaskMQ(loveAndFriends.getUserId(),1,3);
             } else {
                 return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在", new JSONObject());
             }
