@@ -81,8 +81,6 @@ public interface SearchGoodsDao {
             "<if test=\"latitude > 0\">" +
             " latitude=#{latitude}," +
             "</if>" +
-            " deleteType=#{deleteType}," +
-            " afficheStatus=#{afficheStatus}," +
             " province=#{province}," +
             " city=#{city}," +
             " district=#{district}" +

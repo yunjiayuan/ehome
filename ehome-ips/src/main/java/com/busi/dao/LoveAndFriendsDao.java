@@ -65,7 +65,6 @@ public interface LoveAndFriendsDao {
             "<if test=\"income >= 1 \">"+
             " income=#{income}," +
             "</if>" +
-            " deleteType=#{deleteType}," +
             " locationProvince=#{locationProvince}," +
             " locationCity=#{locationCity}," +
             " locationDistrict=#{locationDistrict}" +

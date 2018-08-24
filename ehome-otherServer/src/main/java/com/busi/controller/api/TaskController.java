@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
@@ -64,13 +65,13 @@ public class TaskController extends BaseController implements TaskApiController 
         } else {
             for (int i = 0; i < list.size(); i++) {
                 TaskList t = (TaskList) list.get(i);
-                if (t.getTaskType() == task.getTaskType()&&t.getTaskId() == task.getSortTask()) {
-                    if(t.getTaskStatus()==0){
+                if (t.getTaskType() == task.getTaskType() && t.getTaskId() == task.getSortTask()) {
+                    if (t.getTaskStatus() == 0) {
                         //新增
                         task.setTaskStatus(1);
                         task.setTime(new Date());
                         taskService.add(task);
-                    }else{
+                    } else {
                         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "该任务已完成", new JSONObject());
                     }
                     break;
