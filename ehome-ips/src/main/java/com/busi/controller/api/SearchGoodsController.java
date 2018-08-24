@@ -127,6 +127,9 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             //放入缓存
             redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome.getInfoId() + "_" + ipsHome.getAfficheType(), Constants.USER_TIME_OUT);
         }
+        //新增任务
+        mqUtils.sendTaskMQ(searchGoods.getUserId(),1,3);
+
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
