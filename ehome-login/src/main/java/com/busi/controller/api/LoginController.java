@@ -157,7 +157,7 @@ public class LoginController extends BaseController implements LoginApiControlle
         //添加暴力密码限制
         String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_LOGIN_ERROR_COUNT,userId+""));
         if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
-            return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的登录密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服","{}");
+            return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的登录密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
         }
         //验证密码是否正确  第三方平台登录不用验证密码
         if(loginType!=2&&!password.equals(userMap.get("password"))){

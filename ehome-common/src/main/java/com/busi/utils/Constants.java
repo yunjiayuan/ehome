@@ -134,6 +134,7 @@ public class Constants {
     public static final String REDIS_KEY_PAYMENT_PAYKEY = "payment_payKey_";//userId与支付私钥的关系对照
     public static final String REDIS_KEY_PAYMENT_PAYPASSWORD = "payment_payPassword_";//userId与支付密码的关系对照
     public static final String REDIS_KEY_PAYMENT_BANKCARD = "payment_bankCard_";//userId与银行卡的关系对照
+    public static final String REDIS_KEY_PAY_ERROR_COUNT = "payment_error_count";//支付错误记录（包括密码有误和支付出现的错误，每天限制100次）
 
     //redis 1库相关key配置(IPS)
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)

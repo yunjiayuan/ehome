@@ -1,14 +1,22 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.PursePayPassword;
 import com.busi.entity.ReturnData;
+import com.busi.entity.UserBankCardInfo;
 import com.busi.service.PursePayPasswordService;
+import com.busi.service.UserBankCardInfoService;
+import com.busi.utils.CommonUtils;
+import com.busi.utils.Constants;
+import com.busi.utils.RedisUtils;
+import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * 支付密码相关接口
@@ -19,7 +27,13 @@ import javax.validation.Valid;
 public class PursePayPasswordController extends BaseController implements PursePayPasswordApiController {
 
     @Autowired
+    RedisUtils redisUtils;
+
+    @Autowired
     private PursePayPasswordService pursePayPasswordService;
+
+    @Autowired
+    private UserBankCardInfoService userBankCardInfoService;
 
     /***
      * 设置支付密码
@@ -28,7 +42,49 @@ public class PursePayPasswordController extends BaseController implements PurseP
      */
     @Override
     public ReturnData addPursePayPassword(@Valid @RequestBody PursePayPassword pursePayPassword, BindingResult bindingResult) {
-        return null;
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=pursePayPassword.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+pursePayPassword.getUserId()+"]的支付密码信息",new JSONObject());
+        }
+        //验证之前是否绑定过银行卡
+        Map<String,Object> bankMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_BANKCARD+pursePayPassword.getUserId() );
+        if(bankMap==null||bankMap.size()<=0){
+            UserBankCardInfo ubci = null;
+            //缓存中没有用户对象信息 查询数据库
+            ubci = userBankCardInfoService.findUserBankCardInfo(pursePayPassword.getUserId());
+            if(ubci==null){
+                return returnData(StatusCode.CODE_BANKCARD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未绑定过银行卡，无法设置支付密码!",new JSONObject());
+            }
+        }else{
+            if(Integer.parseInt(bankMap.get("redisStatus").toString())==0) {//redisStatus==0 说明数据中无此记录
+                return returnData(StatusCode.CODE_BANKCARD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未绑定过银行卡，无法设置支付密码!",new JSONObject());
+            }
+        }
+        //验证之前是否设置过支付密码
+        Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pursePayPassword.getUserId() );
+        if(payPasswordMap==null||payPasswordMap.size()<=0){
+            PursePayPassword ppp = null;
+            //缓存中没有用户对象信息 查询数据库
+            ppp = pursePayPasswordService.findPursePayPassword(pursePayPassword.getUserId());
+            if(ppp!=null){
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_EXIST_ERROR.CODE_VALUE,"您已设置过支付密码，不能重复设置!",new JSONObject());
+            }
+        }else{
+            if(Integer.parseInt(payPasswordMap.get("redisStatus").toString())==1) {//redisStatus==1 说明数据中已有此记录
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_EXIST_ERROR.CODE_VALUE,"您已设置过支付密码，不能重复设置!",new JSONObject());
+            }
+        }
+        //开始设置密码
+        String payCode = CommonUtils.getRandom(6,0);//生成随机数值
+        String newPassWord = CommonUtils.getPasswordBySalt(pursePayPassword.getPayPassword(), payCode);//生成加盐的新密码
+        pursePayPassword.setPayPassword(newPassWord);
+        pursePayPassword.setPayCode(payCode);
+        pursePayPasswordService.addPursePayPassword(pursePayPassword);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
     /***
@@ -38,6 +94,44 @@ public class PursePayPasswordController extends BaseController implements PurseP
      */
     @Override
     public ReturnData updatePursePayPassword(@Valid @RequestBody PursePayPassword pursePayPassword, BindingResult bindingResult) {
-        return null;
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=pursePayPassword.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+pursePayPassword.getUserId()+"]的支付密码信息",new JSONObject());
+        }
+        //验证之前是否设置过支付密码
+        Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pursePayPassword.getUserId() );
+        if(payPasswordMap==null||payPasswordMap.size()<=0){
+            PursePayPassword ppp = null;
+            //缓存中没有用户对象信息 查询数据库
+            ppp = pursePayPasswordService.findPursePayPassword(pursePayPassword.getUserId());
+            if(ppp==null){
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法修改支付密码!",new JSONObject());
+            }
+            payPasswordMap = CommonUtils.objectToMap(pursePayPassword);
+        }else{
+            if(Integer.parseInt(payPasswordMap.get("redisStatus").toString())==0) {//redisStatus==0说明数据中无此记录
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法修改支付密码!",new JSONObject());
+            }
+        }
+        //验证旧密码是否正确
+        String oldPassWord = CommonUtils.getPasswordBySalt(pursePayPassword.getPayPassword(), payPasswordMap.get("payCode").toString());//生成加盐的新密码
+        if(!oldPassWord.equals(payPasswordMap.get("payPassword").toString())){
+            //密码有误 添加错误限制 防暴力破解
+            String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,pursePayPassword.getUserId()+""));
+            if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
+                return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
+            }
+        }
+        //开始修改新密码
+        String payCode = CommonUtils.getRandom(6,0);//生成随机数值
+        String newPassWord = CommonUtils.getPasswordBySalt(pursePayPassword.getNewPayPassword(), payCode);//生成加盐的新密码
+        pursePayPassword.setPayPassword(newPassWord);
+        pursePayPassword.setPayCode(payCode);
+        pursePayPasswordService.updatePursePayPassword(pursePayPassword);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }
