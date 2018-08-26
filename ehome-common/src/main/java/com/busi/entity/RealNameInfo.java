@@ -1,7 +1,8 @@
 package com.busi.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -15,7 +16,8 @@ import java.util.Date;
  * @version create time：2017-6-5 下午1:35:45 
  * 
  */
-
+@Setter
+@Getter
 public class RealNameInfo {
 	
 	private long id;//主键ID
