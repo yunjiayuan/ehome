@@ -28,4 +28,13 @@ public interface PursePayPasswordApiController {
      */
     @PutMapping("updatePursePayPassword")
     ReturnData updatePursePayPassword(@Valid @RequestBody PursePayPassword pursePayPassword, BindingResult bindingResult);
+
+    /***
+     * 验证旧支付密码是否正确
+     * @param oldPayPassword 旧支付密码
+     * @return
+     */
+    @GetMapping("checkPayPassword/{oldPayPassword}")
+    ReturnData checkPayPassword(@PathVariable String oldPayPassword);
+
 }
