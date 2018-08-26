@@ -63,14 +63,14 @@ public class UserBankCardInfoController extends BaseController implements UserBa
             //根据本地库中的银行卡信息验证该银行卡信息是否正确
             if(!ubci.getBankCardNo().equals(userBankCardInfo.getBankCardNo())||!ubci.getBankName().equals(userBankCardInfo.getBankName())
                     ||!ubci.getBankPhone().equals(userBankCardInfo.getBankPhone())){
-                return returnData(StatusCode.CODE_BANKCARD_CHECK_ERROR.CODE_VALUE,"您填写的银行卡信息有误",new JSONObject());
+                return returnData(StatusCode.CODE_BANKCARD_CHECK_ERROR.CODE_VALUE,"您填写的银行卡信息与该卡在银行中预留的信息不符!",new JSONObject());
             }
         }else{//本地库中不存在
             //远程验证该银行卡信息是否正确
             ubci = RealNameUtils.checkBankCard(userBankCardInfo.getUserId(),userBankCardInfo.getBankCard(),userBankCardInfo.getBankName(),
                     userBankCardInfo.getBankCardNo(),userBankCardInfo.getBankPhone());
             if(ubci==null){
-                return returnData(StatusCode.CODE_BANKCARD_CHECK_ERROR.CODE_VALUE,"您填写的银行卡信息有误",new JSONObject());
+                return returnData(StatusCode.CODE_BANKCARD_CHECK_ERROR.CODE_VALUE,"您填写的银行卡信息与该卡在银行中预留的信息不符!",new JSONObject());
             }
         }
         //开始绑定新银行卡
