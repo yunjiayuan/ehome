@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.LoveAndFriends;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -37,38 +38,38 @@ public interface LoveAndFriendsDao {
      * @return
      */
     @Update("<script>" +
-            "update loveAndFriends set"+
-            "<if test=\"title != null and title != ''\">"+
+            "update loveAndFriends set" +
+            "<if test=\"title != null and title != ''\">" +
             " title=#{title}," +
             "</if>" +
-            "<if test=\"sex == 1 or sex == 2\">"+
+            "<if test=\"sex == 1 or sex == 2\">" +
             " sex=#{sex}," +
             "</if>" +
-            "<if test=\"content != null and content != ''\">"+
+            "<if test=\"content != null and content != ''\">" +
             " content=#{content}," +
             "</if>" +
-            "<if test=\"imgUrl != null and imgUrl != ''\">"+
+            "<if test=\"imgUrl != null and imgUrl != ''\">" +
             " imgUrl=#{imgUrl}," +
             "</if>" +
-            "<if test=\"age >= 1 \">"+
+            "<if test=\"age >= 1 \">" +
             " age=#{age}," +
             "</if>" +
-            "<if test=\"stature >= 1 \">"+
+            "<if test=\"stature >= 1 \">" +
             " stature=#{stature}," +
             "</if>" +
-            "<if test=\"education >= 1 \">"+
+            "<if test=\"education >= 1 \">" +
             " education=#{education}," +
             "</if>" +
-            "<if test=\"marriage >= 1 \">"+
+            "<if test=\"marriage >= 1 \">" +
             " marriage=#{marriage}," +
             "</if>" +
-            "<if test=\"income >= 1 \">"+
+            "<if test=\"income >= 1 \">" +
             " income=#{income}," +
             "</if>" +
             " locationProvince=#{locationProvince}," +
             " locationCity=#{locationCity}," +
             " locationDistrict=#{locationDistrict}" +
-            " where id=#{id} and userId=#{userId}"+
+            " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(LoveAndFriends loveAndFriends);
 
@@ -78,9 +79,9 @@ public interface LoveAndFriendsDao {
      * @return
      */
     @Update("<script>" +
-            "update loveAndFriends set"+
+            "update loveAndFriends set" +
             " deleteType=#{deleteType}" +
-            " where id=#{id} and userId=#{userId}"+
+            " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateDel(LoveAndFriends loveAndFriends);
 
@@ -100,21 +101,33 @@ public interface LoveAndFriendsDao {
 
     /***
      * 分页条件查询 默认按时间降序排序
-     * @param screen
-     * @param sort
+     * @param userId   用户ID
+     * @param screen  暂定按性别查询:0不限，1男，2女
+     * @param sort   默认0智能排序，1时间倒序
      * @return
      */
 //    @Select("select * from loveAndFriends where auditType = 2 and deleteType = 1 order by refreshTime")
     @Select("<script>" +
             "select * from loveAndFriends" +
             " where 1=1" +
-            "<if test=\"screen != 0 \">"+
+            "<if test=\"userId > 0 \">" +
+            " and userId=#{userId}" +
+            "</if>" +
+            "<if test=\"sort == 0 \">" +
+            " and sex!=#{sex}" +
+            " and age=#{age}" +
+            " and income=#{income}" +
+            "</if>" +
+            "<if test=\"sort == 1 and screen!=0\">" +
             " and sex=#{screen}" +
             "</if>" +
-            " and auditType = 2"+
-            " and deleteType = 1"+
-            " order by #{sort} desc" +
+            "<if test=\"sort == 1 and screen == 0\">" +
+            " and deleteType = 1" +
+            "</if>" +
+            " and auditType = 2" +
+            " and deleteType = 1" +
+            " order by fraction,refreshTime desc" +
             "</script>")
-    List<LoveAndFriends> findList(@Param("screen") int screen, @Param("sort") String sort);
+    List<LoveAndFriends> findList(@Param("userId") long userId, @Param("screen") int screen, @Param("sort") int sort, @Param("sex") int sex, @Param("age") int age, @Param("income") int income);
 
 }

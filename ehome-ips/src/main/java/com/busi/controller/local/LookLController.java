@@ -22,6 +22,11 @@ public class LookLController extends BaseController implements LookLocalControll
     @Autowired
     LookService lookService;
 
+    /***
+     * 新增
+     * @param look
+     * @return
+     */
     @Override
     public ReturnData addLook(@RequestBody Look look) {
 

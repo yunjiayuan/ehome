@@ -58,8 +58,8 @@ public interface SearchGoodsApiController {
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findMatterList/{province}/{city}/{district}/{beginAge}/{endAge}/{missingSex}/{searchType}/{page}/{count}")
-    ReturnData findMatterList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int beginAge, @PathVariable int endAge, @PathVariable int missingSex, @PathVariable int searchType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findMatterList/{userId}/{province}/{city}/{district}/{beginAge}/{endAge}/{missingSex}/{searchType}/{page}/{count}")
+    ReturnData findMatterList(@PathVariable long userId,@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int beginAge, @PathVariable int endAge, @PathVariable int missingSex, @PathVariable int searchType, @PathVariable int page, @PathVariable int count);
 
     /**
      * 更新公告状态

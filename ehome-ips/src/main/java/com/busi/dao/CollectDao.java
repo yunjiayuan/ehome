@@ -39,7 +39,7 @@ public interface CollectDao {
      * @param afficheType
      */
     @Select("select COUNT(id) from collect where infoId=#{infoId} and afficheType=#{afficheType}")
-    Collect findUserById(@Param("infoId") long infoId,@Param("afficheType") int afficheType);
+    int findUserById(@Param("infoId") long infoId,@Param("afficheType") int afficheType);
 
     /***
      * 分页查询 默认按时间降序排序

@@ -26,8 +26,8 @@ public interface CollectApiController {
      *@Description: 删除我的收藏
      *@return:
      */
-    @DeleteMapping("delCollect/{ids}")
-    ReturnData delCollect(@PathVariable String ids);
+    @DeleteMapping("delCollect/{myId}/{ids}")
+    ReturnData delCollect(@PathVariable long myId,@PathVariable String ids);
 
     /**
      * 统计收藏次数

@@ -49,7 +49,7 @@ public class CollectService {
      * @param afficheType
      * @return
      */
-    public Collect findUserById(long infoId ,int afficheType){
+    public int findUserById(long infoId ,int afficheType){
         return collectDao.findUserById(infoId,afficheType);
     }
 

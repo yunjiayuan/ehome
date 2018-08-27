@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @create: 2018-08-24 16:25
  */
 @RestController
-public class LookController extends BaseController implements LookApiController{
+public class LookController extends BaseController implements LookApiController {
 
     @Autowired
     LookService lookService;
@@ -32,7 +32,7 @@ public class LookController extends BaseController implements LookApiController{
     @Override
     public ReturnData delLook(@PathVariable long myId, @PathVariable String ids) {
         //验证参数
-        if (myId <= 0 ) {
+        if (myId <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //验证删除权限
@@ -40,9 +40,9 @@ public class LookController extends BaseController implements LookApiController{
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + myId + "]的浏览记录", new JSONObject());
         }
         //查询数据库
-        int look = lookService.del(ids,myId);
+        int look = lookService.del(ids, myId);
         if (look <= 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "公告浏览记录["+ids+"]不存在", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "公告浏览记录[" + ids + "]不存在", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -62,6 +62,10 @@ public class LookController extends BaseController implements LookApiController{
         }
         if (userId < 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+        }
+        //验证查看权限
+        if (CommonUtils.getMyId() != userId) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限浏览用户[" + userId + "]的浏览记录", new JSONObject());
         }
         //开始查询
         PageBean<Look> pageBean;

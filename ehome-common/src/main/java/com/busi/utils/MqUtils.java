@@ -63,7 +63,7 @@ public class MqUtils {
 
     /***
      * 新增任务 任务系统同步
-     * @param userId   当期用户ID
+     * @param userId   当前用户ID
      * @param taskType 任务类型 0、一次性任务   1 、每日任务
      * @param sortTask 任务ID
      */
@@ -75,8 +75,33 @@ public class MqUtils {
         header.put("interfaceType", "6");//interfaceType 5同步任务系统
         JSONObject content = new JSONObject();
         content.put("userId",userId);
-        content.put("taskType",taskType);
         content.put("sortTask",sortTask);
+        content.put("taskType",taskType);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
+
+    /***
+     * 新增浏览记录 系统同步
+     * @param userId   当前用户ID
+     * @param infoId   公告ID
+     * @param title 标题
+     * @param afficheType 公告类型
+     */
+    public void sendLookMQ(long userId,long infoId,String title ,int afficheType){
+
+        //调用MQ同步浏览记录到浏览记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "7");//interfaceType 7同步浏览记录
+        JSONObject content = new JSONObject();
+        content.put("myId",userId);
+        content.put("infoId",infoId);
+        content.put("title",title);
+        content.put("afficheType",afficheType);
         root.put("header", header);
         root.put("content", content);
         String sendMsg = root.toJSONString();

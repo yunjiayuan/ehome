@@ -135,6 +135,9 @@ public interface SearchGoodsDao {
     @Select("<script>" +
             "select * from searchGoods" +
             " where 1=1" +
+            "<if test=\"userId > 0 \">" +
+            " and userId = #{userId}" +
+            "</if>" +
             "<if test=\"searchType > 0 \">" +
             " and searchType = #{searchType}" +
             "</if>" +
@@ -156,12 +159,14 @@ public interface SearchGoodsDao {
             "<if test=\"district != -1 \">"+
             " and district = #{district}" +
             "</if>" +
+            "<if test=\"endAge != 0 \">"+
             " and age >= #{beginAge}" +
             " and #{endAge} >= age" +
+            "</if>" +
             " and auditType = 2" +
             " and deleteType = 1" +
-            " order by refreshTime desc" +
+            " order by fraction,refreshTime desc" +
             "</script>")
-    List<SearchGoods> findList(@Param("province") int province,@Param("city") int city,@Param("district") int district,@Param("beginAge") int beginAge,@Param("endAge") int endAge,@Param("missingSex") int missingSex,@Param("searchType") int searchType);
+    List<SearchGoods> findList(@Param("userId") long userId,@Param("province") int province,@Param("city") int city,@Param("district") int district,@Param("beginAge") int beginAge,@Param("endAge") int endAge,@Param("missingSex") int missingSex,@Param("searchType") int searchType);
 
 }
