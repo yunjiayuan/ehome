@@ -36,7 +36,7 @@ public interface PursePayPasswordDao {
      */
     @Update("<script>" +
             "update pursePayPassword set"+
-            " payPassword=#{payPassword}" +
+            " payPassword=#{payPassword}," +
             " payCode=#{payCode}" +
             " where userId=#{userId}"+
             "</script>")

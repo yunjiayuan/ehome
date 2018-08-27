@@ -4,6 +4,8 @@ import com.busi.entity.UserBankCardInfo;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 银行卡相关DAO
  * author：SunTianJie
@@ -18,7 +20,7 @@ public interface UserBankCardInfoDao {
      * @param userBankCardInfo
      * @return
      */
-    @Insert("insert into purse (userId,bankCard,bankPhone,bankName,bankCardNo,time) values (#{userId},#{bankCard},#{bankPhone},#{bankName},#{bankCardNo},#{time})")
+    @Insert("insert into userBankCardInfo (userId,bankCard,bankPhone,bankName,bankCardNo,time) values (#{userId},#{bankCard},#{bankPhone},#{bankName},#{bankCardNo},#{time})")
     @Options(useGeneratedKeys = true)
     int addUserBankCardInfo(UserBankCardInfo userBankCardInfo);
 
@@ -28,5 +30,14 @@ public interface UserBankCardInfoDao {
      */
     @Select("select * from userBankCardInfo where userId = #{userId}")
     UserBankCardInfo findUserBankCardInfo(@Param("userId") long userId);
+
+    /***
+     * 检测银行卡信息是否存在
+     * @param bankCard
+     */
+    @Select("select * from userBankCardInfo where bankCard = #{bankCard}")
+    List<UserBankCardInfo> findUserBankCardInfoByBankCard(@Param("bankCard") String bankCard);
+
+
 
 }
