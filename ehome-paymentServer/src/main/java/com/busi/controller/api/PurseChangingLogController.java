@@ -29,7 +29,7 @@ public class PurseChangingLogController extends BaseController implements PurseC
      * 查询用户钱包交易明细信息
      * @param userId    将要查询的用户ID
      * @param currencyType 交易支付类型 -1所有 0钱(真实人民币),1家币,2家点
-     * @param tradeType 交易类型-1所有 0充值 1提现,2转账转入,3转账转出,4红包转入,5红包转出,6 点子转入,7点子转出,8悬赏转入,9悬赏转出,10兑换转入,11兑换支出,12红包退款,13二手购买转出,14二手出售转入,15家厨房转出,16家厨房转入,17购买会员支出
+     * @param tradeType 交易类型-1所有 0充值 1提现,2转账转入,3转账转出,4红包转入,5红包转出,6 点子转入,7点子转出,8悬赏转入,9悬赏转出,10兑换转入,11兑换支出,12红包退款,13二手购买转出,14二手出售转入,15家厨房转出,16家厨房转入,17购买会员支出,18游戏支出，19游戏转入，20任务奖励转入
      * @param beginTime 查询的日期起始时间 格式为20170501
      * @param endTime   查询的日期结束时间 格式为20170530
      * @param page      页码 第几页 起始值1
@@ -41,7 +41,7 @@ public class PurseChangingLogController extends BaseController implements PurseC
                                        @PathVariable String beginTime,@PathVariable String endTime,
                                        @PathVariable int page,@PathVariable int count) {
         //验证参数
-        if(tradeType<-1||tradeType>17){
+        if(tradeType<-1||tradeType>20){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"tradeType参数有误",new JSONObject());
         }
         if(currencyType<-1||tradeType>2){
