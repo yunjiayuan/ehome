@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -96,7 +97,11 @@ public class CollectController extends BaseController implements CollectApiContr
         // 统计公告收藏数量
         int collect = 0;
         collect = collectService.findUserById(infoId, afficheType);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", collect);
+
+        Map<String, Integer> numMap = new HashMap<>();
+        numMap.put("count", collect);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", numMap);
     }
 
     /***
