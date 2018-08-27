@@ -2,7 +2,6 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.Purse;
 import com.busi.entity.PursePayPassword;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UserBankCardInfo;
@@ -15,7 +14,6 @@ import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import sun.security.util.Password;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -84,7 +82,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
             payPasswordMap = CommonUtils.objectToMap(pursePayPassword);
             redisUtils.hmset(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+userId,payPasswordMap,Constants.USER_TIME_OUT);
         }else{
-            payPwdStatus=1;
+            if(Integer.parseInt(payPasswordMap.get("redisStatus").toString())==1) {//数据库中有对应记录
+                payPwdStatus=1;
+            }
         }
         Map<String,Object> bankMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_BANKCARD+userId );
         if(bankMap==null||bankMap.size()<=0){
@@ -102,7 +102,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
             bankMap = CommonUtils.objectToMap(userBankCardInfo);
             redisUtils.hmset(Constants.REDIS_KEY_PAYMENT_BANKCARD+userId,bankMap,Constants.USER_TIME_OUT);
         }else{
-            bindBankCardStatus=1;
+            if(Integer.parseInt(bankMap.get("redisStatus").toString())==1) {//数据库中有对应记录
+                bindBankCardStatus=1;
+            }
         }
         //响应客户端
         Map<String,Object> map = new HashMap<>();
