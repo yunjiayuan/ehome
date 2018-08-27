@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -80,5 +81,48 @@ public class UserBankCardInfoController extends BaseController implements UserBa
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_BANKCARD+userBankCardInfo.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 验证提交的银行卡信息与该用户绑定银行卡信息是否一致
+     * @return 返回 私钥 用于重置支付密码的凭据
+     */
+    @Override
+    public ReturnData checkUserBankCardInfo(@Valid @RequestBody UserBankCardInfo userBankCardInfo, BindingResult bindingResult){
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证权限
+        if(CommonUtils.getMyId()!=userBankCardInfo.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限验证用户["+userBankCardInfo.getUserId()+"]的银行卡信息",new JSONObject());
+        }
+        //判断当前用户是否已绑定过银行卡
+        Map<String,Object> bankMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_BANKCARD+userBankCardInfo.getUserId());
+        if(bankMap==null||bankMap.size()<=0){
+            UserBankCardInfo ubci = null;
+            //缓存中没有用户对象信息 查询数据库
+            ubci = userBankCardInfoService.findUserBankCardInfo(userBankCardInfo.getUserId());
+            if(ubci==null){
+                return returnData(StatusCode.CODE_BANKCARD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未绑定过银行卡，无法设置支付密码!",new JSONObject());
+            }
+            bankMap = CommonUtils.objectToMap(ubci);
+        }else{
+            if(Integer.parseInt(bankMap.get("redisStatus").toString())==0) {//redisStatus==0 说明数据中无此记录
+                return returnData(StatusCode.CODE_BANKCARD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未绑定过银行卡，无法设置支付密码!",new JSONObject());
+            }
+        }
+        //开始验证卡信息是否正确
+        if(!userBankCardInfo.getBankCard().equals(bankMap.get("bankCard").toString())||!userBankCardInfo.getBankPhone().equals(bankMap.get("bankPhone").toString())
+                ||!userBankCardInfo.getBankName().equals(bankMap.get("bankName").toString())||!userBankCardInfo.getBankCardNo().equals(bankMap.get("bankCardNo").toString())){
+            return returnData(StatusCode.CODE_BANKCARD_CHECK_ERROR.CODE_VALUE,"您填写的银行卡信息与该卡在银行中预留的信息不符!",new JSONObject());
+        }
+        //生成私钥 用于后边重置支付密码接口使用
+        String payKey = CommonUtils.strToMD5(CommonUtils.getToken()+CommonUtils.getClientId()+new Date().getTime()+CommonUtils.getRandom(6,0), 16);//支付秘钥key
+        redisUtils.set(Constants.REDIS_KEY_PAYMENT_PAYKEY+CommonUtils.getMyId(),payKey,Constants.MSG_TIME_OUT_MINUTE_10);
+        //响应客户端
+        Map<String,String> map = new HashMap();
+        map.put("paymentKey",payKey);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
     }
 }

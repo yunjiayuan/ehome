@@ -105,6 +105,11 @@ public class PursePayPasswordController extends BaseController implements PurseP
         if(CommonUtils.getMyId()!=pursePayPassword.getUserId()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+pursePayPassword.getUserId()+"]的支付密码信息",new JSONObject());
         }
+        //添加防暴力验证
+        String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+""));
+        if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
+            return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
+        }
         //验证之前是否设置过支付密码
         Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pursePayPassword.getUserId() );
         if(payPasswordMap==null||payPasswordMap.size()<=0){
@@ -124,9 +129,10 @@ public class PursePayPasswordController extends BaseController implements PurseP
         String oldPassWord = CommonUtils.getPasswordBySalt(pursePayPassword.getPayPassword(), payPasswordMap.get("payCode").toString());//生成加盐的新密码
         if(!oldPassWord.equals(payPasswordMap.get("payPassword").toString())){
             //密码有误 添加错误限制 防暴力破解
-            String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,pursePayPassword.getUserId()+""));
-            if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
-                return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
+            if(CommonUtils.checkFull(errorCount)){//第一次错误
+                redisUtils.hset(Constants.REDIS_KEY_PAY_ERROR_COUNT,pursePayPassword.getUserId()+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_PAY_ERROR_COUNT,pursePayPassword.getUserId()+"",1);
             }
             return returnData(StatusCode.CODE_PAYPASSWORD_ERROR.CODE_VALUE,"您输入的支付密码有误",new JSONObject());
         }
@@ -153,6 +159,11 @@ public class PursePayPasswordController extends BaseController implements PurseP
         if(oldPayPassword.length()!=32){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"oldPayPassword参数有误",new JSONObject());
         }
+        //添加防暴力验证
+        String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+""));
+        if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
+            return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
+        }
         //验证之前是否设置过支付密码
         Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+CommonUtils.getMyId());
         if(payPasswordMap==null||payPasswordMap.size()<=0){
@@ -172,12 +183,83 @@ public class PursePayPasswordController extends BaseController implements PurseP
         String oldPassWord = CommonUtils.getPasswordBySalt(oldPayPassword, payPasswordMap.get("payCode").toString());//生成加盐的新密码
         if(!oldPassWord.equals(payPasswordMap.get("payPassword").toString())){
             //密码有误 添加错误限制 防暴力破解
-            String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+""));
-            if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
-                return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
+            if(CommonUtils.checkFull(errorCount)){//第一次错误
+                redisUtils.hset(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+"",1);
             }
             return returnData(StatusCode.CODE_PAYPASSWORD_ERROR.CODE_VALUE,"您输入的支付密码有误",new JSONObject());
         }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 重置支付密码
+     * @param pursePayPassword
+     * @return
+     */
+    @Override
+    public ReturnData resetPayPwd(@Valid @RequestBody PursePayPassword pursePayPassword, BindingResult bindingResult) {
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        if(CommonUtils.checkFull(pursePayPassword.getPaymentKey())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"paymentKey参数有误",new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=pursePayPassword.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限重置用户["+pursePayPassword.getUserId()+"]的支付密码信息",new JSONObject());
+        }
+        //添加防暴力验证
+        String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+""));
+        if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
+            return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
+        }
+        //验证之前是否设置过支付密码
+        Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pursePayPassword.getUserId() );
+        if(payPasswordMap==null||payPasswordMap.size()<=0){
+            PursePayPassword ppp = null;
+            //缓存中没有用户对象信息 查询数据库
+            ppp = pursePayPasswordService.findPursePayPassword(pursePayPassword.getUserId());
+            if(ppp==null){
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法重置支付密码!",new JSONObject());
+            }
+        }else{
+            if(Integer.parseInt(payPasswordMap.get("redisStatus").toString())==0) {//redisStatus==0说明数据中无此记录
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法重置支付密码!",new JSONObject());
+            }
+        }
+        //验证修改秘钥是否正确
+        Object serverKey = redisUtils.getKey(Constants.REDIS_KEY_PAYMENT_PAYKEY+CommonUtils.getMyId());
+        if(serverKey==null){
+            if(CommonUtils.checkFull(errorCount)){//第一次错误
+                redisUtils.hset(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+"",1);
+            }
+            return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"操作已过期，秘钥已过期，请重新验证银行卡信息找回密码!",new JSONObject());
+        }
+        if(!pursePayPassword.getPaymentKey().equals(serverKey.toString())){
+            if(CommonUtils.checkFull(errorCount)){//第一次错误
+                redisUtils.hset(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+"",1);
+            }
+            //清除秘钥
+            redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+CommonUtils.getMyId(),0);
+            return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"秘钥不正确，请重新验证银行卡信息找回密码!",new JSONObject());
+        }
+        //开始修改新密码
+        String payCode = CommonUtils.getRandom(6,0);//生成随机数值
+        String newPassWord = CommonUtils.getPasswordBySalt(pursePayPassword.getPayPassword(), payCode);//生成加盐的新密码
+        pursePayPassword.setPayPassword(newPassWord);
+        pursePayPassword.setPayCode(payCode);
+        pursePayPasswordService.updatePursePayPassword(pursePayPassword);
+        //清除缓存
+        redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pursePayPassword.getUserId(),0);
+        //清除秘钥
+        redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+CommonUtils.getMyId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

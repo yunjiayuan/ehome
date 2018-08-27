@@ -37,4 +37,12 @@ public interface PursePayPasswordApiController {
     @GetMapping("checkPayPassword/{oldPayPassword}")
     ReturnData checkPayPassword(@PathVariable String oldPayPassword);
 
+    /***
+     * 重置支付密码
+     * @param pursePayPassword
+     * @return
+     */
+    @PutMapping("resetPayPwd")
+    ReturnData resetPayPwd(@Valid @RequestBody PursePayPassword pursePayPassword, BindingResult bindingResult);
+
 }
