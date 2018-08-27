@@ -80,7 +80,7 @@ public class LoveAndFriends {
 
   private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
-  private int fraction;//公告分数   与数据库无关字段
+  private int fraction;//公告分数
 
   private String matching;			//匹配度   与数据库无关字段
 

@@ -180,7 +180,6 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
 
     /**
      * 查询
-     *
      * @param id
      * @return
      */
@@ -197,10 +196,15 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
+            //新增浏览记录
+            mqUtils.sendLookMQ(CommonUtils.getMyId(),id,posts.getTitle(),6);
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
             redisUtils.hmset(Constants.REDIS_KEY_IPS_OTHERPOSTS + id, otherPostsMap, Constants.USER_TIME_OUT);
         }
+        //新增浏览记录
+        mqUtils.sendLookMQ(CommonUtils.getMyId(),id,otherPostsMap.get("title").toString(),1);
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }
 

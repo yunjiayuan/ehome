@@ -48,14 +48,15 @@ public interface LoveAndFriendsApiController {
 
     /***
      * 分页条件查询
+     * @param userId   用户ID
      * @param screen   性别:0不限，1男，2女
      * @param sort  0刷新时间，1年龄，2收入
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findListLove/{screen}/{sort}/{page}/{count}")
-    ReturnData findListLove(@PathVariable int screen, @PathVariable int sort, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findListLove/{userId}/{screen}/{sort}/{page}/{count}")
+    ReturnData findListLove(@PathVariable long userId ,@PathVariable int screen, @PathVariable int sort, @PathVariable int page, @PathVariable int count);
 
     /**
      * 查询是否已发布过

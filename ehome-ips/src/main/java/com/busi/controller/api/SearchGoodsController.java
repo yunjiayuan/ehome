@@ -125,10 +125,10 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             ipsHome.setFraction(fraction);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome.getInfoId() + "_" + ipsHome.getAfficheType(), Constants.USER_TIME_OUT);
+            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, Constants.USER_TIME_OUT);
         }
         //新增任务
-        mqUtils.sendTaskMQ(searchGoods.getUserId(),1,3);
+        mqUtils.sendTaskMQ(searchGoods.getUserId(), 1, 3);
 
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);
@@ -245,7 +245,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             ipsHome.setFraction(fraction);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome.getInfoId() + "_" + ipsHome.getAfficheType(), Constants.USER_TIME_OUT);
+            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, Constants.USER_TIME_OUT);
         }
         searchGoods.setFraction(fraction);
         searchGoods.setRefreshTime(new Date());
@@ -273,16 +273,41 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
+        int num = 0;
         Map<String, Object> otherPostsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_SEARCHGOODS + id);
         if (otherPostsMap == null || otherPostsMap.size() <= 0) {
             SearchGoods posts = searchGoodsService.findUserById(id);
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
+            if (posts.getSearchType() == 1) {
+                num = 3;
+            }
+            if (posts.getSearchType() == 2) {
+                num = 4;
+            }
+            if (posts.getSearchType() == 3) {
+                num = 5;
+            }
+            //新增浏览记录
+            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), num);
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
             redisUtils.hmset(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, otherPostsMap, Constants.USER_TIME_OUT);
         }
+        //新增浏览记录
+        num = (int) otherPostsMap.get("searchType");
+        if (num == 1) {
+            num = 3;
+        }
+        if (num == 2) {
+            num = 4;
+        }
+        if (num == 3) {
+            num = 5;
+        }
+        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), num);
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }
 
@@ -300,7 +325,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
      * @return
      */
     @Override
-    public ReturnData findMatterList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int beginAge, @PathVariable int endAge, @PathVariable int missingSex, @PathVariable int searchType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findMatterList(@PathVariable long userId, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int beginAge, @PathVariable int endAge, @PathVariable int missingSex, @PathVariable int searchType, @PathVariable int page, @PathVariable int count) {
 
         //验证参数
         if (page < 0 || count <= 0) {
@@ -320,7 +345,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         }
         //开始查询
         PageBean<SearchGoods> pageBean;
-        pageBean = searchGoodsService.findList(province, city, district, beginAge, endAge, missingSex, searchType, page, count);
+        pageBean = searchGoodsService.findList(userId, province, city, district, beginAge, endAge, missingSex, searchType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
