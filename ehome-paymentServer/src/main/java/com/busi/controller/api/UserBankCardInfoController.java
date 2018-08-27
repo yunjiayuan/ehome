@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -74,7 +75,10 @@ public class UserBankCardInfoController extends BaseController implements UserBa
             }
         }
         //开始绑定新银行卡
+        userBankCardInfo.setTime(new Date());
         userBankCardInfoService.addUserBankCardInfo(userBankCardInfo);
+        //清除缓存
+        redisUtils.expire(Constants.REDIS_KEY_PAYMENT_BANKCARD+userBankCardInfo.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

@@ -3,7 +3,7 @@ package com.busi.controller.api;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UserBankCardInfo;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 
@@ -19,6 +19,6 @@ public interface UserBankCardInfoApiController {
      * @param userBankCardInfo
      * @return
      */
-    @PutMapping("addUserBankCardInfo")
+    @PostMapping("addUserBankCardInfo")
     ReturnData addUserBankCardInfo(@Valid @RequestBody UserBankCardInfo userBankCardInfo, BindingResult bindingResult);
 }

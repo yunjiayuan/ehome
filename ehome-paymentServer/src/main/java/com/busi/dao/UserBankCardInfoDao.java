@@ -18,7 +18,7 @@ public interface UserBankCardInfoDao {
      * @param userBankCardInfo
      * @return
      */
-    @Insert("insert into purse (userId,bankCard,bankPhone,bankName,bankCardNo,time) values (#{userId},#{bankCard},#{bankPhone},#{bankName},#{bankCardNo},#{time})")
+    @Insert("insert into userBankCardInfo (userId,bankCard,bankPhone,bankName,bankCardNo,time) values (#{userId},#{bankCard},#{bankPhone},#{bankName},#{bankCardNo},#{time})")
     @Options(useGeneratedKeys = true)
     int addUserBankCardInfo(UserBankCardInfo userBankCardInfo);
 
