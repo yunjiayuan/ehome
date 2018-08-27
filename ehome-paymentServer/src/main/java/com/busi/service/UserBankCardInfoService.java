@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 银行卡相关Service
  * author：SunTianJie
@@ -42,7 +44,12 @@ public class UserBankCardInfoService {
      * @return
      */
     public UserBankCardInfo findUserBankCardInfoByBankCard(String bankCard){
-        return userBankCardInfoDao.findUserBankCardInfoByBankCard(bankCard);
+        List<UserBankCardInfo> list = userBankCardInfoDao.findUserBankCardInfoByBankCard(bankCard);
+        UserBankCardInfo userBankCardInfo = null;
+        if(list!=null&&list.size()>0){
+            userBankCardInfo = list.get(0);
+        }
+        return userBankCardInfo;
     }
 
 

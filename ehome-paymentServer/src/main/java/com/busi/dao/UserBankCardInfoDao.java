@@ -4,6 +4,8 @@ import com.busi.entity.UserBankCardInfo;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 银行卡相关DAO
  * author：SunTianJie
@@ -34,7 +36,7 @@ public interface UserBankCardInfoDao {
      * @param bankCard
      */
     @Select("select * from userBankCardInfo where bankCard = #{bankCard}")
-    UserBankCardInfo findUserBankCardInfoByBankCard(@Param("bankCard") String bankCard);
+    List<UserBankCardInfo> findUserBankCardInfoByBankCard(@Param("bankCard") String bankCard);
 
 
 
