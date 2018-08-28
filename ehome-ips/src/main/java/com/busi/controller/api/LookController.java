@@ -35,12 +35,15 @@ public class LookController extends BaseController implements LookApiController 
         if (myId <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
+        if (CommonUtils.checkFull(ids)) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "ids参数有误", new JSONObject());
+        }
         //验证删除权限
         if (CommonUtils.getMyId() != myId) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + myId + "]的浏览记录", new JSONObject());
         }
         //查询数据库
-        int look = lookService.del(ids, myId);
+        int look = lookService.del(ids.split(","), myId);
         if (look <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "公告浏览记录[" + ids + "]不存在", new JSONObject());
         }

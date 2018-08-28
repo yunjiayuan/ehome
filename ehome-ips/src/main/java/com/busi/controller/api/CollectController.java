@@ -66,14 +66,17 @@ public class CollectController extends BaseController implements CollectApiContr
     public ReturnData delCollect(@PathVariable long myId, @PathVariable String ids) {
         //验证参数
         if (myId <= 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "myId参数有误", new JSONObject());
+        }
+        if (CommonUtils.checkFull(ids)) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "ids参数有误", new JSONObject());
         }
         //验证删除权限
         if (CommonUtils.getMyId() != myId) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + myId + "]的收藏记录", new JSONObject());
         }
         //查询数据库
-        int look = collectService.del(ids, myId);
+        int look = collectService.del(ids.split(","), myId);
         if (look <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "公告收藏记录[" + ids + "]不存在", new JSONObject());
         }
@@ -84,6 +87,7 @@ public class CollectController extends BaseController implements CollectApiContr
 
     /**
      * 查询
+     *
      * @param infoId
      * @param afficheType
      * @return
@@ -118,7 +122,7 @@ public class CollectController extends BaseController implements CollectApiContr
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         if (userId < 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
         //开始查询
         PageBean<Collect> pageBean;

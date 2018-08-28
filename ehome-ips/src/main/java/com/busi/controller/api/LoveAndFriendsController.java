@@ -140,10 +140,10 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 //新增任务
                 mqUtils.sendTaskMQ(loveAndFriends.getUserId(), 1, 3);
             } else {
-                return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在", new JSONObject());
+                return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "您已发布过婚恋交友的公告，您需要修改之前的公告信息吗？", new JSONObject());
             }
         } else {
-            return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "该类公告已存在", new JSONObject());
+            return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "您已发布过婚恋交友的公告，您需要修改之前的公告信息吗？", new JSONObject());
         }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId(), 0);

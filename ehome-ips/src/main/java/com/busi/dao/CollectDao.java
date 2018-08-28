@@ -30,8 +30,16 @@ public interface CollectDao {
      * @param myId
      * @return
      */
-    @Delete(("delete from collect where id in (#{ids}) and myId=#{myId}"))
-    int del(@Param("ids") String ids , @Param("myId") long myId);
+//    @Delete("delete from collect where id in (#{ids}) and myId=#{myId}")
+    @Delete("<script>" +
+            "delete from collect" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+                " #{item}"+
+            "</foreach>"+
+            " and myId=#{myId}" +
+            "</script>")
+    int del(@Param("ids") String[] ids , @Param("myId") long myId);
 
     /***
      * 根据Id统计被收藏次数

@@ -30,7 +30,7 @@ public class IPS_HomeController  extends BaseController implements IPS_HomeApiCo
     @Override
     public ReturnData findHomeList(@PathVariable long userId) {
         //验证参数
-        if (userId <= 0) {
+        if (userId < 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
         //开始查询
