@@ -15,7 +15,6 @@ import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -189,7 +188,7 @@ public class PurseController extends BaseController implements PurseApiControlle
         exchangeOrder.setPayStatus(0);//未支付状态
         exchangeOrder.setTime(new Date());
         //将订单放入缓存中  5分钟有效时间  超时作废
-        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+exchangeOrder.getOrderNumber(),CommonUtils.objectToMap(exchangeOrder),Constants.TIME_OUT_MINUTE_5);
+        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+userId+"_"+exchangeOrder.getOrderNumber(),CommonUtils.objectToMap(exchangeOrder),Constants.TIME_OUT_MINUTE_5);
         //响应客户端
         Map<String,String> map = new HashMap();
         map.put("orderNumber",exchangeOrder.getOrderNumber());
