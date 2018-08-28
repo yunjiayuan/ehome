@@ -6,15 +6,17 @@ package com.busi.utils;
  * create time：2018/6/5 13:36
  */
 public class Constants {
-    /**activeMQ消息服务常量配置 开始**/
+    /**超时时间常量配置 开始**/
     public static final String MSG_ID ="msg_id_";
 //    public static final int MSG_TIME_OUT_SECOND_30 =30;/30秒有效期
     public static final int MSG_TIME_OUT_MINUTE_10 =60*10;//10分钟有效期
+    public static final int TIME_OUT_MINUTE_5 =60*5;//5分钟有效期
 //    public static final int MSG_TIME_OUT_HOUR_1 =60*60;//1小时有效期
 //    public static final int MSG_TIME_OUT_DAY_7 =60*60*24*7;//七天有效期
     public static final String MSG_REGISTER_MQ ="msg_register_mq";//注册队列名称
+    public static final int USER_TIME_OUT =60*60*24*7;//对象在缓存中的生命周期 7天有效期
 
-    /**activeMQ消息服务常量配置 结束**/
+    /**超时时间常量配置 结束**/
 
     /** 省市区参数 开始**/
     public static final int DSY_PROVINCE = 34;
@@ -51,10 +53,6 @@ public class Constants {
     public static final String BRITHDAY = "^(19|20)\\\\d{2}(1[0-2]|0?[1-9])(0?[1-9]|[1-2][0-9]|3[0-1])$";
     public static final String[] PRETTY_NUMBER_ARRAY ={ABAB,AABB,ABCABC,ABABAB,AABBCC,AAABBB,AAA,AAAA,AAAAA,AAAAAA,AAAAAAA,AAAAAAAA,AAAAAAAAA,AAAAAAAAAA,AAAAAAAAAAA,ABC,ABCD,ABCDE,ABCDEF,ABCDEFG,ABCDEFGH,ABCDEFGHI,LOVE,PHONE,BRITHDAY};
     /**门牌号靓号规则 结束**/
-
-    /** 用户相关配置 开始**/
-    public static final int USER_TIME_OUT =60*60*24*7;//用户对象在缓存中的生命周期 7天有效期
-    /**用户相关配置 结束**/
 
     /** 请求接口白名单 开始**/
     public static final String REQUEST_WHITE_LIST ="login-api/createCode,login-api/login,login-api/checkCode,login-api/registerByHouseNumber,login-api/registerByPhone,login-api/findVersion";//白名单接口 服务端将不会验证token权限
@@ -135,6 +133,7 @@ public class Constants {
     public static final String REDIS_KEY_PAYMENT_PAYPASSWORD = "payment_payPassword_";//userId与支付密码的关系对照
     public static final String REDIS_KEY_PAYMENT_BANKCARD = "payment_bankCard_";//userId与银行卡的关系对照
     public static final String REDIS_KEY_PAY_ERROR_COUNT = "payment_error_count";//支付错误记录（包括密码有误和支付出现的错误，每天限制100次）
+    public static final String REDIS_KEY_PAY_ORDER_EXCHANGE = "payment_order_exchange_";//钱包兑换订单 对应关系  订单ID对应订单实体
 
     //redis 1库相关key配置(IPS)
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)

@@ -802,6 +802,16 @@ public class CommonUtils {
 		long second = (d12.getTime()-new Date().getTime())/1000;
 		return second;
 	}
+
+	/**
+	 * 获取订单编号（通用）
+	 * @param userId    当前下单的用户ID
+	 * @param orderType 订单类别对应常量值
+	 * @return
+	 */
+	public static String getOrderNumber(long userId,String orderType){
+		return CommonUtils.strToMD5(orderType+userId+new Date().getTime()+CommonUtils.getRandom(6,0),16);
+	}
 //	public static void main(String[] args) {
 ////		System.out.println(checkBankCard("6225768308550119"));
 //		System.out.println(checkPhone("15901213694"));

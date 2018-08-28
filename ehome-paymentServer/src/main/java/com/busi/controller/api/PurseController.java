@@ -2,6 +2,7 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.ExchangeOrder;
 import com.busi.entity.Purse;
 import com.busi.entity.PursePayPassword;
 import com.busi.entity.ReturnData;
@@ -14,6 +15,8 @@ import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,7 +125,7 @@ public class PurseController extends BaseController implements PurseApiControlle
 
 
     /**
-     * 钱包兑换接口
+     * 钱包兑换--生成订单接口
      * @param userId       当前用户ID
      * @param exChangeType 兑换类型 1家币兑换家点（1:100） 2人民币兑换家币（1:1）
      * @param money        当exChangeType==1时人民币兑换家币 当exChangeType==2时家币兑换家点
@@ -164,22 +167,32 @@ public class PurseController extends BaseController implements PurseApiControlle
             if(pursePayPassword==null){
                 return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您当前账户尚未设置过支付密码，无法进行兑换操作",new JSONObject());
             }
-            payPasswordMap = CommonUtils.objectToMap(pursePayPassword);
         }
-        //开始兑换
+        //判断余额
         if(exChangeType==1){//人民币兑换家币
             double spareMoney = Double.parseDouble(purseMap.get("spareMoney").toString());
-            if(spareMoney>=money){
-                //生成订单
-
+            if(spareMoney<money){
+                return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
             }
         }else{//家币兑换家点
             long homePoint = Long.parseLong(purseMap.get("homePoint").toString());
-            if(homePoint>=money){
-                //生成订单
-
+            if(homePoint<money){
+                return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
             }
         }
-        return null;
+        //生成兑换订单 等待支付
+        ExchangeOrder exchangeOrder = new ExchangeOrder();
+        exchangeOrder.setOrderNumber(CommonUtils.getOrderNumber(userId,Constants.REDIS_KEY_PAY_ORDER_EXCHANGE));
+        exchangeOrder.setUserId(userId);
+        exchangeOrder.setExchangeType(exChangeType);
+        exchangeOrder.setMoney(money);
+        exchangeOrder.setPayStatus(0);//未支付状态
+        exchangeOrder.setTime(new Date());
+        //将订单放入缓存中  5分钟有效时间  超时作废
+        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+exchangeOrder.getOrderNumber(),CommonUtils.objectToMap(exchangeOrder),Constants.TIME_OUT_MINUTE_5);
+        //响应客户端
+        Map<String,String> map = new HashMap();
+        map.put("orderNumber",exchangeOrder.getOrderNumber());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
     }
 }

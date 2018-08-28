@@ -4,7 +4,6 @@ package com.busi.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.Date;
 
