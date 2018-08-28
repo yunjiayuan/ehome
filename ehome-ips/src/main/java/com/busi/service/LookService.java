@@ -39,7 +39,7 @@ public class LookService {
      * @return
      */
     @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int del(String ids ,long userId){
+    public int del(String[] ids ,long userId){
         return lookDao.del(ids,userId);
     }
 

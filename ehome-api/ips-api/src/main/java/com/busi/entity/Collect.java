@@ -17,7 +17,7 @@ import java.util.Date;
 @Getter
 public class Collect {
 
-  private long id;		//主见ID
+  private long id;		//主键ID
 
   @Min(value= 1 ,message= "myId参数有误")
   private long myId;		//收藏用户ID

@@ -4,6 +4,7 @@ import com.busi.entity.Task;
 import com.busi.entity.TaskList;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -86,7 +87,7 @@ public interface TaskDao {
             "</if>" +
             " and userId=#{userId}" +
             "</script>")
-    List<Task> findList(@Param("userId") long userId,@Param("taskType") int taskType);
+    List<Task> findList(@Param("userId") long userId, @Param("taskType") int taskType);
 
     /***
      * 分页查询
@@ -94,7 +95,14 @@ public interface TaskDao {
      */
     @Select("<script>" +
             "select * from taskList" +
+            " where 1=1" +
+            "<if test=\"taskType == -1\">" +
+            " and taskType=1 or taskType = 0" +
+            "</if>" +
+            "<if test=\"taskType > -1\">" +
+            " and taskType=#{taskType}" +
+            "</if>" +
             "</script>")
-    List<TaskList> findTaskList();
+    List<TaskList> findTaskList(@Param("taskType") int taskType);
 
 }

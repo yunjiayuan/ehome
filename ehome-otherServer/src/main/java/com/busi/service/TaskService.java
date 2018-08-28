@@ -79,11 +79,11 @@ public class TaskService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<TaskList> findTaskList(int page, int count) {
+    public PageBean<TaskList> findTaskList(int taskType,int page, int count) {
 
         List<TaskList> list;
         Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = taskDao.findTaskList();
+        list = taskDao.findTaskList(taskType);
 
         return PageUtils.getPageBean(p,list);
     }

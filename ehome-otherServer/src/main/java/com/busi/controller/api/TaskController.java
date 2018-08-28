@@ -101,15 +101,17 @@ public class TaskController extends BaseController implements TaskApiController 
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //查询缓存
-        List list = redisUtils.getList(Constants.REDIS_KEY_IPS_TASK + userId, 0, -1);
-        if (list != null && list.size() > 0) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        if (taskType == -1) {
+            List list = redisUtils.getList(Constants.REDIS_KEY_IPS_TASK + userId, 0, -1);
+            if (list != null && list.size() > 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+            }
         }
         //开始查询
         PageBean<Task> pageBean;//任务
         PageBean<TaskList> pageBeanList;//任务详情
         pageBean = taskService.findList(userId, taskType, page, count);
-        pageBeanList = taskService.findTaskList(page, count);
+        pageBeanList = taskService.findTaskList(taskType, page, count);
         List task = pageBean.getList();
         List taskList = pageBeanList.getList();
         if (taskList != null && taskList.size() > 0) {
@@ -125,10 +127,12 @@ public class TaskController extends BaseController implements TaskApiController 
                         }
                     }
                 }
-                //更新缓存
-                redisUtils.pushList(Constants.REDIS_KEY_IPS_TASK + userId, taskList);
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, taskList);
+                if (taskType == -1) {
+                    //更新缓存
+                    redisUtils.pushList(Constants.REDIS_KEY_IPS_TASK + userId, taskList);
+                }
             }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, taskList);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
     }
