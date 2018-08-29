@@ -31,4 +31,7 @@ public class PursePayPassword {
   @Length(min=16,max = 16, message = "paymentKey参数超出合法范围")
   private String paymentKey;//16位重置秘钥  10分钟有效  使用后失效
 
+  @Length(min=4,max = 4 ,message = "code参数超出合法范围")
+  private String code;//验证码 与数据库无关字段 只用于密码重置操作
+
 }

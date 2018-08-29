@@ -10,10 +10,7 @@ import com.busi.mq.MqProducer;
 import com.busi.service.GraffitiChartLogService;
 import com.busi.service.UserInfoService;
 import com.busi.service.VisitViewService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -49,6 +46,9 @@ public class RegisterController extends BaseController implements RegisterApiCon
 
     @Autowired
     MqProducer mqProducer;
+
+    @Autowired
+    MqUtils mqUtils;
 
     /***
      * 门牌号注册接口
@@ -166,18 +166,19 @@ public class RegisterController extends BaseController implements RegisterApiCon
                 return returnData(StatusCode.CODE_SMS_PHONEBOUND_ERROR.CODE_VALUE,"该手机号已被注册过",new JSONObject());
             }
             //调用MQ进行发送短信
-            JSONObject root = new JSONObject();
-            JSONObject header = new JSONObject();
-            header.put("interfaceType", "0");//interfaceType 0 表示发送手机短信  1表示发送邮件  2表示新用户注册转发
-            JSONObject content = new JSONObject();
-            content.put("phone",phone);//将要发送短信的手机号
-            content.put("phoneType",0);//短信类型 0表示注册时发送短信
-            content.put("phoneCode",code);//短信验证码
-            root.put("header", header);
-            root.put("content", content);
-            String sendMsg = root.toJSONString();
-            ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
-            mqProducer.sendMsg(activeMQQueue,sendMsg);
+            mqUtils.sendPhoneMessage(phone,code,0);
+//            JSONObject root = new JSONObject();
+//            JSONObject header = new JSONObject();
+//            header.put("interfaceType", "0");//interfaceType 0 表示发送手机短信  1表示发送邮件  2表示新用户注册转发
+//            JSONObject content = new JSONObject();
+//            content.put("phone",phone);//将要发送短信的手机号
+//            content.put("phoneType",0);//短信类型 0表示注册时发送短信
+//            content.put("phoneCode",code);//短信验证码
+//            root.put("header", header);
+//            root.put("content", content);
+//            String sendMsg = root.toJSONString();
+//            ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+//            mqProducer.sendMsg(activeMQQueue,sendMsg);
             //将验证码存入缓存 后边注册时使用
             redisUtils.set(Constants.REDIS_KEY_REG_TOKEN+regToken,phone+"_"+code,60*10);//验证码10分钟内有效
             code = "";//手机验证码不返回客户端

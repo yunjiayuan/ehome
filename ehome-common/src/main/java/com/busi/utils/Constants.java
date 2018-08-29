@@ -106,7 +106,6 @@ public class Constants {
     /** redis配置 开始**/
     //redis 0库相关key配置(USER)
     public static final String REDIS_KEY_VERSION = "version_";//版本号key
-    public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
     public static final String REDIS_KEY_USER = "user_";//用户实体key
     public static final String REDIS_KEY_PHONENUMBER = "phoneNumber";//手机号与用户ID对应关系
     public static final String REDIS_KEY_OTHERNUMBER = "otherNumber";//第三方平台账号与用户ID对应关系
@@ -134,6 +133,10 @@ public class Constants {
     public static final String REDIS_KEY_PAYMENT_BANKCARD = "payment_bankCard_";//userId与银行卡的关系对照
     public static final String REDIS_KEY_PAY_ERROR_COUNT = "payment_error_count";//支付错误记录（包括密码有误和支付出现的错误，每天限制100次）
     public static final String REDIS_KEY_PAY_ORDER_EXCHANGE = "payment_order_exchange_";//钱包兑换订单 对应关系  订单ID对应订单实体
+
+    //验证码相关配置
+    public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
+    public static final String REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE = "payment_findPayPassword_code_";//找回支付密码 短信验证码对应的key
 
     //redis 1库相关key配置(IPS)
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)

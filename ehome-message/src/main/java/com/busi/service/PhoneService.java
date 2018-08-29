@@ -24,11 +24,14 @@ public class PhoneService implements MessageAdapter {
         int phoneType = Integer.parseInt(body.getString("phoneType"));
         String phoneCode = body.getString("phoneCode");
         String content = "";//短信内容
-        if(phoneType==0){//注册发送短信
-            content = "云家园提醒您，您的手机注册验证码为："+phoneCode+",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
-            SMSUtil.sendMessage(content, phone);
+        if(phoneType==0) {//注册发送短信
+            content = "云家园提醒您，您的手机注册验证码为：" + phoneCode + ",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
+        }else if(phoneType==1){//支付密码找回 验证手机号
+            content = "云家园提醒您，您的支付密码找回验证码为：" + phoneCode + ",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
         }else{
             //预留
         }
+        //发送短信
+        SMSUtil.sendMessage(content, phone);
     }
 }
