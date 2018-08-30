@@ -140,7 +140,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
         //添加防暴力验证
         String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+""));
         if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
-            return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动停用支付功能一天，如有疑问请联系官方客服",new JSONObject());
+            return returnData(StatusCode.CODE_PAYPASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的支付密码错误次数过多，系统已自动停用支付功能一天，如有疑问请联系官方客服",new JSONObject());
         }
         //检测账户信息 是否正常
         Map<String,Object> purseMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PURSEINFO+pay.getUserId() );

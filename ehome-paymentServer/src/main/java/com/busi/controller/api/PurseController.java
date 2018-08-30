@@ -126,7 +126,7 @@ public class PurseController extends BaseController implements PurseApiControlle
     /**
      * 钱包兑换--生成订单接口
      * @param userId       当前用户ID
-     * @param exChangeType 兑换类型 1家币兑换家点（1:100） 2人民币兑换家币（1:1）
+     * @param exChangeType 兑换类型 1人民币兑换家币（1:1）  2家币兑换家点（1:100）
      * @param money        当exChangeType==1时人民币兑换家币 当exChangeType==2时家币兑换家点
      * @return
      */
