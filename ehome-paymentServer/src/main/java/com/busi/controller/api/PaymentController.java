@@ -224,7 +224,6 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 7://公告栏二手购买订单支付
 
-
                 break;
             case 8://家门口厨房购买订单支付
 

@@ -251,7 +251,7 @@ public class PursePayPasswordController extends BaseController implements PurseP
             return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"秘钥不正确，请重新验证银行卡信息找回密码!",new JSONObject());
         }
         //验证手机验证码是否正确
-        String serverCode = (String)redisUtils.getKey(Constants.REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE);
+        String serverCode = (String)redisUtils.getKey(Constants.REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE+pursePayPassword.getUserId());
         if(CommonUtils.checkFull(serverCode)){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
         }
@@ -268,6 +268,8 @@ public class PursePayPasswordController extends BaseController implements PurseP
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pursePayPassword.getUserId(),0);
         //清除秘钥
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+CommonUtils.getMyId(),0);
+        //清除短信验证码
+        redisUtils.expire(Constants.REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE+pursePayPassword.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }
