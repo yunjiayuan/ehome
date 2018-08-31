@@ -42,4 +42,13 @@ public interface UserBankCardInfoApiController {
      */
     @PutMapping("checkUserBankCardInfo")
     ReturnData checkUserBankCardInfo(@Valid @RequestBody UserBankCardInfo userBankCardInfo, BindingResult bindingResult);
+
+    /***
+     * 找回密码流程中 验证手机验证码是否正确
+     * @param code       手机验证码
+     * @param paymentKey 私钥（银行卡验证接口中返回的私钥信息）
+     * @return
+     */
+    @GetMapping("checkCodeByFindPayPassword/{code}/{paymentKey}")
+    ReturnData checkCodeByFindPayPassword(@PathVariable String code,@PathVariable String paymentKey);
 }

@@ -43,6 +43,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private PursePayPasswordService pursePayPasswordService;
+
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
