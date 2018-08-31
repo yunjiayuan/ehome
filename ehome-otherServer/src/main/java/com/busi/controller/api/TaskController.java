@@ -129,7 +129,7 @@ public class TaskController extends BaseController implements TaskApiController 
                 }
                 if (taskType == -1) {
                     //更新缓存
-                    redisUtils.pushList(Constants.REDIS_KEY_IPS_TASK + userId, taskList);
+                    redisUtils.pushList(Constants.REDIS_KEY_IPS_TASK + userId, taskList, CommonUtils.getCurrentTimeTo_12());
                 }
             }
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, taskList);

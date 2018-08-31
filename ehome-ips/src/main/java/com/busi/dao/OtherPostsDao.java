@@ -69,7 +69,7 @@ public interface OtherPostsDao {
      */
     @Update("<script>" +
             "update otherPosts set" +
-            " userId=#{userId}" +
+            " refreshTime=#{refreshTime}" +
             " where id=#{id} and userId=#{userId}" +
             " and auditType = 2 and deleteType = 1" +
             "</script>")

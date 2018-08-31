@@ -120,7 +120,7 @@ public interface SearchGoodsDao {
      */
     @Update("<script>" +
             "update searchGoods set" +
-            " userId=#{userId}" +
+            " refreshTime=#{refreshTime}" +
             " where id=#{id} and userId=#{userId}" +
             " and auditType = 2 and deleteType = 1" +
             "</script>")
@@ -187,7 +187,7 @@ public interface SearchGoodsDao {
             " where userId = #{userId}" +
             " and auditType = 2" +
             " and deleteType = 1" +
-            " order by fraction,refreshTime desc" +
+            " order by refreshTime desc" +
             "</script>")
     List<SearchGoods> findUList(@Param("userId") long userId);
 

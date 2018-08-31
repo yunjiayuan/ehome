@@ -307,6 +307,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
     /**
      * 查询
+     *
      * @param id
      * @return
      */
@@ -459,8 +460,10 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 sex = loveAndFriends.getSex();
                 age = loveAndFriends.getAge();
                 income = loveAndFriends.getIncome();
+                pageBean = loveAndFriendsService.findList(screen, sort, sex, age, income, page, count);
+            } else {
+                pageBean = loveAndFriendsService.findList(screen, 1, sex, age, income, page, count);
             }
-            pageBean = loveAndFriendsService.findList(screen, sort, sex, age, income, page, count);
         }
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());

@@ -92,7 +92,7 @@ public interface LoveAndFriendsDao {
      */
     @Update("<script>" +
             "update loveAndFriends set" +
-            " userId=#{userId}" +
+            " refreshTime=#{refreshTime}" +
             " where id=#{id} and userId=#{userId} " +
             " and auditType = 2 and deleteType = 1" +
             "</script>")
@@ -123,7 +123,7 @@ public interface LoveAndFriendsDao {
             "select * from loveAndFriends" +
             " where 1=1" +
             "<if test=\"sort == 0 \">" +
-            " and sex!=#{sex}" +
+            " and sex=#{sex}" +
             " and age=#{age}" +
             " and income=#{income}" +
             "</if>" +
@@ -149,7 +149,7 @@ public interface LoveAndFriendsDao {
             " where userId=#{userId}" +
             " and auditType = 2" +
             " and deleteType = 1" +
-            " order by fraction,refreshTime desc" +
+            " order by refreshTime desc" +
             "</script>")
     List<LoveAndFriends> findUList(@Param("userId") long userId);
 

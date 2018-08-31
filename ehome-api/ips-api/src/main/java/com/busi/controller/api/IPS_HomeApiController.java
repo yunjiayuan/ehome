@@ -21,7 +21,7 @@ public interface IPS_HomeApiController {
      * @param afficheType
      * @return
      */
-    @GetMapping("updateState/{infoId}/{userId}/{afficheType}")
+    @GetMapping("refreshTime/{infoId}/{userId}/{afficheType}")
     ReturnData refreshTime(@PathVariable long infoId, @PathVariable long userId, @PathVariable int afficheType);
 
 }
