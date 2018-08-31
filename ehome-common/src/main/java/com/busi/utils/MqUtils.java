@@ -108,4 +108,27 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 发送短信
+     * @param phone     将要发送短信的手机号
+     * @param phoneCode 短信验证码
+     * @param phoneType 短信类型 0表示注册 1表示支付密码找回短信验证
+     */
+    public void sendPhoneMessage(String phone,String phoneCode,int phoneType){
+
+        //调用MQ同步浏览记录到浏览记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "0");//interfaceType  0 表示发送手机短信
+        JSONObject content = new JSONObject();
+        content.put("phone",phone);
+        content.put("phoneCode",phoneCode);
+        content.put("phoneType",phoneType);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
 }

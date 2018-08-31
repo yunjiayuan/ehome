@@ -65,6 +65,10 @@ public class Constants {
     public static final String AUTHKEY = "B01D84CD215ACD2D1BAA68BA83F98326";//认证密钥
     public static final String CGID = "52";//通道组编号
     public static final String CSID = "101";//签名编号
+    public static final int ACCOUNT_DAY_TOTAL = 100;//同一账号每天最多发送短信次数
+    public static final int ACCOUNT_HOUR_TOTAL = 30;//同一账号每小时最多发送短信次数
+    public static final int CLIENT_DAY_TOTAL = 200;//同一客户端设备每天最多发送短信次数
+    public static final int CLIENT_HOUR_TOTAL = 60;//同一客户端设备每小时最多发送短信次数
     /** 短信平台配置 结束**/
 
     /** 附近的人配置 开始**/
@@ -106,7 +110,6 @@ public class Constants {
     /** redis配置 开始**/
     //redis 0库相关key配置(USER)
     public static final String REDIS_KEY_VERSION = "version_";//版本号key
-    public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
     public static final String REDIS_KEY_USER = "user_";//用户实体key
     public static final String REDIS_KEY_PHONENUMBER = "phoneNumber";//手机号与用户ID对应关系
     public static final String REDIS_KEY_OTHERNUMBER = "otherNumber";//第三方平台账号与用户ID对应关系
@@ -134,6 +137,16 @@ public class Constants {
     public static final String REDIS_KEY_PAYMENT_BANKCARD = "payment_bankCard_";//userId与银行卡的关系对照
     public static final String REDIS_KEY_PAY_ERROR_COUNT = "payment_error_count";//支付错误记录（包括密码有误和支付出现的错误，每天限制100次）
     public static final String REDIS_KEY_PAY_ORDER_EXCHANGE = "payment_order_exchange_";//钱包兑换订单 对应关系  订单ID对应订单实体
+
+    //验证码相关配置
+    public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
+    public static final String REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE = "payment_findPayPassword_code_";//找回支付密码 短信验证码对应的key
+
+    //短信次数验证key
+    public static final String REDIS_KEY_ACCOUNT_DAY_TOTAL = "sendMsg_account_day_total";//同一账号每天最多发送短信次数限制KEY
+    public static final String REDIS_KEY_ACCOUNT_HOUR_TOTAL = "sendMsg_account_hour_total";//同一账号每小时最多发送短信次数限制KEY
+    public static final String REDIS_KEY_CLIENT_DAY_TOTAL = "sendMsg_client_day_total";//同一客户端设备每天最多发送短信次数限制KEY
+    public static final String REDIS_KEY_CLIENT_HOUR_TOTAL = "sendMsg_client_hour_total";//同一客户端设备每小时最多发送短信次数限制KEY
 
     //redis 1库相关key配置(IPS)
     public static final String REDIS_KEY_IPS_HOMELIST = "ips_home_list";//IPS 推荐列表(之前的最新)

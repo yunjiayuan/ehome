@@ -45,6 +45,10 @@ public class ConsumerDistribute {
     @Autowired
     private TaskService taskService;//任务系统
 
+    @Autowired
+    private IpsService ipsService;//IPS系统浏览量同步
+
+
     /***
      * 监听消息
      * 消息格式：
@@ -116,7 +120,7 @@ public class ConsumerDistribute {
                     messageAdapter = purseService;
                     break;
                 case "8"://表示公告系统同步浏览量
-                    messageAdapter = purseService;
+                    messageAdapter = ipsService;
                     break;
                 default://异常
                     log.info("消息服务平台操作失败，请求参数有误interfaceType:" + interfaceType);

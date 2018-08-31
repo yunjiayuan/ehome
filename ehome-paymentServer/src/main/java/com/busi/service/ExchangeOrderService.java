@@ -61,7 +61,8 @@ public class ExchangeOrderService extends BaseController implements PayBaseServi
             mqUtils.sendPurseMQ(pay.getUserId(),10,2,money*100);//家点转入
             mqUtils.sendPurseMQ(pay.getUserId(),11,1,money*-1);//家币转出
         }
-
+        //更改状态 防止重复支付
+        redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+pay.getUserId()+"_"+pay.getOrderNumber(),"payStatus",1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }
