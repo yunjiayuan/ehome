@@ -63,6 +63,19 @@ public interface OtherPostsDao {
     int updateDel(OtherPosts otherPosts);
 
     /***
+     * 刷新公告时间
+     * @param otherPosts
+     * @return
+     */
+    @Update("<script>" +
+            "update otherPosts set" +
+            " userId=#{userId}" +
+            " where id=#{id} and userId=#{userId}" +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int updateTime(OtherPosts otherPosts);
+
+    /***
      * 根据Id查询用户其他公告信息
      * @param id
      */

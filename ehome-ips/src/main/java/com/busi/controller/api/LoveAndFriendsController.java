@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -57,7 +58,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库（是否已发布过）
-        Map<String, Object> loveAndFriendsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId());
+        Map<String, Object> loveAndFriendsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId());
         if (loveAndFriendsMap == null || loveAndFriendsMap.size() <= 0) {
             LoveAndFriends andFriends;
             andFriends = loveAndFriendsService.findByIdUser(loveAndFriends.getUserId());
@@ -119,7 +120,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
                 //放入缓存
                 loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
-                redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + CommonUtils.getMyId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
                 //新增home
                 if (fraction > 70) {
                     IPS_Home ipsHome = new IPS_Home();
@@ -135,7 +136,15 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                     ipsHome.setAfficheType(1);
                     ipsHome.setFraction(fraction);
 
-                    redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, Constants.USER_TIME_OUT);
+                    redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+
+                    List list = null;
+                    list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+                    if (list.size() == 101) {
+                        //清除缓存中的信息
+                        redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+                        redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+                    }
                 }
                 //新增任务
                 mqUtils.sendTaskMQ(loveAndFriends.getUserId(), 1, 3);
@@ -175,8 +184,18 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         }
         andFriends.setDeleteType(2);
         loveAndFriendsService.updateDel(andFriends);
+
+        //同时更新home
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+        for (int j = 0; j < list.size(); j++) {
+            IPS_Home home = (IPS_Home) list.get(j);
+            if (home.getAfficheType() == 1 && home.getInfoId() == andFriends.getId()) {
+                redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+            }
+        }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + userId, 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -196,7 +215,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + loveAndFriends.getUserId() + "]的婚恋交友信息", new JSONObject());
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), 0);
 
         //符合推荐规则 添加到缓存home列表中
         int num3 = 0;//图片
@@ -259,8 +278,21 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             ipsHome.setDeleteType(1);
             ipsHome.setAfficheType(1);
 
+            List list = null;
+            list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+            for (int i = 0; i < list.size(); i++) {
+                IPS_Home home = (IPS_Home) list.get(i);
+                if (home.getAfficheType() == 1 && home.getInfoId() == loveAndFriends.getId()) {
+                    redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+                }
+            }
+            if (list.size() == 101) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+                redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+            }
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, Constants.USER_TIME_OUT);
+            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         }
         loveAndFriends.setFraction(fraction);
         loveAndFriends.setRefreshTime(new Date());
@@ -388,7 +420,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
         //放入缓存
         loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
-        redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", loveAndFriendsMap);
     }
@@ -418,14 +450,18 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         int sex = 0;
         int age = 0;
         int income = 0;
-        LoveAndFriends loveAndFriends = loveAndFriendsService.findByIdUser(CommonUtils.getMyId());
-        if (loveAndFriends != null) {
-            sex = loveAndFriends.getSex();
-            age = loveAndFriends.getAge();
-            income = loveAndFriends.getIncome();
-        }
         PageBean<LoveAndFriends> pageBean;
-        pageBean = loveAndFriendsService.findList(userId, screen, sort, sex, age,income,page, count);
+        if (userId > 0) {
+            pageBean = loveAndFriendsService.findUList(userId, page, count);
+        } else {
+            LoveAndFriends loveAndFriends = loveAndFriendsService.findByIdUser(CommonUtils.getMyId());
+            if (loveAndFriends != null) {
+                sex = loveAndFriends.getSex();
+                age = loveAndFriends.getAge();
+                income = loveAndFriends.getIncome();
+            }
+            pageBean = loveAndFriendsService.findList(screen, sort, sex, age, income, page, count);
+        }
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -434,6 +470,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
     /**
      * 查询是否已发布过
+     *
      * @param userId
      * @return
      */
@@ -452,7 +489,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             } else {
                 //放入缓存
                 loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
-                redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
             }
         }
         Map<String, String> idMap = new HashMap<>();

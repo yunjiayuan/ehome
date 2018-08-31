@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.SearchGoods;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -94,9 +95,9 @@ public interface SearchGoodsDao {
      * @return
      */
     @Update("<script>" +
-            "update searchGoods set"+
+            "update searchGoods set" +
             " deleteType=#{deleteType}" +
-            " where id=#{id} and userId=#{userId}"+
+            " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateDel(SearchGoods searchGoods);
 
@@ -106,11 +107,24 @@ public interface SearchGoodsDao {
      * @return
      */
     @Update("<script>" +
-            "update searchGoods set"+
+            "update searchGoods set" +
             " afficheStatus=#{afficheStatus}" +
-            " where id=#{id} and userId=#{userId}"+
+            " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateStatus(SearchGoods searchGoods);
+
+    /***
+     * 刷新公告时间
+     * @param searchGoods
+     * @return
+     */
+    @Update("<script>" +
+            "update searchGoods set" +
+            " userId=#{userId}" +
+            " where id=#{id} and userId=#{userId}" +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int updateTime(SearchGoods searchGoods);
 
     /***
      * 根据Id查询用户寻人寻物失物招领信息
@@ -131,7 +145,6 @@ public interface SearchGoodsDao {
      * @param searchType  查找类别:0不限 ,1寻人,2寻物,3失物招领
      * @return
      */
-//    @Select("select * from searchGoods where auditType = 2 and deleteType = 1 order by refreshTime")
     @Select("<script>" +
             "select * from searchGoods" +
             " where 1=1" +
@@ -147,19 +160,19 @@ public interface SearchGoodsDao {
 //            "<if test=\"endAge >= beginAge and endAge > 0 \">"+
 //            " and age = #{endAge} "+
 //            "</if>" +
-            "<if test=\"missingSex != 0 \">"+
+            "<if test=\"missingSex != 0 \">" +
             " and missingSex = #{missingSex}" +
             "</if>" +
-            "<if test=\"province != -1 \">"+
+            "<if test=\"province != -1 \">" +
             " and province = #{province}" +
             "</if>" +
-            "<if test=\"city != -1 \">"+
+            "<if test=\"city != -1 \">" +
             " and city = #{city}" +
             "</if>" +
-            "<if test=\"district != -1 \">"+
+            "<if test=\"district != -1 \">" +
             " and district = #{district}" +
             "</if>" +
-            "<if test=\"endAge != 0 \">"+
+            "<if test=\"endAge != 0 \">" +
             " and age >= #{beginAge}" +
             " and #{endAge} >= age" +
             "</if>" +
@@ -167,6 +180,15 @@ public interface SearchGoodsDao {
             " and deleteType = 1" +
             " order by fraction,refreshTime desc" +
             "</script>")
-    List<SearchGoods> findList(@Param("userId") long userId,@Param("province") int province,@Param("city") int city,@Param("district") int district,@Param("beginAge") int beginAge,@Param("endAge") int endAge,@Param("missingSex") int missingSex,@Param("searchType") int searchType);
+    List<SearchGoods> findList(@Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("beginAge") int beginAge, @Param("endAge") int endAge, @Param("missingSex") int missingSex, @Param("searchType") int searchType);
+
+    @Select("<script>" +
+            "select * from searchGoods" +
+            " where userId = #{userId}" +
+            " and auditType = 2" +
+            " and deleteType = 1" +
+            " order by fraction,refreshTime desc" +
+            "</script>")
+    List<SearchGoods> findUList(@Param("userId") long userId);
 
 }

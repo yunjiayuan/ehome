@@ -1,5 +1,6 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Date;
@@ -33,10 +34,12 @@ public class IPS_Home {
 
     private int deleteType;				//删除标志：1未删除，2用户删除，3管理人员删除
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date refreshTime;			//刷新时间（注：未刷新之前为发布时间）
 
     private int frontPlaceType;			//是否置顶：1未置顶，2已置顶
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date releaseTime;			//发布时间
 
     private String mediumImgUrl;		//图片地址

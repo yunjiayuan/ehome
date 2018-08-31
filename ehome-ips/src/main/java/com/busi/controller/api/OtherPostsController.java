@@ -119,7 +119,7 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         posts.setDeleteType(2);
         otherPostsService.updateDel(posts);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + id, 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + posts.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -200,7 +200,7 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
             mqUtils.sendLookMQ(CommonUtils.getMyId(),id,posts.getTitle(),6);
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
-            redisUtils.hmset(Constants.REDIS_KEY_IPS_OTHERPOSTS + id, otherPostsMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_IPS_OTHERPOSTS + posts.getId(), otherPostsMap, Constants.USER_TIME_OUT);
         }
         //新增浏览记录
         mqUtils.sendLookMQ(CommonUtils.getMyId(),id,otherPostsMap.get("title").toString(),1);
