@@ -131,7 +131,7 @@ public class Constants {
     public static final String REDIS_KEY_USER_HEADNOTES = "user_headNotes_";//用户主界面房间封面及欢迎视频对照关系
     public static final String REDIS_KEY_USER_HEADALBUN = "user_headAlbum_";//用户个人资料界面的九张头像相册对照关系
     public static final String REDIS_KEY_USER_WALK_LIMIT = "user_walk_limit";//用户随便走走 各地串串记录对照关系
-    public static final String REDIS_KEY_USER_SET_TOP = "user_walk_limit";//用户置顶公告 对照关系
+    public static final String REDIS_KEY_USER_SET_TOP = "user_set_top";//用户置顶公告 对照关系
     public static final String REDIS_KEY_USER_GRAFFITI_LIMIT = "user_graffiti_limit";//涂鸦次数记录对照关系
     public static final String REDIS_KEY_USER_VISIT_TODAY_COUNT = "user_visit_todayCount";//今日访问
     public static final String REDIS_KEY_USER_VISIT_TOTAL_COUNT = "user_visit_totalCount";//总访问量
