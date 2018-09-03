@@ -19,7 +19,7 @@ public class RechargeOrder {
 
     private long userId;//用户ID
 
-    private long money;//充值金额金额
+    private double money;//充值金额金额
 
     private int payStatus;//支付状态  0未支付 1已支付
 

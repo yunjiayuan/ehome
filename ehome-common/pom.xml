@@ -12,6 +12,12 @@
     <artifactId>ehome-common</artifactId>
     <packaging>jar</packaging>
     <dependencies>
+        <!-- 集成dom4j数据库框架 -->
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
         <!-- 集成mybatis数据库框架 -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>

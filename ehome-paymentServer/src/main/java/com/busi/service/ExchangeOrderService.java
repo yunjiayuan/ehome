@@ -48,6 +48,8 @@ public class ExchangeOrderService extends BaseController implements PayBaseServi
             if(serverMoney<money){
                 return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
             }
+            //更改状态 防止重复支付
+            redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+pay.getUserId()+"_"+pay.getOrderNumber(),"payStatus",1);
             //开始扣款支付
             mqUtils.sendPurseMQ(pay.getUserId(),10,1,money);//家币转入
             mqUtils.sendPurseMQ(pay.getUserId(),11,0,money*-1);//人民币转出
@@ -57,12 +59,12 @@ public class ExchangeOrderService extends BaseController implements PayBaseServi
             if(serverHomePoint<money){
                 return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
             }
+            //更改状态 防止重复支付
+            redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+pay.getUserId()+"_"+pay.getOrderNumber(),"payStatus",1);
             //开始扣款支付
             mqUtils.sendPurseMQ(pay.getUserId(),10,2,money*100);//家点转入
             mqUtils.sendPurseMQ(pay.getUserId(),11,1,money*-1);//家币转出
         }
-        //更改状态 防止重复支付
-        redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+pay.getUserId()+"_"+pay.getOrderNumber(),"payStatus",1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

@@ -10,21 +10,28 @@ import com.busi.payment.alipay.AlipayUtils;
 import com.busi.payment.unionpay.UnionPayConfig;
 import com.busi.payment.unionpay.sdk.AcpService;
 import com.busi.payment.unionpay.sdk.SDKConfig;
+import com.busi.payment.unionpay.sdk.SDKConstants;
 import com.busi.payment.weixin.WeixinConfig;
 import com.busi.payment.weixin.WeixinUtils;
 import com.busi.utils.*;
 import com.sun.javaws.CacheUtil;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * 第三方支付平台 加签 回调相关接口
@@ -60,7 +67,7 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"sum参数有误",new JSONObject());
         }
         //开始加签
-        String new_out_trade_no = CommonUtils.getOrderNumber(CommonUtils.getMyId(),"订单号");
+        String new_out_trade_no = CommonUtils.getOrderNumber(CommonUtils.getMyId(),Constants.REDIS_KEY_PAY_ORDER_RECHARGE);//订单号
         Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+CommonUtils.getMyId() );
         if(userMap==null||userMap.size()<=0){
             //缓存中没有用户对象信息
@@ -207,13 +214,17 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
 //        }
         //加签完成 生成充值订单
         RechargeOrder rechargeOrder =  new RechargeOrder();
-
+        rechargeOrder.setOrderNumber(new_out_trade_no);
+        rechargeOrder.setUserId(CommonUtils.getMyId());
+        rechargeOrder.setMoney(sum);
+        rechargeOrder.setPayStatus(0);//未支付状态
+        rechargeOrder.setTime(new Date());
         //将订单放入缓存中  5分钟有效时间  超时作废
-//        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+userId+"_"+exchangeOrder.getOrderNumber(),CommonUtils.objectToMap(exchangeOrder),Constants.TIME_OUT_MINUTE_5);
+        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_RECHARGE+CommonUtils.getMyId()+"_"+rechargeOrder.getOrderNumber(),CommonUtils.objectToMap(rechargeOrder),Constants.TIME_OUT_MINUTE_5);
         //响应客户端
         Map<String,String>  map = new HashMap<>();
         map.put("signData",signData);
-        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"success",map);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
     }
 
     /***
@@ -250,16 +261,20 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"服务端处理支付宝平台发送用户[\"+userId+\"]充值操作的验签请求操作失败，验签失败！",new JSONObject());
         }
         if(signVerified){//验签通过 执行回调业务处理
-            //判断订单状态
-
+            //获取未支付的订单
+            Map<String,Object> rechargeOrderMap = redisUtils.hmget(Constants.REDIS_KEY_PAY_ORDER_RECHARGE+userId+"_"+alipayBean.getOut_trade_no());
+            if(rechargeOrderMap==null||rechargeOrderMap.size()<=0||Integer.parseInt(rechargeOrderMap.get("payStatus").toString())!=0){
+                return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"由于您等待时间过久或网络延迟导致充值失败，请重新充值",new JSONObject());
+            }
+            //更改状态 防止重复支付
+            redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_RECHARGE+userId+"_"+alipayBean.getOut_trade_no(),"payStatus",1);
             //更新钱包和交易明细
             mqUtils.sendPurseMQ(userId,0,0,t_amount);
-
             //更新任务记录
             mqUtils.sendTaskMQ(userId,1,10);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
         }
-        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"服务端处理支付宝平台发送用户[\"+userId+\"]充值操作的验签请求操作失败，验签失败！",new JSONObject());
+        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败，请重新充值！",new JSONObject());
     }
 
     /***
@@ -269,7 +284,81 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
      */
     @Override
     public ReturnData checkWeixinSign(@RequestBody WeixinSignBean weixinSignBean) {
-        return null;
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        String line = "";
+        String result ="";//微信回调结果
+        String newSign ="";//新签名
+        Document doc = null;
+        BufferedReader reader = null;
+        StringBuffer inputString = null;
+        long userId = 0 ;
+        try {
+            reader = request.getReader();
+            inputString = new StringBuffer();
+            while ((line = reader.readLine()) != null) {
+                inputString.append(line);
+            }
+            if(reader!=null){
+                reader.close();
+            }
+            result = inputString.toString();
+            if(!CommonUtils.checkFull(result)){
+                //开始解析 微信回调数据
+                doc = DocumentHelper.parseText(result);
+                Element root = doc.getRootElement();// 指向根节点
+                userId = Long.parseLong(root.element("attach").getText());
+                String outTradeNo = root.element("out_trade_no").getText();//订单号
+                int total_fee = Integer.parseInt(root.element("total_fee").getText());
+                //开始对微信数据和订单数据进行重新加签 并比对签名
+                //将微信返回的数据 除去sign ,全部进行签名
+                SortedMap<String, String> signParams = new TreeMap<String, String>();
+                signParams.put("appid", root.element("appid").getText());
+                signParams.put("attach", root.element("attach").getText());
+                signParams.put("bank_type", root.element("bank_type").getText());
+                signParams.put("cash_fee", root.element("cash_fee").getText());
+                signParams.put("fee_type", root.element("fee_type").getText());
+                signParams.put("is_subscribe", root.element("is_subscribe").getText());
+                signParams.put("mch_id", root.element("mch_id").getText());
+                signParams.put("nonce_str", root.element("nonce_str").getText());
+                signParams.put("openid", root.element("openid").getText());
+                signParams.put("out_trade_no", outTradeNo);
+                signParams.put("result_code", root.element("result_code").getText());
+                signParams.put("return_code", root.element("return_code").getText());
+                signParams.put("time_end", root.element("time_end").getText());
+                signParams.put("total_fee", total_fee+"");//
+                signParams.put("trade_type", root.element("trade_type").getText());
+                signParams.put("transaction_id", root.element("transaction_id").getText());
+                //重新加签
+                newSign = WeixinUtils.dataSign(signParams);//生成签名
+                //验签
+                if(!CommonUtils.checkFull(newSign)&&newSign.equals(root.element("sign").getText())){//验签成功 执行业务回调处理
+                    //获取未支付的订单
+                    Map<String,Object> rechargeOrderMap = redisUtils.hmget(Constants.REDIS_KEY_PAY_ORDER_RECHARGE+weixinSignBean.getAttach()+"_"+outTradeNo);
+                    if(rechargeOrderMap==null||rechargeOrderMap.size()<=0||Integer.parseInt(rechargeOrderMap.get("payStatus").toString())!=0){
+                        return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"由于您等待时间过久或网络延迟导致充值失败，请重新充值",new JSONObject());
+                    }
+                    //更改状态 防止重复支付
+                    redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_RECHARGE+userId+"_"+outTradeNo,"payStatus",1);
+                    //更新钱包和交易明细
+                    double t_amount = total_fee/100.0;//单位是分 所以需要除以100
+                    mqUtils.sendPurseMQ(userId,0,0,t_amount);
+                    //更新任务记录
+                    mqUtils.sendTaskMQ(userId,1,10);
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+                }else{//不通过
+                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败，验签失败!",new JSONObject());
+                }
+            }else{
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败，微信返回数据为空!",new JSONObject());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败,请重新充值!",new JSONObject());
+        }catch (DocumentException e) {
+            e.printStackTrace();
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败,请重新充值!",new JSONObject());
+        }
     }
 
     /***
@@ -279,6 +368,67 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
      */
     @Override
     public ReturnData checkUnionPaySign(@RequestBody UnionpayBean unionpayBean) {
-        return null;
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = attributes.getRequest();
+            String encoding = request.getParameter(SDKConstants.param_encoding);
+            // 获取银联通知服务器发送的后台通知参数
+            Map<String, String> reqParam = new HashMap<String, String>();
+            Enumeration<?> temp = request.getParameterNames();
+            if (null != temp) {
+                while (temp.hasMoreElements()) {
+                    String en = (String) temp.nextElement();
+                    String value = request.getParameter(en);
+                    reqParam.put(en, value);
+                    //在报文上送时，如果字段的值为空，则不上送<下面的处理为在获取所有参数数据时，判断若值为空，则删除这个字段>
+                    //System.out.println("ServletUtil类247行  temp数据的键=="+en+"     值==="+value);
+                    if (null == reqParam.get(en) || "".equals(reqParam.get(en))) {
+                        reqParam.remove(en);
+                    }
+                }
+            }
+            Map<String, String> valideData = null;
+            if (null != reqParam && !reqParam.isEmpty()) {
+                Iterator<Entry<String, String>> it = reqParam.entrySet().iterator();
+                valideData = new HashMap<String, String>(reqParam.size());
+                while (it.hasNext()) {
+                    Entry<String, String> e = it.next();
+                    String key = (String) e.getKey();
+                    String value = (String) e.getValue();
+                    value = new String(value.getBytes(encoding), encoding);
+                    valideData.put(key, value);
+                }
+            }
+            //重要！验证签名前不要修改reqParam中的键值对的内容，否则会验签不过
+            if (!AcpService.validate(valideData, encoding)) {
+                //验签失败，需解决验签问题
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败,银联回调验签返回数据为空!",new JSONObject());
+            } else {
+                //【注：为了安全验签成功才应该写商户的成功处理逻辑】交易成功，更新商户订单状态
+                long userId =Long.parseLong(valideData.get("reqReserved"));
+                String orderId =valideData.get("orderId"); //获取后台通知的数据，其他字段也可用类似方式获取
+                int total_fee = Integer.parseInt(valideData.get("txnAmt"));//价格 单位分
+                //执行回调业务处理
+                //获取未支付的订单
+                Map<String,Object> rechargeOrderMap = redisUtils.hmget(Constants.REDIS_KEY_PAY_ORDER_RECHARGE+userId+"_"+orderId);
+                if(rechargeOrderMap==null||rechargeOrderMap.size()<=0||Integer.parseInt(rechargeOrderMap.get("payStatus").toString())!=0){
+                    return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"由于您等待时间过久或网络延迟导致充值失败，请重新充值",new JSONObject());
+                }
+                //更改状态 防止重复支付
+                redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_RECHARGE+userId+"_"+orderId,"payStatus",1);
+                //更新钱包和交易明细
+                double t_amount = total_fee/100.0;//单位是分 所以需要除以100
+                mqUtils.sendPurseMQ(userId,0,0,t_amount);
+                //更新任务记录
+                mqUtils.sendTaskMQ(userId,1,10);
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+            }
+        }catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败，请重新充值!",new JSONObject());
+        }catch (Exception e){
+            e.printStackTrace();
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"充值失败，请重新充值!",new JSONObject());
+        }
     }
 }
