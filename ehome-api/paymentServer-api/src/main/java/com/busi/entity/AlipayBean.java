@@ -40,7 +40,7 @@ public class AlipayBean {
 
     private String notify_type;
 
-    private String out_trade_no;
+    private String out_trade_no;//订单号
 
     private String point_amount;
 
