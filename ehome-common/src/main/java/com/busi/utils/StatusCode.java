@@ -153,6 +153,11 @@ public enum StatusCode {
 	CODE_NOTEPAD_REPEAT_ERROR(332,"今日已发表过记事"),
 	CODE_NOTEPAD_SCHEDULE_ERROR(333,"日程数量已达上限"),
 	
+	//公告置顶
+	CODE_SETTOP_UNQUALIFIED(337,"非会员没有置顶资格"),
+	CODE_SETTOP_ORDINARY_TOPLIMIT(338,"本月普通会员的置顶次数用尽"),
+	CODE_SETTOP_SENIOR_TOPLIMIT(339,"本月高级会员的置顶次数用尽"),
+
 	//公告
 	CODE_IPS_AFFICHE_EXISTING(341,"该类公告已存在"),
 	CODE_IPS_AFFICHE_NOT_EXIST(342,"公告不存在"),
