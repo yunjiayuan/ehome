@@ -224,7 +224,7 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
         //响应客户端
         Map<String,String>  map = new HashMap<>();
         map.put("signData",signData);
-        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"success",map);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
     }
 
     /***
