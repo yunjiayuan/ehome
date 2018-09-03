@@ -74,6 +74,26 @@ public class OtherPostsService {
     }
 
     /***
+     * 置顶公告
+     * @param otherPosts
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int setTop(OtherPosts otherPosts) {
+        return otherPostsDao.setTop(otherPosts);
+    }
+
+    /***
+     * 统计当月置顶次数
+     * @param userId
+     * @return
+     */
+//    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+//    public int statistics(long userId){
+//        return otherPostsDao.statistics(userId);
+//    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return

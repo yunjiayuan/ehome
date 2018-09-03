@@ -37,7 +37,9 @@ public class IPS_Home {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date refreshTime;			//刷新时间（注：未刷新之前为发布时间）
 
-    private int frontPlaceType;			//是否置顶：1未置顶，2已置顶
+    private int frontPlaceType;			//是否置顶：0未置顶  1当前分类置顶  2推荐列表置顶
+
+    private int levelType;				//级别
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date releaseTime;			//发布时间

@@ -45,6 +45,8 @@ public class OtherPosts {
 
     private long seeNumber ;  //浏览次数
 
+    private int frontPlaceType;			//是否置顶：1未置顶，2已置顶
+
     private int fraction;//公告分数
 
 }

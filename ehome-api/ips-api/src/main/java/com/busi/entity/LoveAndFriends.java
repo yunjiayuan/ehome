@@ -82,6 +82,8 @@ public class LoveAndFriends {
 
   private int fraction;//公告分数
 
+  private int frontPlaceType;			//是否置顶：1未置顶，2已置顶
+
   private String matching;			//匹配度   与数据库无关字段
 
 }

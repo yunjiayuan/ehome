@@ -4,6 +4,7 @@ import com.busi.entity.LoveAndFriends;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import javax.ws.rs.GET;
 import java.util.List;
 
 /**
@@ -99,6 +100,33 @@ public interface LoveAndFriendsDao {
     int updateTime(LoveAndFriends loveAndFriends);
 
     /***
+     * 置顶公告
+     * @param loveAndFriends
+     * @return
+     */
+    @Update("<script>" +
+            "update loveAndFriends set" +
+            " frontPlaceType=#{frontPlaceType}" +
+            " where id=#{id} and userId=#{userId} " +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int setTop(LoveAndFriends loveAndFriends);
+
+    /***
+     * 统计当月置顶次数
+     * @param userId
+     * @return
+     */
+//    @Select("<script>" +
+//            "select count(*) from loveAndFriends" +
+//            " where DATE_FORMAT( refreshTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )" +
+//            " and frontPlaceType > 0" +
+//            " and userId=#{userId}" +
+//            " and auditType = 2 and deleteType = 1" +
+//            "</script>")
+//    int statistics(@Param("userId") long userId);
+
+    /***
      * 根据Id查询用户婚恋交友信息
      * @param id
      */
@@ -135,7 +163,7 @@ public interface LoveAndFriendsDao {
             "</if>" +
             " and auditType = 2" +
             " and deleteType = 1" +
-            " order by fraction,refreshTime desc" +
+            " order by frontPlaceType,fraction,refreshTime desc" +
             "</script>")
     List<LoveAndFriends> findList(@Param("screen") int screen, @Param("sort") int sort, @Param("sex") int sex, @Param("age") int age, @Param("income") int income);
 

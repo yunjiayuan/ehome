@@ -24,5 +24,15 @@ public interface IPS_HomeApiController {
     @GetMapping("refreshTime/{infoId}/{userId}/{afficheType}")
     ReturnData refreshTime(@PathVariable long infoId, @PathVariable long userId, @PathVariable int afficheType);
 
+    /**
+     * 置顶公告
+     * @param infoId
+     * @param userId
+     * @param frontPlaceType
+     * @return
+     */
+    @GetMapping("setTop/{infoId}/{userId}/{frontPlaceType}/{afficheType}")
+    ReturnData setTop(@PathVariable long infoId, @PathVariable long userId, @PathVariable int frontPlaceType, @PathVariable int afficheType);
+
 }
 

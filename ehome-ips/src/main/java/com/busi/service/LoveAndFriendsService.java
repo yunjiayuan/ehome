@@ -75,6 +75,26 @@ public class LoveAndFriendsService {
     }
 
     /***
+     * 置顶公告
+     * @param loveAndFriends
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int setTop(LoveAndFriends loveAndFriends) {
+        return loveAndFriendsDao.setTop(loveAndFriends);
+    }
+
+    /***
+     * 统计当月置顶次数
+     * @param userId
+     * @return
+     */
+//    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+//    public int statistics(long userId){
+//        return loveAndFriendsDao.statistics(userId);
+//    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return

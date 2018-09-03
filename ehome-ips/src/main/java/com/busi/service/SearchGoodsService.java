@@ -85,6 +85,26 @@ public class SearchGoodsService {
     }
 
     /***
+     * 置顶公告
+     * @param searchGoods
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int setTop(SearchGoods searchGoods) {
+        return searchGoodsDao.setTop(searchGoods);
+    }
+
+    /***
+     * 统计当月置顶次数
+     * @param userId
+     * @return
+     */
+//    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+//    public int statistics(long userId) {
+//        return searchGoodsDao.statistics(userId);
+//    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return

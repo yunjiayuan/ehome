@@ -76,6 +76,33 @@ public interface OtherPostsDao {
     int updateTime(OtherPosts otherPosts);
 
     /***
+     * 置顶公告
+     * @param otherPosts
+     * @return
+     */
+    @Update("<script>" +
+            "update otherPosts set" +
+            " frontPlaceType=#{frontPlaceType}" +
+            " where id=#{id} and userId=#{userId} " +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int setTop(OtherPosts otherPosts);
+
+    /***
+     * 统计当月置顶次数
+     * @param userId
+     * @return
+     */
+//    @Select("<script>" +
+//            "select count(*) from otherPosts" +
+//            " where DATE_FORMAT( refreshTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )" +
+//            " and frontPlaceType > 0" +
+//            " and userId=#{userId}" +
+//            " and auditType = 2 and deleteType = 1" +
+//            "</script>")
+//    int statistics(@Param("userId") long userId);
+
+    /***
      * 根据Id查询用户其他公告信息
      * @param id
      */
@@ -87,7 +114,6 @@ public interface OtherPostsDao {
      * @param userId
      * @return
      */
-//    @Select("select * from otherPosts where auditType = 2 and deleteType = 1 order by refreshTime")
     @Select("<script>" +
             "select * from otherPosts" +
             " where 1=1" +
@@ -96,7 +122,7 @@ public interface OtherPostsDao {
             "</if>" +
             " and auditType = 2"+
             " and deleteType = 1"+
-            " order by refreshTime desc" +
+            " order by frontPlaceType,fraction,refreshTime desc" +
             "</script>")
     List<OtherPosts> findList(@Param("userId") long userId);
 

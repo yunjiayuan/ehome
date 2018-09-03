@@ -127,6 +127,33 @@ public interface SearchGoodsDao {
     int updateTime(SearchGoods searchGoods);
 
     /***
+     * 置顶公告
+     * @param searchGoods
+     * @return
+     */
+    @Update("<script>" +
+            "update searchGoods set" +
+            " frontPlaceType=#{frontPlaceType}" +
+            " where id=#{id} and userId=#{userId} " +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int setTop(SearchGoods searchGoods);
+
+    /***
+     * 统计当月置顶次数
+     * @param userId
+     * @return
+     */
+//    @Select("<script>" +
+//            "select count(*) from searchGoods" +
+//            " where DATE_FORMAT( refreshTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )" +
+//            " and frontPlaceType > 0" +
+//            " and userId=#{userId}" +
+//            " and auditType = 2 and deleteType = 1" +
+//            "</script>")
+//    int statistics(@Param("userId") long userId);
+
+    /***
      * 根据Id查询用户寻人寻物失物招领信息
      * @param id
      */
@@ -178,7 +205,7 @@ public interface SearchGoodsDao {
             "</if>" +
             " and auditType = 2" +
             " and deleteType = 1" +
-            " order by fraction,refreshTime desc" +
+            " order by frontPlaceType,fraction,refreshTime desc" +
             "</script>")
     List<SearchGoods> findList(@Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("beginAge") int beginAge, @Param("endAge") int endAge, @Param("missingSex") int missingSex, @Param("searchType") int searchType);
 
