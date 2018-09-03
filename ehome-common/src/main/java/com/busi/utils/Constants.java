@@ -95,6 +95,12 @@ public class Constants {
     public static final int WALK_LIMIT_COUNT_SENIOR_MEMBER = 10000;//高级会员 元老级会员 创世元老级会员用户每天10000次
     /** 随便走走 各地串串配置 结束**/
 
+    /** 公告置顶配置 开始**/
+    public static final int SET_TOP_COUNT_USER = 0;//普通用户每天30次
+    public static final int SET_TOP_COUNT_MEMBER = 3;//普通会员用户每月3次
+    public static final int SET_TOP_COUNT_SENIOR_MEMBER = 10;//高级会员 元老级会员 创世元老级会员用户每月10次
+    /** 公告置顶配置 结束**/
+
     /** 涂鸦次数限制配置 开始**/
     public static final int GRAFFITI_COUNT_USER = 10;//普通用户每天10次
     public static final int GRAFFITI_COUNT_MEMBER = 20;//普通会员用户每天20次
