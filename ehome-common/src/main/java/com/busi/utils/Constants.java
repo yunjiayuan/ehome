@@ -15,6 +15,7 @@ public class Constants {
 //    public static final int MSG_TIME_OUT_DAY_7 =60*60*24*7;//七天有效期
     public static final String MSG_REGISTER_MQ ="msg_register_mq";//注册队列名称
     public static final int USER_TIME_OUT =60*60*24*7;//对象在缓存中的生命周期 7天有效期
+    public static final int TIME_OUT_MINUTE_30 =60*60*24*30;//30天有效期
 
     /**超时时间常量配置 结束**/
 
