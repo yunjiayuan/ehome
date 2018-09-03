@@ -75,6 +75,16 @@ public class SearchGoodsService {
     }
 
     /***
+     * 刷新公告时间
+     * @param searchGoods
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateTime(SearchGoods searchGoods) {
+        return searchGoodsDao.updateTime(searchGoods);
+    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return
@@ -100,7 +110,16 @@ public class SearchGoodsService {
 
         List<SearchGoods> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = searchGoodsDao.findList(userId,province, city, district, beginAge, endAge, missingSex, searchType);
+        list = searchGoodsDao.findList(userId, province, city, district, beginAge, endAge, missingSex, searchType);
+
+        return PageUtils.getPageBean(p, list);
+    }
+
+    public PageBean<SearchGoods> findList(long userId, int page, int count) {
+
+        List<SearchGoods> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = searchGoodsDao.findUList(userId);
 
         return PageUtils.getPageBean(p, list);
     }

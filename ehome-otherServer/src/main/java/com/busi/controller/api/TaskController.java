@@ -129,7 +129,7 @@ public class TaskController extends BaseController implements TaskApiController 
                 }
                 if (taskType == -1) {
                     //更新缓存
-                    redisUtils.pushList(Constants.REDIS_KEY_IPS_TASK + userId, taskList);
+                    redisUtils.pushList(Constants.REDIS_KEY_IPS_TASK + userId, taskList, CommonUtils.getCurrentTimeTo_12());
                 }
             }
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, taskList);
@@ -147,7 +147,7 @@ public class TaskController extends BaseController implements TaskApiController 
     @Override
     public ReturnData updateTaskState(@PathVariable long userId, @PathVariable int taskType, @PathVariable long sortTask) {
         //验证参数
-        if (sortTask <= 0 || userId <= 0) {
+        if (sortTask < 0 || userId <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         if (taskType < 0 || taskType > 1) {
@@ -195,7 +195,7 @@ public class TaskController extends BaseController implements TaskApiController 
             taskService.update(task);
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + task.getUserId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_TASK + task.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

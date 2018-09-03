@@ -86,6 +86,19 @@ public interface LoveAndFriendsDao {
     int updateDel(LoveAndFriends loveAndFriends);
 
     /***
+     * 刷新公告时间
+     * @param loveAndFriends
+     * @return
+     */
+    @Update("<script>" +
+            "update loveAndFriends set" +
+            " refreshTime=#{refreshTime}" +
+            " where id=#{id} and userId=#{userId} " +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int updateTime(LoveAndFriends loveAndFriends);
+
+    /***
      * 根据Id查询用户婚恋交友信息
      * @param id
      */
@@ -101,7 +114,6 @@ public interface LoveAndFriendsDao {
 
     /***
      * 分页条件查询 默认按时间降序排序
-     * @param userId   用户ID
      * @param screen  暂定按性别查询:0不限，1男，2女
      * @param sort   默认0智能排序，1时间倒序
      * @return
@@ -110,11 +122,8 @@ public interface LoveAndFriendsDao {
     @Select("<script>" +
             "select * from loveAndFriends" +
             " where 1=1" +
-            "<if test=\"userId > 0 \">" +
-            " and userId=#{userId}" +
-            "</if>" +
             "<if test=\"sort == 0 \">" +
-            " and sex!=#{sex}" +
+            " and sex=#{sex}" +
             " and age=#{age}" +
             " and income=#{income}" +
             "</if>" +
@@ -128,6 +137,20 @@ public interface LoveAndFriendsDao {
             " and deleteType = 1" +
             " order by fraction,refreshTime desc" +
             "</script>")
-    List<LoveAndFriends> findList(@Param("userId") long userId, @Param("screen") int screen, @Param("sort") int sort, @Param("sex") int sex, @Param("age") int age, @Param("income") int income);
+    List<LoveAndFriends> findList(@Param("screen") int screen, @Param("sort") int sort, @Param("sex") int sex, @Param("age") int age, @Param("income") int income);
+
+    /***
+     * 分页条件查询 按userId查询
+     * @param userId   用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from loveAndFriends" +
+            " where userId=#{userId}" +
+            " and auditType = 2" +
+            " and deleteType = 1" +
+            " order by refreshTime desc" +
+            "</script>")
+    List<LoveAndFriends> findUList(@Param("userId") long userId);
 
 }

@@ -54,13 +54,23 @@ public class OtherPostsService {
     }
 
     /***
-     * 更新
+     * 更新删除状态
      * @param otherPosts
      * @return
      */
     @Transactional(rollbackFor={RuntimeException.class, Exception.class})
     public int updateDel(OtherPosts otherPosts){
         return  otherPostsDao.updateDel(otherPosts);
+    }
+
+    /***
+     * 刷新公告时间
+     * @param otherPosts
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateTime(OtherPosts otherPosts) {
+        return otherPostsDao.updateTime(otherPosts);
     }
 
     /***

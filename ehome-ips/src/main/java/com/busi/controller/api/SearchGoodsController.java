@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -121,11 +122,19 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             ipsHome.setRefreshTime(searchGoods.getRefreshTime());
             ipsHome.setAuditType(2);
             ipsHome.setDeleteType(1);
-            ipsHome.setAfficheType(searchGoods.getSearchType());
+            ipsHome.setAfficheType(searchGoods.getSearchType() + 2);
             ipsHome.setFraction(fraction);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, Constants.USER_TIME_OUT);
+            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+
+            List list = null;
+            list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+            if (list.size() == 101) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+                redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+            }
         }
         //新增任务
         mqUtils.sendTaskMQ(searchGoods.getUserId(), 1, 3);
@@ -155,6 +164,15 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         SearchGoods posts = searchGoodsService.findUserById(id);
         if (posts == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        //更新home
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+        for (int i = 0; i < list.size(); i++) {
+            IPS_Home home = (IPS_Home) list.get(i);
+            if (home.getAfficheType() == 1 && home.getInfoId() == posts.getId()) {
+                redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+            }
         }
         posts.setDeleteType(2);
         searchGoodsService.updateDel(posts);
@@ -236,16 +254,29 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             ipsHome.setTitle(searchGoods.getTitle());
             ipsHome.setUserId(searchGoods.getUserId());
             ipsHome.setContent(searchGoods.getContent());
-            ipsHome.setMediumImgUrl(searchGoods.getImgUrl());
             ipsHome.setReleaseTime(searchGoods.getAddTime());
+            ipsHome.setMediumImgUrl(searchGoods.getImgUrl());
             ipsHome.setRefreshTime(searchGoods.getRefreshTime());
             ipsHome.setAuditType(2);
             ipsHome.setDeleteType(1);
-            ipsHome.setAfficheType(searchGoods.getSearchType());
+            ipsHome.setAfficheType(searchGoods.getSearchType() + 2);
             ipsHome.setFraction(fraction);
 
+            List list = null;
+            list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+            for (int i = 0; i < list.size(); i++) {
+                IPS_Home home = (IPS_Home) list.get(i);
+                if (home.getAfficheType() == 1 && home.getInfoId() == searchGoods.getId()) {
+                    redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+                }
+            }
+            if (list.size() == 101) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+                redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+            }
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, Constants.USER_TIME_OUT);
+            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         }
         searchGoods.setFraction(fraction);
         searchGoods.setRefreshTime(new Date());
@@ -280,34 +311,16 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
-            if (posts.getSearchType() == 1) {
-                num = 3;
-            }
-            if (posts.getSearchType() == 2) {
-                num = 4;
-            }
-            if (posts.getSearchType() == 3) {
-                num = 5;
-            }
             //新增浏览记录
-            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), num);
+            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), posts.getSearchType() + 2);
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
             redisUtils.hmset(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, otherPostsMap, Constants.USER_TIME_OUT);
+        } else {
+            //新增浏览记录
+            num = (int) otherPostsMap.get("searchType");
+            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), num + 2);
         }
-        //新增浏览记录
-        num = (int) otherPostsMap.get("searchType");
-        if (num == 1) {
-            num = 3;
-        }
-        if (num == 2) {
-            num = 4;
-        }
-        if (num == 3) {
-            num = 5;
-        }
-        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), num);
-
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }
 
@@ -354,7 +367,6 @@ public class SearchGoodsController extends BaseController implements SearchGoods
 
     /**
      * 更新公告状态
-     *
      * @param id            主键ID
      * @param userId        用户ID
      * @param afficheStatus 0未解决  1已解决
@@ -376,6 +388,36 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         }
         posts.setAfficheStatus(afficheStatus);
         searchGoodsService.updateStatus(posts);
+
+        //更新home
+        IPS_Home ipsHome = new IPS_Home();
+        ipsHome.setInfoId(posts.getId());
+        ipsHome.setTitle(posts.getTitle());
+        ipsHome.setUserId(posts.getUserId());
+        ipsHome.setContent(posts.getContent());
+        ipsHome.setReleaseTime(posts.getAddTime());
+        ipsHome.setMediumImgUrl(posts.getImgUrl());
+        ipsHome.setRefreshTime(posts.getRefreshTime());
+        ipsHome.setAuditType(2);
+        ipsHome.setDeleteType(1);
+        ipsHome.setAfficheType(posts.getSearchType() + 2);
+        ipsHome.setFraction(posts.getFraction());
+
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+        for (int i = 0; i < list.size(); i++) {
+            IPS_Home home = (IPS_Home) list.get(i);
+            if (home.getAfficheType() == 1 && home.getInfoId() == posts.getId()) {
+                redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+            }
+        }
+        //放入缓存
+        redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+        if (list.size() == 101) {
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+            redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+        }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

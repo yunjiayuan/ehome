@@ -67,8 +67,10 @@ public class LookController extends BaseController implements LookApiController 
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //验证查看权限
-        if (CommonUtils.getMyId() != userId) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限浏览用户[" + userId + "]的浏览记录", new JSONObject());
+        if(userId != 0){
+            if (CommonUtils.getMyId() != userId) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限浏览用户[" + userId + "]的浏览记录", new JSONObject());
+            }
         }
         //开始查询
         PageBean<Look> pageBean;
