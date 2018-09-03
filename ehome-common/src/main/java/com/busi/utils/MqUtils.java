@@ -67,7 +67,7 @@ public class MqUtils {
      * @param taskType 任务类型 0、一次性任务   1 、每日任务
      * @param sortTask 任务ID
      */
-    public void sendTaskMQ(long userId,int taskType,long sortTask){
+    public void sendTaskMQ(long userId, int taskType, long sortTask){
 
         //调用MQ同步 图片到图片删除记录表
         JSONObject root = new JSONObject();

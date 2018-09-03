@@ -1,4 +1,4 @@
-package com.busi.payment.weixin;
+package com.busi.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,5 +32,7 @@ public class WeixinSignBean {
 	private String prepay_id;
 	
 	private String trade_type;
+
+	private String attach;//此为用户自定义参数 目前只传 用户ＩＤ
 	
 }

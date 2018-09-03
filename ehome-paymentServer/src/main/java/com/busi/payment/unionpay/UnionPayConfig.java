@@ -26,6 +26,6 @@ public class UnionPayConfig {
 	/*渠道类型 08手机*/
 	public static final String CHANNELTYPE = "08";  
 	/*服务端的回调地址*/
-	public static final String BACK_URL = "http://ephone.lichengwang.com/eps/checkUnionPaySign";//受理方和发卡方自选填写的域[O]--后台通知地址
+	public static final String BACK_URL = "http://ehome.lichengwang.com:8760/paymentServer-api/checkUnionPaySign";//受理方和发卡方自选填写的域[O]--后台通知地址
 
 }

@@ -2,23 +2,21 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.busi.controller.BaseController;
-import com.busi.entity.PurseChangingLog;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import com.busi.payment.alipay.AlipayConfig;
 import com.busi.payment.alipay.AlipayUtils;
 import com.busi.payment.unionpay.UnionPayConfig;
 import com.busi.payment.unionpay.sdk.AcpService;
 import com.busi.payment.unionpay.sdk.SDKConfig;
 import com.busi.payment.weixin.WeixinConfig;
-import com.busi.payment.weixin.WeixinSignBean;
 import com.busi.payment.weixin.WeixinUtils;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
+import com.sun.javaws.CacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -38,6 +36,9 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private MqUtils mqUtils;
 
     /***
      *  第三方平台加签接口
@@ -204,8 +205,80 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
 //            //预留 后续开发
 //
 //        }
+        //加签完成 生成充值订单
+        RechargeOrder rechargeOrder =  new RechargeOrder();
+
+        //将订单放入缓存中  5分钟有效时间  超时作废
+//        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+userId+"_"+exchangeOrder.getOrderNumber(),CommonUtils.objectToMap(exchangeOrder),Constants.TIME_OUT_MINUTE_5);
+        //响应客户端
         Map<String,String>  map = new HashMap<>();
         map.put("signData",signData);
         return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"success",map);
+    }
+
+    /***
+     * 支付宝回调验签接口
+     * @param alipayBean
+     * @return
+     */
+    @Override
+    public ReturnData checkAlipaySign(@RequestBody AlipayBean alipayBean) {
+        long userId = Long.parseLong(alipayBean.getPassback_params());//用户ID
+        double t_amount = Double.parseDouble(alipayBean.getTotal_amount());//金额
+        Map<String, String> params = new HashMap<String, String>();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        Map<String, String[]> requestParams = request.getParameterMap();
+        if(requestParams!=null){
+            for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+                String name = iter.next();
+                String[] values = requestParams.get(name);
+                String valueStr = "";
+                for (int i = 0; i < values.length; i++) {
+                    valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+                }
+                // 乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
+                // valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
+                params.put(name, valueStr);
+            }
+        }
+        boolean signVerified = false;
+        try {
+            signVerified = AlipaySignature.rsaCheckV1(params, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.ALIPAY_CHARSET);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"服务端处理支付宝平台发送用户[\"+userId+\"]充值操作的验签请求操作失败，验签失败！",new JSONObject());
+        }
+        if(signVerified){//验签通过 执行回调业务处理
+            //判断订单状态
+
+            //更新钱包和交易明细
+            mqUtils.sendPurseMQ(userId,0,0,t_amount);
+
+            //更新任务记录
+            mqUtils.sendTaskMQ(userId,1,10);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"服务端处理支付宝平台发送用户[\"+userId+\"]充值操作的验签请求操作失败，验签失败！",new JSONObject());
+    }
+
+    /***
+     * 微信回调验签接口
+     * @param weixinSignBean
+     * @return
+     */
+    @Override
+    public ReturnData checkWeixinSign(@RequestBody WeixinSignBean weixinSignBean) {
+        return null;
+    }
+
+    /***
+     * 银联回调验签接口
+     * @param unionpayBean
+     * @return
+     */
+    @Override
+    public ReturnData checkUnionPaySign(@RequestBody UnionpayBean unionpayBean) {
+        return null;
     }
 }

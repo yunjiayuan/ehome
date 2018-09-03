@@ -21,5 +21,5 @@ public class WeixinConfig {
 	/*微信私钥*/
 	public static final String PARTNER_KEY = "ad0a7f04730737233175a98958d1db4e";  
 	/*微信 充值支付 同步回调服务端接口地址*/
-	public static final String RECHARGE_NOTIFY_URL = "http://ephone.lichengwang.com/eps/checkWeixinSign";  
+	public static final String RECHARGE_NOTIFY_URL = "http://ehome.lichengwang.com:8760/paymentServer-api/checkWeixinSign";
 }

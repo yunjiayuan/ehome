@@ -28,6 +28,6 @@ public class AlipayConfig {
 	/*支付宝网关*/
 	public static final String GATEWAY = "https://openapi.alipay.com/gateway.do";  
 	/*支付宝 充值支付 同步回调服务端接口地址*/
-	public static final String RECHARGE_NOTIFY_URL = "http://ephone.lichengwang.com/eps/checkAlipaySign";  
+	public static final String RECHARGE_NOTIFY_URL = "http://ehome.lichengwang.com:8760/paymentServer-api/checkAlipaySign";
 	
 }
