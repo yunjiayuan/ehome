@@ -55,7 +55,7 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
      * @return
      */
     @Override
-    public ReturnData findPayPasswordInfo(@PathVariable int platformType,@PathVariable int payType,@PathVariable double sum) {
+    public ReturnData rechargeDataSign(@PathVariable int platformType,@PathVariable int payType,@PathVariable double sum) {
         //验证码参数
         if(platformType<1||platformType>3){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"platformType参数有误",new JSONObject());

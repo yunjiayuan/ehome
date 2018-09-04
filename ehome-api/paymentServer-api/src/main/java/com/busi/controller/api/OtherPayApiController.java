@@ -23,8 +23,8 @@ public interface OtherPayApiController {
      * @param sum          充值金额 小数点后两位
      * @return
      */
-    @GetMapping("findPayPasswordInfo/{platformType}/{payType}/{sum}")
-    ReturnData findPayPasswordInfo(@PathVariable int platformType,@PathVariable int payType,@PathVariable double sum);
+    @GetMapping("rechargeDataSign/{platformType}/{payType}/{sum}")
+    ReturnData rechargeDataSign(@PathVariable int platformType,@PathVariable int payType,@PathVariable double sum);
 
     /***
      * 支付宝回调验签接口
