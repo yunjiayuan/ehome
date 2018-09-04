@@ -14,6 +14,7 @@ import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.*;
 
 /**
@@ -151,7 +152,6 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
 
     /**
      * 刷新公告时间
-     *
      * @param infoId      公告ID
      * @param userId      用户ID
      * @param afficheType 公告类别标志：1婚恋交友,2二手手机,3寻人,4寻物,5失物招领,6其他 7发简历找工作 8发布招聘（注：后续添加）
@@ -280,7 +280,6 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
 
     /**
      * 置顶公告
-     *
      * @param infoId
      * @param userId
      * @param frontPlaceType 0未置顶  1当前分类置顶  2推荐列表置顶
@@ -319,6 +318,8 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
                 numLimit = Constants.SET_TOP_COUNT_MEMBER;
             } else if (memberShipStatus > 1) {//高级以上
                 numLimit = Constants.SET_TOP_COUNT_SENIOR_MEMBER;
+            } else {
+                return returnData(StatusCode.CODE_SETTOP_UNQUALIFIED.CODE_VALUE, "很抱歉，您没有置顶资格,成为会员可开启置顶功能!", new JSONObject());
             }
         }
         //获取当前时间毫秒数
@@ -332,11 +333,23 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         //计算当前时间到月底的秒数差
         long second = (lastday.getTime() - now) / 1000;
 
-        //和缓存中的记录比较是否到达上线
+        //和缓存中的记录比较是否到达上限
         Object obj = redisUtils.hget(Constants.REDIS_KEY_USER_SET_TOP, userId + "");
-        if (obj == null || CommonUtils.checkFull(obj.toString())) {//第一次
-            if (memberShipStatus <= 0) {//普通用户没有置顶资格
-                return returnData(StatusCode.CODE_SETTOP_UNQUALIFIED.CODE_VALUE, "很抱歉，您没有置顶资格,成为会员可开启刷新功能!", new JSONObject());
+        if (obj == null || CommonUtils.checkFull(obj.toString())) {
+            //查询用户当月置顶次数
+            int num = 0;
+            num = loveAndFriendsService.statistics(userId);
+            num += searchGoodsService.statistics(userId);
+            num += otherPostsService.statistics(userId);
+            if (num >= numLimit) {
+                //此处需要判断会员级别
+                if (memberShipStatus == 0) {//普通用户
+                    return returnData(StatusCode.CODE_SETTOP_UNQUALIFIED.CODE_VALUE, "很抱歉，您还没有置顶资格,成为会员可开启刷新功能!", new JSONObject());
+                } else if (memberShipStatus == 1) {//普通会员
+                    return returnData(StatusCode.CODE_SETTOP_ORDINARY_TOPLIMIT.CODE_VALUE, "很抱歉，您本月的置顶次数已用尽,成为高级会员可获得更多次数!", new JSONObject());
+                } else {
+                    return returnData(StatusCode.CODE_SETTOP_SENIOR_TOPLIMIT.CODE_VALUE, "很抱歉，您本月的置顶次数已用尽,下个月再来吧!", new JSONObject());
+                }
             }
             redisUtils.hset(Constants.REDIS_KEY_USER_SET_TOP, userId + "", 1, second);
         } else {//已有记录 比较是否达到上限
@@ -354,21 +367,6 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             count++;
             redisUtils.hset(Constants.REDIS_KEY_USER_SET_TOP, userId + "", count, second);
         }
-        //查询用户当月置顶次数
-//        int num = 0;
-//        num = loveAndFriendsService.statistics(userId);
-//        num += searchGoodsService.statistics(userId);
-//        num += otherPostsService.statistics(userId);
-//        if (num >= numLimit) {
-//            //此处需要判断会员级别
-//            if (memberShipStatus == 0) {//普通用户
-//                return returnData(StatusCode.CODE_SETTOP_UNQUALIFIED.CODE_VALUE, "很抱歉，您没有置顶资格,成为会员可开启刷新功能!", new JSONObject());
-//            } else if (memberShipStatus == 1) {//普通会员
-//                return returnData(StatusCode.CODE_SETTOP_ORDINARY_TOPLIMIT.CODE_VALUE, "很抱歉，您本月的置顶次数已用尽,成为高级会员可获得更多次数!", new JSONObject());
-//            } else {
-//                return returnData(StatusCode.CODE_SETTOP_SENIOR_TOPLIMIT.CODE_VALUE, "很抱歉，您本月的置顶次数已用尽,下个月再来吧!", new JSONObject());
-//            }
-//        }
         OtherPosts posts = null;
         SearchGoods searchGoods = null;
         LoveAndFriends loveAndFriends = null;

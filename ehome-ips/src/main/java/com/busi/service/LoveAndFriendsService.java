@@ -89,10 +89,10 @@ public class LoveAndFriendsService {
      * @param userId
      * @return
      */
-//    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-//    public int statistics(long userId){
-//        return loveAndFriendsDao.statistics(userId);
-//    }
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int statistics(long userId){
+        return loveAndFriendsDao.statistics(userId);
+    }
 
     /***
      * 根据ID查询

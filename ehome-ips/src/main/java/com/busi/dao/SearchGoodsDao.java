@@ -144,14 +144,14 @@ public interface SearchGoodsDao {
      * @param userId
      * @return
      */
-//    @Select("<script>" +
-//            "select count(*) from searchGoods" +
-//            " where DATE_FORMAT( refreshTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )" +
-//            " and frontPlaceType > 0" +
-//            " and userId=#{userId}" +
-//            " and auditType = 2 and deleteType = 1" +
-//            "</script>")
-//    int statistics(@Param("userId") long userId);
+    @Select("<script>" +
+            "select count(*) from searchGoods" +
+            " where DATE_FORMAT( refreshTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )" +
+            " and frontPlaceType > 0" +
+            " and userId=#{userId}" +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int statistics(@Param("userId") long userId);
 
     /***
      * 根据Id查询用户寻人寻物失物招领信息

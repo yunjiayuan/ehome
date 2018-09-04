@@ -99,10 +99,10 @@ public class SearchGoodsService {
      * @param userId
      * @return
      */
-//    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-//    public int statistics(long userId) {
-//        return searchGoodsDao.statistics(userId);
-//    }
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int statistics(long userId) {
+        return searchGoodsDao.statistics(userId);
+    }
 
     /***
      * 根据ID查询

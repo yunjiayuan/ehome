@@ -88,10 +88,10 @@ public class OtherPostsService {
      * @param userId
      * @return
      */
-//    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-//    public int statistics(long userId){
-//        return otherPostsDao.statistics(userId);
-//    }
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int statistics(long userId){
+        return otherPostsDao.statistics(userId);
+    }
 
     /***
      * 根据ID查询
