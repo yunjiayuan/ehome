@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -33,8 +32,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
     @Autowired
     LoveAndFriendsService loveAndFriendsService;
 
-    @Autowired
-    DetailedUserInfoService detailedUserInfoService;
+//    @Autowired
+//    DetailedUserInfoService detailedUserInfoService;
 
     @Autowired
     UserInfoService userInfoService;
@@ -340,34 +339,42 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         int district = -1;// 区
         int studyrank = 0;// 学历
         int maritalstatus = 0;// 婚否
-        int height = 0;// 身高
-        int monthlyPay = 0; // 月薪
-        DetailedUserInfo ua = null;
-        ua = detailedUserInfoService.findUserDetailedById(CommonUtils.getMyId());
-        if (ua != null) {
-            height = ua.getHeight();
+//        int height = 0;// 身高
+//        int monthlyPay = 0; // 月薪
+//        DetailedUserInfo ua = null;
+//        ua = detailedUserInfoService.findUserDetailedById(CommonUtils.getMyId());
+//        if (ua != null) {
+////            height = ua.getHeight();
+//        }
+//        UserInfo userInfoCache = userInfoService.findUserById(CommonUtils.getMyId());
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
+        if (userMap == null || userMap.size() <= 0) {
+            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "账号不存在", new JSONObject());
         }
-        UserInfo userInfoCache = userInfoService.findUserById(CommonUtils.getMyId());
-        if (userInfoCache != null) {
-            SimpleDateFormat formatter = new SimpleDateFormat(
-                    "yyyy-MM-dd");
-            String userbirthday = formatter.format(userInfoCache
-                    .getBirthday());
-            age = CommonUtils.getAge(userbirthday);
-            sex = userInfoCache.getSex();
-            province = userInfoCache.getProvince();
-            city = userInfoCache.getCity();
-            district = userInfoCache.getDistrict();
-            studyrank = userInfoCache.getStudyRank();
-            maritalstatus = userInfoCache.getMaritalStatus();
-//            monthlyPay = userInfoCache.getMonthlyPay();
-        } else {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "服务端计算婚恋交友匹配度错误，用户 [" + CommonUtils.getMyId() + "]缓存中数据异常！", new JSONObject());
-        }
+//        SimpleDateFormat formatter = new SimpleDateFormat(
+//                "yyyy-MM-dd");
+        String de = String.valueOf(userMap.get("birthday"));
+        //需先转换日期类型
+//        Date sd = null;
+//        try {
+//            sd = DateFormat.getDateInstance().parse(de);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        String userbirthday = formatter.format(sd);
+        String strBirthdayArr=de.substring(0,10);
+        age = CommonUtils.getAge(strBirthdayArr);
+        sex = Integer.parseInt(userMap.get("sex").toString());
+        province = Integer.parseInt(userMap.get("province").toString());
+        city = Integer.parseInt(userMap.get("city").toString());
+        district = Integer.parseInt(userMap.get("district").toString());
+        studyrank = Integer.parseInt(userMap.get("studyRank").toString());
+        maritalstatus = Integer.parseInt(userMap.get("maritalStatus").toString());
+//          monthlyPay = userInfoCache.getMonthlyPay();
         // 开始计算 左上角匹配度 suntj 20161019
         loveAndFriends = loveAndFriendsService.findUserById(id);
         if (loveAndFriends.getSex() != sex) {// 匹配性别 （30%）
-            matching += 30;
+            matching += 35;
         }
         if (loveAndFriends.getAge() == 1) {// 匹配年龄 （10%）
             if (age >= 18 && age <= 29) {// 18-29
@@ -397,26 +404,26 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         if (loveAndFriends.getLocationProvince() == province) {// 匹配省市区 （省4%
             // 市4% 县2%
             // 总共10%）
-            matching += 4;
+            matching += 6;
             if (loveAndFriends.getLocationCity() == city) {
-                matching += 4;
+                matching += 6;
                 if (loveAndFriends.getLocationDistrict() == district) {
-                    matching += 2;
+                    matching += 3;
                 }
             }
         }
         if (loveAndFriends.getEducation() == studyrank) {// 匹配学历 （10%）
-            matching += 10;
+            matching += 15;
         }
         if (loveAndFriends.getMarriage() == maritalstatus) {// 匹配婚姻状况 （20%）
-            matching += 10;
+            matching += 15;
         }
-        if (loveAndFriends.getIncome() == monthlyPay) {// 匹配收入 （10%）
-            matching += 10;
-        }
-        if (loveAndFriends.getStature() == height) {// 匹配身高 （10%）
-            matching += 10;
-        }
+//        if (loveAndFriends.getIncome() == monthlyPay) {// 匹配收入 （10%）
+//            matching += 10;
+//        }
+//        if (loveAndFriends.getStature() == height) {// 匹配身高 （10%）
+//            matching += 10;
+//        }
         loveAndFriends.setMatching(matching + "%");// 设置匹配度
 
         //放入缓存
@@ -468,6 +475,21 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
+        List<LoveAndFriends> loveAndFriends = new ArrayList<>();
+        loveAndFriends = pageBean.getList();
+        Collections.sort(loveAndFriends, new Comparator<LoveAndFriends>() {
+            @Override
+            public int compare(LoveAndFriends o1, LoveAndFriends o2) {
+                // 按照置顶等级进行降序排列
+                if (o1.getFrontPlaceType() > o2.getFrontPlaceType()) {
+                    return -1;
+                }
+                if (o1.getFrontPlaceType() == o2.getFrontPlaceType()) {
+                    return 0;
+                }
+                return 1;
+            }
+        });
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 

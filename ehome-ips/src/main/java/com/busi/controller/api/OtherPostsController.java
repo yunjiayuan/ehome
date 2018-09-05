@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -230,6 +229,21 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
+        List<OtherPosts> otherPosts = new ArrayList<>();
+        otherPosts = pageBean.getList();
+        Collections.sort(otherPosts, new Comparator<OtherPosts>() {
+            @Override
+            public int compare(OtherPosts o1, OtherPosts o2) {
+                // 按照置顶等级进行降序排列
+                if (o1.getFrontPlaceType() > o2.getFrontPlaceType()) {
+                    return -1;
+                }
+                if (o1.getFrontPlaceType() == o2.getFrontPlaceType()) {
+                    return 0;
+                }
+                return 1;
+            }
+        });
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 

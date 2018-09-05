@@ -97,6 +97,12 @@ public class Constants {
     public static final int WALK_LIMIT_COUNT_SENIOR_MEMBER = 10000;//高级会员 元老级会员 创世元老级会员用户每天10000次
     /** 随便走走 各地串串配置 结束**/
 
+    /** 喂鸟相关配置 开始**/
+    public  static final int FEEDBIRDTOTALCOUNT = 10;		//普通用户每天最多喂鸟10次
+    public  static final int FEEDBIRDFULL = 10;		    //喂饱次数(产生一个金蛋)
+    public  static final long  EGGCOUNTDOWN= 1000 * 60 * 60 * 10;//产蛋时间 10个小时
+    /** 喂鸟相关配置 结束**/
+
     /** 公告置顶配置 开始**/
     public static final int SET_TOP_COUNT_USER = 0;//普通用户无资格
     public static final int SET_TOP_COUNT_MEMBER = 3;//普通会员用户每月3次
@@ -138,6 +144,10 @@ public class Constants {
     public static final String REDIS_KEY_USER_VISIT_TODAY_COUNT = "user_visit_todayCount";//今日访问
     public static final String REDIS_KEY_USER_VISIT_TOTAL_COUNT = "user_visit_totalCount";//总访问量
     public static final String REDIS_KEY_USER_VISIT = "user_visit_";//访问量记录关系表
+    public static final String REDIS_KEY_BIRD_EXISTENCE = "bird_existence_";//今日是否喂过鸟
+    public static final String REDIS_KEY_BIRD_FEEDING_TODAY = "bird_feeding_today_";//今天喂的鸟
+    public static final String REDIS_KEY_BIRD_DYNAMIC_COUNT = "bird_dynamic_count";//双方喂鸟互动次数
+    public static final String REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT = "bird_feeding_totalcount";//今日喂鸟次数
     public static final String REDIS_KEY_USER_JURISDICTION = "user_jurisdiction_";//用户权限关系
     public static final String REDIS_KEY_USERMEMBERSHIP = "userMembership_";//userId与用户会员信息对象的关系对照
     public static final String REDIS_KEY_PAYMENT_PURSEINFO = "payment_purse_";//userId与钱包对象的关系对照

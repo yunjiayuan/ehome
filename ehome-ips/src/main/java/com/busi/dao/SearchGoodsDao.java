@@ -205,7 +205,7 @@ public interface SearchGoodsDao {
             "</if>" +
             " and auditType = 2" +
             " and deleteType = 1" +
-            " order by frontPlaceType,fraction,refreshTime desc" +
+            " order by refreshTime desc" +
             "</script>")
     List<SearchGoods> findList(@Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("beginAge") int beginAge, @Param("endAge") int endAge, @Param("missingSex") int missingSex, @Param("searchType") int searchType);
 

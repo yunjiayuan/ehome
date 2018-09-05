@@ -122,7 +122,7 @@ public interface OtherPostsDao {
             "</if>" +
             " and auditType = 2"+
             " and deleteType = 1"+
-            " order by frontPlaceType,fraction,refreshTime desc" +
+            " order by refreshTime desc" +
             "</script>")
     List<OtherPosts> findList(@Param("userId") long userId);
 
