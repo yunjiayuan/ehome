@@ -234,7 +234,7 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
      * @return
      */
     @Override
-    public String checkAlipaySign(@RequestBody AlipayBean alipayBean) {
+    public String checkAlipaySign(AlipayBean alipayBean) {
         long userId = Long.parseLong(alipayBean.getPassback_params());//用户ID
         double t_amount = Double.parseDouble(alipayBean.getTotal_amount());//金额
         Map<String, String> params = new HashMap<String, String>();

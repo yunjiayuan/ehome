@@ -30,9 +30,10 @@ public interface OtherPayApiController {
      * 支付宝回调验签接口
      * @param alipayBean
      * @return
+     * 注意：此处对象不能加 @RequestBody 注解 否则无法回调到接口中
      */
     @PostMapping("checkAlipaySign")
-    String checkAlipaySign(@RequestBody AlipayBean alipayBean);
+    String checkAlipaySign(AlipayBean alipayBean);
 
     /***
      * 微信回调验签接口
