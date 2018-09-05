@@ -97,14 +97,24 @@ public class UserMembershipController extends BaseController implements UserMemb
         }
         //当前会员状态 1：普通会员  2：vip高级会员  3：元老级会员  4：创始元老级会员
         int memberShipStatus = Integer.parseInt(userMembershipMap.get("memberShipStatus").toString());
+        //元老级会员状态
+        int membershipLevel = Integer.parseInt(userMembershipMap.get("memberShipStatus").toString());
+        //创始元老级会员状态
+        int initiatorMembershipLevel = Integer.parseInt(userMembershipMap.get("initiatorMembershipLevel").toString());
         //判断购买会员的类型
         switch (memberOrder.getExpireType()) {//将要购买的会员类型
 
             case 0://0表示购买创始元老级会员
+                if(initiatorMembershipLevel>0){
+                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"您已为创始元老级会员，无需再次购买!",new JSONObject());
+                }
                 int initiatorMembershipMoney[] = {100,200,300,400,500}; //创始元老级会员套餐数组
                 memberOrder.setMoney(initiatorMembershipMoney[memberOrder.getNumber()]);
                 break;
             case 1://1购买元老级会员
+                if(membershipLevel>0){
+                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"您已为元老级会员，无需再次购买!",new JSONObject());
+                }
                 memberOrder.setMoney(100);//元老级会员 固定100元
                 break;
             case 2://2表示购买普通会员
@@ -132,15 +142,16 @@ public class UserMembershipController extends BaseController implements UserMemb
                     Date regularStopTime = null;
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     try {
-                        regularExpireTime = sdf.parse(userMembershipMap.get("regularExpireTime").toString());
-                        regularStopTime = sdf.parse(userMembershipMap.get("regularStopTime").toString());
+                        if(memberShipStatus>1){//比普通会员高级时  普通会员之前已暂停过
+                            regularExpireTime = sdf.parse(userMembershipMap.get("regularExpireTime").toString());
+                            regularStopTime = sdf.parse(userMembershipMap.get("regularStopTime").toString());
+                            days = (regularExpireTime.getTime()-regularStopTime.getTime())/count;
+                        }else{
+                            regularExpireTime = sdf.parse(userMembershipMap.get("regularExpireTime").toString());
+                            days = (regularExpireTime.getTime()-new Date().getTime())/count;
+                        }
                     } catch (ParseException e) {
                         e.printStackTrace();
-                    }
-                    if(memberShipStatus>1){//比普通会员高级时  普通会员之前已暂停过
-                        days = (regularExpireTime.getTime()-regularStopTime.getTime())/count;
-                    }else{
-                        days = (regularExpireTime.getTime()-new Date().getTime())/count;
                     }
                     long lastMonths = days/31;//普通会员剩余总整月数
 //					long surplusDays = days%31;//多余天数
@@ -170,7 +181,7 @@ public class UserMembershipController extends BaseController implements UserMemb
         memberOrder.setPayState(0);//未支付
         memberOrder.setTime(new Date());
         //将订单放入缓存中  5分钟有效时间  超时作废
-        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_EXCHANGE+memberOrder.getUserId()+"_"+memberOrder.getOrderNumber(),CommonUtils.objectToMap(memberOrder),Constants.TIME_OUT_MINUTE_5);
+        redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_MEMBER+memberOrder.getUserId()+"_"+memberOrder.getOrderNumber(),CommonUtils.objectToMap(memberOrder),Constants.TIME_OUT_MINUTE_5);
         //响应客户端
         Map<String,String> map = new HashMap();
         map.put("orderNumber",memberOrder.getOrderNumber());

@@ -157,6 +157,7 @@ public class Constants {
     public static final String REDIS_KEY_PAY_ERROR_COUNT = "payment_error_count";//支付错误记录（包括密码有误和支付出现的错误，每天限制100次）
     public static final String REDIS_KEY_PAY_ORDER_EXCHANGE = "payment_order_exchange_";//钱包兑换订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_PAY_ORDER_RECHARGE = "payment_order_recharge_";//钱包充值订单 对应关系  订单ID对应订单实体
+    public static final String REDIS_KEY_PAY_ORDER_MEMBER = "payment_order_member_";//购买会员订单 对应关系  订单ID对应订单实体
 
     //验证码相关配置
     public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key

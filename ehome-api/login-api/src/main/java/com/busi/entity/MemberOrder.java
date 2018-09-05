@@ -23,8 +23,6 @@ public class MemberOrder {
 
     private double money;//花费金额
 
-    @Max(value = 12, message = "monthNumber参数有误，超出指定范围")
-    @Min(value= 1 ,message= "monthNumber参数有误，超出指定范围")
     private int monthNumber;//购买的月数
 
     private int number;//选择购买套餐的数组下标
