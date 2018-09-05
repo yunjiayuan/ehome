@@ -21,7 +21,7 @@ public class ExchangeOrder {
 
     private long money;//兑换金额
 
-    private int ExchangeType;//兑换类型  当exChangeType==1时人民币兑换家币 当exChangeType==2时家币兑换家点
+    private int exchangeType;//兑换类型  当exChangeType==1时人民币兑换家币 当exChangeType==2时家币兑换家点
 
     private int payStatus;//支付状态  0未支付 1已支付
 
