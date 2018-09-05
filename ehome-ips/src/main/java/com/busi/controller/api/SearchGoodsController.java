@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: 寻人寻物失物招领
@@ -362,11 +360,27 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
+        List<SearchGoods> searchGoods = new ArrayList<>();
+        searchGoods = pageBean.getList();
+        Collections.sort(searchGoods, new Comparator<SearchGoods>() {
+            @Override
+            public int compare(SearchGoods o1, SearchGoods o2) {
+                // 按照置顶等级进行降序排列
+                if (o1.getFrontPlaceType() > o2.getFrontPlaceType()) {
+                    return -1;
+                }
+                if (o1.getFrontPlaceType() == o2.getFrontPlaceType()) {
+                    return 0;
+                }
+                return 1;
+            }
+        });
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 
     /**
      * 更新公告状态
+     *
      * @param id            主键ID
      * @param userId        用户ID
      * @param afficheStatus 0未解决  1已解决

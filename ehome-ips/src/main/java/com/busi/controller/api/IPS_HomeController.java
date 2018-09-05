@@ -152,6 +152,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
 
     /**
      * 刷新公告时间
+     *
      * @param infoId      公告ID
      * @param userId      用户ID
      * @param afficheType 公告类别标志：1婚恋交友,2二手手机,3寻人,4寻物,5失物招领,6其他 7发简历找工作 8发布招聘（注：后续添加）
@@ -280,6 +281,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
 
     /**
      * 置顶公告
+     *
      * @param infoId
      * @param userId
      * @param frontPlaceType 0未置顶  1当前分类置顶  2推荐列表置顶
@@ -351,7 +353,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
                     return returnData(StatusCode.CODE_SETTOP_SENIOR_TOPLIMIT.CODE_VALUE, "很抱歉，您本月的置顶次数已用尽,下个月再来吧!", new JSONObject());
                 }
             }
-            redisUtils.hset(Constants.REDIS_KEY_USER_SET_TOP, userId + "", 1, second);
+            redisUtils.hset(Constants.REDIS_KEY_USER_SET_TOP, userId + "", num + 1, second);
         } else {//已有记录 比较是否达到上限
             int count = Integer.parseInt(obj.toString());
             if (count >= numLimit) {

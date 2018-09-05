@@ -163,7 +163,7 @@ public interface LoveAndFriendsDao {
             "</if>" +
             " and auditType = 2" +
             " and deleteType = 1" +
-            " order by frontPlaceType,fraction,refreshTime desc" +
+            " order by refreshTime desc" +
             "</script>")
     List<LoveAndFriends> findList(@Param("screen") int screen, @Param("sort") int sort, @Param("sex") int sex, @Param("age") int age, @Param("income") int income);
 
