@@ -11,11 +11,12 @@ public class Constants {
 //    public static final int MSG_TIME_OUT_SECOND_30 =30;/30秒有效期
     public static final int MSG_TIME_OUT_MINUTE_10 =60*10;//10分钟有效期
     public static final int TIME_OUT_MINUTE_5 =60*5;//5分钟有效期
+    public static final int TIME_OUT_MINUTE_60_24_1 =60*60*24;//1天有效期
 //    public static final int MSG_TIME_OUT_HOUR_1 =60*60;//1小时有效期
 //    public static final int MSG_TIME_OUT_DAY_7 =60*60*24*7;//七天有效期
     public static final String MSG_REGISTER_MQ ="msg_register_mq";//注册队列名称
     public static final int USER_TIME_OUT =60*60*24*7;//对象在缓存中的生命周期 7天有效期
-    public static final int TIME_OUT_MINUTE_30 =60*60*24*30;//30天有效期
+    public static final int TIME_OUT_MINUTE_60_24_30 =60*60*24*30;//30天有效期
 
     /**超时时间常量配置 结束**/
 
@@ -56,7 +57,7 @@ public class Constants {
     /**门牌号靓号规则 结束**/
 
     /** 请求接口白名单 开始**/
-    public static final String REQUEST_WHITE_LIST ="login-api/createCode,login-api/login,login-api/checkCode,login-api/registerByHouseNumber,login-api/registerByPhone,login-api/findVersion";//白名单接口 服务端将不会验证token权限
+    public static final String REQUEST_WHITE_LIST ="login-api/createCode,login-api/login,login-api/checkCode,login-api/registerByHouseNumber,login-api/registerByPhone,login-api/findVersion,paymentServer-api/checkAlipaySign,paymentServer-api/checkWeixinSign,paymentServer-api/checkUnionPaySign";//白名单接口 服务端将不会验证token权限
     /** 请求接口白名单 结束**/
 
     /** 短信平台配置 开始**/

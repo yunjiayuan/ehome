@@ -30,9 +30,10 @@ public interface OtherPayApiController {
      * 支付宝回调验签接口
      * @param alipayBean
      * @return
+     * 注意：此处对象不能加 @RequestBody 注解 否则无法回调到接口中
      */
     @PostMapping("checkAlipaySign")
-    ReturnData checkAlipaySign(@RequestBody AlipayBean alipayBean);
+    String checkAlipaySign(AlipayBean alipayBean);
 
     /***
      * 微信回调验签接口
@@ -40,7 +41,7 @@ public interface OtherPayApiController {
      * @return
      */
     @PostMapping("checkWeixinSign")
-    ReturnData checkWeixinSign(@RequestBody WeixinSignBean weixinSignBean);
+    String checkWeixinSign(@RequestBody WeixinSignBean weixinSignBean);
 
     /***
      * 银联回调验签接口
@@ -48,5 +49,5 @@ public interface OtherPayApiController {
      * @return
      */
     @PostMapping("checkUnionPaySign")
-    ReturnData checkUnionPaySign(@RequestBody UnionpayBean unionpayBean);
+    String checkUnionPaySign(@RequestBody UnionpayBean unionpayBean);
 }
