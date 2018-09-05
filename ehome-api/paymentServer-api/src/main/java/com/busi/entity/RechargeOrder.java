@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.util.Date;
 
 /**
- * 充值订单实体 与数据库无关
+ * 充值订单实体
  * author：SunTianJie
  * create time：2018/8/28 11:05
  */
