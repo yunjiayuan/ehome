@@ -29,11 +29,13 @@ public class PaymentController extends BaseController implements PaymentApiContr
     @Autowired
     RedisUtils redisUtils;
 
-    @Autowired
     PayBaseService payBaseService;
 
     @Autowired
     ExchangeOrderService exchangeOrderService;
+
+    @Autowired
+    MemberOrderService memberOrderService;
 
     @Autowired
     private UserBankCardInfoService userBankCardInfoService;
@@ -221,7 +223,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 payBaseService = exchangeOrderService;
                 break;
             case 6://购买创始元老级会员支付
-
+                payBaseService = memberOrderService;
                 break;
             case 7://公告栏二手购买订单支付
 
@@ -230,13 +232,13 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
                 break;
             case 9://购买元老级会员支付
-
+                payBaseService = memberOrderService;
                 break;
             case 10://购买普通会员支付
-
+                payBaseService = memberOrderService;
                 break;
             case 11://购买VIP高级会员支付
-
+                payBaseService = memberOrderService;
                 break;
             default:
                 break;

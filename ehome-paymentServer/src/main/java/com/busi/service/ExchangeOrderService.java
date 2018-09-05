@@ -42,7 +42,7 @@ public class ExchangeOrderService extends BaseController implements PayBaseServi
         }
         //判断余额
         long money = Long.parseLong(exchangeOrderMap.get("money").toString());//将要兑换的钱
-        if(Integer.parseInt(exchangeOrderMap.get("ExchangeType").toString())==1){
+        if(Integer.parseInt(exchangeOrderMap.get("exchangeType").toString())==1){
             //人民币兑换家币
             double serverMoney = Double.parseDouble(purseMap.get("spareMoney").toString());
             if(serverMoney<money){
