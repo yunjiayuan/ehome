@@ -94,6 +94,8 @@ public class UserMembershipController extends BaseController implements UserMemb
                 userMembership.setRedisStatus(1);//数据库中已有对应记录
             }
             userMembershipMap = CommonUtils.objectToMap(userMembership);
+            //更新缓存
+            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP+memberOrder.getUserId(),userMembershipMap,Constants.USER_TIME_OUT);
         }
         //当前会员状态 1：普通会员  2：vip高级会员  3：元老级会员  4：创始元老级会员
         int memberShipStatus = Integer.parseInt(userMembershipMap.get("memberShipStatus").toString());

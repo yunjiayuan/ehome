@@ -33,13 +33,34 @@ public interface UserMembershipDao {
      * @param userMembership
      * @return
      */
-    @Update(("update UserMembership set" +
-            "membershipLevel=#{membershipLevel},initiatorMembershipLevel=#{initiatorMembershipLevel}," +
-            "vipMembershipLevel=#{vipMembershipLevel},regularMembershipLevel=#{regularMembershipLevel}," +
-            "memberShipStatus=#{memberShipStatus},memberShipLevelStatus=#{memberShipLevelStatus}," +
-            "regularExpireTime=#{regularExpireTime},regularStopTime=#{regularStopTime}," +
-            "vipExpireTime=#{vipExpireTime},vipStopTime=#{vipStopTime},membershipTime=#{membershipTime},initiatorMembershipTime=#{initiatorMembershipTime" +
-            " where userId=#{userId}"))
+    @Update("<script>" +
+            "update UserMembership set"+
+            "<if test=\"regularExpireTime != null\">"+
+            " regularExpireTime=#{regularExpireTime}," +
+            "</if>" +
+            "<if test=\"regularStopTime != null\">"+
+            " regularStopTime=#{regularStopTime}," +
+            "</if>" +
+            "<if test=\"vipExpireTime != null\">"+
+            " vipExpireTime=#{vipExpireTime}," +
+            "</if>" +
+            "<if test=\"vipStopTime != null\">"+
+            " vipStopTime=#{vipStopTime}," +
+            "</if>" +
+            "<if test=\"membershipTime != null\">"+
+            " membershipTime=#{membershipTime}," +
+            "</if>" +
+            "<if test=\"initiatorMembershipTime != null\">"+
+            " initiatorMembershipTime=#{initiatorMembershipTime}," +
+            "</if>" +
+            "membershipLevel=#{membershipLevel}," +
+            "initiatorMembershipLevel=#{initiatorMembershipLevel}," +
+            "vipMembershipLevel=#{vipMembershipLevel}," +
+            "regularMembershipLevel=#{regularMembershipLevel}," +
+            "memberShipStatus=#{memberShipStatus}," +
+            "memberShipLevelStatus=#{memberShipLevelStatus}" +
+            " where userId=#{userId}"+
+            "</script>")
     int update(UserMembership userMembership);
 
     /***

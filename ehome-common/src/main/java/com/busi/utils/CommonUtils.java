@@ -4,12 +4,12 @@ package com.busi.utils;
 import com.busi.qiniu.util.Auth;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.security.MessageDigest;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -750,6 +750,53 @@ public class CommonUtils {
 		return map;
 	}
 
+	/***
+	 * map转换成对象
+	 * @param map
+	 * @param beanClass
+	 * @return
+	 * @throws Exception
+	 */
+	public static Object mapToObject(Map<String, Object> map, Class<?> beanClass){
+		if (map == null)return null;
+		Object obj = null;
+		try {
+            obj = beanClass.newInstance();
+            Field[] fields = obj.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                int mod = field.getModifiers();
+                if(Modifier.isStatic(mod) || Modifier.isFinal(mod)){
+                    continue;
+                }
+                field.setAccessible(true);
+                String regEx = "^((\\d{2}(([02468][048])|([13579][26]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])))))|(\\d{2}(([02468][1235679])|([13579][01345789]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|(1[0-9])|(2[0-8]))))))(\\s(((0?[0-9])|([1][0-9])|([2][0-4]))\\:([0-5]?[0-9])((\\s)|(\\:([0-5]?[0-9])))))?$";
+                Object value = map.get(field.getName());
+                boolean rs = false;
+                if(value!=null){
+                    Pattern pattern = Pattern.compile(regEx);
+                    Matcher matcher = pattern.matcher(value.toString());
+                    // 字符串是否与正则表达式相匹配
+                    rs = matcher.matches();
+                }
+                if(rs){//时间格式
+                    SimpleDateFormat  sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = sdf.parse(value.toString());
+                    field.set(obj, date);
+                }else{
+                    field.set(obj, value);
+                }
+
+            }
+        } catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+	}
 	/**
 	 * 已登录用户获取，当前登录用户的myId
 	 * @return
