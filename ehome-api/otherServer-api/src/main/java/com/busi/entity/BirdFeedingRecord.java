@@ -27,6 +27,10 @@ public class BirdFeedingRecord {
     private Date time;        //喂鸟时间
 
     //数据库无关字段
+    private String userName;	//用户名称
+
+    private String userHead;	//用户头像
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date birthday; // 生日  用来算年龄
 
