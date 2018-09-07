@@ -156,6 +156,7 @@ public class Constants {
     public static final String REDIS_KEY_PAY_ORDER_EXCHANGE = "payment_order_exchange_";//钱包兑换订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_PAY_ORDER_RECHARGE = "payment_order_recharge_";//钱包充值订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_PAY_ORDER_MEMBER = "payment_order_member_";//购买会员订单 对应关系  订单ID对应订单实体
+    public static final String REDIS_KEY_PAY_ORDER_REDPACKETSINFO = "payment_order_redpacketsInfo_";//发送红包订单 对应关系  订单ID对应订单实体
 
     //验证码相关配置
     public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
