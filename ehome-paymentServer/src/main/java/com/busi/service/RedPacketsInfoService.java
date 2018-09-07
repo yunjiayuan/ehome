@@ -3,7 +3,7 @@ package com.busi.service;
 import com.busi.dao.RedPacketsInfoDao;
 import com.busi.entity.PageBean;
 import com.busi.entity.RedPacketsInfo;
-import com.busi.utils.PageUtils;
+import com.busi.utils.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.List;
  * create time：2018-8-16 11:46:00
  */
 @Service
-public class RedPacketsInfoService {
+public class RedPacketsInfoService{
 
     @Autowired
     private RedPacketsInfoDao redPacketsInfoDao;

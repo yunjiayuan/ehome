@@ -53,7 +53,7 @@ public class MemberOrderService extends BaseController implements PayBaseService
             return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行购买会员操作",new JSONObject());
         }
         //更改状态 防止重复支付
-        redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_MEMBER+pay.getUserId()+"_"+pay.getOrderNumber(),"payStatus",1);
+        redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_MEMBER+pay.getUserId()+"_"+pay.getOrderNumber(),"payState",1);
         //获取当前用户的会员状态
         Map<String,Object> userMembershipMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP+pay.getUserId());
         if(userMembershipMap==null||userMembershipMap.size()<=0){

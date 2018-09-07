@@ -23,8 +23,10 @@ public class RedPacketsInfo {
 
     private long id;//主键ID
 
+    @Min(value= 1 ,message= "sendUserId参数有误")
     private long sendUserId;//发红包者ID
 
+    @Min(value= 1 ,message= "receiveUserId参数有误")
     private long receiveUserId;//接收红包者ID
 
     @DecimalMax(value = "200",message = "红包最大金额为200元")

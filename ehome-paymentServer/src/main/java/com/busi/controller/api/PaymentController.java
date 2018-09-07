@@ -46,6 +46,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
     @Autowired
     private PursePayPasswordService pursePayPasswordService;
 
+    @Autowired
+    RedPacketsInfoOrderService redPacketsInfoOrderService;
+
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -214,10 +217,10 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
                 break;
             case 3://发个人红包
-
+                payBaseService = redPacketsInfoOrderService;
                 break;
             case 4://拆个人红包
-
+                payBaseService = redPacketsInfoOrderService;
                 break;
             case 5://钱包现金兑换家币
                 payBaseService = exchangeOrderService;
