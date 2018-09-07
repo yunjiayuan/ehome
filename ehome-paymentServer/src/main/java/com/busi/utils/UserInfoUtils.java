@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * 此处编写本类功能说明
+ * 查询用户信息工具类
  * author：SunTianJie
  * create time：2018/9/7 19:08
  */
