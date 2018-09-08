@@ -43,11 +43,11 @@ public class RedPacketsInfoService{
     }
 
     /***
-     * 根据用户ID查询用户交易明细列表
+     * 根据用户ID查询红包记录列表
      * @param userId
      * @return
      */
-    public PageBean<RedPacketsInfo> findRedPacketsInfoList(long findType, int userId, int time,int page, int count){
+    public PageBean<RedPacketsInfo> findRedPacketsInfoList(long findType, long userId, int time,int page, int count){
 
         List<RedPacketsInfo> list;
         Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页

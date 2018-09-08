@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
@@ -131,5 +132,68 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",redPacketsInfo);
+    }
+
+    /***
+     * 接收(拆)红包后留言接口
+     * @param redPacketsInfo
+     * @return
+     */
+    @Override
+    public ReturnData receiveMessage(@Valid @RequestBody RedPacketsInfo redPacketsInfo, BindingResult bindingResult) {
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        RedPacketsInfo rpi = redPacketsInfoService.findRedPacketsInfo(redPacketsInfo.getReceiveUserId(),redPacketsInfo.getId());
+        if(rpi==null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您将要留言的红包不存在",new JSONObject());
+        }
+        if(rpi.getReceiveUserId()!=redPacketsInfo.getReceiveUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限对该红包进行留言",new JSONObject());
+        }
+        if(rpi.getRedPacketsStatus()!=2){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您将要留言的红包尚未领取，请领取后再留言",new JSONObject());
+        }
+        if(!CommonUtils.checkFull(rpi.getReceiveMessage())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您已经留过言了，无法再进行留言",new JSONObject());
+        }
+        //开始留言
+        redPacketsInfoService.updateRedPacketsReceiveMessage(redPacketsInfo);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 查询红包记录列表
+     * @param userId   被查询用户ID
+     * @param findType 1查询我发的红包 2查询我收的红包列表
+     * @param time   	查询年份 格式2017  起始值2017
+     * @param page     页码 第几页 起始值1
+     * @param count    每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findRedPacketsList(@PathVariable long userId,@PathVariable int findType,@PathVariable int time,@PathVariable int page,@PathVariable int count) {
+        //验证参数
+        if(findType<0||findType>2){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"findType参数有误",new JSONObject());
+        }
+        if(page<0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"page参数有误",new JSONObject());
+        }
+        if(count<1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"count参数有误",new JSONObject());
+        }
+        //验证身份
+        if(CommonUtils.getMyId()!=userId){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误,您无权限进行此操作",new JSONObject());
+        }
+        //开始查询
+        PageBean<RedPacketsInfo> pageBean;
+        pageBean = redPacketsInfoService.findRedPacketsInfoList(findType,userId,time,page,count);
+        if(pageBean==null){
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,pageBean);
     }
 }

@@ -35,24 +35,25 @@ public interface RedPacketsInfoDao {
 
     /**
      * 查询红包列表
-     * @param findType  查询用户类型 0默认查当前用户的发收红包 1只查当前用户发的 2只查当前用户收的
-     * @param userId  查询用户
-     * @param time    年份 格式2018 起始值2018
+     * @param findType 1查询用户类型 1只查当前用户发的 2只查当前用户收的
+     * @param userId   查询用户
+     * @param time     年份 格式2018 起始值2018
      * @return
      */
     @Select("<script>" +
             "select * from redPacketsInfo" +
             " where 1=1" +
-            "<if test=\"findType == 0 \">"+
-            " and (sendUserId = #{userId} or receiveUserId = #{userId})" +
+            "<if test=\"time != 0 \">"+
+            " and YEAR(sendTime) = #{time}" +
             "</if>" +
             "<if test=\"findType == 1 \">"+
             " and sendUserId = #{userId}" +
+            " order by sendTime desc" +
             "</if>" +
             "<if test=\"findType == 2 \">"+
             " and receiveUserId = #{userId}" +
+            " order by receiveTime desc" +
             "</if>" +
-            " order by time desc" +
             "</script>")
     List<RedPacketsInfo> findRedPacketsInfoList(@Param("findType") long findType,@Param("userId") long userId, @Param("time") int time);
 
@@ -69,7 +70,7 @@ public interface RedPacketsInfoDao {
      * @param redPacketsInfo
      * @return
      */
-    @Update("update redPacketsInfo set receiveMessage = #{receiveMessage} where receiveUserId = #{receiveUserId} and id = #{id}")
+    @Update("update redPacketsInfo set receiveMessage = #{receiveMessage} where receiveUserId = #{receiveUserId} and id = #{id} and redPacketsStatus = 2 and receiveMessage is null")
     int updateRedPacketsReceiveMessage(RedPacketsInfo redPacketsInfo);
 
     /***
