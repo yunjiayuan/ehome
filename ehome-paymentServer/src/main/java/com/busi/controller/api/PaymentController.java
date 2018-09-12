@@ -159,21 +159,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
             }
             purseMap = CommonUtils.objectToMap(purse);
         }
-        //检测是否设置过支付密码
-        Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pay.getUserId() );
-        if(payPasswordMap==null||payPasswordMap.size()<=0){
-            PursePayPassword ppp = null;
-            //缓存中没有用户对象信息 查询数据库
-            ppp = pursePayPasswordService.findPursePayPassword(pay.getUserId());
-            if(ppp==null){
-                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行当前操作!",new JSONObject());
-            }
-            payPasswordMap = CommonUtils.objectToMap(ppp);
-        }else{
-            if(Integer.parseInt(payPasswordMap.get("redisStatus").toString())==0) {//redisStatus==0说明数据中无此记录
-                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行当前操作!",new JSONObject());
-            }
-        }
+
         //验证支付秘钥是否正确
         Object serverKey = redisUtils.getKey(Constants.REDIS_KEY_PAYMENT_PAYKEY+pay.getUserId());
         if(serverKey==null){
@@ -196,16 +182,33 @@ public class PaymentController extends BaseController implements PaymentApiContr
         }
         //清除秘钥
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+pay.getUserId(),0);
-        //支付密码是否正确
-        String oldPassWord = CommonUtils.getPasswordBySalt(pay.getPayPassword(), payPasswordMap.get("payCode").toString());//生成加盐的新密码
-        if(!oldPassWord.equals(payPasswordMap.get("payPassword").toString())){
-            //密码有误 添加错误限制 防暴力破解
-            if(CommonUtils.checkFull(errorCount)){//第一次错误
-                redisUtils.hset(Constants.REDIS_KEY_PAY_ERROR_COUNT,pay.getUserId()+"",1,24*60*60);//设置1天后失效
+        //检测是否设置过支付密码
+        if(pay.getServiceType()!=4){//拆红包 不需要支付密码
+            Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pay.getUserId() );
+            if(payPasswordMap==null||payPasswordMap.size()<=0){
+                PursePayPassword ppp = null;
+                //缓存中没有用户对象信息 查询数据库
+                ppp = pursePayPasswordService.findPursePayPassword(pay.getUserId());
+                if(ppp==null){
+                    return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行当前操作!",new JSONObject());
+                }
+                payPasswordMap = CommonUtils.objectToMap(ppp);
             }else{
-                redisUtils.hashIncr(Constants.REDIS_KEY_PAY_ERROR_COUNT,pay.getUserId()+"",1);
+                if(Integer.parseInt(payPasswordMap.get("redisStatus").toString())==0) {//redisStatus==0说明数据中无此记录
+                    return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行当前操作!",new JSONObject());
+                }
             }
-            return returnData(StatusCode.CODE_PAYPASSWORD_ERROR.CODE_VALUE,"您输入的支付密码有误",new JSONObject());
+            //支付密码是否正确
+            String oldPassWord = CommonUtils.getPasswordBySalt(pay.getPayPassword(), payPasswordMap.get("payCode").toString());//生成加盐的新密码
+            if(!oldPassWord.equals(payPasswordMap.get("payPassword").toString())){
+                //密码有误 添加错误限制 防暴力破解
+                if(CommonUtils.checkFull(errorCount)){//第一次错误
+                    redisUtils.hset(Constants.REDIS_KEY_PAY_ERROR_COUNT,pay.getUserId()+"",1,24*60*60);//设置1天后失效
+                }else{
+                    redisUtils.hashIncr(Constants.REDIS_KEY_PAY_ERROR_COUNT,pay.getUserId()+"",1);
+                }
+                return returnData(StatusCode.CODE_PAYPASSWORD_ERROR.CODE_VALUE,"您输入的支付密码有误",new JSONObject());
+            }
         }
         //开始支付
         switch (pay.getServiceType()) {
