@@ -1,17 +1,12 @@
 package com.busi.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.busi.Feign.LoginStatusInfoControllerFegin;
 import com.busi.Feign.VisitViewControllerFegin;
 import com.busi.adapter.MessageAdapter;
-import com.busi.entity.LoginStatusInfo;
 import com.busi.entity.VisitView;
-import com.busi.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 /**
  * 同步用户访问量信息
@@ -32,10 +27,12 @@ public class VisitViewService implements MessageAdapter {
     @Override
     public void sendMsg(JSONObject body) {
         try {
+            long myId = Long.parseLong(body.getString("myId"));
             long userId = Long.parseLong(body.getString("userId"));
             long todayVisitCount = Long.parseLong(body.getString("todayVisitCount"));
             long totalVisitCount = Long.parseLong(body.getString("totalVisitCount"));
             VisitView visitView = new VisitView();
+            visitView.setMyId(myId);
             visitView.setUserId(userId);
             visitView.setTodayVisitCount(todayVisitCount);
             visitView.setTotalVisitCount(totalVisitCount);

@@ -19,8 +19,8 @@ public class Pay {
     @Min(value= 1 ,message= "userId参数格式有误")
     private long userId;
 
-    @Length(min=32,max = 32, message = "payPassword参数格式有误")
-    @NotNull
+//    @Length(min=32,max = 32, message = "payPassword参数格式有误")
+//    @NotNull
     private String payPassword;//支付密码
 
     @Length(min=16,max = 16, message = "payPassword参数格式有误")
