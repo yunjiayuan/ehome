@@ -199,6 +199,9 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
         //开始查询
         PageBean<RedPacketsInfo> pageBean;
         pageBean = redPacketsInfoService.findRedPacketsInfoList(findType,userId,time,page,count);
+        if(pageBean==null){
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,new JSONArray());
+        }
         List list = pageBean.getList();
         if(list!=null&&list.size()>0){
             for (int i=0;i<list.size();i++){
@@ -216,9 +219,6 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
                     }
                 }
             }
-        }
-        if(pageBean==null){
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,new JSONArray());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,pageBean);
     }

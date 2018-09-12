@@ -82,6 +82,7 @@ public class VisitViewController extends BaseController implements VisitViewApiC
         JSONObject header = new JSONObject();
         header.put("interfaceType", "4");//interfaceType 0 表示发送手机短信  1表示发送邮件  2表示新用户注册转发 3表示用户登录时同步登录信息 4表示新增访问量
         JSONObject content = new JSONObject();
+        content.put("myId",CommonUtils.getMyId());
         content.put("userId",visitView.getUserId() );
         content.put("todayVisitCount",todayVisitCount);
         content.put("totalVisitCount",totalVisitCount);

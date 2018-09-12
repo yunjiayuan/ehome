@@ -14,7 +14,9 @@ public class VisitView {
 
   private long id;//主键ID
 
-  private long userId;//用户ID
+  private long myId;//当前登录用户ID（用于脚印更新）
+
+  private long userId;//被访问用户ID
 
   private long todayVisitCount;//今天访问量
 
