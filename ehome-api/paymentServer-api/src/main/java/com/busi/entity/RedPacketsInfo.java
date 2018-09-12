@@ -21,7 +21,7 @@ import java.util.Date;
 @Setter
 public class RedPacketsInfo {
 
-    private long id;//主键ID
+    private String id;//订单ID 程序生成
 
     @Min(value= 1 ,message= "sendUserId参数有误")
     private long sendUserId;//发红包者ID
@@ -30,7 +30,7 @@ public class RedPacketsInfo {
     private long receiveUserId;//接收红包者ID
 
     @DecimalMax(value = "200",message = "红包最大金额为200元")
-    @DecimalMin(value = "0.01",message = "红包最大金额为0.01元")
+    @DecimalMin(value = "0.01",message = "红包最小金额为0.01元")
     private double redPacketsMoney;//红包金额，最大200 小数点后两位
 
     @Length(max = 25, message = "sendMessage参数有误，留言字数太多了")

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,13 +81,14 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
             return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法发红包操作",new JSONObject());
         }
         //生成红包订单
+        String orderNumber = CommonUtils.getOrderNumber(redPacketsInfo.getSendUserId(),Constants.REDIS_KEY_PAY_ORDER_REDPACKETSINFO);
+        redPacketsInfo.setId(orderNumber);
         redPacketsInfo.setPayStatus(0);//未支付
         redPacketsInfo.setDelStatus(0);//删除状态 正常
         redPacketsInfo.setRedPacketsStatus(0);//红包状态 已发送
         redPacketsInfo.setSendTime(new Date());
         redPacketsInfoService.addRedPacketsInfo(redPacketsInfo);
         //将订单放入缓存中  5分钟有效时间  超时作废
-        String orderNumber = CommonUtils.strToMD5(redPacketsInfo.getId()+"",16);
         redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_REDPACKETSINFO+orderNumber,CommonUtils.objectToMap(redPacketsInfo),Constants.TIME_OUT_MINUTE_5);
         //响应客户端
         Map<String,String> map = new HashMap();
@@ -100,9 +102,9 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
      * @return
      */
     @Override
-    public ReturnData findRedPacketsInfo(@PathVariable long id) {
+    public ReturnData findRedPacketsInfo(@PathVariable String id) {
         //验证参数
-        if(id<=0){
+        if(id.length()!=16){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"id参数有误",new JSONObject());
         }
         RedPacketsInfo redPacketsInfo = redPacketsInfoService.findRedPacketsInfo(CommonUtils.getMyId(),id);
@@ -140,10 +142,16 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
      * @return
      */
     @Override
-    public ReturnData receiveMessage(@Valid @RequestBody RedPacketsInfo redPacketsInfo, BindingResult bindingResult) {
+    public ReturnData receiveMessage(@RequestBody RedPacketsInfo redPacketsInfo) {
         //验证参数格式
-        if(bindingResult.hasErrors()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        if(redPacketsInfo.getId().length()!=16){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"id参数格式有误",new JSONObject());
+        }
+        if(CommonUtils.getStringLengsByByte(redPacketsInfo.getReceiveMessage())>50){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"receiveMessage参数有误,字数太多了",new JSONObject());
+        }
+        if(CommonUtils.getMyId()!=redPacketsInfo.getReceiveUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权给用户["+redPacketsInfo.getReceiveUserId()+"]的红包进行留言",new JSONObject());
         }
         RedPacketsInfo rpi = redPacketsInfoService.findRedPacketsInfo(redPacketsInfo.getReceiveUserId(),redPacketsInfo.getId());
         if(rpi==null){
@@ -191,6 +199,24 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
         //开始查询
         PageBean<RedPacketsInfo> pageBean;
         pageBean = redPacketsInfoService.findRedPacketsInfoList(findType,userId,time,page,count);
+        List list = pageBean.getList();
+        if(list!=null&&list.size()>0){
+            for (int i=0;i<list.size();i++){
+                RedPacketsInfo redPacketsInfo = (RedPacketsInfo) list.get(i);
+                if(redPacketsInfo!=null){
+                    UserInfo sendUserInfo = userInfoUtils.getUserInfo(redPacketsInfo.getSendUserId());
+                    if(sendUserInfo!=null){
+                        redPacketsInfo.setSendUserName(sendUserInfo.getName());
+                        redPacketsInfo.setSendUserHead(sendUserInfo.getHead());
+                    }
+                    UserInfo receiveUserInfo = userInfoUtils.getUserInfo(redPacketsInfo.getReceiveUserId());
+                    if(receiveUserInfo!=null){
+                        redPacketsInfo.setReceiveUserName(receiveUserInfo.getName());
+                        redPacketsInfo.setReceiveUserHead(receiveUserInfo.getHead());
+                    }
+                }
+            }
+        }
         if(pageBean==null){
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,new JSONArray());
         }

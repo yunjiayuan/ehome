@@ -4,7 +4,6 @@ import com.busi.entity.RedPacketsInfo;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
 /**
@@ -20,7 +19,7 @@ public interface RedPacketsInfoApiController {
      * @return
      */
     @PostMapping("addRedPacketsInfo")
-    ReturnData addRedPacketsInfo(@Valid  @RequestBody RedPacketsInfo redPacketsInfo, BindingResult bindingResult);
+    ReturnData addRedPacketsInfo(@Valid @RequestBody RedPacketsInfo redPacketsInfo, BindingResult bindingResult);
 
     /***
      * 根据红包ID查询红包信息
@@ -28,7 +27,7 @@ public interface RedPacketsInfoApiController {
      * @return
      */
     @GetMapping("findRedPacketsInfo/{id}")
-    ReturnData findRedPacketsInfo(@PathVariable long id);
+    ReturnData findRedPacketsInfo(@PathVariable String id);
 
     /***
      * 接收(拆)红包后留言接口
@@ -36,7 +35,7 @@ public interface RedPacketsInfoApiController {
      * @return
      */
     @PutMapping("receiveMessage")
-    ReturnData receiveMessage(@Valid @RequestBody RedPacketsInfo redPacketsInfo, BindingResult bindingResult);
+    ReturnData receiveMessage(@RequestBody RedPacketsInfo redPacketsInfo);
 
     /***
      * 查询红包记录列表
@@ -47,7 +46,7 @@ public interface RedPacketsInfoApiController {
      * @param count    每页条数
      * @return
      */
-    @GetMapping("findRedPacketsList/{userId}/{findType}/{page}/{count}")
+    @GetMapping("findRedPacketsList/{userId}/{findType}/{time}/{page}/{count}")
     ReturnData findRedPacketsList(@PathVariable long userId,@PathVariable int findType,@PathVariable int time,@PathVariable int page,@PathVariable int count);
 
 }

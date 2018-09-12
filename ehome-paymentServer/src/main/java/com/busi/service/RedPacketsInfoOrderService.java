@@ -41,15 +41,16 @@ public class RedPacketsInfoOrderService  extends BaseController implements PayBa
      */
     @Override
     public ReturnData pay(Pay pay, Map<String, Object> purseMap) {
-        //获取未支付的订单
+        //获取缓存中的订单
         Map<String,Object> redPacketsInfoMap = redisUtils.hmget(Constants.REDIS_KEY_PAY_ORDER_REDPACKETSINFO+pay.getOrderNumber() );
         RedPacketsInfo redPacketsInfo = (RedPacketsInfo)CommonUtils.mapToObject(redPacketsInfoMap,RedPacketsInfo.class);
-        if(redPacketsInfo==null){
-            return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"该红包已过期，无法再进行操作",new JSONObject());
-        }
         RedPacketsCensus rpc = null;
         switch (pay.getServiceType()) {
             case 3://发红包
+                //获取未支付的订单 未支付订单不存数据库  所以缓存中不存在 怎该订单已失效
+                if(redPacketsInfo==null){
+                    return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"该红包已过期，无法再进行操作",new JSONObject());
+                }
                 //判断余额
                 double serverMoney = Double.parseDouble(purseMap.get("spareMoney").toString());
                 if(serverMoney<redPacketsInfo.getRedPacketsMoney()){
@@ -86,6 +87,14 @@ public class RedPacketsInfoOrderService  extends BaseController implements PayBa
                 }
                 break;
             case 4://拆红包
+                //缓存中的订单不存在  则可以已过期或者缓存出现异常 补偿处理
+                if(redPacketsInfo==null){
+                    //查询数据库
+                    redPacketsInfo = redPacketsInfoService.findRedPacketsInfo(pay.getUserId(),pay.getOrderNumber());
+                    if(redPacketsInfo==null){//数据库中不存在
+                        return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"该红包已过期，无法进行拆红包",new JSONObject());
+                    }
+                }
                 if(redPacketsInfo.getRedPacketsStatus()!=0){//未收取
                     return returnData(StatusCode.CODE_RED_PACKETS_NOT_AWARDYOU.CODE_VALUE,"该红包对方尚未支付，无法进行拆红包",new JSONObject());
                 }

@@ -38,7 +38,7 @@ public class RedPacketsInfoService{
      * @param id
      * @return
      */
-    public RedPacketsInfo findRedPacketsInfo(long userId,long id){
+    public RedPacketsInfo findRedPacketsInfo(long userId,String id){
         return redPacketsInfoDao.findRedPacketsInfo(userId,id);
     }
 
@@ -92,7 +92,7 @@ public class RedPacketsInfoService{
      * @return
      */
     @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateRedPacketsDelStatus(long userId,long id){
+    public int updateRedPacketsDelStatus(long userId,String id){
         return  redPacketsInfoDao.updateRedPacketsDelStatus(userId, id);
     }
 

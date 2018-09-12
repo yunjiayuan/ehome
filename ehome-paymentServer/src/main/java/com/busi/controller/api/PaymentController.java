@@ -155,7 +155,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
             //缓存中没有用户对象信息 查询数据库
             purse = purseInfoService.findPurseInfo(pay.getUserId());
             if(purse==null){
-                return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
+                return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行相关支付操作",new JSONObject());
             }
             purseMap = CommonUtils.objectToMap(purse);
         }
@@ -166,12 +166,12 @@ public class PaymentController extends BaseController implements PaymentApiContr
             //缓存中没有用户对象信息 查询数据库
             ppp = pursePayPasswordService.findPursePayPassword(pay.getUserId());
             if(ppp==null){
-                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行兑换操作!",new JSONObject());
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行当前操作!",new JSONObject());
             }
             payPasswordMap = CommonUtils.objectToMap(ppp);
         }else{
             if(Integer.parseInt(payPasswordMap.get("redisStatus").toString())==0) {//redisStatus==0说明数据中无此记录
-                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行兑换操作!",new JSONObject());
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您尚未设置过支付密码，无法进行当前操作!",new JSONObject());
             }
         }
         //验证支付秘钥是否正确
@@ -182,7 +182,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
             }else{
                 redisUtils.hashIncr(Constants.REDIS_KEY_PAY_ERROR_COUNT,pay.getUserId()+"",1);
             }
-            return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"操作已过期，秘钥已过期，请重新兑换!",new JSONObject());
+            return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"操作已过期，秘钥已过期，请稍后重试!",new JSONObject());
         }
         if(!pay.getPaymentKey().equals(serverKey.toString())){
             if(CommonUtils.checkFull(errorCount)){//第一次错误
@@ -192,7 +192,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
             }
             //清除秘钥
             redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+pay.getUserId(),0);
-            return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"秘钥不正确，请重新兑换!",new JSONObject());
+            return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"秘钥不正确，请稍后重试!",new JSONObject());
         }
         //清除秘钥
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+pay.getUserId(),0);

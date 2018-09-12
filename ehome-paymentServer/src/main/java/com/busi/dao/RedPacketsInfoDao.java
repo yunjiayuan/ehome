@@ -19,9 +19,9 @@ public interface RedPacketsInfoDao {
      * @param redPacketsInfo
      * @return
      */
-    @Insert("insert into redPacketsInfo (sendUserId,receiveUserId,redPacketsMoney,sendMessage,receiveMessage,sendTime,receiveTime,delStatus,payStatus,redPacketsStatus) " +
-            "values (#{sendUserId},#{receiveUserId},#{redPacketsMoney},#{sendMessage},#{receiveMessage},#{sendTime},#{receiveTime},#{delStatus},#{payStatus},#{redPacketsStatus})")
-    @Options(useGeneratedKeys = true)
+    @Insert("insert into redPacketsInfo (id,sendUserId,receiveUserId,redPacketsMoney,sendMessage,receiveMessage,sendTime,receiveTime,delStatus,payStatus,redPacketsStatus) " +
+            "values (#{id},#{sendUserId},#{receiveUserId},#{redPacketsMoney},#{sendMessage},#{receiveMessage},#{sendTime},#{receiveTime},#{delStatus},#{payStatus},#{redPacketsStatus})")
+//    @Options(useGeneratedKeys = true)
     int addRedPacketsInfo(RedPacketsInfo redPacketsInfo);
 
     /***
@@ -31,7 +31,7 @@ public interface RedPacketsInfoDao {
      * @return
      */
     @Select("select * from redPacketsInfo where (sendUserId = #{userId} or receiveUserId = #{userId}) and id = #{id}")
-    RedPacketsInfo findRedPacketsInfo(@Param("userId") long userId,@Param("id") long id);
+    RedPacketsInfo findRedPacketsInfo(@Param("userId") long userId,@Param("id") String id);
 
     /**
      * 查询红包列表
@@ -88,5 +88,5 @@ public interface RedPacketsInfoDao {
      * @return
      */
     @Update("update redPacketsInfo set delStatus = #{delStatus} where  (sendUserId = #{userId} or receiveUserId = #{userId}) and id = #{id}")
-    int updateRedPacketsDelStatus(@Param("userId") long userId,@Param("id") long id);
+    int updateRedPacketsDelStatus(@Param("userId") long userId,@Param("id") String id);
 }
