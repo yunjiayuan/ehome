@@ -15,11 +15,11 @@ interface BirdJournalApiController {
     /**
      * 新增喂鸟记录
      *
-     * @param visitId
+     * @param userId
      * @return
      */
-    @GetMapping("addBirdLog/{visitId}")
-    ReturnData addBirdLog(@PathVariable long visitId);
+    @GetMapping("addBirdLog/{userId}")
+    ReturnData addBirdLog(@PathVariable long userId);
 
     /**
      * @Description: 删除喂鸟记录
@@ -31,11 +31,11 @@ interface BirdJournalApiController {
     /**
      * 查询剩余次数与今日是否喂过此鸟
      *
-     * @param visitId
+     * @param userId
      * @return
      */
-    @GetMapping("getRemainder/{visitId}")
-    ReturnData getRemainder(@PathVariable long visitId);
+    @GetMapping("getRemainder/{userId}")
+    ReturnData getRemainder(@PathVariable long userId);
 
     /**
      * 查询鸟蛋状态

@@ -15,7 +15,7 @@ import java.util.Map;
 public class UserInfoUtils {
 
     @Autowired
-    UserInfoLocalControllerFegin userInfoLocalControllerFegin;
+    private UserInfoLocalControllerFegin userInfoLocalControllerFegin;
 
     @Autowired
     RedisUtils redisUtils;

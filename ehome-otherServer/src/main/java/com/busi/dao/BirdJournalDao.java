@@ -20,8 +20,8 @@ public interface BirdJournalDao {
      * @param birdFeedingRecord
      * @return
      */
-    @Insert("insert into birdFeedingRecord(userId,visitId,feedBirdTotalCount,birthday,time,sex) " +
-            "values (#{userId},#{visitId},#{feedBirdTotalCount},#{birthday},#{time},#{sex})")
+    @Insert("insert into birdFeedingRecord(userId,visitId,time) " +
+            "values (#{userId},#{visitId},#{time})")
     @Options(useGeneratedKeys = true)
     int addJourna(BirdFeedingRecord birdFeedingRecord);
 
@@ -210,7 +210,7 @@ public interface BirdJournalDao {
     List<BirdEggSmash> findEggList(@Param("userId") long userId);
 
     /***
-     * 分页查询互动次数 默认按时间降序排序
+     * 分页查询互动次数
      * @param userId
      * @param state
      * @return
@@ -232,20 +232,21 @@ public interface BirdJournalDao {
             " #{item}" +
             "</foreach>" +
             "</if>" +
-            " order by time desc" +
             "</script>")
-    List<BirdInteraction> findUserList(@Param("userId") long userId, @Param("users") String users, @Param("state") int state);
+    List<BirdInteraction> findUserList(@Param("userId") long userId, @Param("users") String[] users, @Param("state") int state);
 
     /***
      * 查询最新一期奖品
      * @param eggType 蛋类型 0不限 1金蛋2 银蛋
+     * mybatis查询的时候，需要用到运算符 小于号：< ，在mybatis配置文件里面，这种会被认为是标签，所以解析错误.
+     * 解决方法,用<![CDATA[ ]]>将有<,的代码包起来。
      * @return
      */
     @Select("<script>" +
             "select * from BirdPrize" +
-            " where eggType=#{eggType}" +
-            " and time=#{time} >= startTime and time=#{time} <= endTime" +
-            " order by grade asc" +
+            " where <![CDATA[ eggType=#{eggType}" +
+            " and #{time} >= startTime and #{time} <= endTime" +
+            " order by grade asc ]]>" +
             "</script>")
     List<BirdPrize> findNewList(@Param("eggType") int eggType, @Param("time") int time);
 
@@ -289,10 +290,10 @@ public interface BirdJournalDao {
             "select * from BirdTheWinners" +
             " where 1=1" +
             " and eggType=#{eggType}" +
-            " and (grade=5 or grade=6) " +
             " and issue=#{issue}" +
+            " and (grade = 5 or grade = 6) " +
             " order by grade,time desc" +
             "</script>")
-    List<BirdTheWinners> findPrizeList(@Param("issue") int issue, @Param("eggType") int eggType);
+    List<BirdTheWinners> findPrizeList(@Param("eggType") int eggType, @Param("issue") int issue);
 
 }

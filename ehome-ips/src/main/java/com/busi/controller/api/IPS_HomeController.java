@@ -6,11 +6,7 @@ import com.busi.entity.*;
 import com.busi.service.LoveAndFriendsService;
 import com.busi.service.OtherPostsService;
 import com.busi.service.SearchGoodsService;
-import com.busi.service.UserMembershipService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,10 +34,10 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
     SearchGoodsService searchGoodsService;
 
     @Autowired
-    UserMembershipService userMembershipService;
+    private UserMembershipUtils userMembershipUtils;
 
     /***
-     * 分页查询接口
+     * 查询接口
      * @param userId   用户ID
      * @return
      */
@@ -298,31 +294,18 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限置顶用户[" + userId + "]的公告", new JSONObject());
         }
         //获取会员等级 根据用户会员等级 获取最大次数 后续添加
-        Map<String, Object> memberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP + userId);
-        if (memberMap == null || memberMap.size() <= 0) {
-            //缓存中没有用户对象信息 查询数据库
-            UserMembership userMembership = userMembershipService.findUserMembership(userId);
-            if (userMembership == null) {
-                userMembership = new UserMembership();
-                userMembership.setUserId(CommonUtils.getMyId());
-            } else {
-                userMembership.setRedisStatus(1);//数据库中已有对应记录
-            }
-            memberMap = CommonUtils.objectToMap(userMembership);
-            //更新缓存
-            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP + CommonUtils.getMyId(), memberMap, Constants.USER_TIME_OUT);
-        }
-        int memberShipStatus = 0;
+        UserMembership memberMap = userMembershipUtils.getUserMemberInfo(CommonUtils.getMyId());
         int numLimit = Constants.SET_TOP_COUNT_USER;
-        if (memberMap.get("memberShipStatus") != null && !CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())) {
-            memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
-            if (memberShipStatus == 1) {//普通会员
-                numLimit = Constants.SET_TOP_COUNT_MEMBER;
-            } else if (memberShipStatus > 1) {//高级以上
-                numLimit = Constants.SET_TOP_COUNT_SENIOR_MEMBER;
-            } else {
-                return returnData(StatusCode.CODE_SETTOP_UNQUALIFIED.CODE_VALUE, "很抱歉，您没有置顶资格,成为会员可开启置顶功能!", new JSONObject());
-            }
+        int memberShipStatus = 0;
+        if (memberMap != null) {
+            memberShipStatus = memberMap.getMemberShipStatus();
+        }
+        if (memberShipStatus == 1) {//普通会员
+            numLimit = Constants.SET_TOP_COUNT_MEMBER;
+        } else if (memberShipStatus > 1) {//高级以上
+            numLimit = Constants.SET_TOP_COUNT_SENIOR_MEMBER;
+        } else {
+            return returnData(StatusCode.CODE_SETTOP_UNQUALIFIED.CODE_VALUE, "很抱歉，您没有置顶资格,成为会员可开启置顶功能!", new JSONObject());
         }
         //获取当前时间毫秒数
         long now = new Date().getTime();

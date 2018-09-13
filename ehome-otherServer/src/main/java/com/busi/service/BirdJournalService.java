@@ -187,7 +187,7 @@ public class BirdJournalService {
      * @param state 0喂我的  1我喂的
      * @return
      */
-    public List<BirdInteraction> findUserList(long userId, String users, int state) {
+    public List<BirdInteraction> findUserList(long userId, String[] users, int state) {
         List<BirdInteraction> list;
         list = birdJournalDao.findUserList(userId, users, state);
         return list;

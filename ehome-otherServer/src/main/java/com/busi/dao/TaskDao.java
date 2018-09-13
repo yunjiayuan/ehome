@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.RedBagRain;
 import com.busi.entity.Task;
 import com.busi.entity.TaskList;
 import org.apache.ibatis.annotations.*;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface TaskDao {
 
     /***
-     * 新增其他公告
+     * 新增任务
      * @param task
      * @return
      */
@@ -25,6 +26,16 @@ public interface TaskDao {
             "values (#{userId},#{taskStatus},#{taskType},#{sortTask},#{time})")
     @Options(useGeneratedKeys = true)
     int add(Task task);
+
+    /***
+     * 新增红包雨记录
+     * @param redBagRain
+     * @return
+     */
+    @Insert("insert into RedBagRain(userId,pizeType,quota,time) " +
+            "values (#{userId},#{pizeType},#{quota},#{time})")
+    @Options(useGeneratedKeys = true)
+    int addRain(RedBagRain redBagRain);
 
     /***
      * 更新任务状态
@@ -104,5 +115,37 @@ public interface TaskDao {
             "</if>" +
             "</script>")
     List<TaskList> findTaskList(@Param("taskType") int taskType);
+
+    /***
+     * 查询任务完成数量
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from Task" +
+            " where userId=#{userId}" +
+            " and TO_DAYS(time)=TO_DAYS(NOW())" +
+            "</script>")
+    int findNum(@Param("userId") long userId);
+
+    /***
+     * 分页查询奖品列表
+     * @param userId  用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from RedBagRain" +
+            " where userId=#{userId}" +
+            "</script>")
+    List<RedBagRain> findPrizeList(@Param("userId") long userId);
+
+    /***
+     * 分页查询中奖人员列表
+     * @return
+     */
+    @Select("<script>" +
+            "select * from RedBagRain order by quota desc" +
+            "</script>")
+    List<RedBagRain> findRedBagList();
 
 }

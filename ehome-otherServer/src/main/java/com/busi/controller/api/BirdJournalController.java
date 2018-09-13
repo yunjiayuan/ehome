@@ -6,8 +6,6 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.BirdJournalService;
 import com.busi.service.TaskService;
-import com.busi.service.UserInfoService;
-import com.busi.service.UserMembershipService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,55 +32,41 @@ public class BirdJournalController extends BaseController implements BirdJournal
     MqUtils mqUtils;
 
     @Autowired
-    UserMembershipService userMembershipService;
-
-    @Autowired
     BirdJournalService birdJournalService;
 
     @Autowired
     UserInfoUtils userInfoUtils;
 
+    @Autowired
+    UserMembershipUtils userMembershipUtils;
+
     /***
      * 新增喂鸟记录
-     * @param visitId
+     * @param userId
      * @return
      */
     @Override
-    public ReturnData addBirdLog(@PathVariable long visitId) {
+    public ReturnData addBirdLog(@PathVariable long userId) {
         //验证参数
-        if (visitId < 0) {
+        if (userId < 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
         long myId = CommonUtils.getMyId();
         //验证是不是自己
-        if (myId == visitId) {//自己不做增加
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        if (myId == userId) {//自己不做增加
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "抱歉自己不可以喂食自己的鹦鹉！", new JSONObject());
         }
         //获取会员等级 根据用户会员等级 获取最大次数 后续添加
-        Map<String, Object> memberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP + myId);
-        if (memberMap == null || memberMap.size() <= 0) {
-            //缓存中没有用户对象 查询数据库
-            UserMembership membership = userMembershipService.findUserMembership(myId);
-            if (membership == null) {
-                membership = new UserMembership();
-                membership.setUserId(CommonUtils.getMyId());
-            } else {
-                //数据库中已有对应记录
-                membership.setRedisStatus(1);
-            }
-            memberMap = CommonUtils.objectToMap(membership);
-            //更新缓存
-            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP + CommonUtils.getMyId(), memberMap, Constants.USER_TIME_OUT);
-        }
+        UserMembership memberMap = userMembershipUtils.getUserMemberInfo(myId);
         int memberShipStatus = 0;
         int numLimit = Constants.FEEDBIRDTOTALCOUNT;
-        if (memberMap.get("memberShipStatus") != null && !CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())) {
-            memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
-            if (memberShipStatus == 1) {//普通会员
-                numLimit = 50;
-            } else if (memberShipStatus > 1) {//高级以上
-                numLimit = 10000;
-            }
+        if (memberMap != null) {
+            memberShipStatus = memberMap.getMemberShipStatus();
+        }
+        if (memberShipStatus == 1) {//普通会员
+            numLimit = 50;
+        } else if (memberShipStatus > 1) {//高级以上
+            numLimit = 10000;
         }
         //当前日期
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
@@ -90,26 +74,33 @@ public class BirdJournalController extends BaseController implements BirdJournal
         //计算当前时间 到 今天晚上12点的秒数差
         long second = CommonUtils.getCurrentTimeTo_12();
 
-        //判断当前用户今日是否有喂鸟行为
-        long my_coverTodaystimes = 0;
         long my_lastFeedBirdDate = 0;
         //获取缓存中今天是否喂过此鸟
-        Map<String, Object> birdUserIdMap = redisUtils.hmget(Constants.REDIS_KEY_BIRD_FEEDING_TODAY + myId + "_" + visitId);
-        if (birdUserIdMap != null || birdUserIdMap.size() > 0) {
+        Map<String, Object> birdUserIdMap = redisUtils.hmget(Constants.REDIS_KEY_BIRD_FEEDING_TODAY + myId + "_" + userId);
+        if (birdUserIdMap != null && birdUserIdMap.size() > 0) {
             return returnData(StatusCode.CODE_BIRD_FEED_TREE.CODE_VALUE, "今日已喂过此鸟，明天再来吧！", new JSONObject());
         }
         //获取缓存中当前用户今日喂鸟次数(判断是否还有次数)
-        my_coverTodaystimes = (long) redisUtils.hget(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + myId);
-        if (my_coverTodaystimes >= numLimit) {
-            return returnData(StatusCode.CODE_BIRD_FEED_FULL.CODE_VALUE, "今日喂鸟次数已用尽，明天再来吧！", new JSONObject());
+        Object object = new Object();
+        long my_coverTodaystimes = 0;
+        object = redisUtils.hget(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + myId);
+        if (object != null) {
+            my_coverTodaystimes = Long.valueOf(String.valueOf(object));
+            if (my_coverTodaystimes >= numLimit) {
+                return returnData(StatusCode.CODE_BIRD_FEED_FULL.CODE_VALUE, "今日喂鸟次数已用尽，明天再来吧！", new JSONObject());
+            }
         }
         //更新当天喂鸟次数
         long my_todaycurFeedBird = redisUtils.hashIncr(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + myId, 1);//原子操作 递增1
         redisUtils.expire(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, second);//更新当天喂鸟次数的生命周期 到今天晚上12点失效
         //更新缓存（互动双方）
         BirdFeedingData myAttr = birdJournalService.findUserById(myId);
+        if (myAttr == null) {//防止空的时候缓存不会新增
+            myAttr = new BirdFeedingData();
+            myAttr.setUserId(myId);
+        }
         Map<String, Object> myAttrMap = CommonUtils.objectToMap(myAttr);
-        redisUtils.hmset(Constants.REDIS_KEY_BIRD_FEEDING_TODAY + myId + "_" + visitId, myAttrMap, second);
+        redisUtils.hmset(Constants.REDIS_KEY_BIRD_FEEDING_TODAY + myId + "_" + userId, myAttrMap, second);
         //查询数据库
         if (myAttr != null) {
             // 玩家最后喂鹦鹉日 (判断是否同一天)
@@ -118,7 +109,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
                 //玩家喂鹦鹉数总次数
                 long my_feedBirdTotalCount = myAttr.getFeedBirdTotalCount();
                 //被喂者是否满足被喂条件
-                BirdFeedingData userAttr = birdJournalService.findUserById(visitId);
+                BirdFeedingData userAttr = birdJournalService.findUserById(userId);
                 int user_eggState = 0;
                 if (userAttr != null) {//被喂者鸟蛋记录
                     user_eggState = userAttr.getEggState();
@@ -132,9 +123,9 @@ public class BirdJournalController extends BaseController implements BirdJournal
                     myAttr.setLastFeedBirdDate(todaylastfeedbirddate);
                     //记录玩家当天喂过的鹦鹉
                     if (myAttr.getFeedBirdIds() != null) {
-                        myAttr.setFeedBirdIds(myAttr.getFeedBirdIds() + "," + visitId);
+                        myAttr.setFeedBirdIds(myAttr.getFeedBirdIds() + "," + userId);
                     } else {
-                        myAttr.setFeedBirdIds("," + visitId);
+                        myAttr.setFeedBirdIds("," + userId);
                     }
                     birdJournalService.updateMya(myAttr);
                 } else if (user_eggState == 1) {
@@ -149,7 +140,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
                 //记录玩家最后喂鹦鹉日
                 myAttr.setLastFeedBirdDate(todaylastfeedbirddate);
                 //累计记录玩家当天向谁喂过鹦鹉
-                myAttr.setFeedBirdIds("," + visitId);
+                myAttr.setFeedBirdIds("," + userId);
                 birdJournalService.updateMya(myAttr);
             }
         } else {
@@ -161,9 +152,9 @@ public class BirdJournalController extends BaseController implements BirdJournal
             //记录玩家最后喂鹦鹉日
             myAttr.setLastFeedBirdDate(todaylastfeedbirddate);
             //记录玩家当天向谁喂过鹦鹉
-            myAttr.setFeedBirdIds("," + visitId);
+            myAttr.setFeedBirdIds("," + userId);
         }
-        BirdFeedingData userAttr = birdJournalService.findUserById(visitId);
+        BirdFeedingData userAttr = birdJournalService.findUserById(userId);
         if (userAttr != null) {
             //玩家被喂鹦鹉次数
             long user_birdBeFeedTotalCount = userAttr.getBirdBeFeedTotalCount();
@@ -204,27 +195,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
         } else {
             //新增被喂者记录
             userAttr = new BirdFeedingData();
-            userAttr.setUserId(visitId);
-            //累计被喂鹦鹉次数++
-            userAttr.setBirdBeFeedTotalCount(1);
-            //记录玩家最后被喂鹦鹉日
-            userAttr.setBeenLastFeedBirdDate(todaylastfeedbirddate);
-            //累计玩家被被喂鹦鹉总数
-            userAttr.setBeenFeedBirdTotalCount(1);
-        }
-        //双方均是第一次喂鸟
-        if (myAttr == null && userAttr == null) {
-            myAttr = new BirdFeedingData();
-            myAttr.setUserId(myId);
-            myAttr.setCurFeedBirdTimes(my_todaycurFeedBird);
-            //累计喂鹦鹉总次数++
-            myAttr.setFeedBirdTotalCount(1);
-            //记录玩家最后喂出鹦鹉日
-            myAttr.setLastFeedBirdDate(todaylastfeedbirddate);
-            myAttr.setFeedBirdIds("," + myId);    //记录玩家当天向谁喂过鹦鹉
-
-            userAttr = new BirdFeedingData();
-            userAttr.setUserId(visitId);
+            userAttr.setUserId(userId);
             //累计被喂鹦鹉次数++
             userAttr.setBirdBeFeedTotalCount(1);
             //记录玩家最后被喂鹦鹉日
@@ -233,21 +204,21 @@ public class BirdJournalController extends BaseController implements BirdJournal
             userAttr.setBeenFeedBirdTotalCount(1);
         }
         //更新双方互动次数
-        BirdInteraction birdInteraction = birdJournalService.findInterac(myId, visitId);
+        BirdInteraction birdInteraction = birdJournalService.findInterac(myId, userId);
         if (birdInteraction != null) {
             birdInteraction.setFeedBirdTotalCount(birdInteraction.getFeedBirdTotalCount() + 1);
             birdJournalService.updateMyb(birdInteraction);
         } else {
             birdInteraction = new BirdInteraction();
             birdInteraction.setUserId(myId);
-            birdInteraction.setVisitId(visitId);
+            birdInteraction.setVisitId(userId);
             birdInteraction.setFeedBirdTotalCount(1);
             birdJournalService.addInteraction(birdInteraction);
         }
         //新增喂鸟历史记录
         BirdFeedingRecord birdFeed = new BirdFeedingRecord();
         birdFeed.setUserId(myId);
-        birdFeed.setVisitId(visitId);
+        birdFeed.setVisitId(userId);
         birdFeed.setTime(new Date());
         birdJournalService.addJourna(birdFeed);
 
@@ -260,7 +231,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
         }
         //更新任务系统
         mqUtils.sendTaskMQ(myId, 1, 7);
-        return returnData(StatusCode.CODE_BIRD_FEED_TREE.CODE_VALUE, "今日已喂过此鸟，明天再来吧！", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
@@ -288,53 +259,48 @@ public class BirdJournalController extends BaseController implements BirdJournal
 
     /***
      * 查询剩余次数与今日是否喂过此鸟
-     * @param visitId
+     * @param userId
      * @return
      */
     @Override
-    public ReturnData getRemainder(@PathVariable long visitId) {
-        long myId = CommonUtils.getMyId();
-        //获取会员等级 根据用户会员等级 获取最大次数 后续添加
-        Map<String, Object> memberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP + myId);
-        if (memberMap == null || memberMap.size() <= 0) {
-            //缓存中没有用户对象 查询数据库
-            UserMembership membership = userMembershipService.findUserMembership(myId);
-            if (membership == null) {
-                membership = new UserMembership();
-                membership.setUserId(CommonUtils.getMyId());
-            } else {
-                //数据库中已有对应记录
-                membership.setRedisStatus(1);
-            }
-            memberMap = CommonUtils.objectToMap(membership);
-            //更新缓存
-            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP + CommonUtils.getMyId(), memberMap, Constants.USER_TIME_OUT);
+    public ReturnData getRemainder(@PathVariable long userId) {
+        if (CommonUtils.getMyId() != userId) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误！", new JSONObject());
         }
+        //获取会员等级 根据用户会员等级 获取最大次数 后续添加
+        UserMembership memberMap = userMembershipUtils.getUserMemberInfo(CommonUtils.getMyId());
         int memberShipStatus = 0;
         int numLimit = Constants.FEEDBIRDTOTALCOUNT;
-        if (memberMap.get("memberShipStatus") != null && !CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())) {
-            memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
-            if (memberShipStatus == 1) {//普通会员
-                numLimit = 50;
-            } else if (memberShipStatus > 1) {//高级以上
-                numLimit = 10000;
-            }
+        if (memberMap != null) {
+            memberShipStatus = memberMap.getMemberShipStatus();
+        }
+        if (memberShipStatus == 1) {//普通会员
+            numLimit = 50;
+        } else if (memberShipStatus > 1) {//高级以上
+            numLimit = 10000;
         }
         int is = 0;// 0未喂过 1已喂过
         Map<String, Integer> isMap = new HashMap<>();
-        Map<String, Object> birdUserIdMap = redisUtils.hmget(Constants.REDIS_KEY_BIRD_FEEDING_TODAY + myId + "_" + visitId);
-        if (birdUserIdMap != null || birdUserIdMap.size() > 0) {
+        Map<String, Object> birdUserIdMap = redisUtils.hmget(Constants.REDIS_KEY_BIRD_FEEDING_TODAY + CommonUtils.getMyId() + "_" + userId);
+        if (birdUserIdMap != null && birdUserIdMap.size() > 0) {
             is = 1;//1已喂过
             isMap.put("is", is);
             return returnData(StatusCode.CODE_BIRD_FEED_TREE.CODE_VALUE, "今日已喂过此鸟，明天再来吧！", isMap);
         }
-        //获取缓存中当前用户今日喂鸟次数(计算剩余次数)
+        //获取缓存中当前用户今日喂鸟次数(判断是否还有次数)
         long number = 0;
-        long todaystimes = (long) redisUtils.hget(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + myId);
-        if (todaystimes >= numLimit) {
-            return returnData(StatusCode.CODE_BIRD_FEED_FULL.CODE_VALUE, "今日喂鸟次数已用尽，明天再来吧！", new JSONObject());
+        Object object = new Object();
+        long my_coverTodaystimes = 0;
+        object = redisUtils.hget(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + CommonUtils.getMyId());
+        if (object != null) {
+            my_coverTodaystimes = Long.valueOf(String.valueOf(object));
+            if (my_coverTodaystimes >= numLimit) {
+                return returnData(StatusCode.CODE_BIRD_FEED_FULL.CODE_VALUE, "今日喂鸟次数已用尽，明天再来吧！", new JSONObject());
+            } else {
+                number = numLimit - my_coverTodaystimes;
+            }
         } else {
-            number = numLimit - todaystimes;
+            number = numLimit;
         }
         isMap.put("is", is);
         isMap.put("num", (int) number);
@@ -380,7 +346,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
                 }
             }
         }
-        listInterac = birdJournalService.findUserList(userId, users, state);
+        listInterac = birdJournalService.findUserList(userId, users.split(","), state);
         BirdInteraction udc = null;
         if (listInterac.size() > 0 && listInterac != null) {
             for (int i = 0; i < listInterac.size(); i++) {
@@ -397,10 +363,10 @@ public class BirdJournalController extends BaseController implements BirdJournal
             UserInfo userInfo = null;
             //state0 谁向我 1我向谁
             if (state == 0) {
-                userInfoUtils.getUserInfo(birdfeed.getUserId());
+                userInfo = userInfoUtils.getUserInfo(birdfeed.getUserId());
                 birdfeed.setFeedBirdTotalCount(dyMap.get(birdfeed.getUserId()) == null ? 0 : dyMap.get(birdfeed.getUserId()));
             } else {
-                userInfoUtils.getUserInfo(birdfeed.getVisitId());
+                userInfo = userInfoUtils.getUserInfo(birdfeed.getVisitId());
                 birdfeed.setFeedBirdTotalCount(dyMap.get(birdfeed.getVisitId()) == null ? 0 : dyMap.get(birdfeed.getVisitId()));
             }
             if (userInfo != null) {
@@ -438,7 +404,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
         for (int j = 0; j < list.size(); j++) {
             BirdEggSmash birdfeed = null;
             birdfeed = (BirdEggSmash) list.get(j);
-            userInfoUtils.getUserInfo(birdfeed.getUserId());
+            userInfo = userInfoUtils.getUserInfo(birdfeed.getUserId());
             if (userInfo != null) {
                 birdfeed.setUserHead(userInfo.getHead());    //获取头像
                 birdfeed.setUserName(userInfo.getName());    //获取名称
@@ -459,29 +425,29 @@ public class BirdJournalController extends BaseController implements BirdJournal
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
         //查询数据库
-        BirdFeedingData egg = birdJournalService.findUserById(userId);
-        if (egg == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有查询到用户[" + userId + "]的鹦鹉信息", new JSONObject());
-        }
         int eggState = 0;
         String time = null;
         Date startLayingTime = null;
-        eggState = egg.getEggState();
-        startLayingTime = egg.getStartLayingTime();
-        //判断蛋 倒计时
-        if (eggState == 1) {//0 没蛋  1产蛋中 2已产
-            long _time = startLayingTime.getTime();
-            long _today = new Date().getTime();
-            long num = _today - _time;
-            if (num >= Constants.EGGCOUNTDOWN) {
-                egg.setEggState(2);
-                eggState = 2;
-                egg.setLayingTotalCount(egg.getLayingTotalCount() + 1);    //产蛋总量+1
-                birdJournalService.updateUsc(egg);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        BirdFeedingData egg = birdJournalService.findUserById(userId);
+        if (egg != null) {
+            eggState = egg.getEggState();
+            startLayingTime = egg.getStartLayingTime();
+            //判断蛋 倒计时
+            if (eggState == 1) {//0 没蛋  1产蛋中 2已产
+                long _time = startLayingTime.getTime();
+                long _today = new Date().getTime();
+                long num = _today - _time;
+                if (num >= Constants.EGGCOUNTDOWN) {
+                    egg.setEggState(2);
+                    eggState = 2;
+                    egg.setLayingTotalCount(egg.getLayingTotalCount() + 1);    //产蛋总量+1
+                    birdJournalService.updateUsc(egg);
+                }
             }
-        }
-        if (egg.getStartLayingTime() != null) {
-            time = egg.getStartLayingTime().toString();
+            if (egg.getStartLayingTime() != null) {
+                time = format.format(egg.getStartLayingTime());
+            }
         }
         Map<String, String> map = new HashMap<>();
         map.put("eggState", String.valueOf(eggState));
@@ -493,6 +459,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
      * 砸鸟蛋
      * @param userId  被砸者
      * @param hitEggType 砸蛋类型   1金蛋2 银蛋
+     * @param issue  期号
      * @return
      */
     @Override
@@ -507,39 +474,30 @@ public class BirdJournalController extends BaseController implements BirdJournal
         }
         long myId = CommonUtils.getMyId();
         //获取会员等级 根据用户会员等级 获取砸蛋次数
-        Map<String, Object> memberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP + myId);
-        if (memberMap == null || memberMap.size() <= 0) {
-            //缓存中没有用户对象 查询数据库
-            UserMembership membership = userMembershipService.findUserMembership(myId);
-            if (membership == null) {
-                membership = new UserMembership();
-                membership.setUserId(CommonUtils.getMyId());
-            } else {
-                //数据库中已有对应记录
-                membership.setRedisStatus(1);
-            }
-            memberMap = CommonUtils.objectToMap(membership);
-            //更新缓存
-            redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP + CommonUtils.getMyId(), memberMap, Constants.USER_TIME_OUT);
-        }
+        UserMembership memberMap = userMembershipUtils.getUserMemberInfo(myId);
         int memberShipStatus = 0;
+        int numLimit = Constants.FEEDBIRDTOTALCOUNT;
+        if (memberMap != null) {
+            memberShipStatus = memberMap.getMemberShipStatus();
+        }
         int[] array = new int[10];
         array = new int[]{0, 1, 0, 1, 0, 1, 0, 1, 2, 2};//普通人
-        int numLimit = Constants.FEEDBIRDTOTALCOUNT;
-        if (memberMap.get("memberShipStatus") != null && !CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())) {
-            memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
-            if (memberShipStatus == 1) {//普通会员
-                numLimit = 50;
-                array = new int[]{0, 1, 0, 1, 0, 1, 2, 1, 2, 2};//普通会员
-            } else if (memberShipStatus > 1) {//高级以上
-                numLimit = 10000;
-                array = new int[]{0, 2, 1, 2, 1, 2, 1, 2, 1, 2};//高级会员
-            }
+        if (memberShipStatus == 1) {//普通会员
+            numLimit = 50;
+            array = new int[]{0, 1, 0, 1, 0, 1, 2, 1, 2, 2};//普通会员
+        } else if (memberShipStatus > 1) {//高级以上
+            numLimit = 10000;
+            array = new int[]{0, 2, 1, 2, 1, 2, 1, 2, 1, 2};//高级会员
         }
-        //获取缓存中当前用户今日喂鸟次数
-        long todaystimes = (long) redisUtils.hget(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + myId);
-        if (todaystimes >= numLimit) {
-            return returnData(StatusCode.CODE_BIRD_FEED_FULL.CODE_VALUE, "今日喂鸟次数已用尽，明天再来吧！", new JSONObject());
+        //获取缓存中当前用户今日喂鸟次数(判断是否还有次数)
+        Object object = new Object();
+        long my_coverTodaystimes = 0;
+        object = redisUtils.hget(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + myId);
+        if (object != null) {
+            my_coverTodaystimes = Long.valueOf(String.valueOf(object));
+            if (my_coverTodaystimes >= numLimit) {
+                return returnData(StatusCode.CODE_BIRD_FEED_FULL.CODE_VALUE, "今日喂鸟次数已用尽，明天再来吧！", new JSONObject());
+            }
         }
         if (hitEggType == 2) {//砸银蛋    生成奖品
             int redNum = 0;
@@ -551,7 +509,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
                 //更新钱包余额和钱包明细
                 mqUtils.sendPurseMQ(userId, 4, 2, redNum);
             }
-            //添加 领蛋记录
+            //添加 砸蛋记录
             BirdEggSmash sEgg = new BirdEggSmash();
             sEgg.setMyId(myId);
             sEgg.setUserId(userId);
@@ -672,7 +630,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
     public ReturnData findNewPrize(@PathVariable int eggType) {
         //验证参数
         if (eggType < 0 || eggType > 2) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "hitEggType参数有误", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "eggType参数有误", new JSONObject());
         }
         List<BirdPrize> list = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
@@ -742,11 +700,11 @@ public class BirdJournalController extends BaseController implements BirdJournal
         }
         UserInfo userInfo = null;
         listWinners = pageBean.getList();
-        if (listWinners != null) {
+        if (listWinners != null && listWinners.size() > 0) {
             for (int j = 0; j < listWinners.size(); j++) {
                 BirdTheWinners birdfeed = null;
                 birdfeed = (BirdTheWinners) listWinners.get(j);
-                userInfoUtils.getUserInfo(birdfeed.getUserId());
+                userInfo = userInfoUtils.getUserInfo(birdfeed.getUserId());
                 if (userInfo != null) {
                     birdfeed.setHead(userInfo.getHead());    //获取头像
                     birdfeed.setName(userInfo.getName());    //获取名称

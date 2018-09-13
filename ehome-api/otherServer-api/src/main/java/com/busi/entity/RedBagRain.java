@@ -8,31 +8,25 @@ import javax.validation.constraints.Min;
 import java.util.Date;
 
 /**
- * @program: 中奖记录
+ * @program: 红包雨
  * @author: ZHaoJiaJie
  * @create: 2018-09-06 17:51
  */
 @Setter
 @Getter
-public class BirdTheWinners {
+public class RedBagRain {
 
     private long id;	//ID
 
     @Min(value = 1, message = "userId参数有误")
-    private long userId;//中奖用户Id
+    private long userId;//用户Id
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date time;	//中奖时间
+    private Date time;	//添加时间
 
-    private int eggType;//蛋类型 0不限 1金蛋2 银蛋
+    private int pizeType;	//奖品种类：0谢谢参与  1现金
 
-    private int grade;	//奖品类型：0悲催蛋  1艳遇蛋  2家点红包 3家币红包 4现金红包 5一等奖 6二等奖（后续添加）
-
-    private int issue;		//期号
-
-    private double cost;//奖品价值
-
-    private int awards;	//奖品ID
+    private double quota;   	//具体金额
 
     //与数据库无关字段
     private String name; //用户名	查询后从内存获取最新

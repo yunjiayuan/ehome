@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.TaskService;
-import com.busi.service.UserMembershipService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @program: 任务
@@ -36,7 +34,7 @@ public class TaskController extends BaseController implements TaskApiController 
     MqUtils mqUtils;
 
     @Autowired
-    UserMembershipService userMembershipService;
+    private UserMembershipUtils userMembershipUtils;
 
     /***
      * 新增任务
@@ -165,28 +163,16 @@ public class TaskController extends BaseController implements TaskApiController 
             //获取会员等级 根据用户会员等级获得相应家点
             int homePoint = 20;
             int memberShipStatus = 0;
-            Map<String, Object> memberMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP + userId);
-            if (memberMap == null || memberMap.size() <= 0) {
-                //缓存中没有用户对象信息 查询数据库
-                UserMembership userMembership = userMembershipService.findUserMembership(userId);
-                if (userMembership == null) {
-                    userMembership = new UserMembership();
-                    userMembership.setUserId(userId);
-                } else {
-                    userMembership.setRedisStatus(1);//数据库中已有对应记录
-                }
-                memberMap = CommonUtils.objectToMap(userMembership);
-                //更新缓存
-                redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP + userId, memberMap, Constants.USER_TIME_OUT);
+            UserMembership memberMap = userMembershipUtils.getUserMemberInfo(CommonUtils.getMyId());
+            if (memberMap != null) {
+                memberShipStatus = memberMap.getMemberShipStatus();
             }
-            if (memberMap.get("memberShipStatus") != null && !CommonUtils.checkFull(memberMap.get("memberShipStatus").toString())) {
-                memberShipStatus = Integer.parseInt(memberMap.get("memberShipStatus").toString());
-                if (memberShipStatus == 1) {//普通会员
-                    homePoint += homePoint * 0.1;
-                } else if (memberShipStatus > 1) {//高级以上
-                    homePoint += homePoint * 0.5;
-                }
+            if (memberShipStatus == 1) {//普通会员
+                homePoint += homePoint * 0.1;
+            } else if (memberShipStatus > 1) {//高级以上
+                homePoint += homePoint * 0.5;
             }
+
             //更新钱包余额
             mqUtils.sendPurseMQ(userId, 20, 2, homePoint);
 

@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.DetailedUserInfoService;
 import com.busi.service.LoveAndFriendsService;
-import com.busi.service.UserInfoService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -15,9 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -31,12 +26,6 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
     @Autowired
     LoveAndFriendsService loveAndFriendsService;
-
-//    @Autowired
-//    DetailedUserInfoService detailedUserInfoService;
-
-    @Autowired
-    UserInfoService userInfoService;
 
     @Autowired
     RedisUtils redisUtils;
