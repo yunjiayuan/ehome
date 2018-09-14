@@ -494,6 +494,8 @@ public class RegisterController extends BaseController implements RegisterApiCon
             //更新缓存 自己修改自己的用户信息 不考虑并发问题
             redisUtils.hmset(Constants.REDIS_KEY_USER+newUserInfo.getUserId(),CommonUtils.objectToMap(newUserInfo),Constants.USER_TIME_OUT);
         }
+        //添加任务
+        mqUtils.sendTaskMQ(userInfo.getUserId(),0,1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
@@ -521,6 +523,8 @@ public class RegisterController extends BaseController implements RegisterApiCon
             redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"head",userInfo.getHead(),Constants.USER_TIME_OUT);
             redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"graffitiHead","",Constants.USER_TIME_OUT);
         }
+        //添加任务
+        mqUtils.sendTaskMQ(userInfo.getUserId(),0,0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
