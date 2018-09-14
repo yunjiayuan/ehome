@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.*;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -38,6 +35,9 @@ public class UserRelationShipController extends BaseController implements UserRe
 
     @Autowired
     UserMembershipService userMembershipService;
+
+    @Autowired
+    MqUtils mqUtils;
 
     /***
      * 新增好友关系接口
@@ -173,6 +173,10 @@ public class UserRelationShipController extends BaseController implements UserRe
         //将缓存中双方的好友列表清除 查询的时候 会重新加载
         redisUtils.expire(Constants.REDIS_KEY_USERFRIENDLIST+userRelationShip.getUserId(),0);
         redisUtils.expire(Constants.REDIS_KEY_USERFRIENDLIST+userRelationShip.getFriendId(),0);
+
+        //添加任务
+        mqUtils.sendTaskMQ(userRelationShip.getUserId(),1,11);
+        mqUtils.sendTaskMQ(userRelationShip.getFriendId(),1,11);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
