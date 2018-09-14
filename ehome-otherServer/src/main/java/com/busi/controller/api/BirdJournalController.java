@@ -264,9 +264,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
      */
     @Override
     public ReturnData getRemainder(@PathVariable long userId) {
-        if (CommonUtils.getMyId() != userId) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误！", new JSONObject());
-        }
+
         //获取会员等级 根据用户会员等级 获取最大次数 后续添加
         UserMembership memberMap = userMembershipUtils.getUserMemberInfo(CommonUtils.getMyId());
         int memberShipStatus = 0;

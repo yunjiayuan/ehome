@@ -172,6 +172,7 @@ public class RedBagRainController extends BaseController implements RedBagRainAp
         RedBagRain t = null;
         PageBean<RedBagRain> pageBean;
         pageBean = taskService.findRedBagList(page, count);
+        List<RedBagRain> theList = new ArrayList<RedBagRain>();
         if (pageBean != null) {
             list = pageBean.getList();
             if (list != null && list.size() > 0) {
@@ -186,10 +187,11 @@ public class RedBagRainController extends BaseController implements RedBagRainAp
                             t.setProTypeId(userInfo.getProType());
                             t.setHouseNumber(userInfo.getHouseNumber());
                         }
+                        theList.add(t);
                     }
                 }
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, theList);
     }
 }

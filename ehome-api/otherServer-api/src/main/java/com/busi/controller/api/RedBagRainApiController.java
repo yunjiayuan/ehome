@@ -15,7 +15,7 @@ public interface RedBagRainApiController {
      * 查询任务完成度
      * @return
      */
-    @GetMapping("findTaskList/")
+    @GetMapping("findTaskList")
     ReturnData findTaskList();
 
     /***
