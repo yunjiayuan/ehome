@@ -92,7 +92,7 @@ public class UserJurisdictionController extends BaseController implements UserJu
                 userJurisdiction.setRedisStatus(1);//数据库中已有记录
             }
             //放到缓存中
-            redisUtils.hmset(Constants.REDIS_KEY_USER_JURISDICTION+userId,CommonUtils.objectToMap(userJurisdiction));
+            redisUtils.hmset(Constants.REDIS_KEY_USER_JURISDICTION+userId,CommonUtils.objectToMap(userJurisdiction),Constants.USER_TIME_OUT);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",userJurisdiction);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
