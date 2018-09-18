@@ -69,22 +69,22 @@ public class SendMessageController extends BaseController implements SendMessage
 
                 break;
             case 1://找回支付密码验证码
-                redisUtils.set(Constants.REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE+CommonUtils.getMyId(),code,60*10);//验证码10分钟内有效
+                redisUtils.set(Constants.REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE+CommonUtils.getMyId(),code,Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟内有效
                 break;
             case 2://安全中心绑定手机验证码
-
+                redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_CODE+CommonUtils.getMyId(),code,Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟内有效
                 break;
             case 3://安全中心解绑手机验证码
-
+                redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_CODE+CommonUtils.getMyId(),code,Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟内有效
                 break;
             case 4://手机短信找回登录密码验证码
-
+                redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_FINDPASSWORD_CODE+CommonUtils.getMyId(),code,Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟内有效
                 break;
             case 5://手机短信修改密码验证码
-
+                redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_CHANGEPASSWORD_CODE+CommonUtils.getMyId(),code,Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟内有效
                 break;
             case 6://短信邀请新用户注册
-
+                redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_INVITATION_CODE+CommonUtils.getMyId(),code,Constants.USER_TIME_OUT);//验证码7天内有效
                 break;
 
             default:
