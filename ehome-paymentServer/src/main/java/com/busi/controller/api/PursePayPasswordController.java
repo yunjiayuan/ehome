@@ -251,11 +251,11 @@ public class PursePayPasswordController extends BaseController implements PurseP
             return returnData(StatusCode.CODE_TIME_OUT_ERROR.CODE_VALUE,"秘钥不正确，请重新验证银行卡信息找回密码!",new JSONObject());
         }
         //验证手机验证码是否正确
-        String serverCode = (String)redisUtils.getKey(Constants.REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE+pursePayPassword.getUserId());
-        if(CommonUtils.checkFull(serverCode)){
+        Object serverCode = redisUtils.getKey(Constants.REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE+pursePayPassword.getUserId());
+        if(serverCode==null){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
         }
-        if(!serverCode.equals(pursePayPassword.getCode())){//不相等
+        if(!serverCode.toString().equals(pursePayPassword.getCode())){//不相等
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您输入的验证码有误,请重新输入",new JSONObject());
         }
         //开始修改新密码
