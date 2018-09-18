@@ -31,7 +31,7 @@ public class PhoneService implements MessageAdapter {
         }else if(phoneType==2){//安全中心绑定手机验证码
             content = "云家园提醒您，您正在进行绑定手机操作，验证码为：" + phoneCode + ",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
         }else if(phoneType==3){//安全中心解绑手机验证码
-            content = "云家园提醒您，您正在进行更换绑定手机验证操作，验证码为：" + phoneCode + ",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
+            content = "云家园提醒您，您正在进行解绑手机验证操作，验证码为：" + phoneCode + ",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
         }else if(phoneType==4){//手机短信找回登录密码验证码
             content = "云家园提醒您，您正在进行找回登录密码操作，验证码为：" + phoneCode + ",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
         }else if(phoneType==5) {//手机短信修改密码验证码
