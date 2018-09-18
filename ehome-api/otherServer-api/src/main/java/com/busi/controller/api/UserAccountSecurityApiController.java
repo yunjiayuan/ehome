@@ -13,17 +13,8 @@ import javax.validation.Valid;
  */
 public interface UserAccountSecurityApiController {
 
-
     /***
-     * 新增安全中心数据接口
-     * @param userAccountSecurity
-     * @return
-     */
-    @PostMapping("addUserAccountSecurity")
-    ReturnData addUserAccountSecurity(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
-
-    /***
-     * 新增安全中心数据接口
+     * 查询安全中心数据接口
      * @param userId
      * @return
      */
@@ -31,12 +22,28 @@ public interface UserAccountSecurityApiController {
     ReturnData findUserAccountSecurity(@PathVariable long userId);
 
     /***
-     * 修改安全中心数据接口
+     * 绑定手机前，验证新手机号是否被占用接口
+     * @param phone
+     * @return
+     */
+    @GetMapping("checkNewPhone/{phone}")
+    ReturnData checkNewPhone(@PathVariable String phone);
+
+    /***
+     * 绑定手机号接口
      * @param userAccountSecurity
      * @return
      */
-    @PutMapping("updateUserAccountSecurity")
-    ReturnData updateUserAccountSecurity (@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+    @PutMapping("bindNewPhone")
+    ReturnData bindNewPhone (@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+
+    /***
+     * 解绑手机号
+     * @param userAccountSecurity
+     * @return
+     */
+    @PutMapping("unBindPhone")
+    ReturnData unBindPhone (@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
 
 
 }

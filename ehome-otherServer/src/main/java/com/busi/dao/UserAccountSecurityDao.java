@@ -60,11 +60,18 @@ public interface UserAccountSecurityDao {
     int update(UserAccountSecurity userAccountSecurity);
 
     /***
-     * 查询
+     * 根据userId查询
      * @param userId
      * @return
      */
     @Select(("select * from userAccountSecurity where userId=#{userId}"))
-    UserAccountSecurity findUserAccountSecurity(@Param("userId") long userId);
+    UserAccountSecurity findUserAccountSecurityByUserId(@Param("userId") long userId);
 
+    /***
+     * 根据phone查询
+     * @param phone
+     * @return
+     */
+    @Select(("select * from userAccountSecurity where phone=#{phone}"))
+    UserAccountSecurity findUserAccountSecurityByPhone(@Param("phone") String phone);
 }

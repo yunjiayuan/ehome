@@ -38,12 +38,21 @@ public class UserAccountSecurityService {
     }
 
     /***
-     * 查询
+     * 根据userId查询
      * @param userId
      * @return
      */
-    public UserAccountSecurity findUserAccountSecurity(long userId){
-        return  userAccountSecurityDao.findUserAccountSecurity(userId);
+    public UserAccountSecurity findUserAccountSecurityByUserId(long userId){
+        return  userAccountSecurityDao.findUserAccountSecurityByUserId(userId);
+    }
+
+    /***
+     * 根据phone查询
+     * @param phone
+     * @return
+     */
+    public UserAccountSecurity findUserAccountSecurityByPhone(String phone){
+        return  userAccountSecurityDao.findUserAccountSecurityByPhone(phone);
     }
 
 }

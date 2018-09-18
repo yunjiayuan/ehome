@@ -49,4 +49,6 @@ public class UserAccountSecurity {
 
     private int redisStatus;//该对象在缓存中的存在形式  0空对象 无数据库对应数据  1数据已有对应数据  与数据无关字段
 
+    private String code;//短信验证码 或邮箱验证码 与数据库无关字段
+
 }
