@@ -6,6 +6,7 @@ import com.busi.entity.*;
 import com.busi.service.LoveAndFriendsService;
 import com.busi.service.OtherPostsService;
 import com.busi.service.SearchGoodsService;
+import com.busi.service.UsedDealService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,9 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
     @Autowired
     private UserMembershipUtils userMembershipUtils;
 
+    @Autowired
+    UsedDealService usedDealService;
+
     /***
      * 查询接口
      * @param userId   用户ID
@@ -51,18 +55,42 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         int count = 50;
         List homeList = null;
         OtherPosts posts = null;
+        UsedDeal usedDeal = null;
         SearchGoods searchGoods = null;
         LoveAndFriends loveAndFriends = null;
         List<IPS_Home> ips = new ArrayList<>();
         homeList = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 100);
         if (userId > 0) {
             //开始查询
+            PageBean<UsedDeal> dealPage = usedDealService.findList(userId, page, count);
             PageBean<OtherPosts> otherPage = otherPostsService.findList(userId, page, count);
             PageBean<SearchGoods> goodsPage = searchGoodsService.findList(userId, page, count);
             PageBean<LoveAndFriends> lovePage = loveAndFriendsService.findUList(userId, page, count);
             List loveList = lovePage.getList();
+            List dealList = dealPage.getList();
             List otherList = otherPage.getList();
             List goodsList = goodsPage.getList();
+            if (dealList != null && dealList.size() > 0) {
+                for (int j = 0; j < dealList.size(); j++) {
+                    if (j < 4) {
+                        usedDeal = (UsedDeal) dealList.get(j);
+                        if (usedDeal != null) {
+                            IPS_Home ipsHome = new IPS_Home();
+                            ipsHome.setInfoId(usedDeal.getId());
+                            ipsHome.setTitle(usedDeal.getTitle());
+                            ipsHome.setUserId(usedDeal.getUserId());
+                            ipsHome.setContent(usedDeal.getContent());
+                            ipsHome.setReleaseTime(usedDeal.getReleaseTime());
+                            ipsHome.setRefreshTime(usedDeal.getRefreshTime());
+                            ipsHome.setAuditType(2);
+                            ipsHome.setDeleteType(1);
+                            ipsHome.setAfficheType(2);
+                            ipsHome.setFraction(usedDeal.getFraction());
+                            ips.add(ipsHome);
+                        }
+                    }
+                }
+            }
             if (otherList != null && otherList.size() > 0) {
                 for (int j = 0; j < otherList.size(); j++) {
                     if (j < 4) {
@@ -166,6 +194,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         }
         List list = null;
         OtherPosts posts = null;
+        UsedDeal usedDeal = null;
         SearchGoods searchGoods = null;
         IPS_Home ipsHome = new IPS_Home();
         LoveAndFriends loveAndFriends = null;
@@ -202,7 +231,35 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + infoId, 0);
         }
         if (afficheType == 2) {//二手手机
-            //后续添加
+            usedDeal = usedDealService.findUserById(infoId);
+            if (usedDeal == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            usedDeal.setRefreshTime(new Date());
+            usedDealService.updateTime(usedDeal);
+
+            //更新home
+            ipsHome.setAuditType(2);
+            ipsHome.setDeleteType(1);
+            ipsHome.setInfoId(infoId);
+            ipsHome.setUserId(userId);
+            ipsHome.setAfficheType(2);
+            ipsHome.setTitle(usedDeal.getTitle());
+            ipsHome.setContent(usedDeal.getContent());
+            ipsHome.setReleaseTime(usedDeal.getReleaseTime());
+            ipsHome.setRefreshTime(usedDeal.getRefreshTime());
+            ipsHome.setFraction(usedDeal.getFraction());
+            ipsHome.setMediumImgUrl(usedDeal.getImgUrl());
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    IPS_Home home = (IPS_Home) list.get(i);
+                    if (home.getAfficheType() == 2 && home.getInfoId() == usedDeal.getId()) {
+                        redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+                    }
+                }
+            }
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + infoId, 0);
         }
         if (afficheType == 3 || afficheType == 4 || afficheType == 5) {//寻人,寻物，失物招领
             searchGoods = searchGoodsService.findUserById(infoId);
@@ -353,6 +410,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             redisUtils.hset(Constants.REDIS_KEY_USER_SET_TOP, userId + "", count, second);
         }
         OtherPosts posts = null;
+        UsedDeal usedDeal = null;
         SearchGoods searchGoods = null;
         LoveAndFriends loveAndFriends = null;
         if (afficheType == 1) { //婚恋交友
@@ -366,7 +424,14 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + infoId, 0);
         }
         if (afficheType == 2) {//二手手机
-            //后续添加
+            usedDeal = usedDealService.findUserById(userId);
+            if (usedDeal == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前公告不存在！", new JSONObject());
+            }
+            usedDeal.setFrontPlaceType(frontPlaceType);
+            usedDealService.setTop(usedDeal);
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + infoId, 0);
         }
         if (afficheType == 3 || afficheType == 4 || afficheType == 5) {//寻人,寻物，失物招领
             searchGoods = searchGoodsService.findUserById(infoId);

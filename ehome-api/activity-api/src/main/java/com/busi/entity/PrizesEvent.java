@@ -29,7 +29,7 @@ public class PrizesEvent {
 
     private int issue;		//期号
 
-    private double price;//奖品价值
+    private int price;//奖品价值
 
     private String imgUrl;			//奖品图
 
