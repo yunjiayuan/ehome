@@ -14,7 +14,7 @@ import javax.validation.Valid;
 public interface UserAccountSecurityApiController {
 
     /***
-     * 查询安全中心数据接口
+     * 查询安全中心详情接口
      * @param userId
      * @return
      */
@@ -45,5 +45,28 @@ public interface UserAccountSecurityApiController {
     @PutMapping("unBindPhone")
     ReturnData unBindPhone (@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
 
+    /***
+     * 查询密保问题信息接口
+     * @param userId
+     * @return
+     */
+    @GetMapping("findQuestion/{userId}")
+    ReturnData findQuestion(@PathVariable long userId);
+
+    /***
+     * 验证密保问题信息
+     * @param userAccountSecurity
+     * @return
+     */
+    @PutMapping("checkQuestion")
+    ReturnData checkQuestion(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+
+    /***
+     * 设置和修改密保问题信息
+     * @param userAccountSecurity
+     * @return
+     */
+    @PutMapping("addQuestion")
+    ReturnData addQuestion(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
 
 }

@@ -242,4 +242,140 @@ public class UserAccountSecurityController extends BaseController implements Use
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
+    /***
+     * 查询密保问题信息接口
+     * @param userId
+     * @return
+     */
+    @Override
+    public ReturnData findQuestion(@PathVariable long userId) {
+        if(userId<=0){//参数有误
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+        }
+        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userId);
+        if(map==null||map.size()<=0){
+            UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(userId);
+            if(userAccountSecurity==null){
+                //之前该用户未设置过安全中心数据
+                userAccountSecurity = new UserAccountSecurity();
+                userAccountSecurity.setUserId(userId);
+            }else{
+                userAccountSecurity.setRedisStatus(1);//数据库中已有记录
+            }
+            //放到缓存中
+            map = CommonUtils.objectToMap(userAccountSecurity);
+            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userId,map,Constants.USER_TIME_OUT);
+        }
+        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map,UserAccountSecurity.class);
+        if(userAccountSecurity==null){
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"账号有误，请重新登录后，再进行此操作",new JSONObject());
+        }
+        String sQuestion = userAccountSecurity.getSecurityQuestion();
+        String questions = "";//只返回密保问题 不返回答案 格式为 ：1,2,5   问题编号“,”分隔
+        if(!CommonUtils.checkFull(sQuestion)){
+            String[] sqArray = sQuestion.split(";");
+            if(sqArray!=null&&sqArray.length>0){
+                for(int i=0;i<sqArray.length;i++){
+                    String[] questionArray = sqArray[i].split(",");
+                    if(i==sqArray.length-1){
+                        questions += questionArray[0];
+                    }else{
+                        questions += questionArray[0]+",";
+                    }
+                }
+            }
+        }
+        Map<String, Object> userAccountSecurityMap = new HashMap<>();
+        userAccountSecurityMap.put("securityQuestion", questions);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", userAccountSecurityMap);
+    }
+
+    /***
+     * 验证密保问题信息
+     * @param userAccountSecurity
+     * @return
+     */
+    @Override
+    public ReturnData checkQuestion(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult) {
+        //验证参数
+        if(CommonUtils.checkFull(userAccountSecurity.getSecurityQuestion())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"securityQuestion参数有误",new JSONObject());
+        }
+        //判断验证人权限
+        if(CommonUtils.getMyId()!=userAccountSecurity.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+userAccountSecurity.getUserId()+"]的安全中心信息",new JSONObject());
+        }
+        int isTrue = 0;//是否正确，0表示错误，1表示正确
+        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId());
+        if(map==null||map.size()<=0){
+            UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByUserId(userAccountSecurity.getUserId());
+            if(uas==null){
+                //之前该用户未设置过安全中心数据
+                return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该账号未设置过密保信息，无法验证",new JSONObject());
+            }else{
+                if(CommonUtils.checkFull(uas.getSecurityQuestion())){
+                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该账号未设置过密保信息，无法验证",new JSONObject());
+                }
+                if(uas.getSecurityQuestion().equals(userAccountSecurity.getSecurityQuestion())){
+                    isTrue = 1;//验证正确
+                }
+            }
+        }else{
+            if(Integer.parseInt(map.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
+                return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该账号未设置过密保信息，无法验证",new JSONObject());
+            }else{
+                if(map.get("securityQuestion")==null){
+                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该账号未设置过密保信息，无法验证",new JSONObject());
+                }
+                if(userAccountSecurity.getSecurityQuestion().equals(map.get("securityQuestion").toString())){
+                    isTrue = 1;//验证正确
+                }
+            }
+        }
+        Map<String, Object> userAccountSecurityMap = new HashMap<>();
+        userAccountSecurityMap.put("isTrue", isTrue);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", userAccountSecurityMap);
+    }
+
+    /***
+     * 设置和修改密保问题信息
+     * @param userAccountSecurity
+     * @return
+     */
+    @Override
+    public ReturnData addQuestion(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult) {
+        //验证参数
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        if(CommonUtils.checkFull(userAccountSecurity.getSecurityQuestion())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"securityQuestion参数有误",new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=userAccountSecurity.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+userAccountSecurity.getUserId()+"]的密保问题信息",new JSONObject());
+        }
+        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId());
+        if(map==null||map.size()<=0){
+            UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByUserId(userAccountSecurity.getUserId());
+            if(uas==null){
+                //之前该用户未设置过安全中心数据
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }else{
+                uas.setSecurityQuestion(userAccountSecurity.getSecurityQuestion());
+                userAccountSecurityService.updateUserAccountSecurity(uas);//数据库中已有记录
+            }
+        }else{
+            if(Integer.parseInt(map.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }else{
+                UserAccountSecurity uas = (UserAccountSecurity) CommonUtils.mapToObject(map,UserAccountSecurity.class);
+                uas.setSecurityQuestion(userAccountSecurity.getSecurityQuestion());
+                userAccountSecurityService.updateUserAccountSecurity(uas);
+            }
+        }
+        //清除安全中心缓存
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
 }
