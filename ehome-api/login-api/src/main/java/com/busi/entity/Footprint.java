@@ -20,10 +20,10 @@ public class Footprint {
 
     private long userId;	//被拜访用户
 
-    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date time;		//拜访时间
 
-    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date awayTime;	//离去时间
 
     private String userName;	//来访用户名称 -与数据库无关
