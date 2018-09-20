@@ -2,19 +2,19 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.RealNameInfo;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UserAccountSecurity;
+import com.busi.service.RealNameInfoService;
 import com.busi.service.UserAccountSecurityService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +31,9 @@ public class UserAccountSecurityController extends BaseController implements Use
 
     @Autowired
     UserAccountSecurityService userAccountSecurityService;
+
+    @Autowired
+    RealNameInfoService realNameInfoService;
 
     /***
      * 查询安全中心数据接口
@@ -377,5 +380,42 @@ public class UserAccountSecurityController extends BaseController implements Use
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 实名认证接口
+     * @param realNameInfo
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData checkRealName(@Valid @RequestBody RealNameInfo realNameInfo, BindingResult bindingResult) {
+        //验证参数
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //开始验证实名信息
+        RealNameInfo rni = null;
+        //查本地库中是否存在该实名信息
+        rni = realNameInfoService.findRealNameInfo(realNameInfo.getRealName(),realNameInfo.getCardNo());
+        if(rni!=null){//存在
+            if(rni.getUserId()==CommonUtils.getMyId()){//重复实名 该用户已实名过
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+            }
+            //新增实名记录
+            rni.setId(0);//置空主键
+            rni.setUserId(CommonUtils.getMyId());
+            rni.setTime(new Date());
+            realNameInfoService.addRealNameInfo(rni);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }
+        //本地中不存在 远程调用第三方平台认证
+        rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),realNameInfo.getRealName(),realNameInfo.getCardNo());
+        if(rni!=null){
+            realNameInfoService.addRealNameInfo(rni);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }else{
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"认证失败，请填写您本人正确的身份信息",new JSONObject());
+        }
     }
 }

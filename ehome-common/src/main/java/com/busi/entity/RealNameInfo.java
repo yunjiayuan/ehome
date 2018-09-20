@@ -1,9 +1,13 @@
 package com.busi.entity;
 
+import com.busi.validator.IdCardConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /** 
@@ -24,8 +28,11 @@ public class RealNameInfo {
 	
 	private long userId;//用户ID
 
+	@NotNull
+	@Pattern(regexp="[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{2,30}",message = "名字格式有误，长度为2-30，并且不能包含非法字符")
 	private String realName;//用户真实姓名
-	
+
+	@IdCardConstraint(message = "身份证格式有误")
 	private String cardNo;//用户身份证号
 	
 	private String addrCode;//用户区号

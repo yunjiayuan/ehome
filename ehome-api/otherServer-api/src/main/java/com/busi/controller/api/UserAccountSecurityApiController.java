@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.busi.entity.RealNameInfo;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UserAccountSecurity;
 import org.springframework.validation.BindingResult;
@@ -68,5 +69,12 @@ public interface UserAccountSecurityApiController {
      */
     @PutMapping("addQuestion")
     ReturnData addQuestion(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+
+    /***
+     * 实名认证接口
+     * @return
+     */
+    @PutMapping("checkRealName")
+    ReturnData checkRealName(@Valid @RequestBody RealNameInfo realNameInfo, BindingResult bindingResult);
 
 }
