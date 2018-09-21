@@ -55,4 +55,14 @@ public class UserAccountSecurityService {
         return  userAccountSecurityDao.findUserAccountSecurityByPhone(phone);
     }
 
+    /***
+     * 查询第三方平台账号是否被绑定过
+     * @param otherPlatformType
+     * @param otherPlatformAccount
+     * @return
+     */
+    public UserAccountSecurity findUserAccountSecurityByOther(int otherPlatformType,String otherPlatformAccount){
+        return  userAccountSecurityDao.findUserAccountSecurityByOther(otherPlatformType,otherPlatformAccount);
+    }
+
 }

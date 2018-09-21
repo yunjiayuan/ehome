@@ -418,4 +418,82 @@ public class UserAccountSecurityController extends BaseController implements Use
             return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"认证失败，请填写您本人正确的身份信息",new JSONObject());
         }
     }
+
+    /***
+     * 门牌号绑定微信、QQ、新浪微博等第三方平台账号
+     * @param userAccountSecurity
+     * @return
+     */
+    @Override
+    public ReturnData bindHouseNumber(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult) {
+        //验证参数
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证当前第三方平台账户是否被其他账户绑定过
+        UserAccountSecurity uasy = userAccountSecurityService.findUserAccountSecurityByOther(userAccountSecurity.getOtherPlatformType(),userAccountSecurity.getOtherPlatformAccount());
+        if(uasy!=null){
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该第三方平台账户已被其他账户绑定过",new JSONObject());
+        }
+        //验证当前用户是否已绑定过
+        Map<String,Object> userAccountSecurityMap = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId());
+        if(userAccountSecurityMap==null||userAccountSecurityMap.size()<=0){
+            UserAccountSecurity uass = userAccountSecurityService.findUserAccountSecurityByUserId(userAccountSecurity.getUserId());
+            if(uass!=null){
+                if(!CommonUtils.checkFull(uass.getOtherPlatformAccount())){
+                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"绑定第三方平台账户失败，您绑定过了",new JSONObject());
+                }
+                //开始绑定
+                uass.setOtherPlatformAccount(userAccountSecurity.getOtherPlatformAccount());
+                uass.setOtherPlatformType(userAccountSecurity.getOtherPlatformType());
+                userAccountSecurityService.updateUserAccountSecurity(uass);
+            }else{
+                //开始绑定
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }
+        }else{
+            if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==1){//redisStatus==1 说明数据中已有记录
+                if(userAccountSecurityMap.get("otherPlatformAccount")!=null){
+                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"绑定第三方平台账户失败，您绑定过了",new JSONObject());
+                }
+                //开始绑定
+                UserAccountSecurity uas = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
+                if(uas==null){
+                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"账号有误，请重新登录后，再进行此操作",new JSONObject());
+                }
+                uas.setOtherPlatformType(userAccountSecurity.getOtherPlatformType());
+                uas.setOtherPlatformAccount(userAccountSecurity.getOtherPlatformAccount());
+                userAccountSecurityService.updateUserAccountSecurity(uas);
+            }else{
+                //开始绑定
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }
+        }
+        //清除安全中心缓存
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 解除门牌号与第三方平台账号（微信、QQ、新浪微博）之间的绑定关系
+     * @param userAccountSecurity
+     * @return
+     */
+    @Override
+    public ReturnData unBindHouseNumber(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult) {
+        //验证参数
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByOther(userAccountSecurity.getOtherPlatformType(),userAccountSecurity.getOtherPlatformAccount());
+        if(uas==null){
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该第三方平台账户尚未被其他账户绑定过，无法解绑",new JSONObject());
+        }
+        uas.setOtherPlatformType(0);
+        uas.setOtherPlatformAccount("");
+        userAccountSecurityService.updateUserAccountSecurity(uas);
+        //清除安全中心缓存
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
 }

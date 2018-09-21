@@ -77,4 +77,20 @@ public interface UserAccountSecurityApiController {
     @PutMapping("checkRealName")
     ReturnData checkRealName(@Valid @RequestBody RealNameInfo realNameInfo, BindingResult bindingResult);
 
+    /***
+     * 门牌号绑定微信、QQ、新浪微博等第三方平台账号
+     * @param userAccountSecurity
+     * @return
+     */
+    @PutMapping("bindHouseNumber")
+    ReturnData bindHouseNumber(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+
+    /***
+     * 解除门牌号与第三方平台账号（微信、QQ、新浪微博）之间的绑定关系
+     * @param userAccountSecurity
+     * @return
+     */
+    @PutMapping("unBindHouseNumber")
+    ReturnData unBindHouseNumber(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+
 }

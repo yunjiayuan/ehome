@@ -24,42 +24,6 @@ public interface UserAccountSecurityDao {
     int add(UserAccountSecurity userAccountSecurity);
 
     /***
-     * 更新
-     * @param userAccountSecurity
-     * @return
-     */
-    @Update("<script>" +
-            "update userAccountSecurity set"+
-            "<if test=\"idCard != '' or idCard != null\">"+
-            " idCard=#{idCard}," +
-            "</if>" +
-            "<if test=\"realName != '' or realName != null\">"+
-            " realName=#{realName}," +
-            "</if>" +
-            "<if test=\"phone != '' or phone != null\">"+
-            " phone=#{phone}," +
-            "</if>" +
-            "<if test=\"email != '' or email != null\">"+
-            " email=#{email}," +
-            "</if>" +
-            "<if test=\"securityQuestion != '' or securityQuestion != null\">"+
-            " securityQuestion=#{securityQuestion}," +
-            "</if>" +
-            "<if test=\"otherPlatformAccount != '' or otherPlatformAccount != null\">"+
-            " otherPlatformAccount=#{otherPlatformAccount}," +
-            "</if>" +
-            "<if test=\"deviceLock != '' or deviceLock != null\">"+
-            " deviceLock=#{deviceLock}," +
-            "</if>" +
-            "<if test=\"otherPlatformType != 0\">"+
-            " otherPlatformType=#{otherPlatformType}," +
-            "</if>" +
-            " userId=#{userId}" +
-            " where userId=#{userId}"+
-            "</script>")
-    int update(UserAccountSecurity userAccountSecurity);
-
-    /***
      * 根据userId查询
      * @param userId
      * @return
@@ -74,4 +38,33 @@ public interface UserAccountSecurityDao {
      */
     @Select(("select * from userAccountSecurity where phone=#{phone}"))
     UserAccountSecurity findUserAccountSecurityByPhone(@Param("phone") String phone);
+
+    /***
+     * 更新
+     * @param userAccountSecurity
+     * @return
+     */
+    @Update("<script>" +
+            "update userAccountSecurity set"+
+            " realName=#{realName}," +
+            " idCard=#{idCard}," +
+            " phone=#{phone}," +
+            " email=#{email}," +
+            " securityQuestion=#{securityQuestion}," +
+            " deviceLock=#{deviceLock}," +
+            " otherPlatformAccount=#{otherPlatformAccount}," +
+            " otherPlatformType=#{otherPlatformType}," +
+            " userId=#{userId}" +
+            " where userId=#{userId}"+
+            "</script>")
+    int update(UserAccountSecurity userAccountSecurity);
+
+    /***
+     * 查询第三方平台账号是否被绑定过
+     * @param otherPlatformType
+     * @param otherPlatformAccount
+     * @return
+     */
+    @Select(("select * from userAccountSecurity where otherPlatformType=#{otherPlatformType} and otherPlatformAccount=#{otherPlatformAccount}"))
+    UserAccountSecurity findUserAccountSecurityByOther(@Param("otherPlatformType") int otherPlatformType,@Param("otherPlatformAccount") String otherPlatformAccount);
 }
