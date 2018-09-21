@@ -110,7 +110,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
                 redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
                 //新增home
-                if (fraction > 70) {
+                if (loveAndFriends.getFraction() > 70) {
                     IPS_Home ipsHome = new IPS_Home();
                     ipsHome.setInfoId(loveAndFriends.getId());
                     ipsHome.setTitle(loveAndFriends.getTitle());
@@ -252,7 +252,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             fraction += 30;
         }
 
-        if (fraction >= 70) {
+        if (loveAndFriends.getFraction() >= 70) {
             IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(loveAndFriends.getId());
             ipsHome.setTitle(loveAndFriends.getTitle());

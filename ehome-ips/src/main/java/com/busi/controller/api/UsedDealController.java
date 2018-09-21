@@ -117,7 +117,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         usedDealService.add(usedDeal);
         //新增home
-        if (fraction > 70) {
+        if (usedDeal.getFraction() > 70) {
             IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(usedDeal.getId());
             ipsHome.setTitle(usedDeal.getTitle());
@@ -145,9 +145,11 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         //新增任务
         mqUtils.sendTaskMQ(usedDeal.getUserId(), 1, 3);
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", usedDeal.getId());
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + usedDeal.getId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /**
@@ -252,7 +254,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             fraction += 30;
         }
         //新增home
-        if (fraction > 70) {
+        if (usedDeal.getFraction() > 70) {
             IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(usedDeal.getId());
             ipsHome.setTitle(usedDeal.getTitle());
@@ -301,9 +303,11 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(usedDeal.getUserId(), usedDeal.getDelImgUrls());
         }
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", usedDeal.getId());
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + usedDeal.getId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /**
@@ -320,11 +324,22 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         //查询缓存 缓存中不存在 查询数据库
         int num = 0;
+        UsedDeal posts = null;
         Map<String, Object> otherPostsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_USEDDEAL + id);
         if (otherPostsMap == null || otherPostsMap.size() <= 0) {
-            UsedDeal posts = usedDealService.findUserById(id);
+            posts = usedDealService.findUserById(id);
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            UserInfo userInfo = null;
+            userInfo = userInfoUtils.getUserInfo(posts.getUserId());
+            if (userInfo != null) {
+                num = usedDealService.findNum(userInfo.getUserId(), 1);//已上架
+                posts.setSellingNumber(num);
+                posts.setName(userInfo.getName());
+                posts.setHead(userInfo.getHead());
+                posts.setProTypeId(userInfo.getProType());
+                posts.setHouseNumber(userInfo.getHouseNumber());
             }
             //新增浏览记录
             mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), 2);
@@ -365,27 +380,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         //开始查询
         PageBean<UsedDeal> pageBean = null;
         if (sort == 4) {
-            long raidus = 10000; //半径10km
-            Map<String, Object> param = new HashMap<>();
-            param.put("lat", lat);
-            param.put("lon", lon);
-            Double latitude = lat;
-            Double longitude = lon;
-            // 赤道周长24901英里 1609是转换成米的系数
-            Double degree = (24901 * 1609) / 360.0;
-            double raidusMile = raidus;
-            Double dpmLat = 1 / degree;
-            Double radiusLat = dpmLat * raidusMile;
-            Double minLat = latitude - radiusLat;
-            Double maxLat = latitude + radiusLat;
-
-            Double mpdLng = degree * Math.cos(latitude * (Math.PI / 180));
-            Double dpmLng = 1 / mpdLng;
-            Double radiusLng = dpmLng * raidusMile;
-            Double minLng = longitude - radiusLng;
-            Double maxLng = longitude + radiusLng;
-
-            pageBean = usedDealService.findAoList(lat, lon, page, count, minLat, maxLat, minLng, maxLng);
+            pageBean = usedDealService.findAoList(lat, lon, page, count);
         } else {
             pageBean = usedDealService.findList(sort, userId, province, city, district, minPrice, maxPrice, usedSort1, usedSort2, usedSort3, page, count);
         }

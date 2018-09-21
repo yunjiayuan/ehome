@@ -236,13 +236,11 @@ public interface UsedDealDao {
      * @return
      */
     @Select("<script>" +
-            "select * from usedDeal" +
-            " where 1=1 " +
-            "<if test=\"lat > 0 or lon > 0\">" +
-            " <![CDATA[ AND lat > #{minLat} AND lat < #{maxLat} AND lon > #{minLng} AND lon < #{maxLng} ]]>" +
-            "</if>" +
+            "select id,usedSort1,usedSort2,usedSort3,basicParame1,basicParame2,basicParame3,basicParame4,userId,title,content,seeNumber,deleteType,auditType,releaseTime,refreshTime,imgUrl,problemType,otherProblem,sellingPrice,buyingPrice,pinkageType,negotiable,toPay,merchantType,expressMode,province,city,district,sellType,lat,lon," +
+            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * 1000) AS distance" +
+            " FROM usedDeal ORDER BY distance ASC" +
             "</script>")
-    List<UsedDeal> findAoList(@Param("lat") double lat, @Param("lon") double lon, @Param("minLat") double minLat, @Param("maxLat") double maxLat, @Param("minLng") double minLng, @Param("maxLng") double maxLng);
+    List<UsedDeal> findAoList(@Param("lat") double lat, @Param("lon") double lon);
 
 
     /***
