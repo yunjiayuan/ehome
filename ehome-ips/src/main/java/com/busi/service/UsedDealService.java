@@ -147,11 +147,11 @@ public class UsedDealService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<UsedDeal> findAoList(double lat, double lon, int page, int count, double minLat, double maxLat, double minLng, double maxLng) {
+    public PageBean<UsedDeal> findAoList(double lat, double lon, int page, int count) {
 
         List<UsedDeal> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = usedDealDao.findAoList(lat, lon, minLat, maxLat, minLng, maxLng);
+        list = usedDealDao.findAoList(lat, lon);
 
         return PageUtils.getPageBean(p, list);
     }
