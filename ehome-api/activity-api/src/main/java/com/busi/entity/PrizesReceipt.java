@@ -24,7 +24,7 @@ public class PrizesReceipt {
 
     private String costName;	//奖品名称
 
-    private String describe;	//奖品描述
+    private String describes;	//奖品描述
 
     private int issue;		//期号
 
