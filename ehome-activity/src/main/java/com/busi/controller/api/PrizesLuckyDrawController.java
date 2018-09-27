@@ -6,6 +6,7 @@ import com.busi.entity.*;
 import com.busi.service.PrizesLuckyDrawService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
+import com.busi.utils.UserAccountSecurityUtils;
 import com.busi.utils.UserInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,9 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
     @Autowired
     PrizesLuckyDrawService prizesLuckyDrawService;
 
+    @Autowired
+    UserAccountSecurityUtils userAccountSecurityUtils;
+
     /***
      * 参加活动
      * @param issue 期数
@@ -41,13 +45,21 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
         if (issue <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "issue参数有误", new JSONObject());
         }
-        //判断该用户是否绑定手机(暂留)
-
         PrizesLuckyDraw prizesLuckyDraw = null;
         PrizesLuckyDraw luckyDraw = new PrizesLuckyDraw();
         prizesLuckyDraw = prizesLuckyDrawService.findIn(CommonUtils.getMyId(), issue);
         if (prizesLuckyDraw != null) {
             return returnData(StatusCode.CODE_ALREADY_JOIN.CODE_VALUE, "用户：[ " + CommonUtils.getMyId() + "]已参与第[" + issue + "]期活动！", new JSONObject());
+        }
+        //判断该用户是否绑定手机
+        UserAccountSecurity userAccountSecurity = null;
+        userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(CommonUtils.getMyId());
+        if (userAccountSecurity != null) {
+            if (CommonUtils.checkFull(userAccountSecurity.getPhone())) {
+                return returnData(StatusCode.CODE_NOT_BIND_PHONE_ERROR.CODE_VALUE, "该用户未绑定手机号!", new JSONObject());
+            }
+        } else {
+            return returnData(StatusCode.CODE_NOT_BIND_PHONE_ERROR.CODE_VALUE, "该用户未绑定手机号!", new JSONObject());
         }
         //开始抽奖
         int awardsId = 0;//奖品ID：0背包  1便携音箱  2豆浆机  3精美餐具  4动漫模型  5酒红石榴石手链  6女士太阳镜  7剃须刀  8头戴式耳机  9榨汁机
@@ -92,7 +104,7 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
                     prize.setIssue(e.getIssue());
                     prize.setImgUrl(e.getImgUrl());
                     prize.setCostName(e.getName());
-                    prize.setDescribe(e.getDescribe());
+                    prize.setDescribes(e.getDescribe());
 
                 }
             } else {//二等奖
@@ -103,7 +115,7 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
                     prize.setPrice(e.getPrice());
                     prize.setIssue(e.getIssue());
                     prize.setCostName(e.getName());
-                    prize.setDescribe(e.getDescribe());
+                    prize.setDescribes(e.getDescribe());
                 }
             }
             prize.setAddress(address);
@@ -258,9 +270,15 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        //判断该用户是否绑定手机(暂留)
-
-        int binding = 1;//是否绑定手机：1是  0 否
+        //判断该用户是否绑定手机
+        int binding = 0;//是否绑定手机：1是  0 否
+        UserAccountSecurity userAccountSecurity = null;
+        userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(CommonUtils.getMyId());
+        if (userAccountSecurity != null) {
+            if (!CommonUtils.checkFull(userAccountSecurity.getPhone())) {
+                binding = 1;//是否绑定手机：1是  0 否
+            }
+        }
         int is = 1;//0已参加 1未参加
         List list = null;
         PrizesLuckyDraw draw = null;

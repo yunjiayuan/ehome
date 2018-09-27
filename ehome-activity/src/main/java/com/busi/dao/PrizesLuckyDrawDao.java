@@ -34,8 +34,8 @@ public interface PrizesLuckyDrawDao {
      * @param prizesReceipt
      * @return
      */
-    @Insert("insert into prizesReceipt(userId,costName,describe,issue,price,imgUrl,contactsName,contactsPhone,province,city,district,postalcode,address,addTime)" +
-            "values (#{userId},#{costName},#{describe},#{issue},#{price},#{imgUrl},#{contactsName},#{contactsPhone},#{province},#{city},#{district},#{postalcode},#{address},#{addTime})")
+    @Insert("insert into prizesReceipt(userId,costName,describes,issue,price,imgUrl,contactsName,contactsPhone,province,city,district,postalcode,address,addTime)" +
+            "values (#{userId},#{costName},#{describes},#{issue},#{price},#{imgUrl},#{contactsName},#{contactsPhone},#{province},#{city},#{district},#{postalcode},#{address},#{addTime})")
     @Options(useGeneratedKeys = true)
     int addReceipt(PrizesReceipt prizesReceipt);
 
