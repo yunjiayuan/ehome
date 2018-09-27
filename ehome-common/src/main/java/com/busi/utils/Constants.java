@@ -161,8 +161,10 @@ public class Constants {
     //验证码相关配置
     public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
     public static final String REDIS_KEY_PAY_FIND_PAYPASSWORD_CODE = "payment_findPayPassword_code_";//找回支付密码 短信验证码对应的key
-    public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_CODE = "user_account_security_bind_code_";//安全中心绑定手机验证码 短信验证码对应的key
-    public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_CODE = "user_account_security_unbind_code_";//安全中心解绑手机验证码 短信验证码对应的key
+    public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_CODE = "user_account_security_bind_phone_code_";//安全中心绑定手机验证码 短信验证码对应的key
+    public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_CODE = "user_account_security_unbind_phone_code_";//安全中心解绑手机验证码 短信验证码对应的key
+    public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_EMAIL_CODE = "user_account_security_bind_email_code_";//安全中心绑定邮箱验证码 验证码对应的key
+    public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_EMAIL_CODE = "user_account_security_unbind_email_code_";//安全中心解绑邮箱验证码 验证码对应的key
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_FINDPASSWORD_CODE = "user_account_security_findPassword_code_";//手机短信找回登录密码验证码 短信验证码对应的key
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_CHANGEPASSWORD_CODE = "user_account_security_changePassword_code_";//手机短信修改密码验证码 短信验证码对应的key
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_INVITATION_CODE = "user_account_security_invitation_code_";//短信邀请新用户注册 短信验证码对应的key
