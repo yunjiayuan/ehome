@@ -86,11 +86,18 @@ public interface RegisterApiController {
 
     /***
      * 修改新用户系统欢迎消息状态接口
-     * @param userInfo
      * @return
      */
     @PutMapping("updateWelcomeInfoStatus")
     ReturnData updateWelcomeInfoStatus ();
+
+    /***
+     * 修改登录密码接口
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("changePassWord")
+    ReturnData changePassWord (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 
 //    /***
 //     * 测试fegin被调用

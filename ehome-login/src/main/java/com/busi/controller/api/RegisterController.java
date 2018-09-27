@@ -1,6 +1,5 @@
 package com.busi.controller.api;
 
-import com.busi.entity.GraffitiChartLog;
 import com.busi.entity.UserInfo;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
@@ -493,6 +492,7 @@ public class RegisterController extends BaseController implements RegisterApiCon
             }
             //更新缓存 自己修改自己的用户信息 不考虑并发问题
             redisUtils.hmset(Constants.REDIS_KEY_USER+newUserInfo.getUserId(),CommonUtils.objectToMap(newUserInfo),Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER+newUserInfo.getUserId(),Constants.USER_TIME_OUT);
         }
         //添加任务
         mqUtils.sendTaskMQ(userInfo.getUserId(),0,1);
@@ -522,6 +522,7 @@ public class RegisterController extends BaseController implements RegisterApiCon
             //更新缓存 自己修改自己的用户信息 不考虑并发问题
             redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"head",userInfo.getHead(),Constants.USER_TIME_OUT);
             redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"graffitiHead","",Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER+userInfo.getUserId(),Constants.USER_TIME_OUT);
         }
         //添加任务
         mqUtils.sendTaskMQ(userInfo.getUserId(),0,0);
@@ -550,6 +551,7 @@ public class RegisterController extends BaseController implements RegisterApiCon
         if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
             //更新缓存 自己修改自己的用户信息 不考虑并发问题
             redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"accessRights",userInfo.getAccessRights(),Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER+userInfo.getUserId(),Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
@@ -570,12 +572,40 @@ public class RegisterController extends BaseController implements RegisterApiCon
         if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
             //更新缓存 自己修改自己的用户信息 不考虑并发问题
             redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"welcomeInfoStatus",userInfo.getWelcomeInfoStatus(),Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER+userInfo.getUserId(),Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
-//    @Override
-//    public ReturnData testFegin(@PathVariable Integer id) {
-//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"nihao",new JSONObject());
-//    }
+    /***
+     * 修改登录密码接口
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData changePassWord(@Valid UserInfo userInfo, BindingResult bindingResult) {
+        //验证参数格式
+        if(CommonUtils.checkFull(userInfo.getPassword())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"旧密码不能为空",new JSONObject());
+        }
+        if(CommonUtils.checkFull(userInfo.getNewPassword())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"新密码不能为空",new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=userInfo.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+userInfo.getUserId()+"]的密码信息",new JSONObject());
+        }
+        //开始修改
+        userInfoService.changePassWord(userInfo);
+        //获取缓存中的登录信息
+        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userInfo.getUserId());
+        if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"head",userInfo.getPassword(),Constants.USER_TIME_OUT);
+            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"password","",Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER+userInfo.getUserId(),Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
 }
