@@ -145,13 +145,13 @@ public class SendMessageController extends BaseController implements SendMessage
         String code = CommonUtils.getRandom(4,1);
         //根据邮件类型 开始发送邮件
         if(emailType==1){//1解绑密保邮箱的验证邮件
-            redisUtils.set("safe_oldEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+            redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }else if(emailType==2){//2修改密码的验证邮件
             redisUtils.set("safe_changePWEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }else if(emailType==3){//3找回密码的验证邮件
             redisUtils.set("safe_findPWEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }else{//0绑定密保邮箱的验证邮件
-            redisUtils.set("safe_newEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+            redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }
         //调用MQ进行发送短信
         mqUtils.sendEmailMessage(CommonUtils.getMyId(),email,emailType,code,userName);
