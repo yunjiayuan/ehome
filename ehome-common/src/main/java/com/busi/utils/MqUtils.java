@@ -131,4 +131,31 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 发送邮件
+     * @param userId    用户ID
+     * @param email     将要发送邮件的邮箱地址
+     * @param emailType 邮件类型 0绑定密保邮箱的验证邮件,1解绑密保邮箱的验证邮件,2修改密码的验证邮件,3找回密码的验证邮件
+     * @param code      邮件验证码
+     * @param userName  用户名
+     */
+    public void sendEmailMessage(long userId,String email,int emailType,String code,String userName){
+
+        //调用MQ同步浏览记录到浏览记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "1");//interfaceType  0 表示发送邮件
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("email",email);
+        content.put("emailType",emailType);
+        content.put("code",code);
+        content.put("userName",userName);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
 }

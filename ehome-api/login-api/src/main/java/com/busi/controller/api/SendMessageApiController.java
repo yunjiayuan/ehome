@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * create time：2018-8-30 08:34:03
  */
 public interface SendMessageApiController {
+
     /**
      * 发送手机短信
      * @param phone     将要发送短信的手机号
@@ -19,4 +20,14 @@ public interface SendMessageApiController {
      */
     @GetMapping("SendPhoneMessage/{phone}/{phoneType}")
     ReturnData SendPhoneMessage(@PathVariable String phone, @PathVariable int phoneType);
+
+    /**
+     * 发送手机短信
+     * @param email     将要发送邮件的邮箱地址
+     * @param emailType 邮件类型 0绑定密保邮箱的验证邮件,1解绑密保邮箱的验证邮件,2修改密码的验证邮件,3找回密码的验证邮件
+     * @return
+     */
+    @GetMapping("SendEmailMessage/{email}/{emailType}")
+    ReturnData SendEmailMessage(@PathVariable String email, @PathVariable int emailType);
+
 }
