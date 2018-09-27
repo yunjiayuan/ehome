@@ -56,6 +56,15 @@ public class UserAccountSecurityService {
     }
 
     /***
+     * 根据邮箱查询
+     * @param email
+     * @return
+     */
+    public UserAccountSecurity findUserAccountSecurityByEmail(String email){
+        return  userAccountSecurityDao.findUserAccountSecurityByEmail(email);
+    }
+
+    /***
      * 查询第三方平台账号是否被绑定过
      * @param otherPlatformType
      * @param otherPlatformAccount

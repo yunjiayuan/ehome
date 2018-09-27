@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -126,7 +127,7 @@ public class UserAccountSecurityController extends BaseController implements Use
     @Override
     public ReturnData checkNewPhone(@PathVariable String phone) {
         //验证参数
-        if(!CommonUtils.checkPhone(phone)){
+        if(CommonUtils.checkFull(phone)||!CommonUtils.checkPhone(phone)){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"phone参数有误",new JSONObject());
         }
         UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByPhone(phone);
@@ -395,11 +396,22 @@ public class UserAccountSecurityController extends BaseController implements Use
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
         }
         //开始验证实名信息
-        RealNameInfo rni = null;
+        List<RealNameInfo> list = null;
         //查本地库中是否存在该实名信息
-        rni = realNameInfoService.findRealNameInfo(realNameInfo.getRealName(),realNameInfo.getCardNo());
-        if(rni!=null){//存在
-            if(rni.getUserId()!=CommonUtils.getMyId()){//过滤重复实名
+        list = realNameInfoService.findRealNameInfo(realNameInfo.getRealName(),realNameInfo.getCardNo());
+        RealNameInfo rni = null;
+        if(list!=null&&list.size()>0){//存在
+            boolean flag =false;
+            for(int i=0;i<list.size();i++){
+                rni = list.get(i);
+                if(rni!=null){
+                    if(rni.getUserId()==CommonUtils.getMyId()){//过滤重复实名
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+            if(!flag){
                 //新增实名记录
                 rni.setId(0);//置空主键
                 rni.setUserId(CommonUtils.getMyId());
@@ -523,6 +535,133 @@ public class UserAccountSecurityController extends BaseController implements Use
         userAccountSecurityService.updateUserAccountSecurity(uas);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 绑定邮箱前，验证新邮箱是否被占用接口
+     * @param email
+     * @return
+     */
+    @Override
+    public ReturnData checkNewEmail(@PathVariable String email) {
+        //验证参数
+        if(CommonUtils.checkFull(email)||!CommonUtils.checkEmail(email)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"phone参数有误",new JSONObject());
+        }
+        UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByEmail(email);
+        int isTrue = 0;//是否正确，0表示占用，1表示可用
+        if(userAccountSecurity==null){
+            isTrue = 1;
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("isTrue", isTrue);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 绑定邮箱接口
+     * @param userAccountSecurity
+     * @return
+     */
+    @Override
+    public ReturnData bindNewEmail(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult) {
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=userAccountSecurity.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+userAccountSecurity.getUserId()+"]的安全中心信息",new JSONObject());
+        }
+        //验证验证码是否正确
+        Object serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_EMAIL_CODE+userAccountSecurity.getUserId()+"_"+userAccountSecurity.getEmail());
+        if(serverCode==null){
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
+        }
+        if(!serverCode.toString().equals(userAccountSecurity.getCode())){//不相等
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"您输入的验证码有误,请重新输入",new JSONObject());
+        }
+        //验证该邮箱是否被绑定过
+        UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByEmail(userAccountSecurity.getEmail());
+        if(uas!=null){//已存在
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该邮箱已被其他账户绑定，请更换其他的手机号再进行绑定",new JSONObject());
+        }
+        //判断该账户是否未绑定邮箱
+        Map<String,Object> userAccountSecurityMap = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId());
+        if(userAccountSecurityMap==null||userAccountSecurityMap.size()<=0){
+            UserAccountSecurity uass = userAccountSecurityService.findUserAccountSecurityByUserId(userAccountSecurity.getUserId());
+            if(uass==null){
+                //之前该用户未设置过安全中心数据 新增
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }else{//更新
+                userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
+            }
+        }else{
+            if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
+                //之前该用户未设置过权限信息 新增
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }else{//更新
+                userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
+            }
+        }
+        //清除安全中心缓存
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
+        //清除验证码
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_EMAIL_CODE+userAccountSecurity.getUserId()+"_"+userAccountSecurity.getEmail(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 解绑邮箱
+     * @param userAccountSecurity
+     * @return
+     */
+    @Override
+    public ReturnData unBindEmail(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult) {
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=userAccountSecurity.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+userAccountSecurity.getUserId()+"]的安全中心信息",new JSONObject());
+        }
+        //验证验证码是否正确
+        Object serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_EMAIL_CODE+userAccountSecurity.getUserId()+"_"+userAccountSecurity.getEmail());
+        if(serverCode==null){
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
+        }
+        if(!serverCode.toString().equals(userAccountSecurity.getCode())){//不相等
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"您输入的验证码有误,请重新输入",new JSONObject());
+        }
+        //判断该账户绑定手机号情况
+        Map<String,Object> userAccountSecurityMap = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId());
+        if(userAccountSecurityMap==null||userAccountSecurityMap.size()<=0){
+            UserAccountSecurity uass = userAccountSecurityService.findUserAccountSecurityByUserId(userAccountSecurity.getUserId());
+            if(uass==null){
+                return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该账号未绑定过邮箱，无法解绑",new JSONObject());
+            }else{
+                if(!uass.getEmail().equals(userAccountSecurity.getEmail())){
+                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"解绑邮箱地址不正确，解绑失败",new JSONObject());
+                }
+            }
+        }else{
+            if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
+                return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该账号未绑定过邮箱，无法解绑",new JSONObject());
+            }else{
+                if(!userAccountSecurityMap.get("email").toString().equals(userAccountSecurity.getEmail())){
+                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"解绑邮箱地址不正确，解绑失败",new JSONObject());
+                }
+            }
+        }
+        //开始解绑 更新数据库
+        userAccountSecurity.setEmail("");
+        userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
+        //清除安全中心缓存
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
+        //清除验证码
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_EMAIL_CODE+userAccountSecurity.getUserId()+"_"+userAccountSecurity.getEmail(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

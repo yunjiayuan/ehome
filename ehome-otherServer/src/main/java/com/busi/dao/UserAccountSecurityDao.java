@@ -40,6 +40,14 @@ public interface UserAccountSecurityDao {
     UserAccountSecurity findUserAccountSecurityByPhone(@Param("phone") String phone);
 
     /***
+     * 根据email查询
+     * @param email
+     * @return
+     */
+    @Select(("select * from userAccountSecurity where email=#{email}"))
+    UserAccountSecurity findUserAccountSecurityByEmail(@Param("email") String email);
+
+    /***
      * 更新
      * @param userAccountSecurity
      * @return

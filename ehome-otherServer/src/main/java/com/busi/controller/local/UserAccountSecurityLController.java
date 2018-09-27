@@ -40,6 +40,7 @@ public class UserAccountSecurityLController extends BaseController implements  U
             if (uas == null) {//数据库也没有
                 return null;
             }
+            uas.setRedisStatus(1);
             userAccountSecurityMap = CommonUtils.objectToMap(uas);
             redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId, userAccountSecurityMap, Constants.USER_TIME_OUT);
         }

@@ -93,4 +93,28 @@ public interface UserAccountSecurityApiController {
     @PutMapping("unBindHouseNumber")
     ReturnData unBindHouseNumber(@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
 
+    /***
+     * 绑定邮箱前，验证新邮箱是否被占用接口
+     * @param email
+     * @return
+     */
+    @GetMapping("checkNewEmail/{email}")
+    ReturnData checkNewEmail(@PathVariable String email);
+
+    /***
+     * 绑定邮箱接口
+     * @param userAccountSecurity
+     * @return
+     */
+    @PutMapping("bindNewEmail")
+    ReturnData bindNewEmail (@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+
+    /***
+     * 解绑邮箱
+     * @param userAccountSecurity
+     * @return
+     */
+    @PutMapping("unBindEmail")
+    ReturnData unBindEmail (@Valid @RequestBody UserAccountSecurity userAccountSecurity, BindingResult bindingResult);
+
 }

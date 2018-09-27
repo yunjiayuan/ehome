@@ -35,13 +35,13 @@ public class RealNameInfoService {
      * @param cardNo   身份证号
      * @return
      */
-    public RealNameInfo findRealNameInfo(String realName,String cardNo){
+    public List<RealNameInfo> findRealNameInfo(String realName,String cardNo){
         List<RealNameInfo> list = realNameInfoDao.findRealNameInfo(realName,cardNo);
-        RealNameInfo realNameInfo = null;
-        if(list!=null&&list.size()>0){
-            realNameInfo = list.get(0);
-        }
-        return realNameInfo;
+//        RealNameInfo realNameInfo = null;
+//        if(list!=null&&list.size()>0){
+//            realNameInfo = list.get(0);
+//        }
+        return list;
     }
 
 }
