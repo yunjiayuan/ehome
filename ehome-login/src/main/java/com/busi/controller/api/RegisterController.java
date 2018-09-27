@@ -583,10 +583,10 @@ public class RegisterController extends BaseController implements RegisterApiCon
      * @return
      */
     @Override
-    public ReturnData changePassWord(@Valid UserInfo userInfo, BindingResult bindingResult) {
+    public ReturnData changePassWord(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
         //验证参数格式
         if(CommonUtils.checkFull(userInfo.getPassword())){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"旧密码不能为空",new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"原密码不能为空",new JSONObject());
         }
         if(CommonUtils.checkFull(userInfo.getNewPassword())){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"新密码不能为空",new JSONObject());
@@ -595,14 +595,20 @@ public class RegisterController extends BaseController implements RegisterApiCon
         if(CommonUtils.getMyId()!=userInfo.getUserId()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+userInfo.getUserId()+"]的密码信息",new JSONObject());
         }
-        //开始修改
-        userInfoService.changePassWord(userInfo);
         //获取缓存中的登录信息
         Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userInfo.getUserId());
         if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
+            if(userMap.get("password")==null){
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"当前账户登录状态出现异常，建议重新登录后再重试此操作",new JSONObject());
+            }
+            //验证旧密码是否正确
+            if(!userInfo.getPassword().equals(userMap.get("password").toString())){
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"原密码不正确",new JSONObject());
+            }
+            //开始修改
+            userInfoService.changePassWord(userInfo);
             //更新缓存 自己修改自己的用户信息 不考虑并发问题
-            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"head",userInfo.getPassword(),Constants.USER_TIME_OUT);
-            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"password","",Constants.USER_TIME_OUT);
+            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"password",userInfo.getNewPassword(),Constants.USER_TIME_OUT);
             redisUtils.expire(Constants.REDIS_KEY_USER+userInfo.getUserId(),Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());

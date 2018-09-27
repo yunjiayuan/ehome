@@ -171,7 +171,7 @@ public interface UserInfoDao {
      */
     @Update("<script>" +
             "update userInfo set"+
-            " password=#{password}," +
+            " password=#{newPassword}" +
             " where userId=#{userId}"+
             "</script>")
     int changePassWord(UserInfo userInfo);
