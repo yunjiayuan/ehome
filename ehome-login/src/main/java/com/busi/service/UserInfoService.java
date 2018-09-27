@@ -93,6 +93,16 @@ public class UserInfoService {
     }
 
     /***
+     * 更新用户密码
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int changePassWord(UserInfo userInfo){
+        return  userInfoDao.changePassWord(userInfo);
+    }
+
+    /***
      * 更新用户涂鸦头像
      * @param userInfo
      * @return

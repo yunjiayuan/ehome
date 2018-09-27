@@ -165,6 +165,18 @@ public interface UserInfoDao {
     int updateUserHead(UserInfo userInfo);
 
     /**
+     * 修改用户密码
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set"+
+            " password=#{newPassword}" +
+            " where userId=#{userId}"+
+            "</script>")
+    int changePassWord(UserInfo userInfo);
+
+    /**
      * 修改涂鸦头像
      * @param userInfo
      * @return

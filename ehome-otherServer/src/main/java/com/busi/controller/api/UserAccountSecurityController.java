@@ -399,24 +399,53 @@ public class UserAccountSecurityController extends BaseController implements Use
         //查本地库中是否存在该实名信息
         rni = realNameInfoService.findRealNameInfo(realNameInfo.getRealName(),realNameInfo.getCardNo());
         if(rni!=null){//存在
-            if(rni.getUserId()==CommonUtils.getMyId()){//重复实名 该用户已实名过
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+            if(rni.getUserId()!=CommonUtils.getMyId()){//过滤重复实名
+                //新增实名记录
+                rni.setId(0);//置空主键
+                rni.setUserId(CommonUtils.getMyId());
+                rni.setTime(new Date());
+                realNameInfoService.addRealNameInfo(rni);
             }
-            //新增实名记录
-            rni.setId(0);//置空主键
-            rni.setUserId(CommonUtils.getMyId());
-            rni.setTime(new Date());
-            realNameInfoService.addRealNameInfo(rni);
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
-        }
-        //本地中不存在 远程调用第三方平台认证
-        rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),realNameInfo.getRealName(),realNameInfo.getCardNo());
-        if(rni!=null){
-            realNameInfoService.addRealNameInfo(rni);
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
         }else{
-            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"认证失败，请填写您本人正确的身份信息",new JSONObject());
+            //本地中不存在 远程调用第三方平台认证
+            rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),realNameInfo.getRealName(),realNameInfo.getCardNo());
+            if(rni!=null){
+                realNameInfoService.addRealNameInfo(rni);
+            }else{
+                return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"认证失败，请填写您本人正确的身份信息",new JSONObject());
+            }
         }
+        //更新安全中心记录表
+        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+realNameInfo.getUserId());
+        if(map==null||map.size()<=0){
+            UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByUserId(realNameInfo.getUserId());
+            if(uas==null){
+                //之前该用户未设置过安全中心数据
+                UserAccountSecurity userAccountSecurity = new UserAccountSecurity();
+                userAccountSecurity.setRealName(realNameInfo.getRealName());
+                userAccountSecurity.setIdCard(realNameInfo.getCardNo());
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }else{
+                uas.setRealName(realNameInfo.getRealName());
+                uas.setIdCard(realNameInfo.getCardNo());
+                userAccountSecurityService.updateUserAccountSecurity(uas);//数据库中已有记录
+            }
+        }else{
+            if(Integer.parseInt(map.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
+                UserAccountSecurity userAccountSecurity = new UserAccountSecurity();
+                userAccountSecurity.setRealName(realNameInfo.getRealName());
+                userAccountSecurity.setIdCard(realNameInfo.getCardNo());
+                userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+            }else{
+                UserAccountSecurity uas = (UserAccountSecurity) CommonUtils.mapToObject(map,UserAccountSecurity.class);
+                uas.setRealName(realNameInfo.getRealName());
+                uas.setIdCard(realNameInfo.getCardNo());
+                userAccountSecurityService.updateUserAccountSecurity(uas);
+            }
+        }
+        //清除安全中心缓存
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+realNameInfo.getUserId(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
     /***

@@ -32,10 +32,10 @@ public class UserInfo {
 	@Pattern(regexp="^\\s*$|^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$",message = "手机号格式有误，请输入正确的手机号")
 	private String phone; // 手机号
 
-	@Length(min = 32, max = 32, message = "密码必须经MD5加密且长度必须为32位")
+	@Length(min = 32, max = 32, message = "登录密码格式有误")
 	private String password; // 密码
 
-    @Length(min = 32, max = 32, message = "密码必须经MD5加密且长度必须为32位")
+    @Length(min = 32, max = 32, message = "环信密码格式有误")
     private String im_password; // 环信密码
 
 	@IdCardConstraint(message = "身份证格式有误")
@@ -143,5 +143,8 @@ public class UserInfo {
 	private long todayVisitCount;//今天访问量 与数据库无关字段
 
 	private long totalVisitCount;//总访问量 与数据库无关字段
+
+	@Length(min = 32, max = 32, message = "新密码格式有误")
+	private String newPassword; // 新密码 数据库无关字段 用于修改密码操作使用
 
 }

@@ -7,6 +7,7 @@ import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 /**
  * 发送信息接口 例如发送短信验证码  发送邮件 发送消息等
@@ -116,6 +117,44 @@ public class SendMessageController extends BaseController implements SendMessage
         }else{
             redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,CommonUtils.getMyId()+"",1);
         }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /**
+     * 发送邮件
+     * @param email     将要发送邮件的邮箱地址
+     * @param emailType 邮件类型 0绑定密保邮箱的验证邮件,1解绑密保邮箱的验证邮件,2修改密码的验证邮件,3找回密码的验证邮件
+     * @return
+     */
+    @Override
+    public ReturnData SendEmailMessage(@PathVariable String email,@PathVariable int emailType) {
+        //验证参数
+        if(!CommonUtils.checkEmail(email)||CommonUtils.checkFull(email)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"email参数有误",new JSONObject());
+        }
+        if(emailType<0||emailType>3){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"emailType参数有误，超出合法范围",new JSONObject());
+        }
+        //获取用户名
+        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+CommonUtils.getMyId());
+        if(userMap==null||userMap.size()<=0||userMap.get("name")==null){
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"当前用户信息存在异常,建议重新登录",new JSONObject());
+        }
+        String userName = userMap.get("name").toString();
+        //生成验证码
+        String code = CommonUtils.getRandom(4,1);
+        //根据邮件类型 开始发送邮件
+        if(emailType==1){//1解绑密保邮箱的验证邮件
+            redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+        }else if(emailType==2){//2修改密码的验证邮件
+            redisUtils.set("safe_changePWEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+        }else if(emailType==3){//3找回密码的验证邮件
+            redisUtils.set("safe_findPWEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+        }else{//0绑定密保邮箱的验证邮件
+            redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+        }
+        //调用MQ进行发送短信
+        mqUtils.sendEmailMessage(CommonUtils.getMyId(),email,emailType,code,userName);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }
