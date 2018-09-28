@@ -176,14 +176,19 @@ public class UserAccountSecurityController extends BaseController implements Use
                 //之前该用户未设置过安全中心数据 新增
                 userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
             }else{//更新
-                userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
+                uass.setPhone(userAccountSecurity.getPhone());
+                userAccountSecurityService.updateUserAccountSecurity(uass);
             }
         }else{
             if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
                 //之前该用户未设置过权限信息 新增
                 userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
             }else{//更新
-                userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
+                UserAccountSecurity uass = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
+                if(uass!=null){
+                    uass.setPhone(userAccountSecurity.getPhone());
+                    userAccountSecurityService.updateUserAccountSecurity(uass);
+                }
             }
         }
         //清除安全中心缓存
@@ -226,6 +231,8 @@ public class UserAccountSecurityController extends BaseController implements Use
                 if(!uass.getPhone().equals(userAccountSecurity.getPhone())){
                     return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"解绑手机号不正确，解绑失败",new JSONObject());
                 }
+                userAccountSecurity.setPhone("");
+                userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
             }
         }else{
             if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
@@ -234,11 +241,13 @@ public class UserAccountSecurityController extends BaseController implements Use
                 if(!userAccountSecurityMap.get("phone").toString().equals(userAccountSecurity.getPhone())){
                     return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"解绑手机号不正确，解绑失败",new JSONObject());
                 }
+                UserAccountSecurity uass = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
+                if(uass!=null){
+                    uass.setPhone("");
+                    userAccountSecurityService.updateUserAccountSecurity(uass);
+                }
             }
         }
-        //开始解绑 更新数据库
-        userAccountSecurity.setPhone("");
-        userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         //清除短信验证码
@@ -595,14 +604,19 @@ public class UserAccountSecurityController extends BaseController implements Use
                 //之前该用户未设置过安全中心数据 新增
                 userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
             }else{//更新
-                userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
+                uass.setEmail(userAccountSecurity.getEmail());
+                userAccountSecurityService.updateUserAccountSecurity(uass);
             }
         }else{
             if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
                 //之前该用户未设置过权限信息 新增
                 userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
             }else{//更新
-                userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
+                UserAccountSecurity uass = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
+                if(uass!=null){
+                    uass.setEmail(userAccountSecurity.getEmail());
+                    userAccountSecurityService.updateUserAccountSecurity(uass);
+                }
             }
         }
         //清除安全中心缓存
@@ -645,6 +659,9 @@ public class UserAccountSecurityController extends BaseController implements Use
                 if(!uass.getEmail().equals(userAccountSecurity.getEmail())){
                     return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"解绑邮箱地址不正确，解绑失败",new JSONObject());
                 }
+                //开始解绑 更新数据库
+                uass.setEmail("");
+                userAccountSecurityService.updateUserAccountSecurity(uass);
             }
         }else{
             if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==0){//redisStatus==0 说明数据中无此记录
@@ -653,11 +670,14 @@ public class UserAccountSecurityController extends BaseController implements Use
                 if(!userAccountSecurityMap.get("email").toString().equals(userAccountSecurity.getEmail())){
                     return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"解绑邮箱地址不正确，解绑失败",new JSONObject());
                 }
+                //开始解绑 更新数据库
+                UserAccountSecurity uass = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
+                if(uass!=null){
+                    uass.setEmail("");
+                    userAccountSecurityService.updateUserAccountSecurity(uass);
+                }
             }
         }
-        //开始解绑 更新数据库
-        userAccountSecurity.setEmail("");
-        userAccountSecurityService.updateUserAccountSecurity(userAccountSecurity);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         //清除验证码
