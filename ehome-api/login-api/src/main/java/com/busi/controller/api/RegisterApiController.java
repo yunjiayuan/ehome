@@ -99,6 +99,23 @@ public interface RegisterApiController {
     @PutMapping("changePassWord")
     ReturnData changePassWord (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 
+    /***
+     * 重置密码接口（用于其它方式修改和找回密码操作）
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("resetPassWord")
+    ReturnData resetPassWord (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
+
+    /***
+     * 找回密码验证账号是否存在
+     * @param userAccount 门牌号组合 0_1001518
+     * @param code        验证码
+     * @return
+     */
+    @GetMapping("checkAccount/{userAccount}")
+    ReturnData checkAccount(@PathVariable String userAccount,@PathVariable String code);
+
 //    /***
 //     * 测试fegin被调用
 //     * @param id

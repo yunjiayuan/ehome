@@ -147,4 +147,7 @@ public class UserInfo {
 	@Length(min = 32, max = 32, message = "新密码格式有误")
 	private String newPassword; // 新密码 数据库无关字段 用于修改密码操作使用
 
+	@Length(min = 16, max = 16, message = "修改密码key有误")
+	private String key; // 修改密码key 数据库无关字段 用于修改密码操作使用
+
 }

@@ -31,6 +31,15 @@ public interface UserAccountSecurityApiController {
     ReturnData checkNewPhone(@PathVariable String phone);
 
     /***
+     * 短信验证修改密码前，验证短信验证码是否正确接口
+     * @param code
+     * @param checkType 0修改密码验证旧手机 1找回密码验证旧手机
+     * @return
+     */
+    @GetMapping("checkPhoneCode/{code}/{checkType}")
+    ReturnData checkPhoneCode(@PathVariable String code,@PathVariable int checkType);
+
+    /***
      * 绑定手机号接口
      * @param userAccountSecurity
      * @return
@@ -100,6 +109,15 @@ public interface UserAccountSecurityApiController {
      */
     @GetMapping("checkNewEmail/{email}")
     ReturnData checkNewEmail(@PathVariable String email);
+
+    /***
+     * 邮箱验证修改密码前，验证邮箱验证码是否正确接口
+     * @param code
+     * @param checkType
+     * @return
+     */
+    @GetMapping("checkEmailCode/{code}/{checkType}")
+    ReturnData checkEmailCode(@PathVariable String code,@PathVariable int checkType);
 
     /***
      * 绑定邮箱接口
