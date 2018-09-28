@@ -67,7 +67,7 @@ public class EmailService implements MessageAdapter {
                 return;
             }
         }else if(emailType==2){//2修改密码的验证邮件
-            if(userAccountSecurity!=null&&CommonUtils.checkFull(userAccountSecurity.getEmail())
+            if(userAccountSecurity!=null&&!CommonUtils.checkFull(userAccountSecurity.getEmail())
                     &&email.equals(userAccountSecurity.getEmail())){
                 subject = "您正在进行邮箱修改密码验证操作";
                 mailMessge ="<table width='615' cellpadding='0' cellspacing='0'>"+
@@ -99,7 +99,7 @@ public class EmailService implements MessageAdapter {
                 return;
             }
         }else if(emailType==3){//3找回密码的验证邮件
-            if(userAccountSecurity!=null&&CommonUtils.checkFull(userAccountSecurity.getEmail())
+            if(userAccountSecurity!=null&&!CommonUtils.checkFull(userAccountSecurity.getEmail())
                     &&email.equals(userAccountSecurity.getEmail())){
                 subject = "您正在进行邮箱找回密码验证操作";
                 mailMessge ="<table width='615' cellpadding='0' cellspacing='0'>"+

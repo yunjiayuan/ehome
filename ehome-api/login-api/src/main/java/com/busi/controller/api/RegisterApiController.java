@@ -113,7 +113,7 @@ public interface RegisterApiController {
      * @param code        验证码
      * @return
      */
-    @GetMapping("checkAccount/{userAccount}")
+    @GetMapping("checkAccount/{userAccount}/{code}")
     ReturnData checkAccount(@PathVariable String userAccount,@PathVariable String code);
 
 //    /***
