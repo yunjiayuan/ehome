@@ -170,7 +170,7 @@ public class UserAccountSecurityController extends BaseController implements Use
             return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
         }
         //判断验证码是否正确
-        if(!serverCode.toString().equals(userAccountSecurity.getCode())){//不相等
+        if(!serverCode.toString().equals(code)){//不相等
             return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"您输入的验证码有误,请重新输入",new JSONObject());
         }
         Map<String, Object> map = new HashMap<>();
@@ -643,7 +643,7 @@ public class UserAccountSecurityController extends BaseController implements Use
             return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
         }
         //判断验证码是否正确
-        if(!serverCode.toString().equals(userAccountSecurity.getCode())){//不相等
+        if(!serverCode.toString().equals(code)){//不相等
             return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"您输入的验证码有误,请重新输入",new JSONObject());
         }
         Map<String, Object> map = new HashMap<>();
