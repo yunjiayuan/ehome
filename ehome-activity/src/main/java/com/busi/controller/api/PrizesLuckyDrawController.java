@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.PrizesLuckyDrawService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.StatusCode;
-import com.busi.utils.UserAccountSecurityUtils;
-import com.busi.utils.UserInfoUtils;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +21,12 @@ import java.util.*;
  */
 @RestController
 public class PrizesLuckyDrawController extends BaseController implements PrizesLuckyDrawApiController {
+
+    @Autowired
+    MqUtils mqUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
 
     @Autowired
     UserInfoUtils userInfoUtils;
@@ -61,6 +64,18 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
         } else {
             return returnData(StatusCode.CODE_NOT_BIND_PHONE_ERROR.CODE_VALUE, "该用户未绑定手机号!", new JSONObject());
         }
+        //查询用户钱包信息
+//        Map<String, Object> purseMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PURSEINFO + CommonUtils.getMyId());
+//        if (purseMap == null || purseMap.size() <= 0) {
+//            return returnData(StatusCode.CODE_PURSE_POINT_NOT_ENOUGH.CODE_VALUE, "家点余额不足!", new JSONObject());
+//        }
+//        long homePoint = 0;
+//        homePoint = Long.parseLong(purseMap.get("homePoint").toString());
+//        if (homePoint < 80) {
+//            return returnData(StatusCode.CODE_PURSE_POINT_NOT_ENOUGH.CODE_VALUE, "家点余额不足!", new JSONObject());
+//        }
+        //更新钱包余额和钱包明细
+        mqUtils.sendPurseMQ(CommonUtils.getMyId(), 18, 0, -80);
         //开始抽奖
         int awardsId = 0;//奖品ID：0背包  1便携音箱  2豆浆机  3精美餐具  4动漫模型  5酒红石榴石手链  6女士太阳镜  7剃须刀  8头戴式耳机  9榨汁机
         String[] cost = {"背包", "便携音箱", "豆浆机", "精美餐具", "动漫模型", "酒红石榴石手链", "女士太阳镜", "剃须刀", "头戴式耳机", "榨汁机"};
