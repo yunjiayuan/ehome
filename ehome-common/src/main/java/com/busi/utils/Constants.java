@@ -146,6 +146,7 @@ public class Constants {
     public static final String REDIS_KEY_USER_VISIT = "user_visit_";//访问量记录关系表
     public static final String REDIS_KEY_BIRD_FEEDING_TODAY = "bird_feeding_today_";//今天喂的鸟
     public static final String REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT = "bird_feeding_totalcount";//今日喂鸟次数
+    public static final String REDIS_KEY_SHARING_PROMOTION = "sharing_promotion_";//已领取新人红包用户
     public static final String REDIS_KEY_USER_JURISDICTION = "user_jurisdiction_";//用户权限关系
     public static final String REDIS_KEY_USERMEMBERSHIP = "userMembership_";//userId与用户会员信息对象的关系对照
     public static final String REDIS_KEY_PAYMENT_PURSEINFO = "payment_purse_";//userId与钱包对象的关系对照
