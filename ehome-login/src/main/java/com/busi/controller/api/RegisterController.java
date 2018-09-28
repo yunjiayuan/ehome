@@ -616,4 +616,90 @@ public class RegisterController extends BaseController implements RegisterApiCon
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
+    /***
+     * 重置密码接口（用于其它方式修改和找回密码操作）
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData resetPassWord(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
+        //验证参数格式
+        if(CommonUtils.checkFull(userInfo.getNewPassword())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"新密码不能为空",new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=userInfo.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+userInfo.getUserId()+"]的密码信息",new JSONObject());
+        }
+        //验证修改key是否正确
+        Object serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_CHANGE_PASSWORD_KEY+CommonUtils.getMyId());
+        if(serverCode==null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"修改秘钥已过期,请重新获取",new JSONObject());
+        }
+        //判断验证码是否正确
+        if(!serverCode.toString().equals(userInfo.getKey())){//不相等
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"秘钥有误,修改失败",new JSONObject());
+        }
+        //获取缓存中的登录信息
+        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userInfo.getUserId());
+        if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
+            //开始修改
+            userInfoService.changePassWord(userInfo);
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"password",userInfo.getNewPassword(),Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER+userInfo.getUserId(),Constants.USER_TIME_OUT);
+        }else{//缓存中不存在 只更新数据库
+            //开始修改
+            userInfoService.changePassWord(userInfo);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 找回密码验证账号是否存在
+     * @param userAccount 门牌号组合 0_1001518
+     * @param code        验证码
+     * @return
+     */
+    @Override
+    public ReturnData checkAccount(@PathVariable String userAccount,@PathVariable String code) {
+        //验证参数格式
+        if(CommonUtils.checkFull(userAccount)||userAccount.indexOf("_")==-1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userAccount参数格式有误",new JSONObject());
+        }
+        if(CommonUtils.checkFull(code)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"code参数格式有误",new JSONObject());
+        }
+        //验证验证码
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        String token = request.getHeader("token");//用户注册的临时令牌 用于标识临时用户访问数据的唯一性
+        if(CommonUtils.checkFull(token)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"客户端参数token为空",new JSONObject());
+        }
+        String serverCode = (String) redisUtils.getKey(Constants.REDIS_KEY_REG_TOKEN+token);
+        if(CommonUtils.checkFull(serverCode)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"该验证码无效或者已过期",new JSONObject());
+        }
+
+        if(!serverCode.equals(code)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"该验证码输入有误",new JSONObject());
+        }
+        //验证成功 清除验证码
+        redisUtils.expire(Constants.REDIS_KEY_REG_TOKEN+token,0);//设置过期时间 0秒后失效
+        Object userId = redisUtils.hget(Constants.REDIS_KEY_HOUSENUMBER,userAccount);
+        if(userId==null||Long.parseLong(userId.toString())<=0){
+            //门牌号与账号之间的对应关系再缓存中不存在  查询数据库
+            String houseArray[] = userAccount.split("_");
+            UserInfo userInfo = userInfoService.findUserByHouseNumber(Integer.parseInt(houseArray[0]),houseArray[1]);
+            if(userInfo==null){
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"账号不存在",new JSONObject());
+            }
+            userId = userInfo.getUserId()+"";
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
 }

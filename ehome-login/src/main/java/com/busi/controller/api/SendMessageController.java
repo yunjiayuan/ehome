@@ -147,9 +147,9 @@ public class SendMessageController extends BaseController implements SendMessage
         if(emailType==1){//1解绑密保邮箱的验证邮件
             redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_UNBIND_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }else if(emailType==2){//2修改密码的验证邮件
-            redisUtils.set("safe_changePWEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+            redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_CHANGEPASSWORD_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }else if(emailType==3){//3找回密码的验证邮件
-            redisUtils.set("safe_findPWEmail_"+CommonUtils.getMyId(), code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
+            redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_FINDPASSWORD_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }else{//0绑定密保邮箱的验证邮件
             redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_BIND_EMAIL_CODE+CommonUtils.getMyId()+"_"+email, code, Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟失效
         }
