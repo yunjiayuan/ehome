@@ -57,7 +57,10 @@ public class Constants {
     /**门牌号靓号规则 结束**/
 
     /** 请求接口白名单 开始**/
-    public static final String REQUEST_WHITE_LIST ="login-api/createCode,login-api/login,login-api/checkCode,login-api/registerByHouseNumber,login-api/registerByPhone,login-api/findVersion,paymentServer-api/checkAlipaySign,paymentServer-api/checkWeixinSign,paymentServer-api/checkUnionPaySign";//白名单接口 服务端将不会验证token权限
+    public static final String REQUEST_WHITE_LIST ="login-api/createCode,login-api/login,login-api/checkCode,login-api/registerByHouseNumber," +
+            "login-api/registerByPhone,login-api/findVersion,paymentServer-api/checkAlipaySign,paymentServer-api/checkWeixinSign," +
+            "paymentServer-api/checkUnionPaySign,otherServer-api/checkPhoneCode,login-api/checkAccount,otherServer-api/checkQuestion," +
+            "otherServer-api/checkEmailCode,login-api/resetPassWord,login-api/SendPhoneMessage,login-api/SendEmailMessage";//白名单接口 服务端将不会验证token权限
     /** 请求接口白名单 结束**/
 
     /** 短信平台配置 开始**/
