@@ -123,6 +123,16 @@ public class UserInfoService {
     }
 
     /***
+     * 更新用户新人红包的标识
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateIsNewUser(UserInfo userInfo){
+        return  userInfoDao.updateIsNewUser(userInfo);
+    }
+
+    /***
      * 修改新用户系统欢迎消息状态接口
      * @param userInfo
      * @return

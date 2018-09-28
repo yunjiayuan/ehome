@@ -211,4 +211,16 @@ public interface UserInfoDao {
             " where userId=#{userId}"+
             "</script>")
     int updateWelcomeInfoStatus(UserInfo userInfo);
+
+    /**
+     * 修改新用户系统欢迎消息状态接口
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set"+
+            " isNewUser=#{isNewUser}" +
+            " where userId=#{userId}"+
+            "</script>")
+    int updateIsNewUser(UserInfo userInfo);
 }
