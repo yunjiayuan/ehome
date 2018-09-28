@@ -11,6 +11,7 @@ import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -57,7 +58,7 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
      * @return
      */
     @Override
-    public ReturnData updateIsNew(@PathVariable UserInfo userInfo) {
+    public ReturnData updateIsNew(@RequestBody UserInfo userInfo) {
 
         int count = userInfoService.updateIsNewUser(userInfo);
         if (count <= 0) {
