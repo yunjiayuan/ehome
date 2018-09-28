@@ -18,8 +18,8 @@ public interface UserAccountSecurityDao {
      * @param userAccountSecurity
      * @return
      */
-    @Insert("insert into UserAccountSecurity(userId,idCard,realName,phone,email,securityQuestion,otherPlatformType,otherPlatformAccount,deviceLock) " +
-            "values (#{userId},#{idCard},#{realName},#{phone},#{email},#{securityQuestion},#{otherPlatformType},#{otherPlatformAccount},#{deviceLock})")
+    @Insert("insert into UserAccountSecurity(userId,idCard,realName,phone,email,securityQuestion,otherPlatformType,otherPlatformAccount,otherPlatformKey,deviceLock) " +
+            "values (#{userId},#{idCard},#{realName},#{phone},#{email},#{securityQuestion},#{otherPlatformType},#{otherPlatformAccount},#{otherPlatformKey},#{deviceLock})")
     @Options(useGeneratedKeys = true)
     int add(UserAccountSecurity userAccountSecurity);
 
@@ -62,6 +62,7 @@ public interface UserAccountSecurityDao {
             " deviceLock=#{deviceLock}," +
             " otherPlatformAccount=#{otherPlatformAccount}," +
             " otherPlatformType=#{otherPlatformType}," +
+            " otherPlatformKey=#{otherPlatformKey}," +
             " userId=#{userId}" +
             " where userId=#{userId}"+
             "</script>")
@@ -70,9 +71,9 @@ public interface UserAccountSecurityDao {
     /***
      * 查询第三方平台账号是否被绑定过
      * @param otherPlatformType
-     * @param otherPlatformAccount
+     * @param otherPlatformKey
      * @return
      */
-    @Select(("select * from userAccountSecurity where otherPlatformType=#{otherPlatformType} and otherPlatformAccount=#{otherPlatformAccount}"))
-    UserAccountSecurity findUserAccountSecurityByOther(@Param("otherPlatformType") int otherPlatformType,@Param("otherPlatformAccount") String otherPlatformAccount);
+    @Select(("select * from userAccountSecurity where otherPlatformType=#{otherPlatformType} and otherPlatformKey=#{otherPlatformKey}"))
+    UserAccountSecurity findUserAccountSecurityByOther(@Param("otherPlatformType") int otherPlatformType,@Param("otherPlatformKey") String otherPlatformKey);
 }

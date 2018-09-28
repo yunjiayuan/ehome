@@ -60,7 +60,7 @@ public class Constants {
     public static final String REQUEST_WHITE_LIST ="login-api/createCode,login-api/login,login-api/checkCode,login-api/registerByHouseNumber," +
             "login-api/registerByPhone,login-api/findVersion,paymentServer-api/checkAlipaySign,paymentServer-api/checkWeixinSign," +
             "paymentServer-api/checkUnionPaySign,otherServer-api/checkPhoneCode,login-api/checkAccount,otherServer-api/checkQuestion," +
-            "otherServer-api/checkEmailCode,login-api/resetPassWord,login-api/SendPhoneMessage,login-api/SendEmailMessage";//白名单接口 服务端将不会验证token权限
+            "otherServer-api/checkEmailCode,login-api/resetPassWord,login-api/SendPhoneMessage,login-api/SendEmailMessage,otherServer-api/findUserAccountSecurity";//白名单接口 服务端将不会验证token权限
     /** 请求接口白名单 结束**/
 
     /** 短信平台配置 开始**/

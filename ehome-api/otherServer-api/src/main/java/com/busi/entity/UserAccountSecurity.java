@@ -45,6 +45,9 @@ public class UserAccountSecurity {
     @Length(max = 50, message = "otherPlatformAccount参数长度不合法")
     private String otherPlatformAccount;//第三方平台账号名称
 
+    @Length(max = 50, message = "otherPlatformAccount参数长度不合法")
+    private String otherPlatformKey;//第三方平台账号key
+
     private String deviceLock;//设备锁(预留)
 
     private int redisStatus;//该对象在缓存中的存在形式  0空对象 无数据库对应数据  1数据已有对应数据  与数据无关字段

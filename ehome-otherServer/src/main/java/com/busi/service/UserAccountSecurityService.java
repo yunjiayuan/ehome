@@ -67,11 +67,11 @@ public class UserAccountSecurityService {
     /***
      * 查询第三方平台账号是否被绑定过
      * @param otherPlatformType
-     * @param otherPlatformAccount
+     * @param otherPlatformKey
      * @return
      */
-    public UserAccountSecurity findUserAccountSecurityByOther(int otherPlatformType,String otherPlatformAccount){
-        return  userAccountSecurityDao.findUserAccountSecurityByOther(otherPlatformType,otherPlatformAccount);
+    public UserAccountSecurity findUserAccountSecurityByOther(int otherPlatformType,String otherPlatformKey){
+        return  userAccountSecurityDao.findUserAccountSecurityByOther(otherPlatformType,otherPlatformKey);
     }
 
 }

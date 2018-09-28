@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 
 /**
  * 用户账户安全接口
@@ -137,6 +138,45 @@ public class UserAccountSecurityController extends BaseController implements Use
         }
         Map<String, Object> map = new HashMap<>();
         map.put("isTrue", isTrue);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 短信验证修改密码前，验证短信验证码是否正确接口
+     * @param code
+     * @param checkType 0修改密码验证旧手机 1找回密码验证旧手机
+     * @return
+     */
+    @Override
+    public ReturnData checkPhoneCode(@PathVariable String code,@PathVariable int checkType) {
+        //验证参数
+        if(CommonUtils.checkFull(code)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"验证码不能为空",new JSONObject());
+        }
+        if(checkType<0||checkType>1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"验证码不能为空",new JSONObject());
+        }
+        UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(CommonUtils.getMyId());
+        if(userAccountSecurity==null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前账户并未绑定手机",new JSONObject());
+        }
+        Object serverCode = null;
+        if(checkType==1){//找回密码验证旧手机
+            serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_FINDPASSWORD_CODE+CommonUtils.getMyId()+"_"+userAccountSecurity.getPhone());
+        }else{//修改密码验证旧手机
+            serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_CHANGEPASSWORD_CODE+CommonUtils.getMyId()+"_"+userAccountSecurity.getPhone());
+        }
+        if(serverCode==null){
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
+        }
+        //判断验证码是否正确
+        if(!serverCode.toString().equals(userAccountSecurity.getCode())){//不相等
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"您输入的验证码有误,请重新输入",new JSONObject());
+        }
+        Map<String, Object> map = new HashMap<>();
+        String key = CommonUtils.strToMD5(CommonUtils.getMyId()+CommonUtils.getClientId()+System.currentTimeMillis()+CommonUtils.getRandom(6,0), 16);//临时key 用于修改密码
+        map.put("key", key);
+        redisUtils.set(Constants.REDIS_KEY_USER_CHANGE_PASSWORD_KEY+CommonUtils.getMyId(),key,Constants.MSG_TIME_OUT_MINUTE_10);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -347,6 +387,9 @@ public class UserAccountSecurityController extends BaseController implements Use
         }
         Map<String, Object> userAccountSecurityMap = new HashMap<>();
         userAccountSecurityMap.put("isTrue", isTrue);
+        String key = CommonUtils.strToMD5(CommonUtils.getMyId()+CommonUtils.getClientId()+System.currentTimeMillis()+CommonUtils.getRandom(6,0), 16);//临时key 用于修改密码
+        userAccountSecurityMap.put("key", key);
+        redisUtils.set(Constants.REDIS_KEY_USER_CHANGE_PASSWORD_KEY+CommonUtils.getMyId(),key,Constants.MSG_TIME_OUT_MINUTE_10);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", userAccountSecurityMap);
     }
 
@@ -481,7 +524,7 @@ public class UserAccountSecurityController extends BaseController implements Use
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
         }
         //验证当前第三方平台账户是否被其他账户绑定过
-        UserAccountSecurity uasy = userAccountSecurityService.findUserAccountSecurityByOther(userAccountSecurity.getOtherPlatformType(),userAccountSecurity.getOtherPlatformAccount());
+        UserAccountSecurity uasy = userAccountSecurityService.findUserAccountSecurityByOther(userAccountSecurity.getOtherPlatformType(),userAccountSecurity.getOtherPlatformKey());
         if(uasy!=null){
             return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该第三方平台账户已被其他账户绑定过",new JSONObject());
         }
@@ -490,11 +533,12 @@ public class UserAccountSecurityController extends BaseController implements Use
         if(userAccountSecurityMap==null||userAccountSecurityMap.size()<=0){
             UserAccountSecurity uass = userAccountSecurityService.findUserAccountSecurityByUserId(userAccountSecurity.getUserId());
             if(uass!=null){
-                if(!CommonUtils.checkFull(uass.getOtherPlatformAccount())){
+                if(!CommonUtils.checkFull(uass.getOtherPlatformKey())){
                     return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"绑定第三方平台账户失败，您绑定过了",new JSONObject());
                 }
                 //开始绑定
                 uass.setOtherPlatformAccount(userAccountSecurity.getOtherPlatformAccount());
+                uass.setOtherPlatformKey(userAccountSecurity.getOtherPlatformKey());
                 uass.setOtherPlatformType(userAccountSecurity.getOtherPlatformType());
                 userAccountSecurityService.updateUserAccountSecurity(uass);
             }else{
@@ -511,6 +555,7 @@ public class UserAccountSecurityController extends BaseController implements Use
                 if(uas==null){
                     return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"账号有误，请重新登录后，再进行此操作",new JSONObject());
                 }
+                uas.setOtherPlatformKey(userAccountSecurity.getOtherPlatformKey());
                 uas.setOtherPlatformType(userAccountSecurity.getOtherPlatformType());
                 uas.setOtherPlatformAccount(userAccountSecurity.getOtherPlatformAccount());
                 userAccountSecurityService.updateUserAccountSecurity(uas);
@@ -535,12 +580,13 @@ public class UserAccountSecurityController extends BaseController implements Use
         if(bindingResult.hasErrors()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
         }
-        UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByOther(userAccountSecurity.getOtherPlatformType(),userAccountSecurity.getOtherPlatformAccount());
+        UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByOther(userAccountSecurity.getOtherPlatformType(),userAccountSecurity.getOtherPlatformKey());
         if(uas==null){
             return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该第三方平台账户尚未被其他账户绑定过，无法解绑",new JSONObject());
         }
         uas.setOtherPlatformType(0);
         uas.setOtherPlatformAccount("");
+        uas.setOtherPlatformKey("");
         userAccountSecurityService.updateUserAccountSecurity(uas);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
@@ -565,6 +611,45 @@ public class UserAccountSecurityController extends BaseController implements Use
         }
         Map<String, Object> map = new HashMap<>();
         map.put("isTrue", isTrue);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 邮箱验证修改密码前，验证邮箱验证码是否正确接口
+     * @param code
+     * @param checkType
+     * @return
+     */
+    @Override
+    public ReturnData checkEmailCode(@PathVariable String code,@PathVariable int checkType) {
+        //验证参数
+        if(CommonUtils.checkFull(code)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"验证码不能为空",new JSONObject());
+        }
+        if(checkType<0||checkType>1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"验证码不能为空",new JSONObject());
+        }
+        UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(CommonUtils.getMyId());
+        if(userAccountSecurity==null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前账户并未绑定邮箱",new JSONObject());
+        }
+        Object serverCode = null;
+        if(checkType==1){//找回密码验证旧邮箱
+            serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_FINDPASSWORD_EMAIL_CODE+CommonUtils.getMyId()+"_"+userAccountSecurity.getEmail());
+        }else{//修改密码验证旧邮箱
+            serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_CHANGEPASSWORD_EMAIL_CODE+CommonUtils.getMyId()+"_"+userAccountSecurity.getEmail());
+        }
+        if(serverCode==null){
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
+        }
+        //判断验证码是否正确
+        if(!serverCode.toString().equals(userAccountSecurity.getCode())){//不相等
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"您输入的验证码有误,请重新输入",new JSONObject());
+        }
+        Map<String, Object> map = new HashMap<>();
+        String key = CommonUtils.strToMD5(CommonUtils.getMyId()+CommonUtils.getClientId()+System.currentTimeMillis()+CommonUtils.getRandom(6,0), 16);//临时key 用于修改密码
+        map.put("key", key);
+        redisUtils.set(Constants.REDIS_KEY_USER_CHANGE_PASSWORD_KEY+CommonUtils.getMyId(),key,Constants.MSG_TIME_OUT_MINUTE_10);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
