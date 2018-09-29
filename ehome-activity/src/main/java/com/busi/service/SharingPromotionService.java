@@ -35,14 +35,23 @@ public class SharingPromotionService {
     }
 
     /***
-     * 返回红包总数与总金额
+     * 返回红包总数
      * @param userId
      * @return
      */
-    public List<ShareRedPacketsInfo> findNum(long userId) {
-        List<ShareRedPacketsInfo> list;
-        list = sharingPromotionDao.findNum(userId);
-        return list;
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public long findNum(long userId) {
+        return sharingPromotionDao.findNum(userId);
+    }
+
+    /***
+     * 返回红包总金额
+     * @param userId
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public double findSum(long userId) {
+        return sharingPromotionDao.findSum(userId);
     }
 
     /***

@@ -27,15 +27,26 @@ public interface SharingPromotionDao {
 
 
     /***
-     * 返回红包总数与总金额
+     * 返回红包总数
      * @param userId
      * @return
      */
     @Select("<script>" +
-            "select count(id),sum(redPacketsMoney) from ShareRedPacketsInfo" +
+            "select count(id) from ShareRedPacketsInfo" +
             " where shareUserId=#{userId}" +
             "</script>")
-    List<ShareRedPacketsInfo> findNum(@Param("userId") long userId);
+    long findNum(@Param("userId") long userId);
+
+    /***
+     * 返回红包总金额
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select sum(redPacketsMoney) from ShareRedPacketsInfo" +
+            " where shareUserId=#{userId}" +
+            "</script>")
+    double findSum(@Param("userId") long userId);
 
     /***
      * 分页查询砸蛋记录 默认按时间降序排序

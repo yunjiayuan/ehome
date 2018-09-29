@@ -47,21 +47,10 @@ public class SharingPromotionController extends BaseController implements Sharin
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        List redCountList = null;
         long counts = 0;//接收的红包总数
         double tatolAmount = 0.0;//接收的红包总金额
-        redCountList = sharingPromotionService.findNum(CommonUtils.getMyId());
-        if (redCountList != null && redCountList.size() > 0) {
-            Object[] array = (Object[]) redCountList.get(0);
-            if (array != null && array.length == 2) {
-                counts = (Long) array[0];
-                if (array[1] == null) {
-                    tatolAmount = 0.00;
-                } else {
-                    tatolAmount = (Double) array[1];
-                }
-            }
-        }
+        counts = sharingPromotionService.findNum(CommonUtils.getMyId());
+        tatolAmount = sharingPromotionService.findSum(CommonUtils.getMyId());
         PageBean<ShareRedPacketsInfo> pageBean;
         pageBean = sharingPromotionService.findList(page, count, CommonUtils.getMyId());
         List redList = pageBean.getList();
