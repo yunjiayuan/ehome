@@ -49,12 +49,12 @@ public class SharingPromotionController extends BaseController implements Sharin
         }
         long counts = 0;//接收的红包总数
         double tatolAmount = 0.0;//接收的红包总金额
-        counts = sharingPromotionService.findNum(CommonUtils.getMyId());
-        tatolAmount = sharingPromotionService.findSum(CommonUtils.getMyId());
         PageBean<ShareRedPacketsInfo> pageBean;
         pageBean = sharingPromotionService.findList(page, count, CommonUtils.getMyId());
         List redList = pageBean.getList();
         if (redList != null && redList.size() > 0) {
+            counts = sharingPromotionService.findNum(CommonUtils.getMyId());
+            tatolAmount = sharingPromotionService.findSum(CommonUtils.getMyId());
             for (int i = 0; i < redList.size(); i++) {
                 ShareRedPacketsInfo t = null;
                 t = (ShareRedPacketsInfo) redList.get(i);
