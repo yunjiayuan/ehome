@@ -150,14 +150,16 @@ public class PaymentController extends BaseController implements PaymentApiContr
         }
         //检测账户信息 是否正常
         Map<String,Object> purseMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PURSEINFO+pay.getUserId() );
-        if(purseMap==null||purseMap.size()<=0){
-            Purse purse = null;
-            //缓存中没有用户对象信息 查询数据库
-            purse = purseInfoService.findPurseInfo(pay.getUserId());
-            if(purse==null){
-                return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行相关支付操作",new JSONObject());
+        if(pay.getServiceType()!=4){//拆红包 不需要验证
+            if(purseMap==null||purseMap.size()<=0){
+                Purse purse = null;
+                //缓存中没有用户对象信息 查询数据库
+                purse = purseInfoService.findPurseInfo(pay.getUserId());
+                if(purse==null){
+                    return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行相关支付操作",new JSONObject());
+                }
+                purseMap = CommonUtils.objectToMap(purse);
             }
-            purseMap = CommonUtils.objectToMap(purse);
         }
 
         //验证支付秘钥是否正确
