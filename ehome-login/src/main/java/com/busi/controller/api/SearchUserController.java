@@ -203,8 +203,8 @@ public class SearchUserController extends BaseController implements SearchUserAp
                 if(sex!=0&&userInfo.getSex()!=sex){
                     continue;
                 }
-                int district = random.nextInt(10000)+500;
-                userInfo.setDistrict(district);
+                int radius = random.nextInt(10000)+500;
+                userInfo.setRadius(radius);
                 list.add(CommonUtils.objectToMap(userInfo));
             }
         }
