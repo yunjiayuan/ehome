@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 脚印接口
@@ -90,6 +88,45 @@ public class FootprintController extends BaseController implements FootprintApiC
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,new JSONArray());
         }
         List list = pageBean.getList();
+        //只随机在线人 此段代码 后续会删除 开始
+        if(isOnlineType==0){
+            //随机10个机器人
+            int countTatol = 0;
+            if(list==null){
+                countTatol =10;
+                list = new ArrayList<Object>();
+            }else{
+                if(list.size()<10){
+                    countTatol =10-list.size();
+                    Random random=new Random();
+                    countTatol = random.nextInt(countTatol)+1;
+                }
+            }
+            List<Footprint> footList =  new ArrayList<Footprint>();
+            for(int i=0;i<countTatol;i++){
+                Random random = new Random();
+                long newUserId = random.nextInt(40000)+13870;;
+                long timeCount = (long) (Math.random()*420000)+182134;
+                long time = new Date().getTime()+timeCount;
+                long awayTime = new Date().getTime()+timeCount+10000;
+                Footprint robotUser = new Footprint();
+                robotUser.setMyId(newUserId);
+                robotUser.setUserId(userId);
+                robotUser.setTime(new Date(time));
+                robotUser.setAwayTime(new Date(awayTime));
+                footList.add(robotUser);
+                list.add(robotUser);
+            }
+            if(footList!=null&&footList.size()>0){
+                for(int i =0;i<footList.size();i++){
+                    Footprint footprint = footList.get(i);
+                    if(footprint!=null){
+                        footprintService.add(footprint);
+                    }
+                }
+            }
+        }
+        // 此段代码 后续会删除 结束
         if(list!=null&&list.size()>0){
             for (int i=0;i<list.size();i++){
                 Footprint footprint = (Footprint) list.get(i);

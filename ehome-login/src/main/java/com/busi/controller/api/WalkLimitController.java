@@ -84,7 +84,9 @@ public class WalkLimitController extends BaseController implements WalkLimitApiC
         long userId = 0;
         Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
         if(userMap==null||userMap.size()<=0){
-            userId = 17;//容错处理 17为测试账号
+            //容错处理 17为测试账号  如果缓存中一个用户也没有  随机机器人13870-53870
+            Random random = new Random();
+            userId = random.nextInt(40000)+13870;
         }
         int count = new Random().nextInt(userMap.size()) + 1;
         int i=1;
