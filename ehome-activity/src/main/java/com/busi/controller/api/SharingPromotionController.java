@@ -47,42 +47,20 @@ public class SharingPromotionController extends BaseController implements Sharin
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        List redCountList = null;
         long counts = 0;//接收的红包总数
         double tatolAmount = 0.0;//接收的红包总金额
-        redCountList = sharingPromotionService.findNum(CommonUtils.getMyId());
-        if (redCountList != null && redCountList.size() > 0) {
-            Object[] array = (Object[]) redCountList.get(0);
-            if (array != null && array.length == 2) {
-                counts = (Long) array[0];
-                if (array[1] == null) {
-                    tatolAmount = 0.00;
-                } else {
-                    tatolAmount = (Double) array[1];
-                }
-            }
-        }
         PageBean<ShareRedPacketsInfo> pageBean;
         pageBean = sharingPromotionService.findList(page, count, CommonUtils.getMyId());
         List redList = pageBean.getList();
         if (redList != null && redList.size() > 0) {
+            counts = sharingPromotionService.findNum(CommonUtils.getMyId());
+            tatolAmount = sharingPromotionService.findSum(CommonUtils.getMyId());
             for (int i = 0; i < redList.size(); i++) {
                 ShareRedPacketsInfo t = null;
                 t = (ShareRedPacketsInfo) redList.get(i);
                 if (t != null) {
-                    Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + t.getBeSharedUserId());
                     UserInfo userInfo = null;
-                    if (userMap == null || userMap.size() <= 0) {
-                        //缓存中没有用户对象信息 查询数据库
-                        UserInfo u = null;
-                        u = userInfoUtils.getUserInfo(t.getBeSharedUserId());
-                        if (u == null) {//数据库也没有
-                            return null;
-                        }
-                        userMap = CommonUtils.objectToMap(u);
-                        redisUtils.hmset(Constants.REDIS_KEY_USER + t.getBeSharedUserId(), userMap, Constants.USER_TIME_OUT);
-                    }
-                    userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+                    userInfo = userInfoUtils.getUserInfo(t.getBeSharedUserId());
                     if (userInfo != null) {
                         t.setBeSharedUserName(userInfo.getName());
                         t.setBeSharedProTypeId(userInfo.getProType());
@@ -94,19 +72,7 @@ public class SharingPromotionController extends BaseController implements Sharin
         }
         //获取自己的用户信息
         UserInfo userInfo = null;
-        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
-        if (userMap == null || userMap.size() <= 0) {
-            //缓存中没有用户对象信息 查询数据库
-            UserInfo u = null;
-            u = userInfoUtils.getUserInfo(CommonUtils.getMyId());
-            if (u == null) {//数据库也没有
-                return null;
-            }
-            userMap = CommonUtils.objectToMap(u);
-            redisUtils.hmset(Constants.REDIS_KEY_USER + CommonUtils.getMyId(), userMap, Constants.USER_TIME_OUT);
-        }
-        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
-
+        userInfo = userInfoUtils.getUserInfo(CommonUtils.getMyId());
         Map<String, Object> map = new HashMap<>();
         map.put("data", redList);
         if (redList != null && redList.size() > 0) {
@@ -197,13 +163,13 @@ public class SharingPromotionController extends BaseController implements Sharin
             }
             long userId = 0;
             Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
-            if (userMap == null || userMap.size() <= 0) {
+            if (userIdMap == null || userIdMap.size() <= 0) {
                 return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在!", new JSONObject());
             }
-            for (String key : userMap.keySet()) {
+            for (String key : userIdMap.keySet()) {
                 Object object = key;
                 if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
-                    userId = (long) userMap.get(key);
+                    userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
                     break;
                 }
             }
