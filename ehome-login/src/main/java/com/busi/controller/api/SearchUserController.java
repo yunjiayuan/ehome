@@ -19,10 +19,8 @@ import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 找人相关接口 如精确 条件 附近的人功能等
@@ -179,10 +177,37 @@ public class SearchUserController extends BaseController implements SearchUserAp
             }
         }
         //补数据处理 如果集合数据太少 则补充系统默认用户数据
-//        if(list.size()<10){
-//            //补90条
-//            //后续开发....
-//        }
+        if(list.size()<10){
+            int counts = 20;//补20条
+            for(int i=0;i<counts;i++){
+                Random random = new Random();
+                long newUserId =  random.nextInt(40000)+13870;
+                Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
+                UserInfo userInfo = null;
+                if (userMap == null || userMap.size() <= 0) {
+                    //缓存中没有用户对象信息 查询数据库
+                    UserInfo u = userInfoService.findUserById(newUserId);
+                    if (u == null) {//数据库也没有
+                        return null;
+                    }
+                    userMap = CommonUtils.objectToMap(u);
+                    redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, userMap, Constants.USER_TIME_OUT);
+                }
+                userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+                if(userInfo==null){
+                    continue;
+                }
+                if(userInfo.getUserId()==CommonUtils.getMyId()){
+                    continue;
+                }
+                if(sex!=0&&userInfo.getSex()!=sex){
+                    continue;
+                }
+                int district = random.nextInt(10000)+500;
+                userInfo.setDistrict(district);
+                list.add(CommonUtils.objectToMap(userInfo));
+            }
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,list);
     }
 }

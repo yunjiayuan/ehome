@@ -105,7 +105,10 @@ public class FootprintController extends BaseController implements FootprintApiC
             List<Footprint> footList =  new ArrayList<Footprint>();
             for(int i=0;i<countTatol;i++){
                 Random random = new Random();
-                long newUserId = random.nextInt(40000)+13870;;
+                long newUserId = random.nextInt(40000)+13870;
+                if(newUserId==CommonUtils.getMyId()){
+                    continue;
+                }
                 long timeCount = (long) (Math.random()*420000)+182134;
                 long time = new Date().getTime()+timeCount;
                 long awayTime = new Date().getTime()+timeCount+10000;
@@ -145,12 +148,12 @@ public class FootprintController extends BaseController implements FootprintApiC
                     UserInfo userInfo = null;
                     if (userMap == null || userMap.size() <= 0) {
                         //缓存中没有用户对象信息 查询数据库
-                        UserInfo u = userInfoService.findUserById(userId);
+                        UserInfo u = userInfoService.findUserById(newUserId);
                         if (u == null) {//数据库也没有
                             return null;
                         }
                         userMap = CommonUtils.objectToMap(u);
-                        redisUtils.hmset(Constants.REDIS_KEY_USER + userId, userMap, Constants.USER_TIME_OUT);
+                        redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, userMap, Constants.USER_TIME_OUT);
                     }
                     userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
                     if(userInfo!=null){

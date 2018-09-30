@@ -84,19 +84,34 @@ public class WalkLimitController extends BaseController implements WalkLimitApiC
         long userId = 0;
         Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
         if(userMap==null||userMap.size()<=0){
-            //容错处理 17为测试账号  如果缓存中一个用户也没有  随机机器人13870-53870
+            //容错处理 如果缓存中一个用户也没有  随机机器人13870-53870
             Random random = new Random();
             userId = random.nextInt(40000)+13870;
-        }
-        int count = new Random().nextInt(userMap.size()) + 1;
-        int i=1;
-        for(String key:userMap.keySet()){
-            if(i==count){
-                Object object = userMap.get(key);//随机用户
-                userId = Long.parseLong(object.toString());
-                break;
+        }else{
+            Random random = new Random();
+            int flag = random.nextInt(2)+1;
+            if(flag==2){//随机机器人
+                userId = random.nextInt(40000)+13870;
+            }else{//随机7天内上线过的人
+                int count = new Random().nextInt(userMap.size()) + 1;
+                int i=1;
+                for(String key:userMap.keySet()){
+                    if(i==count){
+                        Object object = userMap.get(key);//随机用户
+                        long id = Long.parseLong(object.toString());
+                        if(id == CommonUtils.getMyId()){
+                            continue;
+                        }
+                        break;
+                    }
+                    i++;
+                }
             }
-            i++;
+        }
+        if(userId==0){
+            //容错处理  如果缓存中一个用户也没有  随机机器人13870-53870
+            Random random = new Random();
+            userId = random.nextInt(40000)+13870;
         }
         map.put("userId",userId);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
