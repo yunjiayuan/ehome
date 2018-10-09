@@ -19,7 +19,7 @@ public class Footmark {
 
     private String title;	//标题
 
-    private long myId;		//登入用户
+    private long userId;		//登入用户
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date addTime;	//添加足迹时间

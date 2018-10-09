@@ -12,10 +12,10 @@ import lombok.Setter;
 @Getter
 public class Footmarkauthority {
 
-  private long id;
+    private long id;        //主键
 
-  private long userId;
+    private long userId;    //用户
 
-  private long authority;
+    private int authority;    // 权限:    0公开  1好友可见  2仅自己可见
 
 }
