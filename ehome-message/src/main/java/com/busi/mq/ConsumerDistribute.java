@@ -48,6 +48,9 @@ public class ConsumerDistribute {
     @Autowired
     private IpsService ipsService;//IPS系统浏览量同步
 
+    @Autowired
+    private FootmarkService footmarkService;//足迹
+
 
     /***
      * 监听消息
@@ -64,7 +67,7 @@ public class ConsumerDistribute {
      * }
      * interfaceType 0:表示发送手机短信  1:表示发送邮件  2:表示新用户注册转发 3:表示用户登录时同步登录信息
      *               4:表示用户访问量信息同步 5:表示同步图片删除 6:同步任务系统 7:表示更新钱包余额和钱包明细
-     *               8:表示公告系统同步浏览量...
+     *               8:表示公告系统同步浏览量 9表示新增足迹 ...
      * content 中的内容，根据具体业务自定义
      * @param json
      * @param textMessage
@@ -121,6 +124,9 @@ public class ConsumerDistribute {
                     break;
                 case "8"://表示公告系统同步浏览量
                     messageAdapter = ipsService;
+                    break;
+                case "9"://表示新增足迹
+                    messageAdapter = footmarkService;
                     break;
                 default://异常
                     log.info("消息服务平台操作失败，请求参数有误interfaceType:" + interfaceType);

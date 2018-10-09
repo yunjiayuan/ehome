@@ -158,4 +158,35 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 新增足迹 任务系统同步
+     * @param userId       用户ID
+     * @param title        标题
+     * @param imgUrl       图片路径
+     * @param videoUrl     视频路径     1个
+     * @param audioUrl     音频路径     1个
+     * @param infoId       信息id 公告ID和分类ID(用,分隔，格式：123,4):1婚恋交友,2二手手机,3寻人,4寻物,5失物招领,6其他（注：后续添加）
+     * @param footmarkType //足迹类型 0.默认全部 1.发布公告 2.发布家博 3.图片上传 4.音频上传 5.视频上传  6记事
+     */
+    public void sendFootmarkMQ(long userId,String title,String imgUrl,String videoUrl,String audioUrl,String infoId,int footmarkType){
+
+        //调用MQ同步 图片到图片删除记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "9");//interfaceType 9同步足迹系统
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("title",title);
+        content.put("imgUrl",imgUrl);
+        content.put("videoUrl",videoUrl);
+        content.put("audioUrl",audioUrl);
+        content.put("infoId",infoId);
+        content.put("footmarkType",footmarkType);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
 }
