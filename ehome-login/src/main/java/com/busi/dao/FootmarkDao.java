@@ -85,14 +85,14 @@ public interface FootmarkDao {
             "<if test=\"userId > 0\">" +
             " and userId=#{userId}" +
             "</if>" +
-            "<if test=\"footmarkType >= 0\">" +
+            "<if test=\"footmarkType > 0\">" +
             " and footmarkType=#{footmarkType}" +
             "</if>" +
             "<if test=\"startTime != null and startTime != '' and endTime != null and endTime != ''\">" +
-            " and DATE_FORMAT(addTime,\"%Y-%m-%d %T\") >= #{startTime} and DATE_FORMAT(addTime,\"%Y-%m-%d %T\") <= #{endTime}" +
+            " <![CDATA[ and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\") and addTime <= DATE_FORMAT(#{endTime},\"%Y-%m-%d %T\") ]]>" +
             "</if>" +
             "<if test=\"startTime != null and startTime != '' and endTime == null and endTime == ''\">" +
-            " and DATE_FORMAT(addTime,\"%Y-%m-%d %T\") >= #{startTime}" +
+            " and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\")" +
             "</if>" +
             " and footmarkStatus = 0" +
             " order by addTime desc" +

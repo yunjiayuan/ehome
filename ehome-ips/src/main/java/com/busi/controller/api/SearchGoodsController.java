@@ -136,6 +136,8 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         }
         //新增任务
         mqUtils.sendTaskMQ(searchGoods.getUserId(), 1, 3);
+        //新增足迹
+        mqUtils.sendFootmarkMQ(searchGoods.getUserId(), searchGoods.getTitle(), searchGoods.getImgUrl(), null, null, searchGoods.getId() + "," + (searchGoods.getSearchType() + 2), 1);
 
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);

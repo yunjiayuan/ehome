@@ -88,6 +88,8 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
 
         //新增任务
         mqUtils.sendTaskMQ(otherPosts.getUserId(),1,3);
+        //新增足迹
+        mqUtils.sendFootmarkMQ(otherPosts.getUserId(), otherPosts.getTitle(), null, null, null, otherPosts.getId() + "," + 6, 1);
 
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + otherPosts.getId(), 0);
