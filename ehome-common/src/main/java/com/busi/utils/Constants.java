@@ -133,6 +133,7 @@ public class Constants {
     public static final String REDIS_KEY_HOUSENUMBER = "houseNumber";//门牌号与用户ID对应关系
     public static final String REDIS_KEY_REGISTER_CREATECODE_COUNT = "register_createCode_count";//获取验证码次数统计
     public static final String REDIS_KEY_LOGIN_ERROR_COUNT = "login_error_count";//登录错误记录
+    public static final String REDIS_KEY_HOUSEMOVING_ERROR_COUNT = "houseMoving_error_count";//搬家密码错误记录
     public static final String REDIS_KEY_QINIU_TOKEN = "qiniu_token";//七牛token
     public static final String REDIS_KEY_USER_DETAILED = "user_detailed_";//用户详细信息对应关系
     public static final String REDIS_KEY_USERFRIENDLIST = "userFriendList_";//用户好友信息对应关系
