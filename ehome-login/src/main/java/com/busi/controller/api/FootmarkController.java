@@ -122,7 +122,8 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
         if (posts == null) {
             footmarkService.addAuthority(footmarkauthority);
         } else {
-            footmarkService.updateAuthority(footmarkauthority);
+            posts.setAuthority(footmarkauthority.getAuthority());
+            footmarkService.updateAuthority(posts);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
