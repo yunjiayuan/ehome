@@ -101,7 +101,7 @@ public class HouseMovingController extends BaseController implements HouseMoving
                 targetUserInfo = (UserInfo) CommonUtils.mapToObject(targetUserMap, UserInfo.class);
             }
         }
-        if(targetUserInfo.getAccessRights()!=0){
+        if(targetUserInfo.getAccountStatus()!=0){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "目标账号存在异常，无法搬家", new JSONObject());
         }
         if (!targetUserInfo.getPassword().equals(targetPassword)) {
@@ -127,8 +127,8 @@ public class HouseMovingController extends BaseController implements HouseMoving
             targetUserInfo.setAccountStatus(2);
         }
         //更新数据库
-        userInfoService.update(myUserInfo);
-        userInfoService.update(targetUserInfo);
+        userInfoService.updateByHouseMoving(myUserInfo);
+        userInfoService.updateByHouseMoving(targetUserInfo);
         //清空缓存 重新登录
         redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER, targetUserInfo.getPhone());
         redisUtils.hdel(Constants.REDIS_KEY_HOUSENUMBER, targetUserInfo.getProType() + "_" + targetUserInfo.getHouseNumber());

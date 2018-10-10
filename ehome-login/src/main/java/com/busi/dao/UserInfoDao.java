@@ -51,7 +51,7 @@ public interface UserInfoDao {
      * @param houseNumber
      * @return
      */
-    @Select("select * from userInfo where proType = #{proType} and houseNumber = #{houseNumber}")
+    @Select("select * from userInfo where proType = #{proType} and houseNumber = #{houseNumber} and accountStatus < 2 ")
     UserInfo findUserByHouseNumber(@Param("proType") int proType, @Param("houseNumber") String houseNumber);
 
     /***
@@ -150,6 +150,21 @@ public interface UserInfoDao {
             " where userId=#{userId}"+
             "</script>")
     int update(UserInfo userInfo);
+
+    /**
+     * 搬家更新
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set"+
+            " proType=#{proType}," +
+            " houseNumber=#{houseNumber}," +
+            " password=#{password}," +
+            " accountStatus=#{accountStatus}" +
+            " where userId=#{userId}"+
+            "</script>")
+    int updateByHouseMoving(UserInfo userInfo);
 
     /**
      * 修改头像  需求把涂鸦图像置空
