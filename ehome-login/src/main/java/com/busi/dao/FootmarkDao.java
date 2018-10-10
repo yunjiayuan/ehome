@@ -5,6 +5,7 @@ import com.busi.entity.Footmarkauthority;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,15 +89,35 @@ public interface FootmarkDao {
             "<if test=\"footmarkType > 0\">" +
             " and footmarkType=#{footmarkType}" +
             "</if>" +
-            "<if test=\"startTime != null and startTime != '' and endTime != null and endTime != ''\">" +
-            " <![CDATA[ and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\") and addTime <= DATE_FORMAT(#{endTime},\"%Y-%m-%d %T\") ]]>" +
+            "<if test=\"endDate != null\">" +
+            " <![CDATA[ and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) and UNIX_TIMESTAMP(addTime) <= UNIX_TIMESTAMP(#{endDate})+86400000 ]]>" +
+//            " <![CDATA[ and FROM_UNIXTIME(addTime,'%Y-%m-%d') >= FROM_UNIXTIME(#{beginDate},'%Y-%m-%d') and FROM_UNIXTIME(addTime,'%Y-%m-%d') <= FROM_UNIXTIME(#{endDate},'%Y-%m-%d') ]]>" +
             "</if>" +
-            "<if test=\"startTime != null and startTime != '' and endTime == null and endTime == ''\">" +
-            " and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\")" +
+            "<if test=\"endDate == null\">" +
+            " and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) " +
             "</if>" +
             " and footmarkStatus = 0" +
             " order by addTime desc" +
             "</script>")
-    List<Footmark> findList(@Param("userId") long userId, @Param("footmarkType") int footmarkType, @Param("startTime") String startTime, @Param("endTime") String endTime);
+    List<Footmark> findTimeList(@Param("userId") long userId, @Param("footmarkType") int footmarkType, @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
+
+    /***
+     * 分页查询 默认按时间降序排序(时间为空时调用)
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select * from footmark" +
+            " where 1=1" +
+            "<if test=\"userId > 0\">" +
+            " and userId=#{userId}" +
+            "</if>" +
+            "<if test=\"footmarkType > 0\">" +
+            " and footmarkType=#{footmarkType}" +
+            "</if>" +
+            " and footmarkStatus = 0" +
+            " order by addTime desc" +
+            "</script>")
+    List<Footmark> findList(@Param("userId") long userId, @Param("footmarkType") int footmarkType);
 
 }
