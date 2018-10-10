@@ -4,6 +4,7 @@ import com.busi.dao.FootmarkDao;
 import com.busi.entity.Footmark;
 import com.busi.entity.Footmarkauthority;
 import com.busi.entity.PageBean;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -11,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -96,8 +100,29 @@ public class FootmarkService {
 
         List<Footmark> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = footmarkDao.findList(userId, footmarkType, startTime, endTime);
-
+        if (CommonUtils.checkFull(startTime)) {
+            list = footmarkDao.findList(userId, footmarkType);
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date beginDate = null;
+            Date endDate = null;
+            Date begin = null;
+            Date end = null;
+            try {
+                if (!CommonUtils.checkFull(startTime)) {
+                    beginDate = format.parse(startTime);
+                    begin = format2.parse(format2.format(beginDate));
+                }
+                if (!CommonUtils.checkFull(endTime)) {
+                    endDate = format.parse(endTime);
+                    end = format2.parse(format2.format(endDate));
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            list = footmarkDao.findTimeList(userId, footmarkType, begin, end);
+        }
         return PageUtils.getPageBean(p, list);
     }
 
