@@ -136,6 +136,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 }
                 //新增任务
                 mqUtils.sendTaskMQ(loveAndFriends.getUserId(), 1, 3);
+                //新增足迹
+                mqUtils.sendFootmarkMQ(loveAndFriends.getUserId(), loveAndFriends.getTitle(), loveAndFriends.getImgUrl(), null, null, loveAndFriends.getId() + "," + 1, 1);
             } else {
                 return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "您已发布过婚恋交友的公告，您需要修改之前的公告信息吗？", new JSONObject());
             }
@@ -351,7 +353,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 //            e.printStackTrace();
 //        }
 //        String userbirthday = formatter.format(sd);
-        String strBirthdayArr=de.substring(0,10);
+        String strBirthdayArr = de.substring(0, 10);
         age = CommonUtils.getAge(strBirthdayArr);
         sex = Integer.parseInt(userMap.get("sex").toString());
         province = Integer.parseInt(userMap.get("province").toString());

@@ -144,6 +144,8 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         //新增任务
         mqUtils.sendTaskMQ(usedDeal.getUserId(), 1, 3);
+        //新增足迹
+        mqUtils.sendFootmarkMQ(usedDeal.getUserId(), usedDeal.getTitle(), usedDeal.getImgUrl(), null, null, usedDeal.getId() + "," + 2, 1);
 
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", usedDeal.getId());
