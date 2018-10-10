@@ -81,6 +81,15 @@ public class UserInfoService {
     public int update(UserInfo userInfo){
         return  userInfoDao.update(userInfo);
     }
+    /***
+     * 搬家更新
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateByHouseMoving(UserInfo userInfo){
+        return  userInfoDao.updateByHouseMoving(userInfo);
+    }
 
     /***
      * 更新用户头像
