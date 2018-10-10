@@ -56,7 +56,7 @@ public interface FootmarkDao {
     @Update("<script>" +
             "update footmarkauthority set" +
             " authority=#{authority}" +
-            " where id=#{id} and userId=#{userId}" +
+            " where userId=#{userId}" +
             "</script>")
     int updateAuthority(Footmarkauthority footmarkauthority);
 
