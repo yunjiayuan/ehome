@@ -150,4 +150,8 @@ public class UserInfo {
 	@Length(min = 16, max = 16, message = "修改密码key有误")
 	private String key; // 修改密码key 数据库无关字段 用于修改密码操作使用
 
+	private int isVest;//是否设置过马甲  0未设置 1已设置（设置后不能进行串门，只能查看马甲信息） 与数据库无关字段
+
+	private long vestId;//马甲主键ID 与数据库无关字段
+
 }

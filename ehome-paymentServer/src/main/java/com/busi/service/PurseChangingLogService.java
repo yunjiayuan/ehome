@@ -54,7 +54,7 @@ public class PurseChangingLogService {
             if(!CommonUtils.checkFull(beginTime)){
                 beginDate = sdf.parse(beginTime);
             }
-            if(!CommonUtils.checkFull(beginTime)){
+            if(!CommonUtils.checkFull(endTime)){
                 endDate = sdf.parse(endTime);
             }
         } catch (ParseException e) {

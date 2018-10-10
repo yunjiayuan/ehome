@@ -47,7 +47,7 @@ public interface PurseChangingLogDao {
             " and UNIX_TIMESTAMP(time) >= UNIX_TIMESTAMP(#{beginTime})" +
             "</if>" +
             "<if test=\" endTime != null \">"+
-            " and UNIX_TIMESTAMP(#{endTime}) >= UNIX_TIMESTAMP(time)" +
+            " and UNIX_TIMESTAMP(#{endTime})+86400000 >= UNIX_TIMESTAMP(time)" +
             "</if>" +
             " and userId = #{userId}"+
             " order by time desc" +
