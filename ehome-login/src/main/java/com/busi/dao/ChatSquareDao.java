@@ -81,15 +81,16 @@ public interface ChatSquareDao {
 
     /***
      * 查询指定用户集合的马甲信息列表
-     * @param ids
+     * @param users
      * @return
      */
     @Select("<script>" +
-            "select * from chatSquare"+
-            " where userId in" +
-            "<foreach collection='ids'  index='index' item='item1' open='(' separator=',' close=')'>" +
-            " #{item1}"+
-            "</foreach>"+
+            "select * from chatSquare" +
+            " where 1=1" +
+            " and userId in" +
+            "<foreach collection='users' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
             "</script>")
-    List findChatSquareUserInfo(@Param("ids") String[] ids);
+    List<ChatSquare> findChatSquareUserInfo(@Param("users") String[] users);
 }
