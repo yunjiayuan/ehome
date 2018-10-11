@@ -16,10 +16,11 @@ public interface LoginApiController {
      * @param account   省简称ID_门牌号、手机号、或第三方平台登录类型   格式 0_1001518 或15901213694 或 1
      * @param password  登录密码(一遍32位MD5加密后的密码)或第三方平台登录key
      * @param loginType 登录类型 0门牌号登录 1手机号登录 2第三方平台账号登录
+     * @param otherPlatformAccount 第三方平台名字 用于同步安全中心
      * @return
      */
-    @GetMapping("login/{loginType}/{account}/{password}")
-    ReturnData login(@PathVariable int loginType,@PathVariable String account , @PathVariable String password);
+    @GetMapping("login/{loginType}/{account}/{password}/{otherPlatformAccount}")
+    ReturnData login(@PathVariable int loginType,@PathVariable String account , @PathVariable String password, @PathVariable String otherPlatformAccount);
 
     /***
      * 退出登录接口

@@ -112,6 +112,23 @@ public class HouseMovingController extends BaseController implements HouseMoving
             }
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的目标账号的密码不正确", new JSONObject());
         }
+        //清空缓存 重新登录
+        if(!CommonUtils.checkFull(targetUserInfo.getPhone())){
+            redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER, targetUserInfo.getPhone());
+        }
+        if(!CommonUtils.checkFull(targetUserInfo.getOtherPlatformKey())){
+            redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, targetUserInfo.getOtherPlatformType() + "_" + targetUserInfo.getOtherPlatformKey());
+        }
+        redisUtils.hdel(Constants.REDIS_KEY_HOUSENUMBER, targetUserInfo.getProType() + "_" + targetUserInfo.getHouseNumber());
+        redisUtils.expire(Constants.REDIS_KEY_USER + targetUserInfo.getUserId(), 0);//0s后过期
+        if(!CommonUtils.checkFull(myUserInfo.getPhone())){
+            redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER, myUserInfo.getPhone());
+        }
+        if(!CommonUtils.checkFull(myUserInfo.getOtherPlatformKey())){
+            redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, myUserInfo.getOtherPlatformType() + "_" + myUserInfo.getOtherPlatformKey());
+        }
+        redisUtils.hdel(Constants.REDIS_KEY_HOUSENUMBER, myUserInfo.getProType() + "_" + myUserInfo.getHouseNumber());
+        redisUtils.expire(Constants.REDIS_KEY_USER + myUserInfo.getUserId(), 0);//0s后过期
         //验证通过 开始搬家
         if (houseMoving == 0) {//搬进
             //将目标账号的门牌号和密码信息换成当前账号的,并停用当前账号
@@ -129,15 +146,6 @@ public class HouseMovingController extends BaseController implements HouseMoving
         //更新数据库
         userInfoService.updateByHouseMoving(myUserInfo);
         userInfoService.updateByHouseMoving(targetUserInfo);
-        //清空缓存 重新登录
-        redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER, targetUserInfo.getPhone());
-        redisUtils.hdel(Constants.REDIS_KEY_HOUSENUMBER, targetUserInfo.getProType() + "_" + targetUserInfo.getHouseNumber());
-        redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, targetUserInfo.getOtherPlatformType() + "_" + targetUserInfo.getOtherPlatformKey());
-        redisUtils.expire(Constants.REDIS_KEY_USER + targetUserInfo.getUserId(), 0);//0s后过期
-        redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER, myUserInfo.getPhone());
-        redisUtils.hdel(Constants.REDIS_KEY_HOUSENUMBER, myUserInfo.getProType() + "_" + myUserInfo.getHouseNumber());
-        redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, myUserInfo.getOtherPlatformType() + "_" + myUserInfo.getOtherPlatformKey());
-        redisUtils.expire(Constants.REDIS_KEY_USER + myUserInfo.getUserId(), 0);//0s后过期
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

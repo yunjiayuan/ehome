@@ -6,10 +6,7 @@ import com.busi.entity.ReturnData;
 import com.busi.entity.UserInfo;
 import com.busi.mq.MqProducer;
 import com.busi.service.UserInfoService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,15 +35,19 @@ public class LoginController extends BaseController implements LoginApiControlle
     @Autowired
     MqProducer mqProducer;
 
+    @Autowired
+    MqUtils mqUtils;
+
     /***
      * 门牌号登录接口
      * @param account   省简称ID_门牌号、手机号、或第三方平台登录类型   格式 0_1001518 或15901213694 或 1
      * @param password  登录密码(一遍32位MD5加密后的密码)或第三方平台登录key
      * @param loginType 登录类型 0门牌号登录(默认) 1手机号登录 2第三方平台账号登录
+     * @param otherPlatformAccount 第三方平台名字 用于同步安全中心
      * @return
      */
     @Override
-    public ReturnData login(@PathVariable int loginType,@PathVariable String account , @PathVariable String password) {
+    public ReturnData login(@PathVariable int loginType,@PathVariable String account , @PathVariable String password, @PathVariable String otherPlatformAccount) {
         //验证参数
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -101,9 +102,12 @@ public class LoginController extends BaseController implements LoginApiControlle
                     userInfo = new UserInfo();
                     userInfo.setOtherPlatformType(otherPlatformType);
                     userInfo.setOtherPlatformKey(password);//此处password充当第三方平台key
+                    userInfo.setOtherPlatformAccount(otherPlatformAccount);
                     userInfo.setTime(new Date());
                     userInfo.setAccountStatus(1);//未激活
                     userInfoService.add(userInfo);
+                    //对于手机号和第三方平台注册用户 需要自动绑定安全中心中的相关数据
+                    mqUtils.sendUserAccountSecurityMQ(userInfo.getUserId(),userInfo.getPhone(),userInfo.getOtherPlatformType(),userInfo.getOtherPlatformAccount(),userInfo.getOtherPlatformKey());
                 }
                 //更新缓存中 第三方平台账号与用户ID 的对应关系表
                 redisUtils.hset(Constants.REDIS_KEY_OTHERNUMBER,userInfo.getOtherPlatformType()+"_"+userInfo.getOtherPlatformKey(),userInfo.getUserId());

@@ -274,8 +274,8 @@ public class RegisterController extends BaseController implements RegisterApiCon
         newUserInfo.setTime(new Date());
         newUserInfo.setAccountStatus(1);//未激活
         userInfoService.add(newUserInfo);
-        //更新缓存中 手机号与用户ID 的对应关系表
-//        redisUtils.hset(Constants.REDIS_KEY_PHONENUMBER,newUserInfo.getPhone(),newUserInfo.getUserId());//重新登录时 会重新加载到缓存中 此处不再同步
+        //对于手机号和第三方平台注册用户 需要自动绑定安全中心中的相关数据
+        mqUtils.sendUserAccountSecurityMQ(newUserInfo.getUserId(),newUserInfo.getPhone(),newUserInfo.getOtherPlatformType(),newUserInfo.getOtherPlatformAccount(),newUserInfo.getOtherPlatformKey());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
@@ -375,8 +375,6 @@ public class RegisterController extends BaseController implements RegisterApiCon
         String sendMsg = root.toJSONString();
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         mqProducer.sendMsg(activeMQQueue,sendMsg);
-        //对于手机号和第三方平台注册用户 需要自动绑定安全中心中的相关数据
-        mqUtils.sendUserAccountSecurityMQ(newUserInfo.getUserId(),newUserInfo.getPhone(),newUserInfo.getOtherPlatformType(),newUserInfo.getOtherPlatformAccount(),newUserInfo.getOtherPlatformKey());
         //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端 环信账号改成用户ID
         Map<String,String> im_map = new HashMap<>();
 //        im_map.put("proType",newUserInfo.getProType()+"");
@@ -405,9 +403,9 @@ public class RegisterController extends BaseController implements RegisterApiCon
                 return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"将要访问串门的用户不存在",new JSONObject());
             }
             //设置访问量信息
-            Object obj = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+userId);
+            Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+userId);
             VisitView visitView = null;
-            if(obj==null){//缓存中不存在 查询数据库
+            if(map==null||map.size()<=0){//缓存中不存在 查询数据库
                 visitView = visitViewService.findVisitView(userId);
                 if(visitView==null){
                     visitView = new VisitView();
@@ -424,7 +422,7 @@ public class RegisterController extends BaseController implements RegisterApiCon
                 if(todayObj==null){//处理当天访问量失效的问题
                     userInfo.setTodayVisitCount(0);//设置今日访问量
                     //更新缓存 重置今天访问量0
-                    redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),0,CommonUtils.getCurrentTimeTo_12());//更新今日访问量的生命周期 到今天晚上12点失效
+                    redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+userId,0,CommonUtils.getCurrentTimeTo_12());//更新今日访问量的生命周期 到今天晚上12点失效
                 }else{
                     userInfo.setTodayVisitCount(Long.parseLong(redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+userId).toString()));//设置今日访问量
                 }
