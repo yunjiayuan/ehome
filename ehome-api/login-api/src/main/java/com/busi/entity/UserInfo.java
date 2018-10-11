@@ -115,6 +115,9 @@ public class UserInfo {
 
 	private int otherPlatformType;//第三方平台类型 1：QQ，2：微信，3：新浪微博
 
+	@Length(max = 50, message = "otherPlatformAccount参数长度不合法")
+	private String otherPlatformAccount;//第三方平台账号名称
+
 	@Max(value = 1, message = "isNewUser参数有误，超出指定范围")
 	@Min(value= 0 ,message= "isNewUser参数有误，超出指定范围")
 	private int isNewUser;//是否为领取新人红包的标识  0默认新用户未领取 1已领新人红包(老用户)

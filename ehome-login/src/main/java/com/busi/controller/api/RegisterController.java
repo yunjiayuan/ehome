@@ -375,8 +375,8 @@ public class RegisterController extends BaseController implements RegisterApiCon
         String sendMsg = root.toJSONString();
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         mqProducer.sendMsg(activeMQQueue,sendMsg);
-        //对于手机号注册用户 需要自动绑定安全中心中的手机号  稍后完善
-
+        //对于手机号和第三方平台注册用户 需要自动绑定安全中心中的相关数据
+        mqUtils.sendUserAccountSecurityMQ(newUserInfo.getUserId(),newUserInfo.getPhone(),newUserInfo.getOtherPlatformType(),newUserInfo.getOtherPlatformAccount(),newUserInfo.getOtherPlatformKey());
         //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端 环信账号改成用户ID
         Map<String,String> im_map = new HashMap<>();
 //        im_map.put("proType",newUserInfo.getProType()+"");

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 消息平台工具方法 目前只提供 更新钱包余额和交易明细 更新任务系统
+ * 消息平台工具方法
  * author：SunTianJie
  * create time：2018/8/22 17:27
  */
@@ -183,6 +183,33 @@ public class MqUtils {
         content.put("audioUrl",audioUrl);
         content.put("infoId",infoId);
         content.put("footmarkType",footmarkType);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
+
+    /***
+     * 手机号或第三方平台新用户注册时同步安全中心
+     * @param userId
+     * @param phone                密保手机(绑定手机，由于手机登录为同一个手机号)
+     * @param otherPlatformType    是否绑定第三方平台账号，0：未绑定, 1：绑定QQ账号，2：绑定微信账号，3：绑定新浪微博账号
+     * @param otherPlatformAccount 第三方平台账号名称
+     * @param otherPlatformKey     第三方平台账号key
+     */
+    public void sendUserAccountSecurityMQ(long userId,String phone,int otherPlatformType,String otherPlatformAccount,String otherPlatformKey){
+
+        //调用MQ同步 图片到图片删除记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "10");//interfaceType 10同步安全中心
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("phone",phone);
+        content.put("otherPlatformType",otherPlatformType);
+        content.put("otherPlatformAccount",otherPlatformAccount);
+        content.put("otherPlatformKey",otherPlatformKey);
         root.put("header", header);
         root.put("content", content);
         String sendMsg = root.toJSONString();

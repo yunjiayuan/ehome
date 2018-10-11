@@ -1,13 +1,17 @@
 package com.busi.controller.local;
 
+import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.ReturnData;
 import com.busi.entity.UserAccountSecurity;
 import com.busi.service.UserAccountSecurityService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
+import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
@@ -47,4 +51,19 @@ public class UserAccountSecurityLController extends BaseController implements  U
         userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap, UserAccountSecurity.class);
         return userAccountSecurity;
     }
+
+    /***
+     * 新增安全中心信息（目前只提供手机和第三方注册新用户时同步安全中心信息使用）
+     * @param userAccountSecurity
+     * @return
+     */
+    @Override
+    public ReturnData addAccountSecurity(@RequestBody UserAccountSecurity userAccountSecurity) {
+        int count =userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+        if(count<=0){
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"新用户注册新增安全中心信息失败",new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
 }
