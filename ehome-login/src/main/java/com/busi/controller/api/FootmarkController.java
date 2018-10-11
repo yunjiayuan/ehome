@@ -135,11 +135,12 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
     @Override
     public ReturnData findAuthority() {
         //查询数据库
+        Map<String, Object> map = new HashMap<>();
         Footmarkauthority posts = footmarkService.findUserId(CommonUtils.getMyId());
         if (posts == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            map.put("authority", 0);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
         }
-        Map<String, Object> map = new HashMap<>();
         map.put("authority", posts.getAuthority());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
