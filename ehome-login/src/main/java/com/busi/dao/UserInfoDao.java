@@ -238,4 +238,30 @@ public interface UserInfoDao {
             " where userId=#{userId}"+
             "</script>")
     int updateIsNewUser(UserInfo userInfo);
+
+    /***
+     * 更新用户手机绑定状态
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set"+
+            " phone=#{phone}" +
+            " where userId=#{userId}"+
+            "</script>")
+    int updateBindPhone(UserInfo userInfo);
+
+    /***
+     * 更新用户第三方平台账号绑定状态
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set"+
+            " otherPlatformKey=#{otherPlatformKey}," +
+            " otherPlatformAccount=#{otherPlatformAccount}," +
+            " otherPlatformType=#{otherPlatformType}" +
+            " where userId=#{userId}"+
+            "</script>")
+    int updateBindOther(UserInfo userInfo);
 }

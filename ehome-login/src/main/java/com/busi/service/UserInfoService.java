@@ -152,6 +152,26 @@ public class UserInfoService {
     }
 
     /***
+     * 更新用户手机号绑定状态
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateBindPhone(UserInfo userInfo){
+        return  userInfoDao.updateBindPhone(userInfo);
+    }
+
+    /***
+     * 更新用户第三方平台账号绑定状态
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateBindOther(UserInfo userInfo){
+        return  userInfoDao.updateBindOther(userInfo);
+    }
+
+    /***
      * 完善资料
      * @param userInfo
      * @return
