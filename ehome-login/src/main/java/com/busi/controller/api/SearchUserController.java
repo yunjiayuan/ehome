@@ -18,6 +18,8 @@ import org.springframework.data.geo.GeoResults;
 import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import sun.plugin.com.event.COMEventHandler;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -55,19 +57,40 @@ public class SearchUserController extends BaseController implements SearchUserAp
         //开始查找用户
         long userId = 0L;
         Object obj = null;
+        UserInfo userInfo = null;
         if(searchType==1){//手机号查找
             obj = redisUtils.hget(Constants.REDIS_KEY_PHONENUMBER,param);
+            if(obj==null||CommonUtils.checkFull(String.valueOf(obj.toString()))){
+                userInfo = userInfoService.findUserByPhone(param);
+            }else{
+                userId = Long.parseLong(obj.toString());
+                Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userId );
+                if(userMap!=null&&userMap.size()>0){
+                    userInfo = (UserInfo) CommonUtils.mapToObject(userMap,UserInfo.class);
+                }else{
+                    userInfo = userInfoService.findUserByPhone(param);
+                }
+            }
         }else{
             obj = redisUtils.hget(Constants.REDIS_KEY_HOUSENUMBER,param);
+            if(obj==null||CommonUtils.checkFull(String.valueOf(obj.toString()))){
+                userInfo = userInfoService.findUserByHouseNumber(Integer.parseInt(param.split("_")[0]),param.split("_")[1]);
+            }else{
+                userId = Long.parseLong(obj.toString());
+                Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userId );
+                if(userMap!=null&&userMap.size()>0){
+                    userInfo = (UserInfo) CommonUtils.mapToObject(userMap,UserInfo.class);
+                }else{
+                    userInfo = userInfoService.findUserByHouseNumber(Integer.parseInt(param.split("_")[0]),param.split("_")[1]);
+                }
+            }
         }
-        if(obj==null||CommonUtils.checkFull(String.valueOf(obj.toString()))){
+        if(userInfo==null){
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"查找的用户不存在",new JSONObject());
         }
-        userId = Long.parseLong(obj.toString());
-        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userId );
-        userMap.put("password","");//过滤登录密码
-        userMap.put("im_password","");//过滤环信密码
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",userMap);
+        userInfo.setPassword("");
+        userInfo.setIm_password("");
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",userInfo);
     }
 
     /**

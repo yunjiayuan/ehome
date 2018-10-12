@@ -5,6 +5,8 @@ import com.busi.controller.BaseController;
 import com.busi.entity.RealNameInfo;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UserAccountSecurity;
+import com.busi.entity.UserInfo;
+import com.busi.fegin.UserInfoLocalControllerFegin;
 import com.busi.service.RealNameInfoService;
 import com.busi.service.UserAccountSecurityService;
 import com.busi.utils.*;
@@ -36,6 +38,9 @@ public class UserAccountSecurityController extends BaseController implements Use
 
     @Autowired
     RealNameInfoService realNameInfoService;
+
+    @Autowired
+    UserInfoLocalControllerFegin userInfoLocalControllerFegin;
 
     /***
      * 查询安全中心数据接口
@@ -231,6 +236,11 @@ public class UserAccountSecurityController extends BaseController implements Use
                 }
             }
         }
+        //同步用户信息
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userAccountSecurity.getUserId());
+        userInfo.setPhone(userAccountSecurity.getPhone());
+        userInfoLocalControllerFegin.updateBindPhone(userInfo);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         //清除短信验证码
@@ -288,6 +298,11 @@ public class UserAccountSecurityController extends BaseController implements Use
                 }
             }
         }
+        //同步用户信息 置空phone
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userAccountSecurity.getUserId());
+        userInfo.setPhone("");
+        userInfoLocalControllerFegin.updateBindPhone(userInfo);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         //清除短信验证码
@@ -523,6 +538,12 @@ public class UserAccountSecurityController extends BaseController implements Use
         if(bindingResult.hasErrors()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
         }
+        if(CommonUtils.checkFull(userAccountSecurity.getOtherPlatformKey())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，otherPlatformKey不能为空",new JSONObject());
+        }
+        if(CommonUtils.checkFull(userAccountSecurity.getOtherPlatformAccount())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，otherPlatformAccount不能为空",new JSONObject());
+        }
         //验证当前第三方平台账户是否被其他账户绑定过
         UserAccountSecurity uasy = userAccountSecurityService.findUserAccountSecurityByOther(userAccountSecurity.getOtherPlatformType(),userAccountSecurity.getOtherPlatformKey());
         if(uasy!=null){
@@ -564,6 +585,13 @@ public class UserAccountSecurityController extends BaseController implements Use
                 userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
             }
         }
+        //同步用户信息
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userAccountSecurity.getUserId());
+        userInfo.setOtherPlatformKey(userAccountSecurity.getOtherPlatformKey());
+        userInfo.setOtherPlatformAccount(userAccountSecurity.getOtherPlatformAccount());
+        userInfo.setOtherPlatformType(userAccountSecurity.getOtherPlatformType());
+        userInfoLocalControllerFegin.updateBindOther(userInfo);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
@@ -588,6 +616,13 @@ public class UserAccountSecurityController extends BaseController implements Use
         uas.setOtherPlatformAccount("");
         uas.setOtherPlatformKey("");
         userAccountSecurityService.updateUserAccountSecurity(uas);
+        //同步用户信息
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userAccountSecurity.getUserId());
+        userInfo.setOtherPlatformKey("");
+        userInfo.setOtherPlatformAccount("");
+        userInfo.setOtherPlatformType(0);
+        userInfoLocalControllerFegin.updateBindOther(userInfo);
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
