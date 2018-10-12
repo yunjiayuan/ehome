@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -333,31 +334,14 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         int district = -1;// 区
         int studyrank = 0;// 学历
         int maritalstatus = 0;// 婚否
-//        int height = 0;// 身高
-//        int monthlyPay = 0; // 月薪
-//        DetailedUserInfo ua = null;
-//        ua = detailedUserInfoService.findUserDetailedById(CommonUtils.getMyId());
-//        if (ua != null) {
-////            height = ua.getHeight();
-//        }
-//        UserInfo userInfoCache = userInfoService.findUserById(CommonUtils.getMyId());
-//        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
+
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(CommonUtils.getMyId());
         if (userInfo == null) {
             return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "账号不存在", new JSONObject());
         }
-//        SimpleDateFormat formatter = new SimpleDateFormat(
-//                "yyyy-MM-dd");
-        String de = String.valueOf(userInfo.getBirthday());
-        //需先转换日期类型
-//        Date sd = null;
-//        try {
-//            sd = DateFormat.getDateInstance().parse(de);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        String userbirthday = formatter.format(sd);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String de = format.format(userInfo.getBirthday());
         String strBirthdayArr = de.substring(0, 10);
         age = CommonUtils.getAge(strBirthdayArr);
         sex = userInfo.getSex();
