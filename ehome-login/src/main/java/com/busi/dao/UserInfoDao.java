@@ -259,7 +259,6 @@ public interface UserInfoDao {
     @Update("<script>" +
             "update userInfo set"+
             " otherPlatformKey=#{otherPlatformKey}," +
-            " otherPlatformAccount=#{otherPlatformAccount}," +
             " otherPlatformType=#{otherPlatformType}" +
             " where userId=#{userId}"+
             "</script>")

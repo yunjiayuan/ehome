@@ -88,7 +88,10 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
             if(!CommonUtils.checkFull(userInfo.getPhone())){
                 redisUtils.hset(Constants.REDIS_KEY_PHONENUMBER,userInfo.getPhone(),userInfo.getUserId());
             }else{
-                redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER,userInfo.getPhone());
+                Object phone = userMap.get("phone");
+                if(phone!=null){
+                    redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER,phone.toString());
+                }
             }
             userMap.put("phone",userInfo.getPhone());
             redisUtils.hmset(Constants.REDIS_KEY_USER+userInfo.getUserId(),userMap,Constants.USER_TIME_OUT);
@@ -110,7 +113,10 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
             if(!CommonUtils.checkFull(userInfo.getOtherPlatformKey())){
                 redisUtils.hset(Constants.REDIS_KEY_OTHERNUMBER,userInfo.getOtherPlatformType() + "_" + userInfo.getOtherPlatformKey(),userInfo.getUserId());
             }else{
-                redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, userInfo.getOtherPlatformType() + "_" + userInfo.getOtherPlatformKey());
+                UserInfo u = (UserInfo) CommonUtils.mapToObject(userMap,UserInfo.class);
+                if(u!=null){
+                    redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, u.getOtherPlatformType() + "_" + u.getOtherPlatformKey());
+                }
             }
             userMap.put("otherPlatformKey",userInfo.getOtherPlatformKey());
             userMap.put("otherPlatformAccount",userInfo.getOtherPlatformAccount());
