@@ -31,4 +31,20 @@ public interface UserInfoLocalController {
     @PutMapping("updateIsNew")
     ReturnData updateIsNew(@RequestBody UserInfo userInfo);
 
+    /***
+     * 更新用户手机号绑定状态
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateBindPhone")
+    ReturnData updateBindPhone(@RequestBody UserInfo userInfo);
+
+    /***
+     * 更新用户第三方平台账号绑定状态
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateBindOther")
+    ReturnData updateBindOther(@RequestBody UserInfo userInfo);
+
 }

@@ -74,4 +74,50 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
+    /***
+     * 更新用户手机号绑定状态
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData updateBindPhone(@RequestBody UserInfo userInfo) {
+        userInfoService.updateBindPhone(userInfo);
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+        if (userMap != null&&userMap.size() > 0) {//缓存中存在 则更新缓存
+            //修改缓存数据
+            if(!CommonUtils.checkFull(userInfo.getPhone())){
+                redisUtils.hset(Constants.REDIS_KEY_PHONENUMBER,userInfo.getPhone(),userInfo.getUserId());
+            }else{
+                redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER,userInfo.getPhone());
+            }
+            userMap.put("phone",userInfo.getPhone());
+            redisUtils.hmset(Constants.REDIS_KEY_USER+userInfo.getUserId(),userMap,Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新用户第三方平台账号绑定状态
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData updateBindOther(@RequestBody UserInfo userInfo) {
+        userInfoService.updateBindOther(userInfo);
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+        if (userMap != null&&userMap.size() > 0) {//缓存中存在 则更新缓存
+            //修改缓存数据
+            if(!CommonUtils.checkFull(userInfo.getOtherPlatformKey())){
+                redisUtils.hset(Constants.REDIS_KEY_OTHERNUMBER,userInfo.getOtherPlatformType() + "_" + userInfo.getOtherPlatformKey(),userInfo.getUserId());
+            }else{
+                redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, userInfo.getOtherPlatformType() + "_" + userInfo.getOtherPlatformKey());
+            }
+            userMap.put("otherPlatformKey",userInfo.getOtherPlatformKey());
+            userMap.put("otherPlatformAccount",userInfo.getOtherPlatformAccount());
+            userMap.put("otherPlatformType",userInfo.getOtherPlatformType());
+            redisUtils.hmset(Constants.REDIS_KEY_USER+userInfo.getUserId(),userMap,Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
 }
