@@ -84,7 +84,8 @@ public interface SearchGoodsDao {
             "</if>" +
             " province=#{province}," +
             " city=#{city}," +
-            " district=#{district}" +
+            " district=#{district}," +
+            " fraction=#{fraction}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(SearchGoods searchGoods);

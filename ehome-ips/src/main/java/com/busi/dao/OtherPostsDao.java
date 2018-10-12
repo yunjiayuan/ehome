@@ -45,6 +45,7 @@ public interface OtherPostsDao {
             "<if test=\"content != null and content != ''\">"+
             " content=#{content}," +
             "</if>" +
+            " fraction=#{fraction}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")

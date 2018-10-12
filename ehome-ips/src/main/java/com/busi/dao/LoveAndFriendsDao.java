@@ -69,7 +69,8 @@ public interface LoveAndFriendsDao {
             "</if>" +
             " locationProvince=#{locationProvince}," +
             " locationCity=#{locationCity}," +
-            " locationDistrict=#{locationDistrict}" +
+            " locationDistrict=#{locationDistrict}," +
+            " fraction=#{fraction}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(LoveAndFriends loveAndFriends);
