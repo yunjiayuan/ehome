@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -32,6 +33,9 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
     @Autowired
     MqUtils mqUtils;
+
+    @Autowired
+    UserInfoUtils userInfoUtils;
 
     /***
      * 新增
@@ -207,6 +211,19 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), 0);
 
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+        for (int i = 0; i < list.size(); i++) {
+            IPS_Home home = (IPS_Home) list.get(i);
+            if (home.getAfficheType() == 1 && home.getInfoId() == loveAndFriends.getId()) {
+                redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+            }
+        }
+        if (list.size() == 101) {
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+            redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+        }
         //符合推荐规则 添加到缓存home列表中
         int num3 = 0;//图片
         int fraction = 0;//公告分数
@@ -254,7 +271,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             fraction += 30;
         }
 
-        if (loveAndFriends.getFraction() >= 70) {
+        if (fraction >= 70) {
             IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(loveAndFriends.getId());
             ipsHome.setTitle(loveAndFriends.getTitle());
@@ -268,19 +285,6 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             ipsHome.setDeleteType(1);
             ipsHome.setAfficheType(1);
 
-            List list = null;
-            list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
-            for (int i = 0; i < list.size(); i++) {
-                IPS_Home home = (IPS_Home) list.get(i);
-                if (home.getAfficheType() == 1 && home.getInfoId() == loveAndFriends.getId()) {
-                    redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
-                }
-            }
-            if (list.size() == 101) {
-                //清除缓存中的信息
-                redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
-                redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
-            }
             //放入缓存
             redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         }
@@ -330,38 +334,23 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         int district = -1;// 区
         int studyrank = 0;// 学历
         int maritalstatus = 0;// 婚否
-//        int height = 0;// 身高
-//        int monthlyPay = 0; // 月薪
-//        DetailedUserInfo ua = null;
-//        ua = detailedUserInfoService.findUserDetailedById(CommonUtils.getMyId());
-//        if (ua != null) {
-////            height = ua.getHeight();
-//        }
-//        UserInfo userInfoCache = userInfoService.findUserById(CommonUtils.getMyId());
-        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
-        if (userMap == null || userMap.size() <= 0) {
+
+        UserInfo userInfo = null;
+        userInfo = userInfoUtils.getUserInfo(CommonUtils.getMyId());
+        if (userInfo == null) {
             return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "账号不存在", new JSONObject());
         }
-//        SimpleDateFormat formatter = new SimpleDateFormat(
-//                "yyyy-MM-dd");
-        String de = String.valueOf(userMap.get("birthday"));
-        //需先转换日期类型
-//        Date sd = null;
-//        try {
-//            sd = DateFormat.getDateInstance().parse(de);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        String userbirthday = formatter.format(sd);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String de = format.format(userInfo.getBirthday());
         String strBirthdayArr = de.substring(0, 10);
         age = CommonUtils.getAge(strBirthdayArr);
-        sex = Integer.parseInt(userMap.get("sex").toString());
-        province = Integer.parseInt(userMap.get("province").toString());
-        city = Integer.parseInt(userMap.get("city").toString());
-        district = Integer.parseInt(userMap.get("district").toString());
-        studyrank = Integer.parseInt(userMap.get("studyRank").toString());
-        maritalstatus = Integer.parseInt(userMap.get("maritalStatus").toString());
-//          monthlyPay = userInfoCache.getMonthlyPay();
+        sex = userInfo.getSex();
+        province = userInfo.getProvince();
+        city = userInfo.getCity();
+        district = userInfo.getDistrict();
+        studyrank = userInfo.getStudyRank();
+        maritalstatus = userInfo.getMaritalStatus();
+//          monthlyPay = userInfo.getMonthlyPay();
         // 开始计算 左上角匹配度 suntj 20161019
         loveAndFriends = loveAndFriendsService.findUserById(id);
         if (loveAndFriends.getSex() != sex) {// 匹配性别 （30%）

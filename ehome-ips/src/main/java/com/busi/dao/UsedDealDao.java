@@ -73,7 +73,8 @@ public interface UsedDealDao {
             " merchantType=#{merchantType}," +
             " expressMode=#{expressMode}," +
             " lat=#{lat}," +
-            " lon=#{lon}" +
+            " lon=#{lon}," +
+            " fraction=#{fraction}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(UsedDeal usedDeal);

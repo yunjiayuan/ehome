@@ -178,7 +178,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
         for (int i = 0; i < list.size(); i++) {
             IPS_Home home = (IPS_Home) list.get(i);
-            if (home.getAfficheType() == 1 && home.getInfoId() == posts.getId()) {
+            if (home.getAfficheType() == 2 && home.getInfoId() == posts.getId()) {
                 redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
             }
         }
@@ -208,6 +208,20 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         UsedDeal posts = usedDealService.findUserById(usedDeal.getId());
         if (posts == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        //先把缓存中的推荐数据清除
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+        for (int i = 0; i < list.size(); i++) {
+            IPS_Home home = (IPS_Home) list.get(i);
+            if (home.getAfficheType() == 2 && home.getInfoId() == usedDeal.getId()) {
+                redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+            }
+        }
+        if (list.size() == 101) {
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+            redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
         }
         //计算公告分数
         int num3 = 0;//图片
@@ -256,7 +270,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             fraction += 30;
         }
         //新增home
-        if (usedDeal.getFraction() > 70) {
+        if (fraction >= 70) {
             IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(usedDeal.getId());
             ipsHome.setTitle(usedDeal.getTitle());
@@ -270,19 +284,6 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             ipsHome.setAfficheType(2);
             ipsHome.setFraction(fraction);
 
-            List list = null;
-            list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
-            for (int i = 0; i < list.size(); i++) {
-                IPS_Home home = (IPS_Home) list.get(i);
-                if (home.getAfficheType() == 1 && home.getInfoId() == usedDeal.getId()) {
-                    redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
-                }
-            }
-            if (list.size() == 101) {
-                //清除缓存中的信息
-                redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
-                redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
-            }
             //放入缓存
             redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         }
