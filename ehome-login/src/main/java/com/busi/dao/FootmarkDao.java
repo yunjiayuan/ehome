@@ -91,7 +91,7 @@ public interface FootmarkDao {
             "</if>" +
             "<if test=\"endDate != null\">" +
             " <![CDATA[ and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) and UNIX_TIMESTAMP(addTime) <= UNIX_TIMESTAMP(#{endDate})+86400000 ]]>" +
-//            " <![CDATA[ and FROM_UNIXTIME(addTime,'%Y-%m-%d') >= FROM_UNIXTIME(#{beginDate},'%Y-%m-%d') and FROM_UNIXTIME(addTime,'%Y-%m-%d') <= FROM_UNIXTIME(#{endDate},'%Y-%m-%d') ]]>" +
+//            " <![CDATA[ and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\") and addTime <= DATE_FORMAT(#{endTime},\"%Y-%m-%d %T\") ]]>" +
             "</if>" +
             "<if test=\"endDate == null\">" +
             " and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) " +

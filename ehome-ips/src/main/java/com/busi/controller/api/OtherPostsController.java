@@ -91,9 +91,11 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         //新增足迹
         mqUtils.sendFootmarkMQ(otherPosts.getUserId(), otherPosts.getTitle(), null, null, null, otherPosts.getId() + "," + 6, 1);
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", otherPosts.getId());
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + otherPosts.getId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
@@ -174,9 +176,11 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         otherPosts.setRefreshTime(new Date());
         otherPostsService.update(otherPosts);
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", otherPosts.getId());
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + otherPosts.getId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /**
