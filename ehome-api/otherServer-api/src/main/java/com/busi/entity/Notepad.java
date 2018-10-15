@@ -23,7 +23,7 @@ public class Notepad {
     @Min(value = 1, message = "userId参数有误")
     private long userId;        //用户ID
 
-    private int type;            //类型ID 0日程1记事
+    private int addType;            //类型ID 0日程1记事
 
     private String content;        //内容
 

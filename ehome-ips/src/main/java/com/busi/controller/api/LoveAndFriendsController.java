@@ -148,9 +148,11 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         } else {
             return returnData(StatusCode.CODE_IPS_AFFICHE_EXISTING.CODE_VALUE, "您已发布过婚恋交友的公告，您需要修改之前的公告信息吗？", new JSONObject());
         }
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", loveAndFriends.getId());
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getUserId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
@@ -296,7 +298,9 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(loveAndFriends.getUserId(), loveAndFriends.getDelImgUrls());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", loveAndFriends.getId());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /**

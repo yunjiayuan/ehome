@@ -56,7 +56,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
             e.printStackTrace();
         }
         Notepad note = null;
-        if (notepad.getType() == 1) {//记事  （每天只能有一条）
+        if (notepad.getAddType() == 1) {//记事  （每天只能有一条）
             note = notepadService.findDayInfo(notepad.getUserId(), notepad.getThisDateId());
             if (note != null) {
                 return returnData(StatusCode.CODE_NOTEPAD_REPEAT_ERROR.CODE_VALUE, "新增记事失败，今天已有记事！", new JSONObject());
@@ -68,8 +68,11 @@ public class NotepadController extends BaseController implements NotepadApiContr
                 return returnData(StatusCode.CODE_NOTEPAD_SCHEDULE_ERROR.CODE_VALUE, "新增日程数量超过上限,新增失败", new JSONObject());
             }
             Date time = null;
+            if (notepad.getAlarmTime() == null) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "alarmTime参数有误", new JSONObject());
+            }
             try {
-                time = dateformat.parse(String.valueOf(notepad.getAlarmTime()));
+                time = dateformat.parse(dateformat.format(notepad.getAlarmTime()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -81,7 +84,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
         //新增任务
         mqUtils.sendTaskMQ(notepad.getUserId(), 1, 9);
         //新增足迹
-        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), null, null, null, notepad.getId() + "," + notepad.getType(), 6);
+        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), null, null, null, notepad.getId() + "," + notepad.getAddType(), 6);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -97,10 +100,10 @@ public class NotepadController extends BaseController implements NotepadApiContr
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限编辑用户[" + notepad.getUserId() + "]的记事本信息", new JSONObject());
         }
         SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if (notepad.getType() == 0) {
+        if (notepad.getAddType() == 0) {
             Date time = null;
             try {
-                time = dateformat.parse(String.valueOf(notepad.getAlarmTime()));
+                time = dateformat.parse(dateformat.format(notepad.getAlarmTime()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -182,7 +185,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
             for (int i = 0; i < list.size(); i++) {
                 np = (Notepad) list.get(i);
                 obb.put("id", np.getId());
-                obb.put("type", np.getType());
+                obb.put("type", np.getAddType());
                 obb.put("content", np.getContent());
                 if (options == 1) {
                     obb.put("alarmTime", np.getAlarmTime());

@@ -22,8 +22,8 @@ public interface NotepadDao {
      * @param notepad
      * @return
      */
-    @Insert("insert into notepad(userId,type,content,thenTime,thisDateId,imgUrls,alarmTime,remindType,time) " +
-            "values (#{userId},#{type},#{content},#{thenTime},#{thisDateId},#{imgUrls},#{alarmTime},#{remindType},#{time})")
+    @Insert("insert into notepad(userId,addType,content,thenTime,thisDateId,imgUrls,alarmTime,remindType,time) " +
+            "values (#{userId},#{addType},#{content},#{thenTime},#{thisDateId},#{imgUrls},#{alarmTime},#{remindType},#{time})")
     @Options(useGeneratedKeys = true)
     int add(Notepad notepad);
 
@@ -37,13 +37,13 @@ public interface NotepadDao {
             "<if test=\"content != null and content != ''\">" +
             " content=#{content}," +
             "</if>" +
-            "<if test=\"type ==1\">" +
+            "<if test=\"addType ==1\">" +
             " imgUrls=#{imgUrls}," +
             "</if>" +
-            "<if test=\"type !=1\">" +
+            "<if test=\"addType !=1\">" +
             " alarmTime=#{alarmTime}," +
-            "</if>" +
             " remindType=#{remindType}," +
+            "</if>" +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -53,7 +53,7 @@ public interface NotepadDao {
      * 查询用户记事
      * @param userId
      */
-    @Select("select * from notepad where userId=#{userId} and thisDateId=#{thisDateId} and type=1")
+    @Select("select * from notepad where userId=#{userId} and thisDateId=#{thisDateId} and addType=1")
     Notepad findDayInfo(@Param("userId") long userId, @Param("thisDateId") long thisDateId);
 
     /***
@@ -63,7 +63,7 @@ public interface NotepadDao {
      */
     @Select("<script>" +
             "select count(id) from notepad" +
-            " where userId=#{userId} and type=0" +
+            " where userId=#{userId} and addType=0" +
             " and TO_DAYS(time)=TO_DAYS(NOW())" +
             "</script>")
     int findNum(@Param("userId") long userId);
@@ -107,7 +107,7 @@ public interface NotepadDao {
             " and userId=#{userId}" +
             " and thisDateId = #{thisDateId}" +
             "<if test=\"options == 1\">" +
-            " and type = 0" +
+            " and addType = 0" +
             "</if>" +
             " order by time desc" +
             "</script>")
@@ -122,7 +122,7 @@ public interface NotepadDao {
             "select * from Notepad" +
             " where 1=1" +
             " and userId=#{userId}" +
-            " and type = #{options}" +
+            " and addType = #{options}" +
             " order by time desc" +
             "</script>")
     List<Notepad> findList(@Param("userId") long userId, @Param("options") int options);
@@ -168,7 +168,7 @@ public interface NotepadDao {
             " where 1=1" +
             " and userId=#{userId}" +
             " and thisDateId = #{thisDateId}" +
-            " and type = #{options}" +
+            " and addType = #{options}" +
             "</script>")
     List<Notepad> findThisDateId(@Param("userId") long userId, @Param("thisDateId") long thisDateId, @Param("options") int options);
 

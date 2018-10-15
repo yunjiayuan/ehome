@@ -139,9 +139,11 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         //新增足迹
         mqUtils.sendFootmarkMQ(searchGoods.getUserId(), searchGoods.getTitle(), searchGoods.getImgUrl(), null, null, searchGoods.getId() + "," + (searchGoods.getSearchType() + 2), 1);
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", searchGoods.getId());
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
@@ -286,9 +288,11 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(searchGoods.getUserId(), searchGoods.getDelImgUrls());
         }
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", searchGoods.getId());
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + searchGoods.getId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /**
