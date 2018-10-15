@@ -62,6 +62,14 @@ public interface UserInfoDao {
     @Update(("update userInfo set name=#{name},head=#{head},password=#{password},im_password=#{im_password},sex=#{sex},proType=#{proType},houseNumber=#{houseNumber},idCard=#{idCard},birthday=#{birthday},country=#{country},province=#{province},city=#{city},district=#{district},accountStatus=#{accountStatus},accessRights=#{accessRights} where userId=#{userId}"))
     int perfectUserInfo(UserInfo userInfo);
 
+    /***
+     * 根据用户ID删除用户
+     * @param userInfo
+     * @return
+     */
+    @Delete(("delete from userInfo where userId=#{userId}"))
+    int delete(UserInfo userInfo);
+
 
     /***
      * 分页条件查询userInfo  注意 请使用>=  不要使用 <=

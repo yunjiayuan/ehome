@@ -81,6 +81,17 @@ public class UserInfoService {
     public int update(UserInfo userInfo){
         return  userInfoDao.update(userInfo);
     }
+
+    /***
+     * 根据用户ID删除用户
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int delete(UserInfo userInfo){
+        return  userInfoDao.delete(userInfo);
+    }
+
     /***
      * 搬家更新
      * @param userInfo

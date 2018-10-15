@@ -116,6 +116,20 @@ public interface RegisterApiController {
     @GetMapping("checkAccount/{userAccount}/{code}")
     ReturnData checkAccount(@PathVariable String userAccount,@PathVariable String code);
 
+    /***
+     * 完善资料界面中绑定已有门牌号
+     * @param homeNumber           将要绑定的门牌号组合格式:0_1001518(目标门票号)
+     * @param password             将要绑定的门牌号密码（一遍MD5加密后）
+     * @param otherPlatformKey     当bindType=0时，此参数为第三方平台key ； 当bindType=1时，此参数为手机号
+     * @param otherPlatformAccount 第三方平台昵称
+     * @param otherPlatformType    第三方平台类型 1：QQ，2：微信
+     * @param bindType             绑定类型 0表示手机号绑定门牌号  1表示第三方平台账号绑定门牌号
+     * @return
+     */
+    @GetMapping("bindHouseNumber/{homeNumber}/{password}/{otherPlatformKey}/{otherPlatformAccount}/{otherPlatformType}/{bindType}")
+    ReturnData bindHouseNumber(@PathVariable String homeNumber,@PathVariable String password,@PathVariable String otherPlatformKey,@PathVariable String otherPlatformAccount,
+                          @PathVariable int otherPlatformType,@PathVariable int bindType);
+
 //    /***
 //     * 测试fegin被调用
 //     * @param id

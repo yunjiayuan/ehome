@@ -53,15 +53,33 @@ public class UserAccountSecurityLController extends BaseController implements  U
     }
 
     /***
-     * 新增安全中心信息（目前只提供手机和第三方注册新用户时同步安全中心信息使用）
+     * 更新安全中心信息（目前只提供手机和第三方注册新用户时同步安全中心信息和完善资料时绑定门牌号时使用）
      * @param userAccountSecurity
      * @return
      */
     @Override
     public ReturnData addAccountSecurity(@RequestBody UserAccountSecurity userAccountSecurity) {
-        int count =userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+        Map<String, Object> userAccountSecurityMap = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userAccountSecurity.getUserId());
+        UserAccountSecurity u = null;
+        int count = 0;
+        if (userAccountSecurityMap == null || userAccountSecurityMap.size() <= 0) {
+            u = userAccountSecurityService.findUserAccountSecurityByUserId(userAccountSecurity.getUserId());
+        }else{
+            if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==1) {//redisStatus==1 说明数据中已有记录
+                u =(UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
+            }
+        }
+        if(u==null){//新增
+            count =userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
+        }else{//更新
+            u.setOtherPlatformType(userAccountSecurity.getOtherPlatformType());
+            u.setOtherPlatformAccount(userAccountSecurity.getOtherPlatformAccount());
+            u.setOtherPlatformKey(userAccountSecurity.getOtherPlatformKey());
+            u.setPhone(userAccountSecurity.getPhone());
+            count = userAccountSecurityService.updateUserAccountSecurity(u);
+        }
         if(count<=0){
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"新用户注册新增安全中心信息失败",new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"更新安全中心信息失败",new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }

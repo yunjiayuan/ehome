@@ -700,4 +700,123 @@ public class RegisterController extends BaseController implements RegisterApiCon
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
+    /***
+     * 完善资料界面中绑定已有门牌号
+     * @param homeNumber           将要绑定的门牌号组合格式:0_1001518(目标门票号)
+     * @param password             将要绑定的门牌号密码（一遍MD5加密后）
+     * @param otherPlatformKey     当bindType=0时，此参数为第三方平台key ； 当bindType=1时，此参数为手机号
+     * @param otherPlatformAccount 第三方平台昵称
+     * @param otherPlatformType    第三方平台类型 1：QQ，2：微信
+     * @param bindType             绑定类型 0表示手机号绑定门牌号  1表示第三方平台账号绑定门牌号
+     * @return
+     */
+    @Override
+    public ReturnData bindHouseNumber(@PathVariable String homeNumber,@PathVariable String password,@PathVariable String otherPlatformKey,
+                                      @PathVariable String otherPlatformAccount,@PathVariable int otherPlatformType,@PathVariable int bindType) {
+        //验证参数
+        if(CommonUtils.checkFull(homeNumber)||homeNumber.indexOf("_")==-1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"homeNumber参数有误",new JSONObject());
+        }
+        if(CommonUtils.checkFull(password)||password.length()!=32){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"password参数有误",new JSONObject());
+        }
+        if(CommonUtils.checkFull(otherPlatformKey)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"otherPlatformKey参数有误",new JSONObject());
+        }
+        if(otherPlatformType<1||otherPlatformType>2){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"otherPlatformType参数有误",new JSONObject());
+        }
+        if(bindType<0||bindType>1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"bindType参数有误",new JSONObject());
+        }
+        //验证当前登录账号是否是未激活状态
+        Map<String,Object> myMap = redisUtils.hmget(Constants.REDIS_KEY_USER+CommonUtils.getMyId());
+        if(myMap==null||myMap.size()<=0){
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"当前账号存在异常，建议重新登录后再试",new JSONObject());
+        }
+        UserInfo myUserInfo = (UserInfo) CommonUtils.mapToObject(myMap,UserInfo.class);
+        if(myUserInfo==null||myUserInfo.getAccountStatus()!=1){//未激活状态才能绑定
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"当前账号无法使用该功能进行绑定",new JSONObject());
+        }
+        //验证目标门票号账号状态是否正常、密码是否正确
+        Object userId = redisUtils.hget(Constants.REDIS_KEY_HOUSENUMBER,homeNumber);
+        UserInfo userInfo = null;
+        if(userId==null||Long.parseLong(userId.toString())<=0){
+            //门牌号与账号之间的对应关系再缓存中不存在  查询数据库
+            String houseArray[] = homeNumber.split("_");
+            userInfo = userInfoService.findUserByHouseNumber(Integer.parseInt(houseArray[0]),houseArray[1]);
+            if(userInfo==null){
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"将要绑定的账号不存在",new JSONObject());
+            }
+        }else{
+            Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userId.toString() );
+            if(userMap==null||userMap.size()<=0){
+                //缓存中没有用户对象信息 查询数据库
+                userInfo = userInfoService.findUserById(Long.parseLong(userId.toString()));
+                if(userInfo==null){//数据库也没有
+                    return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"将要绑定的账号不存在",new JSONObject());
+                }
+            }else{
+                userInfo = (UserInfo) CommonUtils.mapToObject(userMap,UserInfo.class);
+            }
+        }
+        if(userInfo.getAccountStatus()!=0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您将要绑定门牌号账号状态不正常，被绑定账号必须是已激活账号",new JSONObject());
+
+        }
+        //添加暴力密码限制
+        String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_LOGIN_ERROR_COUNT,CommonUtils.getMyId()+""));
+        if(!CommonUtils.checkFull(errorCount)&&Integer.parseInt(errorCount)>100){//大于100次 今天该账号禁止访问
+            return returnData(StatusCode.CODE_PASSWORD_ERROR_TOO_MUCH.CODE_VALUE,"您输入的绑定门牌号对应密码错误次数过多，系统已自动封号一天，如有疑问请联系官方客服",new JSONObject());
+        }
+        //验证密码是否正确
+        if(!password.equals(userInfo.getPassword())){
+            if(CommonUtils.checkFull(errorCount)){//第一次错误
+                redisUtils.hset(Constants.REDIS_KEY_LOGIN_ERROR_COUNT,CommonUtils.getMyId()+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_LOGIN_ERROR_COUNT,CommonUtils.getMyId()+"",1);
+            }
+            return returnData(StatusCode.CODE_PASSWORD_ERROR.CODE_VALUE,"密码错误",new JSONObject());
+        }
+        //开始绑定
+        if(bindType==1){//第三方平台账号绑定门牌号
+            //验证被绑定账号是否已绑定过第三方平台账号或手机号
+            if(!CommonUtils.checkFull(userInfo.getOtherPlatformKey())){
+                return returnData(StatusCode.CODE_HOUSENUMBER_IS_EXIST_CODE_ERROR.CODE_VALUE,"您将要绑定门牌号账号[\"+homeNumber+\"]已绑定其他平台账号,请更换门牌号或者解绑！",new JSONObject());
+            }
+            //当前登录账号将会被停用
+            redisUtils.hdel(Constants.REDIS_KEY_OTHERNUMBER, myUserInfo.getOtherPlatformType() + "_" + myUserInfo.getOtherPlatformKey());
+            redisUtils.expire(Constants.REDIS_KEY_USER+CommonUtils.getMyId(),0);
+            userInfoService.delete(myUserInfo);
+            //目标账号将会被绑定
+            userInfo.setOtherPlatformType(otherPlatformType);
+            userInfo.setOtherPlatformKey(otherPlatformKey);
+            userInfo.setOtherPlatformAccount(otherPlatformAccount);
+            userInfoService.updateBindOther(userInfo);
+            //更新安全中心绑定信息
+            //修改旧账号绑定信息
+            mqUtils.sendUserAccountSecurityMQ(myUserInfo.getUserId(),null,0,null,null);
+            //更新目标账号
+            mqUtils.sendUserAccountSecurityMQ(userInfo.getUserId(),userInfo.getPhone(),userInfo.getOtherPlatformType(),userInfo.getOtherPlatformAccount(),userInfo.getOtherPlatformKey());
+        }else{//手机号绑定门牌号
+            //验证被绑定账号是否已绑定过手机号
+            if(!CommonUtils.checkFull(userInfo.getPhone())){
+                return returnData(StatusCode.CODE_HOUSENUMBER_IS_EXIST_CODE_ERROR.CODE_VALUE,"您将要绑定门牌号账号[\"+homeNumber+\"]已绑定其他手机号,请更换门牌号或者解绑！",new JSONObject());
+            }
+            //当前登录账号将会被停用
+            redisUtils.hdel(Constants.REDIS_KEY_PHONENUMBER,myUserInfo.getPhone());
+            redisUtils.expire(Constants.REDIS_KEY_USER+CommonUtils.getMyId(),0);
+            userInfoService.delete(myUserInfo);
+            //目标账号将会被绑定
+            userInfo.setPhone(otherPlatformKey);
+            userInfoService.updateBindPhone(userInfo);
+            //更新安全中心绑定信息
+            //修改旧账号绑定信息
+            mqUtils.sendUserAccountSecurityMQ(myUserInfo.getUserId(),null,0,null,null);
+            //更新目标账号
+            mqUtils.sendUserAccountSecurityMQ(userInfo.getUserId(),userInfo.getPhone(),userInfo.getOtherPlatformType(),userInfo.getOtherPlatformAccount(),userInfo.getOtherPlatformKey());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
 }

@@ -20,7 +20,7 @@ public interface UserAccountSecurityLocalController {
     UserAccountSecurity getUserAccountSecurity(@PathVariable(value="userId") long userId);
 
     /***
-     * 更新安全中心信息（目前只提供手机和第三方注册新用户时同步安全中心信息使用）
+     * 更新安全中心信息（目前只提供手机和第三方注册新用户时同步安全中心信息和完善资料时绑定门牌号时使用）
      * @param userAccountSecurity
      * @return
      */
