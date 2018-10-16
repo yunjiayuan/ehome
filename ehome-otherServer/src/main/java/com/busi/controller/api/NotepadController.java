@@ -110,6 +110,10 @@ public class NotepadController extends BaseController implements NotepadApiContr
             notepad.setAlarmTime(time);
         }
         notepadService.update(notepad);
+        if (!CommonUtils.checkFull(notepad.getDelImgUrls())) {
+            //调用MQ同步 图片到图片删除记录表
+            mqUtils.sendDeleteImageMQ(notepad.getUserId(), notepad.getDelImgUrls());
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -178,22 +182,24 @@ public class NotepadController extends BaseController implements NotepadApiContr
     @Override
     public ReturnData findThisDateRecord(@PathVariable long thisDateId, @PathVariable int options) {
         List list = null;
-        Map<String, Object> obb = new HashMap<>();
+        JSONArray jsonArray = new JSONArray();
         list = notepadService.findThisDateRecord(CommonUtils.getMyId(), thisDateId, options);
         if (list != null && list.size() > 0) {
             Notepad np = null;
             for (int i = 0; i < list.size(); i++) {
                 np = (Notepad) list.get(i);
+                Map<String, Object> obb = new HashMap<>();
                 obb.put("id", np.getId());
-                obb.put("type", np.getAddType());
+                obb.put("addType", np.getAddType());
                 obb.put("content", np.getContent());
                 if (options == 1) {
                     obb.put("alarmTime", np.getAlarmTime());
                     obb.put("remindType", np.getRemindType());
                 }
+                jsonArray.add(obb);
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", obb);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", jsonArray);
     }
 
     /***
@@ -282,9 +288,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
         if (calendarsHoliday == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", calendarsHoliday);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", calendarsHoliday);
     }
 
     /**
@@ -297,9 +301,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
     public ReturnData findByIdInfo(@PathVariable long infoId) {
         Notepad np = null;
         np = notepadService.findById(infoId);
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", np);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", np);
     }
 
     /**
