@@ -723,7 +723,7 @@ public class RegisterController extends BaseController implements RegisterApiCon
         if(CommonUtils.checkFull(otherPlatformKey)){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"otherPlatformKey参数有误",new JSONObject());
         }
-        if(otherPlatformType<1||otherPlatformType>2){
+        if(otherPlatformType<0||otherPlatformType>2){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"otherPlatformType参数有误",new JSONObject());
         }
         if(bindType<0||bindType>1){
