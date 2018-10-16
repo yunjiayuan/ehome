@@ -86,7 +86,7 @@ public class SearchUserController extends BaseController implements SearchUserAp
             }
         }
         if(userInfo==null){
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"查找的用户不存在",new JSONObject());
+            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"查找的用户不存在",new JSONObject());
         }
         userInfo.setPassword("");
         userInfo.setIm_password("");
