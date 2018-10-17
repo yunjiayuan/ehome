@@ -81,6 +81,7 @@ public class UserAccountSecurityLController extends BaseController implements  U
         if(count<=0){
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"更新安全中心信息失败",new JSONObject());
         }
+        redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userAccountSecurity.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
