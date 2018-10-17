@@ -64,11 +64,11 @@ public class SelectionActivities {
     private String activityCover;//活动封面
 
     //与数据库无关字段
-    private String delImgUrls;//将要删除的图片地址组合 “,”分隔
+    private String delUrls;//将要删除的地址组合 “,”分隔
 
-    private String name; //用户名	查询后从内存获取最新
+    private String name; //用户名
 
-    private String head; //头像	查询后从内存获取最新
+    private String head; //头像
 
     private int proTypeId;//省简称ID
 

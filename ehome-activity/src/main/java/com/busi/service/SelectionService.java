@@ -105,21 +105,20 @@ public class SelectionService {
                                                                       String s_name, int s_province, int s_city, int s_district, int s_job,
                                                                       int page, int count) {
 
-        List<SelectionActivities> list;
+        List<SelectionActivities> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (searchType == 0) {
-            if (selectionType == 1) {
-                list = selectionDao.findsSelectionList1(findType,
-                        infoId, orderVoteCountType, s_name, s_province, s_city,
-                        s_district);
+            if (selectionType <= 1) {
+                list = selectionDao.findsSelectionList1(findType, orderVoteCountType,
+                        s_province, s_city, s_district);
             }
             if (selectionType == 2) {
-                list = selectionDao.findsSelectionList2(findType,
-                        infoId, orderVoteCountType, s_name, s_province, s_city,
-                        s_district, s_job);
+                list = selectionDao.findsSelectionList2(findType, orderVoteCountType,
+                        s_province, s_job);
             }
+        } else {
+            list = selectionDao.findsSelectionList3(searchType, selectionType, findType, infoId, s_name);
         }
-        list = selectionDao.findsSelectionList3(selectionType, findType, infoId, s_name);
 
         return PageUtils.getPageBean(p, list);
     }

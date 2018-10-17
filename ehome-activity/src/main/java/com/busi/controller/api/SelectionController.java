@@ -102,9 +102,9 @@ public class SelectionController extends BaseController implements SelectionApiC
         if (activities == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "数据错误，活动信息不存在", new JSONObject());
         }
-        if (!CommonUtils.checkFull(selectionActivities.getDelImgUrls())) {
+        if (!CommonUtils.checkFull(selectionActivities.getDelUrls())) {
             //调用MQ同步 图片到图片删除记录表
-            mqUtils.sendDeleteImageMQ(selectionActivities.getUserId(), selectionActivities.getDelImgUrls());
+            mqUtils.sendDeleteImageMQ(selectionActivities.getUserId(), selectionActivities.getDelUrls());
         }
         selectionService.updateSelection(selectionActivities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -113,7 +113,7 @@ public class SelectionController extends BaseController implements SelectionApiC
     /***
      * 分页查询参加活动的人员列表
      * @param searchType  排序 0按条件查询 1按编号查询 2按名字查询
-     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星   4青年创业
+     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星  4青年创业
      * @param findType   查询类型： 0表示默认，1表示查询有视频的
      * @param infoId  被查询参加活动人员的活动ID
      * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
@@ -136,13 +136,12 @@ public class SelectionController extends BaseController implements SelectionApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<SelectionActivities> pageBean = null;
-        if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-        }
         pageBean = selectionService.findsSelectionActivitiesList(searchType, selectionType, findType,
                 infoId, orderVoteCountType, s_name, s_province, s_city,
                 s_district, s_job, page, count);
-
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
@@ -158,9 +157,9 @@ public class SelectionController extends BaseController implements SelectionApiC
         if (activities == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您还未参加该活动!", new JSONObject());
         }
-        if (!CommonUtils.checkFull(selectionActivities.getDelImgUrls())) {
+        if (!CommonUtils.checkFull(selectionActivities.getDelUrls())) {
             //调用MQ同步 图片到图片删除记录表
-            mqUtils.sendDeleteImageMQ(activities.getUserId(), selectionActivities.getDelImgUrls());
+            mqUtils.sendDeleteImageMQ(activities.getUserId(), selectionActivities.getDelUrls());
         }
         selectionService.setCover(selectionActivities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -265,6 +264,7 @@ public class SelectionController extends BaseController implements SelectionApiC
         if (vote != null) {
             return returnData(StatusCode.CODE_ALREADY_VOTE.CODE_VALUE, "今天已经对该用户进行过投票", new JSONObject());
         }
+        selectionVote.setMyId(CommonUtils.getMyId());
         selectionVote.setTime(new Date());
         selectionService.addVote(selectionVote);
         SelectionActivities activities = selectionService.findDetails(selectionVote.getUserId(), selectionVote.getSelectionType());
@@ -279,8 +279,8 @@ public class SelectionController extends BaseController implements SelectionApiC
     }
 
     /***
-     * 分页查询投票历史
-     * @param userId  用户ID
+     * 分页查询被投票历史记录
+     * @param userId  被查询用户ID
      * @param selectionType  评选类型 1城市小姐  2校花  3城市之星   4青年创业
      * @param page  页码 第几页 起始值1
      * @param count 每页条数

@@ -98,13 +98,13 @@ public interface SelectionDao {
     @Update("<script>" +
             "update selectionActivities set" +
             "<if test=\"activityCover != null and activityCover != ''\">" +
-            " activityCover=#{activityCover}," +
+            " activityCover=#{activityCover}" +
             "</if>" +
             "<if test=\"activityVideo != null and activityVideo != ''\">" +
-            " activityVideo=#{activityVideo}," +
+            " activityVideo=#{activityVideo}" +
             "</if>" +
             "<if test=\"imgUrl != null and imgUrl != ''\">" +
-            " imgUrl=#{imgUrl}," +
+            " imgUrl=#{imgUrl}" +
             "</if>" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -120,15 +120,45 @@ public interface SelectionDao {
 
     /***
      * 分页查询参加活动的人员列表
-     * @param searchType  排序 0按条件查询 1按编号查询 2按名字查询
-     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星   4青年创业
      * @param findType   查询类型： 0表示默认，1表示查询有视频的
-     * @param infoId  被查询参加活动人员的活动ID
      * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
-     * @param s_name  名字
      * @param s_province  省ID -1不限
      * @param s_city   市ID -1不限
      * @param s_district  区ID -1不限
+     * @return
+     */
+    @Select("<script>" +
+            "select * from SelectionActivities" +
+            " where 1=1" +
+            " and status = 0" +
+            " and (selectionType=0 or selectionType=1)" +
+            "<if test=\"findType == 1\">" +
+            " and activityVideo is not null" +
+            "</if>" +
+            " <if test=\"s_province>=0 and s_city>=0 and s_district>=0\">" +
+            " and s_province=#{s_province} and s_city=#{s_city} and s_district=#{s_district}" +
+            "</if>" +
+            " <if test=\"s_province>=0 and s_city>=0 and s_district==-1\">" +
+            " and s_province=#{s_province} and s_city=#{s_city}" +
+            "</if>" +
+            " <if test=\"s_province>=0 and s_city==-1 and s_district==-1\">" +
+            " and s_province=#{s_province}" +
+            "</if>" +
+            " <if test=\"orderVoteCountType!=0\">" +
+            " ORDER BY votesCounts ASC" +
+            "</if>" +
+            " <if test=\"orderVoteCountType==0\">" +
+            " ORDER BY votesCounts DESC" +
+            "</if>" +
+            "</script>")
+    List<SelectionActivities> findsSelectionList1(@Param("findType") int findType, @Param("orderVoteCountType") int orderVoteCountType,
+                                                  @Param("s_province") int s_province, @Param("s_city") int s_city, @Param("s_district") int s_district);
+
+    /***
+     * 分页查询参加活动的人员列表
+     * @param findType   查询类型： 0表示默认，1表示查询有视频的
+     * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
+     * @param s_province  省ID -1不限
      * @param s_job   selectionType为1时=职业 "0":"请选择","1":"在校学生","2":"计算机/互联网/IT","3":"电子/半导体/仪表仪器","4":"通讯技术","5":"销售","6":"市场拓展","7":"公关/商务","8":"采购/贸易","9":"客户服务/技术支持","10":"人力资源/行政/后勤","11":"高级管理","12":"生产/加工/制造","13":"质检/安检","14":"工程机械","15":"技工","16":"财会/审计/统计","17":"金融/证券/投资/保险","18":"房地产/装修/物业","19":"仓储/物流","20":"交通/运输","21":"普通劳动力/家政服务","22":"普通服务行业","23":"航空服务业","24":"教育/培训","25":"咨询/顾问","26":"学术/科研","27":"法律","28":"设计/创意","29":"文学/传媒/影视","30":"餐饮/旅游","31":"化工","32":"能源/地址勘察","33":"医疗/护理","34":"保健/美容","35":"生物/制药/医疗机械","36":"体育工作者","37":"翻译","38":"公务员/国家干部","39":"私营业主","40":"农/林/牧/渔业","41":"警察/其他","42":"自由职业者","43":"其他"
      * 	  			  selectionType为2时=学校名称：0，1，2，3
      * @return
@@ -136,68 +166,51 @@ public interface SelectionDao {
     @Select("<script>" +
             "select * from SelectionActivities" +
             " where 1=1" +
-            "<if test=\"findType == 1'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 0'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 1'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 2'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            " and userId=#{userId}" +
             " and status = 0" +
-            " order by time desc" +
+            " and selectionType=2" +
+            "<if test=\"findType == 1\">" +
+            " and activityVideo is not null" +
+            "</if>" +
+            " <if test=\"s_province>0 and s_job &lt;= 0\">" +
+            " and s_province=#{s_province}" +
+            "</if>" +
+            " <if test=\"s_province>0 and s_job>0\">" +
+            " and s_province=#{s_province} and s_job=#{s_job}" +
+            "</if>" +
+            " <if test=\"orderVoteCountType!=0\">" +
+            " ORDER BY votesCounts ASC" +
+            "</if>" +
+            " <if test=\"orderVoteCountType==0\">" +
+            " ORDER BY votesCounts DESC" +
+            "</if>" +
             "</script>")
-    List<SelectionActivities> findsSelectionList1(@Param("searchType") int searchType, @Param("selectionType") int selectionType, @Param("findType") int findType, @Param("infoId") long infoId, @Param("orderVoteCountType") int orderVoteCountType, @Param("s_name") String s_name,
-                                                           @Param("s_province") int s_province, @Param("s_city") int s_city, @Param("s_district") int s_district, @Param("s_job") int s_job);
+    List<SelectionActivities> findsSelectionList2(@Param("findType") int findType, @Param("orderVoteCountType") int orderVoteCountType,
+                                                  @Param("s_province") int s_province, @Param("s_job") int s_job);
 
+    /***
+     * 分页查询参加活动的人员列表
+     * @param searchType  排序 0按条件查询 1按编号查询 2按名字查询
+     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星   4青年创业
+     * @param findType   查询类型： 0表示默认，1表示查询有视频的
+     * @param infoId  被查询参加活动人员的活动ID
+     * @param s_name  名字
+     * @return
+     */
     @Select("<script>" +
             "select * from SelectionActivities" +
             " where 1=1" +
-            "<if test=\"findType == 1'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 0'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 1'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 2'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            " and userId=#{userId}" +
             " and status = 0" +
-            " order by time desc" +
+            "<if test=\"findType == 1\">" +
+            " and activityVideo is not null" +
+            "</if>" +
+            "<if test=\"searchType == 1\">" +
+            " and id=#{infoId} and selectionType=#{selectionType}" +
+            "</if>" +
+            "<if test=\"s_name != null and s_name != '' and searchType == 2 \">" +
+            " and s_name LIKE #{s_name} and selectionType=#{selectionType}" +
+            "</if>" +
             "</script>")
-    List<SelectionActivities> findsSelectionList2(@Param("searchType") int searchType, @Param("selectionType") int selectionType, @Param("findType") int findType, @Param("infoId") long infoId, @Param("orderVoteCountType") int orderVoteCountType, @Param("s_name") String s_name,
-                                                           @Param("s_province") int s_province, @Param("s_city") int s_city, @Param("s_district") int s_district, @Param("s_job") int s_job);
-
-    @Select("<script>" +
-            "select * from SelectionActivities" +
-            " where 1=1" +
-            "<if test=\"findType == 1'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 0'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 1'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            "<if test=\"searchType == 2'\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            " and userId=#{userId}" +
-            " and status = 0" +
-            " order by time desc" +
-            "</script>")
-    List<SelectionActivities> findsSelectionList3(@Param("searchType") int searchType, @Param("selectionType") int selectionType, @Param("findType") int findType, @Param("infoId") long infoId, @Param("orderVoteCountType") int orderVoteCountType, @Param("s_name") String s_name,
-                                                           @Param("s_province") int s_province, @Param("s_city") int s_city, @Param("s_district") int s_district, @Param("s_job") int s_job);
+    List<SelectionActivities> findsSelectionList3(@Param("searchType") int searchType, @Param("selectionType") int selectionType, @Param("findType") int findType, @Param("infoId") long infoId, @Param("s_name") String s_name);
 
     /***
      * 根据ID查询参加活动人员的详细信息
@@ -206,50 +219,6 @@ public interface SelectionDao {
      */
     @Select("select * from SelectionActivities where id = #{id}")
     SelectionActivities findById(@Param("id") long id);
-
-
-    /***
-     * 根据ID查询参加活动人员的详细信息
-     * @param id
-     * @return
-     */
-    @Select("<select id=\"selectRechargeInfoChainCount\" resultType=\"int\">" +
-
-
-            " <if test=\"searchType==0\">" +
-            " <if test=\"selectionType==2\">" +
-            " and selectionType=2" +
-            " <if test=\"orderVoteCountType==0\">" +
-            " ORDER BY votesCounts DESC" +
-            " <if test=\"orderVoteCountType!=0\">" +
-            " ORDER BY votesCounts ASC" +
-            " <if test=\"s_province>=0\">" +
-            " and s_province=#{s_province}" +
-            " <if test=\"s_job>=0\">" +
-            " and s_job=#{s_job}" +
-            " <if test=\"selectionType==1\">" +
-            " and (selectionType=1 or selectionType=2)" +
-            " <if test=\"s_province==-1 and s_city==-1 and s_district==-1\">" +
-            " <if test=\"orderVoteCountType==0\">" +
-            " ORDER BY votesCounts DESC" +
-            " <if test=\"orderVoteCountType!=0\">" +
-            " ORDER BY votesCounts ASC" +
-            " <if test=\"s_province>=0 and s_city>=0 and s_district>=0\">" +
-
-            " </if> " +
-            " </if> " +
-            " </if>" +
-            " </if>" +
-            " </if>" +
-            " </if>" +
-            " </if>" +
-            " </if>" +
-            " </if>" +
-            " </if>" +
-
-
-            " </select>")
-    SelectionActivities findBId(@Param("id") long id);
 
     /***
      * 查询是否给该用户投过票

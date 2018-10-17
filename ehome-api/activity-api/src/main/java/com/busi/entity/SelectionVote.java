@@ -19,18 +19,19 @@ public class SelectionVote {
 
     private long id;
 
-    private long myId;
+    private long myId;    //投票者
 
-    private long userId;
+    private long userId;   //被投票者
 
     private int selectionType;//活动类型  1城市小姐  2城市之星 3青年创业
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;
 
-    private String userName;//用户名	查询后从内存获取最新  与数据库无关字段
+    //与数据库无关字段
+    private String userName;//用户名
 
-    private String userHead;//头像	查询后从内存获取最新  与数据库无关字段
+    private String userHead;//头像
 
     private int sex;//性别 1男2女
 
@@ -40,8 +41,8 @@ public class SelectionVote {
 
     private int district;//地区或县
 
-    private int proTypeId;//省简称ID  与数据库无关字段
+    private int proTypeId;//省简称ID
 
-    private long houseNumber;// 门牌号  与数据库无关字段
+    private long houseNumber;// 门牌号
 
 }
