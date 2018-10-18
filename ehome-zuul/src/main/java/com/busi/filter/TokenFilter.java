@@ -141,6 +141,11 @@ public class TokenFilter extends ZuulFilter  {
         }
         String serverToken = String.valueOf(userMap.get("token"));
         String serverClientId = String.valueOf(userMap.get("clientId"));
+        Object object = userMap.get("accountStatus");
+        int accountStatus = 0;
+        if(object!=null&&!CommonUtils.checkFull(object.toString())){
+            accountStatus = Integer.parseInt(object.toString());
+        }
         if(CommonUtils.checkFull(serverToken)||CommonUtils.checkFull(serverClientId)){
             String errorInfo="{\"statusCode\":110,\"statusMsg\":\"用户登录已过期，请重新登录\",\"data\":"+new JSONObject()+"}";
             ctx.setSendZuulResponse(false);
@@ -180,7 +185,22 @@ public class TokenFilter extends ZuulFilter  {
             log.info("当前登录的用户token与服务端不符，建议重新登录 myId="+myId+",clientId="+clientId+",token="+token);
             return null;
         }
-
+        //判断账号状态
+        if(accountStatus==1){//未激活
+            String errorInfo="{\"statusCode\":121,\"statusMsg\":\"该账号未激活，暂时不能访问其他数据接口\",\"data\":"+new JSONObject()+"}";
+            ctx.setSendZuulResponse(false);
+            ctx.setResponseBody(errorInfo);
+            ctx.getResponse().setContentType("application/json;charset=UTF-8");
+            log.info("该账号未激活，暂时不能访问其他数据接口，自动跳转到登录界面 myId="+myId+",clientId="+clientId+",token="+token);
+            return null;
+        }else if(accountStatus==2){//已停用
+            String errorInfo="{\"statusCode\":122,\"statusMsg\":\"该账号已被停用，如有疑问请联系官方客服\",\"data\":"+new JSONObject()+"}";
+            ctx.setSendZuulResponse(false);
+            ctx.setResponseBody(errorInfo);
+            ctx.getResponse().setContentType("application/json;charset=UTF-8");
+            log.info("该账号已被停用，暂时不能访问其他数据接口，自动跳转到登录界面 myId="+myId+",clientId="+clientId+",token="+token);
+            return null;
+        }
         //如果有token，则进行路由转发  这里return的值没有意义，zuul框架没有使用该返回值
         return null;
     }

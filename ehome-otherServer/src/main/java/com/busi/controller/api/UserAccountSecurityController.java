@@ -568,13 +568,13 @@ public class UserAccountSecurityController extends BaseController implements Use
             }
         }else{
             if(Integer.parseInt(userAccountSecurityMap.get("redisStatus").toString())==1){//redisStatus==1 说明数据中已有记录
-                if(userAccountSecurityMap.get("otherPlatformAccount")!=null){
-                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"绑定第三方平台账户失败，您绑定过了",new JSONObject());
-                }
                 //开始绑定
                 UserAccountSecurity uas = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
                 if(uas==null){
                     return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"账号有误，请重新登录后，再进行此操作",new JSONObject());
+                }
+                if(!CommonUtils.checkFull(uas.getOtherPlatformKey())){
+                    return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE,"很抱歉,绑定第三方平台账户失败,您已经绑定过了",new JSONObject());
                 }
                 uas.setOtherPlatformKey(userAccountSecurity.getOtherPlatformKey());
                 uas.setOtherPlatformType(userAccountSecurity.getOtherPlatformType());
