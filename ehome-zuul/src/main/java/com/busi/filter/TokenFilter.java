@@ -186,7 +186,7 @@ public class TokenFilter extends ZuulFilter  {
             return null;
         }
         //判断账号状态
-        if(accountStatus==1&&uri.indexOf("login-api/bindHouseNumber")==-1&&uri.indexOf("login-api/perfectUserInfo")==-1){//未激活
+        if(accountStatus==1&&uri.indexOf("login-api/bindHouseNumber")==-1&&uri.indexOf("login-api/perfectUserInfo")==-1){//未激活（绑定门牌号和完善资料接口不需要验证）
             String errorInfo="{\"statusCode\":121,\"statusMsg\":\"该账号未激活，暂时不能访问其他数据接口\",\"data\":"+new JSONObject()+"}";
             ctx.setSendZuulResponse(false);
             ctx.setResponseBody(errorInfo);
