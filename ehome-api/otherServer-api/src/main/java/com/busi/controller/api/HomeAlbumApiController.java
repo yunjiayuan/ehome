@@ -1,0 +1,138 @@
+package com.busi.controller.api;
+
+import com.busi.entity.HomeAlbum;
+import com.busi.entity.Homealbumpic;
+import com.busi.entity.ReturnData;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+/***
+ * 存储室相关接口
+ * author：zhaojiajie
+ * create time：2018-10-19 12:41:59
+ */
+public interface HomeAlbumApiController {
+
+    /**
+     * 新建相册
+     *
+     * @param homeAlbum
+     * @return
+     */
+    @PostMapping("addAlbum")
+    ReturnData addAlbum(@Valid @RequestBody HomeAlbum homeAlbum, BindingResult bindingResult);
+
+    /**
+     * 更新相册
+     *
+     * @param homeAlbum
+     * @return
+     */
+    @PostMapping("updateAlbum")
+    ReturnData updateAlbum(@Valid @RequestBody HomeAlbum homeAlbum, BindingResult bindingResult);
+
+    /**
+     * @Description: 删除相册
+     * @return:
+     */
+    @DeleteMapping("delAlbum/{userId}/{id}")
+    ReturnData delAlbum(@PathVariable long userId, @PathVariable long id);
+
+    /***
+     * 分页查询相册列表
+     * @param userId  用户ID
+     * @param roomType 房间类型 默认-1不限， 0花园,1客厅,2家店,3存储室-图片-童年,4存储室-图片-青年,5存储室-图片-中年,6存储室-图片-老年，7藏品室，8荣誉室
+     * @param name  相册名
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findAlbumList/{userId}/{roomType}/{name}/{page}/{count}")
+    ReturnData findAlbumList(@PathVariable long userId, @PathVariable int roomType, @PathVariable String name, @PathVariable int page, @PathVariable int count);
+
+    /**
+     * 更新相册密码
+     *
+     * @param homeAlbum
+     * @return
+     */
+    @PostMapping("modifyAlbumPwd")
+    ReturnData modifyAlbumPwd(@Valid @RequestBody HomeAlbum homeAlbum, BindingResult bindingResult);
+
+    /**
+     * 查询相册基本信息
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("getAlbumInfo/{id}/{roomType}")
+    ReturnData getAlbumInfo(@PathVariable long id, @PathVariable int roomType);
+
+    /**
+     * 设置相册封面
+     *
+     * @param homeAlbum
+     * @return
+     */
+    @PostMapping("updateAlbumCover")
+    ReturnData updateAlbumCover(@Valid @RequestBody HomeAlbum homeAlbum, BindingResult bindingResult);
+
+    /**
+     * 清除相册密码(同上更新密码)
+     *
+     * @param id
+     * @return
+     */
+//    @GetMapping("resetAlbumPwd/{id}")
+//    ReturnData resetAlbumPwd(@PathVariable long id);
+
+    /**
+     * 验证相册密码
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("ckAlbumPass/{id}/{password}")
+    ReturnData ckAlbumPass(@PathVariable long id, @PathVariable String password);
+
+    /**
+     * 统计相册图片总数
+     *
+     * @return
+     */
+    @GetMapping("picNumber")
+    ReturnData picNumber();
+
+    /**
+     * @Description: 删除图片
+     * @return:
+     */
+    @DeleteMapping("delAlbum/{userId}/{albumId}/{ids}")
+    ReturnData delAlbum(@PathVariable long userId, @PathVariable int albumId, @PathVariable String ids);
+
+    /**
+     * 更新图片信息
+     *
+     * @param homealbumpic
+     * @return
+     */
+    @PostMapping("updatePic")
+    ReturnData updatePic(@Valid @RequestBody Homealbumpic homealbumpic, BindingResult bindingResult);
+
+    /***
+     * 分页查询指定相册图片
+     * @param userId  用户ID
+     * @param albumId 相册ID
+     * @param name  图片名
+     * @param password  相册密码
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findAlbumPic/{userId}/{albumId}/{name}/{password}/{page}/{count}")
+    ReturnData findAlbumPic(@PathVariable long userId, @PathVariable int albumId, @PathVariable String name, @PathVariable String password, @PathVariable int page, @PathVariable int count);
+
+
+}

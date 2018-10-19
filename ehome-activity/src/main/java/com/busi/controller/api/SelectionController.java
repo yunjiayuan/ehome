@@ -78,6 +78,14 @@ public class SelectionController extends BaseController implements SelectionApiC
             String picArray[] = selectionActivities.getImgUrl().split(",");
             selectionActivities.setActivityCover(picArray[0]);
         }
+//        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Date birthday = null;
+//        try {
+//            birthday = dateformat.parse(dateformat.format(selectionActivities.getS_birthday()));
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+        selectionActivities.setS_birthday(selectionActivities.getS_birthday() + " 00:00:00");
         selectionActivities.setTime(new Date());
         selectionService.addSelection(selectionActivities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -198,20 +206,23 @@ public class SelectionController extends BaseController implements SelectionApiC
             }
         }
         // 检测之前是否已经参加
+        long id = 0;
         int isJoin = 0;// 0未参加 1已参加
         SelectionActivities activities = selectionService.findDetails(CommonUtils.getMyId(), selectionType);
         if (activities != null) {
+            id = activities.getId();
             isJoin = 1;
         }
-        // 获取用户性别 客户端判断是否具备参加资格
+        // 获取用户性别 客 户端判断是否具备参加资格
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(CommonUtils.getMyId());
         if (userInfo == null) {
             return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在", new JSONObject());
         }
-        Map<String, Integer> map = new HashMap<>();
-        map.put("autonym", autonym);
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
         map.put("isJoin", isJoin);
+        map.put("autonym", autonym);
         map.put("sex", userInfo.getSex());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
