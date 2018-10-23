@@ -124,6 +124,11 @@ public class Constants {
     public static final int USER_FRIEND_COUNT_SENIOR_MEMBER = 1000;//高级会员 元老级会员 创世元老级会员
     /** 好友上线个数配置 结束**/
 
+    /** 相册相关配置 开始**/
+    public static final int UPLOADALBUMCOUNT = 50;		//普通用户“存储室”中最多可创建50个相册
+    public static final int UPLOADIMGCOUNT = 500;		//普通用户“存储室”中最多上传图片的总张数为：500
+    /** 相册相关配置 结束**/
+
     /** redis配置 开始**/
     //redis 0库相关key配置(USER)
     public static final String REDIS_KEY_VERSION = "version_";//版本号key
