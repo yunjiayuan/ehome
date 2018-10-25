@@ -5,9 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.HomeBlog;
 import com.busi.entity.ReturnData;
 import com.busi.service.HomeBlogService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.MqUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +29,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
     @Autowired
     private HomeBlogService homeBlogService;
+
+    @Autowired
+    RedisUtils redisUtils;
 
     @Autowired
     private MqUtils mqUtils;
@@ -167,9 +170,14 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             homeBlog.setContent(content);//截取全部内容
         }
         //开始新增
+        homeBlog.setTime(new Date());
         homeBlogService.add(homeBlog);
         //添加足迹
-        mqUtils.sendFootmarkMQ(homeBlog.getUserId(), homeBlog.getTitle(), homeBlog.getImgUrl(), null, null, homeBlog.getId()+"", 2);
+        String t = homeBlog.getTitle();
+        if(CommonUtils.checkFull(t)){
+            t = homeBlog.getContentTxt();
+        }
+        mqUtils.sendFootmarkMQ(homeBlog.getUserId(), t, homeBlog.getImgUrl(), null, null, homeBlog.getId()+"", 2);
         //添加任务
         mqUtils.sendTaskMQ(homeBlog.getUserId(), 1, 1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
@@ -183,7 +191,35 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
      */
     @Override
     public ReturnData findBlogInfo(@PathVariable long userId,@PathVariable long blogId) {
-        return null;
+        Map<String,Object> blogInfoMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG+userId);
+        if(blogInfoMap==null||blogInfoMap.size()<=0){
+            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId);
+            if(homeBlog!=null){
+                //放到缓存中
+                blogInfoMap = CommonUtils.objectToMap(homeBlog);
+                redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userId,blogInfoMap,Constants.USER_TIME_OUT);
+            }
+        }
+        HomeBlog homeBlog = (HomeBlog) CommonUtils.mapToObject(blogInfoMap,HomeBlog.class);
+        if(homeBlog!=null&&CommonUtils.getMyId()!=userId){//排除自己查看自己
+            if(homeBlog.getClassify()==1){//私密
+                return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
+            }
+            if(homeBlog.getClassify()==2){//2给谁看
+                //判断自己是否在 给谁看 的列表中
+                homeBlog.getAccessId();
+
+                return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
+            }
+            if(homeBlog.getClassify()==3){//3不给谁看
+                //判断自己是否在 不给谁看 的列表中
+                homeBlog.getAccessId();
+
+                return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
+            }
+        }
+        //检测当前登录用户是否有权限查看
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", homeBlog);
     }
 
     /***
@@ -194,7 +230,13 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
      */
     @Override
     public ReturnData delBlog(@PathVariable long userId,@PathVariable long blogId) {
-        return null;
+        //判断操作人权限
+        if(CommonUtils.getMyId()!=userId){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+userId+"]的生活圈",new JSONObject());
+        }
+        //开始更新删除状态
+        homeBlogService.delBlog(blogId,userId);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***

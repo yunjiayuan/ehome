@@ -51,7 +51,7 @@ public class HomeBlog {
 
   @Max(value = 3, message = "classify参数有误，超出指定范围")
   @Min(value= 0 ,message= "classify参数有误，超出指定范围")
-  private long classify;//查看权限：0公开博文 1私密博文 2给谁看 3不给谁看
+  private int classify;//查看权限：0公开博文 1私密博文 2给谁看 3不给谁看
 
   @Max(value = 31, message = "tag参数有误，超出指定范围")
   @Min(value= 0 ,message= "tag参数有误，超出指定范围")

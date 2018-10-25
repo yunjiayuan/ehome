@@ -18,7 +18,7 @@ public interface HomeBlogApiController {
      * @param homeBlog
      * @return
      */
-    @PostMapping("homeBlog")
+    @PostMapping("addBlog")
     ReturnData addBlog(@Valid @RequestBody HomeBlog homeBlog, BindingResult bindingResult);
 
     /***
@@ -36,7 +36,7 @@ public interface HomeBlogApiController {
      * @param blogId 将要被删除的生活圈
      * @return
      */
-    @DeleteMapping("delBlog")
+    @DeleteMapping("delBlog/{userId}/{blogId}")
     ReturnData delBlog(@PathVariable long userId,@PathVariable long blogId);
 
     /***

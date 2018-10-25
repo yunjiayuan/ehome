@@ -60,7 +60,7 @@ spring:
       #useGlobalDataSourceStat: true
 
   redis:
-    database: 2  #数据库 默认0号库 0库用于存储用户相关信息
+    database: 2  #数据库 默认0号库 2库用于存储生活圈相关信息
 #    host: 192.168.1.163 #单机时需要指定
     password: LiChengWang_redis_20180604
 #    port: 6379 #单机时需要指定

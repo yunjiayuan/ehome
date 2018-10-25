@@ -20,8 +20,8 @@ public interface HomeBlogDao {
      * @param homeBlog
      * @return
      */
-    @Insert("insert into homeBlog(userId,title,content,imgUrl,videoUrl,videoCoverUrl,audioUrl,sendType,classify,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
-            "values (#{userId},#{title},#{content},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{sendType},#{classify},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
+    @Insert("insert into homeBlog(userId,title,content,contentTxt,imgUrl,videoUrl,videoCoverUrl,audioUrl,sendType,classify,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
+            "values (#{userId},#{title},#{content},#{contentTxt},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{sendType},#{classify},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
     @Options(useGeneratedKeys = true)
     int add(HomeBlog homeBlog);
 
