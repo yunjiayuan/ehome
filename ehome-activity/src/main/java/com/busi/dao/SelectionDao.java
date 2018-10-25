@@ -54,9 +54,6 @@ public interface SelectionDao {
             "<if test=\"imgUrl != null and imgUrl != ''\">" +
             " imgUrl=#{imgUrl}," +
             "</if>" +
-            "<if test=\"activityVideo != null and activityVideo != ''\">" +
-            " activityVideo=#{activityVideo}," +
-            "</if>" +
             "<if test=\"s_birthday != null\">" +
             " s_birthday=#{s_birthday}," +
             "</if>" +
@@ -70,6 +67,7 @@ public interface SelectionDao {
             "</if>" +
             " s_sex=2," +
             " s_job=#{s_job}," +
+            " activityVideo=#{activityVideo}," +
             " s_maritalStatus=#{s_maritalStatus}," +
             " s_height=#{s_height}," +
             " s_weight=#{s_weight}," +
