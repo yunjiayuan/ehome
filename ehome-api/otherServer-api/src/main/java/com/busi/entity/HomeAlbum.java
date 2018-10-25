@@ -43,6 +43,8 @@ public class HomeAlbum {
     private String imgCover;    //封面
 
     //与数据库无关
+    private String delUrls;         //将要删除的地址组合 “,”分隔
+
     private String password;            //密码
 
     private String oldPassword;        //原密码

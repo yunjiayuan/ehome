@@ -1,7 +1,7 @@
 package com.busi.controller.api;
 
 import com.busi.entity.HomeAlbum;
-import com.busi.entity.Homealbumpic;
+import com.busi.entity.HomeAlbumPic;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ public interface HomeAlbumApiController {
      * @param homeAlbum
      * @return
      */
-    @PostMapping("updateAlbum")
+    @PutMapping("updateAlbum")
     ReturnData updateAlbum(@Valid @RequestBody HomeAlbum homeAlbum, BindingResult bindingResult);
 
     /**
@@ -58,7 +58,7 @@ public interface HomeAlbumApiController {
      * @param homeAlbum
      * @return
      */
-    @PostMapping("modifyAlbumPwd")
+    @PutMapping("modifyAlbumPwd")
     ReturnData modifyAlbumPwd(@Valid @RequestBody HomeAlbum homeAlbum, BindingResult bindingResult);
 
     /**
@@ -67,8 +67,8 @@ public interface HomeAlbumApiController {
      * @param id
      * @return
      */
-    @GetMapping("getAlbumInfo/{id}/{roomType}")
-    ReturnData getAlbumInfo(@PathVariable long id, @PathVariable int roomType);
+    @GetMapping("getAlbumInfo/{id}")
+    ReturnData getAlbumInfo(@PathVariable long id);
 
     /**
      * 设置相册封面
@@ -76,7 +76,7 @@ public interface HomeAlbumApiController {
      * @param homeAlbum
      * @return
      */
-    @PostMapping("updateAlbumCover")
+    @PutMapping("updateAlbumCover")
     ReturnData updateAlbumCover(@Valid @RequestBody HomeAlbum homeAlbum, BindingResult bindingResult);
 
     /**
@@ -106,20 +106,29 @@ public interface HomeAlbumApiController {
     ReturnData picNumber();
 
     /**
+     * 新增图片
+     *
+     * @param homeAlbumPic
+     * @return
+     */
+    @PostMapping("uploadPic")
+    ReturnData uploadPic(@Valid @RequestBody HomeAlbumPic homeAlbumPic, BindingResult bindingResult);
+
+    /**
      * @Description: 删除图片
      * @return:
      */
-    @DeleteMapping("delAlbum/{userId}/{albumId}/{ids}")
-    ReturnData delAlbum(@PathVariable long userId, @PathVariable int albumId, @PathVariable String ids);
+    @DeleteMapping("delAlbumPic/{userId}/{albumId}/{ids}")
+    ReturnData delAlbumPic(@PathVariable long userId, @PathVariable long albumId, @PathVariable String ids);
 
     /**
      * 更新图片信息
      *
-     * @param homealbumpic
+     * @param homeAlbumPic
      * @return
      */
-    @PostMapping("updatePic")
-    ReturnData updatePic(@Valid @RequestBody Homealbumpic homealbumpic, BindingResult bindingResult);
+    @PutMapping("updatePic")
+    ReturnData updatePic(@Valid @RequestBody HomeAlbumPic homeAlbumPic, BindingResult bindingResult);
 
     /***
      * 分页查询指定相册图片
