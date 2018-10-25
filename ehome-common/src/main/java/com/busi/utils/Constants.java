@@ -201,6 +201,7 @@ public class Constants {
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY = "user_account_security_";//userId与安全中心对象的关系对照
 
     //redis 3库相关key配置(EBLOG)
+    public static final String REDIS_KEY_EBLOG_ = "eblog_";//userId与生活圈对象的关系对照
 
 
     /** redis配置 结束**/
