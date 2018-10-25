@@ -236,17 +236,20 @@ public class SelectionController extends BaseController implements SelectionApiC
     @Override
     public ReturnData findJoin(@PathVariable long id) {
         SelectionActivities sa = selectionService.findById(id);
+        if (sa == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询活动人员不存在!", new JSONObject());
+        }
         //判断该用户是否实名
         int realNameStatus = 0;// 0实名未认证 1已认证
         UserAccountSecurity userAccountSecurity = null;
-        userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(CommonUtils.getMyId());
+        userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(sa.getUserId());
         if (userAccountSecurity != null) {
             if (!CommonUtils.checkFull(userAccountSecurity.getRealName()) || !CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
                 realNameStatus = 1;
             }
         }
         UserInfo userInfo = null;
-        userInfo = userInfoUtils.getUserInfo(CommonUtils.getMyId());
+        userInfo = userInfoUtils.getUserInfo(sa.getUserId());
         if (userInfo != null) {
             sa.setName(userInfo.getName());
             sa.setHead(userInfo.getHead());
@@ -254,7 +257,6 @@ public class SelectionController extends BaseController implements SelectionApiC
             sa.setHouseNumber(userInfo.getHouseNumber());
             sa.setRealNameStatus(realNameStatus);
         }
-
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", sa);
     }
 
