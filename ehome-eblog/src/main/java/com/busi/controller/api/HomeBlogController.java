@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.HomeBlog;
 import com.busi.entity.ReturnData;
+import com.busi.entity.UserInfo;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
     @Autowired
     private HomeBlogService homeBlogService;
+
+    @Autowired
+    private UserInfoUtils userInfoUtils;
 
     @Autowired
     RedisUtils redisUtils;
@@ -201,7 +205,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         HomeBlog homeBlog = (HomeBlog) CommonUtils.mapToObject(blogInfoMap,HomeBlog.class);
-        if(homeBlog!=null&&CommonUtils.getMyId()!=userId){//排除自己查看自己
+        if(homeBlog==null){
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        if(CommonUtils.getMyId()!=userId){//排除自己查看自己
             if(homeBlog.getClassify()==1){//私密
                 return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
             }
@@ -218,6 +225,16 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
             }
         }
+        //设置用户信息
+        UserInfo userInfo = userInfoUtils.getUserInfo(userId);
+        if(userInfo!=null){
+            homeBlog.setUserName(userInfo.getName());
+            homeBlog.setUserHead(userInfo.getHead());
+            homeBlog.setProTypeId(userInfo.getProType());
+            homeBlog.setHouseNumber(userInfo.getHouseNumber());
+        }
+        //设置是否喜欢过
+
         //检测当前登录用户是否有权限查看
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", homeBlog);
     }
@@ -234,8 +251,34 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         if(CommonUtils.getMyId()!=userId){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+userId+"]的生活圈",new JSONObject());
         }
+        //查询该条生活圈信息
+        Map<String,Object> blogInfoMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG+userId);
+        if(blogInfoMap==null||blogInfoMap.size()<=0){
+            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId);
+            if(homeBlog!=null){
+                blogInfoMap = CommonUtils.objectToMap(homeBlog);
+            }
+        }
+        HomeBlog hb = (HomeBlog) CommonUtils.mapToObject(blogInfoMap,HomeBlog.class);
+        if(hb==null){//不存在直接返回成功
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
         //开始更新删除状态
         homeBlogService.delBlog(blogId,userId);
+        //判断是否为生活秀首页推荐数据
+        if(hb.getSendType()==2&&hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
+            //更新生活秀首页推荐列表
+            List list = null;
+            list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, 1001);
+            for (int j = 0; j < list.size(); j++) {
+                HomeBlog homeBlog = (HomeBlog) list.get(j);
+                if (homeBlog.getUserId() == userId && homeBlog.getId() == blogId) {
+                    redisUtils.removeList(Constants.REDIS_KEY_EBLOGLIST, 1, homeBlog);
+                }
+            }
+        }
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_EBLOG + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
+
+import javax.validation.constraints.*;
 import java.util.Date;
 
 /***
@@ -99,6 +97,8 @@ public class HomeBlog {
   @Length(max = 100, message = "位置信息字数太长了")
   private String position;//具体位置信息
 
+  private int cityId;//百度地图中的城市ID，用于同城搜索
+
   @Max(value = 1, message = "anonymousType参数有误，超出指定范围")
   @Min(value= 0 ,message= "anonymousType参数有误，超出指定范围")
   private int anonymousType;//是否匿名发布 0表示正常发布不匿名  1表示匿名发布  别人能看到博文  无法查看名字和门牌号 也不能通过家博进行访问串门
@@ -116,5 +116,13 @@ public class HomeBlog {
 
   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
   private Date time;//发布时间
+
+  private int isLike;		  //是否点赞  0未点赞 1点赞  与数据库无关字段
+  private String userName; 	  //发布者用户名	 与数据库无关字段
+  private String userHead;    //发布者头像	 与数据库无关字段
+  private int proTypeId;	  //发布者省简称ID 与数据库无关字段
+  private long houseNumber;   //发布者门牌号   与数据库无关字段
+//  private String shareName;	  //shareUserId 用户名称
+//  private String origUserName;//原始博主用户名 转载使用
 
 }

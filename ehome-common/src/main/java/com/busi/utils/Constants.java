@@ -206,7 +206,8 @@ public class Constants {
 
     //redis 3库相关key配置(EBLOG)
     public static final String REDIS_KEY_EBLOG = "eblog_";//userId与生活圈对象的关系对照
-
+    public static final String REDIS_KEY_EBLOGLIST = "eblog_list";//生活秀首页列表
+    public static final int EBLOG_LIKE_COUNT = 10000;//点赞数临界值 超过临界值 自动进入推荐列表
 
     /** redis配置 结束**/
 
