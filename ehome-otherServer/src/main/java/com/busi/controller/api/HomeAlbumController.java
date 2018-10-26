@@ -3,8 +3,6 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.HomeAlbumPic;
-import com.busi.entity.HomeAlbumPwd;
 import com.busi.entity.*;
 import com.busi.service.HomeAlbumService;
 import com.busi.utils.*;
