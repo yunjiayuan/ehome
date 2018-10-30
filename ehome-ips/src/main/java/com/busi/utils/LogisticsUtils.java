@@ -1,7 +1,6 @@
 package com.busi.utils;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.busi.entity.UsedDealLogistics;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
