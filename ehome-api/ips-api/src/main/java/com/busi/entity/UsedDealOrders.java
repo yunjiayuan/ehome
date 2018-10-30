@@ -39,9 +39,9 @@ public class UsedDealOrders {
     private Date receivingTime;            // 标准收货时间
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date delayed;            // 延时后发货时间
+    private Date delayTime;            // 延时后发货时间
 
-    private String no;                    //订单编号
+    private String orderNumber;                    //订单编号
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
@@ -77,7 +77,7 @@ public class UsedDealOrders {
 
     private int address_district;                    // 地区或县
 
-    private String address_postalcode;        // 邮	政编码
+    private String address_postalcode;        // 邮政编码
 
     private String address;                        // 详细地址
 

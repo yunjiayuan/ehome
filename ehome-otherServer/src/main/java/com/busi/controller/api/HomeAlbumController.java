@@ -232,20 +232,17 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
                 }
             }
             //根据相册ID组合 查询对应相册内的图片数量
-            picSizeList = homeAlbumService.findByIds(albumIds.split(","));
-            if (picSizeList != null && albumList != null) {
-                for (int i = 0; i < picSizeList.size(); i++) {
-                    Object[] object = (Object[]) picSizeList.get(i);
-                    for (int j = 0; j < albumList.size(); j++) {
-                        album = albumList.get(j);
-                        if (object != null) {
-                            long alb = (Long) object[1];
-                            if (album.getId() == alb) {
-                                album.setPhotoSize((Long) object[0]);
-                            }
-                        }
+            long num = 0;
+            String[] ids = albumIds.split(",");
+            for (int i = 0; i < ids.length; i++) {
+                num = homeAlbumService.findByIds2(Long.parseLong(ids[i]));
+                for (int j = 0; j < albumList.size(); j++) {
+                    album = albumList.get(j);
+                    if (album.getId() == Long.parseLong(ids[i])) {
+                        album.setPhotoSize(num);
                     }
                 }
+
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", albumList);

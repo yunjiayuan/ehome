@@ -245,6 +245,15 @@ public class HomeAlbumService {
         return list;
     }
 
+    /***
+     * 根据ID查询用户相册
+     * @param id
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public long findByIds2(long id) {
+        return homeAlbumDao.findByIds2(id);
+    }
 
     /***
      * 统计用户各分类图片总数

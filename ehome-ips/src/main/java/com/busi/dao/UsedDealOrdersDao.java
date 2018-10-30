@@ -22,9 +22,9 @@ public interface UsedDealOrdersDao {
      * @param usedDealOrders
      * @return
      */
-    @Insert("insert into usedDealOrders(myId,userId,goodsId,logisticsId,addTime,paymentTime,deliveryTime,receivingTime,delayed,no," +
+    @Insert("insert into usedDealOrders(myId,userId,goodsId,logisticsId,addTime,paymentTime,deliveryTime,receivingTime,delayTime,orderNumber," +
             "ordersState,title,money,sellingPrice,postage,pinkageType,picture,distributioMode,extendFrequency,afficheType,ordersType,addressId,address_Name,address_Phone,address_province,address_city,address_district,address_postalcode,address) " +
-            "values (#{myId},#{userId},#{goodsId},#{logisticsId},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{delayed},#{no}," +
+            "values (#{myId},#{userId},#{goodsId},#{logisticsId},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{delayTime},#{orderNumber}," +
             "#{ordersState},#{title},#{money},#{sellingPrice},#{postage},#{pinkageType},#{picture},#{distributioMode},#{extendFrequency},#{afficheType},#{ordersType},#{addressId},#{address_Name},#{address_Phone},#{address_province},#{address_city},#{address_district},#{address_postalcode},#{address})")
     @Options(useGeneratedKeys = true)
     int addOrders(UsedDealOrders usedDealOrders);
@@ -34,8 +34,8 @@ public interface UsedDealOrdersDao {
      * @param usedDealLogistics
      * @return
      */
-    @Insert("insert into usedDealLogistics(myId,userId,brand,brandName,no,status,data,orders) " +
-            "values (#{myId},#{userId},#{brand},#{brandName},#{no},#{status},#{data},#{orders})")
+    @Insert("insert into usedDealLogistics(myId,userId,brand,no,status,data,orders) " +
+            "values (#{myId},#{userId},#{brand},#{no},#{status},#{data},#{orders})")
     @Options(useGeneratedKeys = true)
     int addLogistics(UsedDealLogistics usedDealLogistics);
 
@@ -55,7 +55,7 @@ public interface UsedDealOrdersDao {
      * 根据Id查询订单
      * @param id
      */
-    @Select("select * from UsedDealOrders where <![CDATA[ id=#{id} and ordersState < 3 and (ordersType = 0 or ordersType > 2) ]]>")
+    @Select("select * from UsedDealOrders where id=#{id} and ordersState < 3 and ordersType = 0 or ordersType > 2")
     UsedDealOrders findDelOrId(@Param("id") long id);
 
     /***
@@ -117,7 +117,7 @@ public interface UsedDealOrdersDao {
             "update usedDealOrders set" +
             " ordersType=#{ordersType}," +
             " deliveryTime=#{deliveryTime}," +
-            " delayed=#{delayed}" +
+            " delayTime=#{delayTime}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateDelivery(UsedDealOrders usedDealOrders);
@@ -171,7 +171,7 @@ public interface UsedDealOrdersDao {
      */
     @Update("<script>" +
             "update usedDealOrders set" +
-            " delayed=#{delayed}" +
+            " delayTime=#{delayTime}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int timeExpand(UsedDealOrders usedDealOrders);

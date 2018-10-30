@@ -313,6 +313,17 @@ public interface HomeAlbumDao {
     List<Object> findByIds(@Param("ids") String[] ids);
 
     /***
+     * 根据ID查询用户相册
+     * @param id
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from homeAlbumPic" +
+            " where albumId=#{id} and picState=0" +
+            "</script>")
+    long findByIds2(@Param("id") long id);
+
+    /***
      * 统计用户各分类图片总数
      * @param userId
      * @return

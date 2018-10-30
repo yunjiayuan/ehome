@@ -78,7 +78,7 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         //更改商品状态为已卖出
         usedDeal.setSellType(3);
         usedDealOrders.setAddTime(new Date());
-        usedDealOrders.setNo(noRandom);//订单编号【MD5】
+        usedDealOrders.setOrderNumber(noRandom);//订单编号【MD5】
         usedDealOrders.setTitle(usedDeal.getTitle());
         usedDealOrders.setUserId(usedDeal.getUserId());
         usedDealOrders.setPicture(usedDeal.getImgUrl());
@@ -178,13 +178,15 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
-        long payTime = new Date().getTime() - io.getPaymentTime().getTime();
-        if (payTime > 3 * 24 * 60 * 60 * 1000 - 30 * 60 * 1000) {//30分钟时间差 给定时任务
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "该订单已超时！", new JSONObject());
+        if (io.getPaymentTime() != null) {
+            long payTime = new Date().getTime() - io.getPaymentTime().getTime();
+            if (payTime > 3 * 24 * 60 * 60 * 1000 - 30 * 60 * 1000) {//30分钟时间差 给定时任务
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "该订单已超时！", new JSONObject());
+            }
         }
         io.setOrdersType(2);        //待收货
         io.setDeliveryTime(new Date());
-        io.setDelayed(io.getDeliveryTime());
+        io.setDelayTime(io.getDeliveryTime());
         UsedDealLogistics ls = usedDealOrdersService.findLogistics(io.getLogisticsId());
         if (ls != null) {
             //更新物流信息
@@ -257,7 +259,7 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
             if (io.getMyId() == CommonUtils.getMyId()) {//买家
                 if (io.getExtendFrequency() < 1) {//买家延长次数只有一次（一次三天）
                     //延长三天后时间
-                    io.setDelayed(new Date(io.getDeliveryTime().getTime() + 86400000 * 3));//发货时间+3天【作为新的发货时间】
+                    io.setDelayTime(new Date(io.getDeliveryTime().getTime() + 86400000 * 3));//发货时间+3天【作为新的发货时间】
                 } else {
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "买家只能延长一次！", new JSONObject());
                 }
@@ -265,9 +267,9 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         } else {//商家[无限制延长]
             if (io.getUserId() == CommonUtils.getMyId()) {//商家
                 if (io.getExtendFrequency() < 1) {
-                    io.setDelayed(new Date(io.getDeliveryTime().getTime() + 86400000 * 3));//发货时间+3天【作为新的发货时间】
+                    io.setDelayTime(new Date(io.getDeliveryTime().getTime() + 86400000 * 3));//发货时间+3天【作为新的发货时间】
                 } else {
-                    io.setDelayed(new Date(io.getDelayed().getTime() + 86400000 * 3));//延时后发货时间【作为新的发货时间】
+                    io.setDelayTime(new Date(io.getDelayTime().getTime() + 86400000 * 3));//延时后发货时间【作为新的发货时间】
                 }
             }
         }
