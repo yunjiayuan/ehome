@@ -55,17 +55,46 @@ public class HomeBlogService {
     }
 
     /***
+     * 查询朋友圈和关注的人列表
+     * @param myId          当前登录者用户ID
+     * @param firendUserIds 好友用户ID组合
+     * @param page          页码 第几页 起始值1
+     * @param count         每页条数
+     * @return
+     */
+    public PageBean<HomeBlog> findBlogListByFirend(long myId,String[] firendUserIds,int page,int count){
+        List<HomeBlog> list;
+        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogDao.findBlogListByFirend(firendUserIds,","+myId+",");
+        return PageUtils.getPageBean(p,list);
+    }
+
+    /***
      * 根据兴趣标签查询列表
      * @param tags       标签数组格式 1,2,3
      * @param searchType 博文类型：0所有 1只看视频
+     * @param userId     当前登录者用户ID  用于判断权限
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
      * @return
      */
-    PageBean<HomeBlog> findBlogListByTags(String[] tags,int searchType,int page,int count){
+    public PageBean<HomeBlog> findBlogListByTags(String[] tags,int searchType,long userId,int page,int count){
         List<HomeBlog> list;
         Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByTags(tags,searchType);
+        list = homeBlogDao.findBlogListByTags(tags,searchType,userId,","+userId+",");
+        return PageUtils.getPageBean(p,list);
+    }
+
+    /***
+     * 根据指定用户ID查询列表
+     * @param searchType 博文类型：0查自己 1查别人
+     * @param userId     被查询用户ID
+     * @return
+     */
+    public PageBean<HomeBlog> findBlogListByUserId(long userId,int searchType,int page,int count){
+        List<HomeBlog> list;
+        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogDao.findBlogListByUserId(userId,","+userId+",",searchType);
         return PageUtils.getPageBean(p,list);
     }
 }

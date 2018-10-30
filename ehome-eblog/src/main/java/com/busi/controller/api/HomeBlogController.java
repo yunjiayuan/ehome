@@ -2,9 +2,7 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.HomeBlog;
-import com.busi.entity.ReturnData;
-import com.busi.entity.UserInfo;
+import com.busi.entity.*;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +28,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
     @Autowired
     private UserInfoUtils userInfoUtils;
+
+    @Autowired
+    private FollowInfoUtils followInfoUtils;
 
     @Autowired
     RedisUtils redisUtils;
@@ -201,7 +199,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             if(homeBlog!=null){
                 //放到缓存中
                 blogInfoMap = CommonUtils.objectToMap(homeBlog);
-                redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY+userId,blogInfoMap,Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_EBLOG+userId,blogInfoMap,Constants.USER_TIME_OUT);
             }
         }
         HomeBlog homeBlog = (HomeBlog) CommonUtils.mapToObject(blogInfoMap,HomeBlog.class);
@@ -236,6 +234,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         //设置是否喜欢过
 
         //检测当前登录用户是否有权限查看
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", homeBlog);
     }
 
@@ -294,7 +293,109 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     @Override
     public ReturnData findBlogList(@PathVariable long userId,@PathVariable int searchType,
                                    @PathVariable String tags,@PathVariable int page,@PathVariable int count) {
-        return null;
+        //验证参数
+        if(searchType<0||searchType>3){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"searchType参数有误",new JSONObject());
+        }
+        if(page<1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"page参数有误",new JSONObject());
+        }
+        if(count<0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"count参数有误",new JSONObject());
+        }
+        PageBean<HomeBlog> pageBean = null;
+        switch (searchType) {
+            case 0://0查看朋友的生活圈
+                //从缓存中获取好友列表
+                List list = null;
+                list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
+                if(list==null||list.size()<=0){//缓存无好友列表存在 直接返回
+                    pageBean = new PageBean<HomeBlog>();
+                    pageBean.setList(new ArrayList<>());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
+                }
+                String firendUserIds = "";//好友ID组合
+                for (int i = 0; i < list.size(); i++) {
+                    HashMap map = (HashMap) list.get(i);
+                    if(map!=null&&map.size()>0){
+                        Object groupName = map.get("groupName");
+                        if(groupName==null||"黑名单".equals(groupName.toString())){
+                            continue;
+                        }
+                        ArrayList userList =(ArrayList) map.get("userList");
+                        if(userList==null||userList.size()<=0){
+                            continue;
+                        }
+                        for (int j = 0; j <userList.size() ; j++) {
+                            UserRelationShip userRelationShip = (UserRelationShip) userList.get(j);
+                            if(userRelationShip==null){
+                                continue;
+                            }
+                            if(i==list.size()-1){
+                                firendUserIds += userRelationShip.getFriendId()+"";
+                            }else{
+                                firendUserIds += userRelationShip.getFriendId()+",";
+                            }
+                        }
+                    }
+                }
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),page,count);
+                break;
+            case 1://1查看关注人的生活圈
+                //获取我关注的人的列表
+                String[] followArray = null;
+                String followUserIds = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
+                if(!CommonUtils.checkFull(followUserIds)){
+                    followArray = followUserIds.split(",");
+                }
+                if(followArray==null||followArray.length<=0){//无关注列表存在 直接返回
+                    pageBean = new PageBean<HomeBlog>();
+                    pageBean.setList(new ArrayList<>());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
+                }
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray,page,count);
+                break;
+            case 2://2查看兴趣话题
+                if(CommonUtils.checkFull(tags)){
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"tags参数有误",new JSONObject());
+                }
+                pageBean = homeBlogService.findBlogListByTags(tags.split(","),0,CommonUtils.getMyId(),page,count);
+                break;
+            case 3://3查询指定用户
+                if(userId<0){
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+                }
+                //判断是不是查自己的信息
+                int type = 0;
+                if(userId!=CommonUtils.getMyId()){
+                    type = 1;
+                }
+                pageBean = homeBlogService.findBlogListByUserId(userId,type,page,count);
+                break;
+        }
+        if(pageBean==null){
+            pageBean = new PageBean<HomeBlog>();
+            pageBean.setList(new ArrayList<>());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
+        }
+        List<HomeBlog> list  = pageBean.getList();
+        for(int i=0;i<list.size();i++){
+            HomeBlog homeBlog = list.get(i);
+            if(homeBlog==null){
+                continue;
+            }
+            //设置用户信息
+            UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
+            if(userInfo!=null){
+                homeBlog.setUserName(userInfo.getName());
+                homeBlog.setUserHead(userInfo.getHead());
+                homeBlog.setProTypeId(userInfo.getProType());
+                homeBlog.setHouseNumber(userInfo.getHouseNumber());
+            }
+            //设置是否喜欢过状态
+
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
     /***

@@ -124,6 +124,10 @@ public class Constants {
     public static final int USER_FRIEND_COUNT_SENIOR_MEMBER = 1000;//高级会员 元老级会员 创世元老级会员
     /** 好友上线个数配置 结束**/
 
+    /** 关注上线个数配置 开始**/
+    public static final int FOLLOW_COUNT = 2000;
+    /** 关注上线个数配置 结束**/
+
     /** 相册相关配置 开始**/
     public static final int UPLOADALBUMCOUNT = 50;		//普通用户“存储室”中最多可创建50个相册
     public static final int UPLOADIMGCOUNT = 500;		//普通用户“存储室”中最多上传图片的总张数为：500
@@ -171,6 +175,7 @@ public class Constants {
     public static final String REDIS_KEY_PAY_ORDER_RECHARGE = "payment_order_recharge_";//钱包充值订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_PAY_ORDER_MEMBER = "payment_order_member_";//购买会员订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_PAY_ORDER_REDPACKETSINFO = "payment_order_redpacketsInfo_";//发送红包订单 对应关系  订单ID对应订单实体
+    public static final String REDIS_KEY_FOLLOW_LIST = "follow_list_";//关注信息 当前用户关注的人的ID组合 逗号分隔
 
     //验证码相关配置
     public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key

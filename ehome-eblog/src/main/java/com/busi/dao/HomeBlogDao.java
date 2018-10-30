@@ -20,8 +20,8 @@ public interface HomeBlogDao {
      * @param homeBlog
      * @return
      */
-    @Insert("insert into homeBlog(userId,title,content,contentTxt,imgUrl,videoUrl,videoCoverUrl,audioUrl,sendType,classify,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
-            "values (#{userId},#{title},#{content},#{contentTxt},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{sendType},#{classify},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
+    @Insert("insert into homeBlog(userId,title,content,contentTxt,imgUrl,videoUrl,videoCoverUrl,audioUrl,sendType,classify,classifyUserIds,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
+            "values (#{userId},#{title},#{content},#{contentTxt},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{sendType},#{classify},#{classifyUserIds},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
     @Options(useGeneratedKeys = true)
     int add(HomeBlog homeBlog);
 
@@ -42,26 +42,67 @@ public interface HomeBlogDao {
     int delBlog(@Param("id") long id,@Param("userId") long userId);
 
     /***
-     * 根据兴趣标签查询列表
-     * @param tags       标签数组格式 1,2,3
-     * @param searchType 博文类型：0所有 1只看视频
+     * 查询朋友圈列表
+     * @param firendUserIds  好友用户ID组合
+     * @param userIds        处理过的登录者用户ID 用于判断可见范围
      * @return
      */
     @Select("<script>" +
             "select * from homeBlog" +
             " where 1=1" +
-            "<if test=\"tags != null and tags != ''\">"+
-            " and tags in" +
+            "<if test=\"userIds != null\">"+
+            " and userId in" +
+            "<foreach collection='firendUserIds' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</if>" +
+            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlog> findBlogListByFirend(@Param("firendUserIds") String[] firendUserIds,@Param("userIds") String userIds);
+
+    /***
+     * 根据兴趣标签查询列表
+     * @param tags       标签数组格式 1,2,3
+     * @param searchType 博文类型：0所有 1只看视频
+     * @param userId     当前登录用户ID
+     * @param userIds    处理过的登录者用户ID 用于判断可见范围
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            "<if test=\"tags != null\">"+
+            " and tag in" +
             "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</if>" +
+            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
             "<if test=\"searchType != 0\">"+
             " and sendType = 2" +
             "</if>" +
+            " and userId != #{userId}" +
             " order by time desc" +
             "</script>")
-    List<HomeBlog> findBlogListByTags(@Param("tags") String[] tags, @Param("searchType") int searchType);
+    List<HomeBlog> findBlogListByTags(@Param("tags") String[] tags, @Param("searchType") int searchType,@Param("userId") long userId,@Param("userIds") String userIds);
 
+    /***
+     * 根据指定用户ID查询列表
+     * @param searchType 博文类型：0查自己 1查别人
+     * @param userId     被查询用户ID
+     * @param userIds    处理过的登录者用户ID 用于判断可见范围
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            "<if test=\"searchType != 0\">"+
+            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
+            "</if>" +
+            " and userId = #{userId}" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlog> findBlogListByUserId(@Param("userId") long userId,@Param("userIds") String userIds,@Param("searchType") int searchType);
 
 }

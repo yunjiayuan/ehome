@@ -47,4 +47,6 @@ public class HomePageInfo {
     private long storageRoom;//存储室锁状态 1未上锁 2已上锁
 
     private int accessRights;//访问权限 0允许任何人  1禁止任何人  2 已是好友可以访问   3不是好友禁止访问
+
+    private int isFollow;//0未关注  1已关注
 }

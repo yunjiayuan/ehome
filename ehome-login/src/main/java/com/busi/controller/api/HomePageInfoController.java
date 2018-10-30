@@ -3,10 +3,7 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.UserInfoService;
-import com.busi.service.UserJurisdictionService;
-import com.busi.service.UserMembershipService;
-import com.busi.service.UserRelationShipService;
+import com.busi.service.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
@@ -41,6 +38,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
 
     @Autowired
     UserMembershipService userMembershipService;
+
+    @Autowired
+    FollowInfoService followInfoService;
 
     /***
      * 获取指定用户ID的家主页信息
@@ -86,6 +86,7 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         int accessRights = Integer.parseInt(userJurisdictionMap.get("accessRights").toString());//访问权限 0允许任何人  1禁止任何人  2 仅好友
         //判断被访问者是不是自己
         int isFriend = 0;//是否为好友 0不是好友  1是好友
+        int isFollow = 0;//是否已关注 0未关注 1已关注
         //判断自己是否与该用户是好友关系
         List list = null;
         list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
@@ -136,7 +137,41 @@ public class HomePageInfoController extends BaseController implements HomePageIn
                     homePageInfo.setAccessRights(2);//访问权限 0允许任何人  1禁止任何人  2 已是好友可以访问   3不是好友禁止访问
                 }
             }
+            //设置关注关系
+            String[] followArray = null;
+            Object follow = redisUtils.getKey(Constants.REDIS_KEY_FOLLOW_LIST+CommonUtils.getMyId());
+            if(follow!=null&&!CommonUtils.checkFull(follow.toString())){
+                followArray = follow.toString().split(",");
+            }else{
+                PageBean<FollowInfo> pageBean = followInfoService.findFollowList(CommonUtils.getMyId(),0,1,2000);
+                if(pageBean!=null&&pageBean.getList()!=null&&pageBean.getList().size()>0){
+                    String followUserIds = "";
+                    for (int i = 0; i <pageBean.getList().size() ; i++) {
+                        FollowInfo followInfo = pageBean.getList().get(i);
+                        if(followInfo==null){
+                            continue;
+                        }
+                        if(i==pageBean.getList().size()-1){
+                            followUserIds += followInfo.getFollowUserId()+"";
+                        }else{
+                            followUserIds += followInfo.getFollowUserId()+",";
+                        }
+                    }
+                    //放入缓存
+                    redisUtils.set(Constants.REDIS_KEY_FOLLOW_LIST+CommonUtils.getMyId(),followUserIds,Constants.USER_TIME_OUT);
+                    followArray = followUserIds.split(",");
+                }
+            }
+            if(followArray!=null){
+                for (int i = 0; i < followArray.length; i++) {
+                    if(userId==Long.parseLong(followArray[i])){
+                        isFollow = 1;
+                        break;
+                    }
+                }
+            }
         }
+        homePageInfo.setIsFollow(isFollow);
         homePageInfo.setIsFriend(isFriend);
         //获取要访问用户的会员信息
         Map<String,Object> membershipMap = redisUtils.hmget(Constants.REDIS_KEY_USERMEMBERSHIP+userId );
