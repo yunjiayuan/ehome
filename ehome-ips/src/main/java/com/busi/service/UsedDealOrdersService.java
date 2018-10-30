@@ -121,6 +121,16 @@ public class UsedDealOrdersService {
     }
 
     /***
+     * 更新物流信息
+     * @param usedDealLogistics
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateLogisticsData(UsedDealLogistics usedDealLogistics) {
+        return usedDealOrdersDao.updateLogisticsData(usedDealLogistics);
+    }
+
+    /***
      * 更新订单发货状态
      * @param usedDealOrders
      * @return

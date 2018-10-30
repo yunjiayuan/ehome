@@ -7,10 +7,7 @@ import com.busi.entity.*;
 import com.busi.service.ShippingAddressService;
 import com.busi.service.UsedDealOrdersService;
 import com.busi.service.UsedDealService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.StatusCode;
-import com.busi.utils.UserInfoUtils;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +32,9 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    LogisticsUtils logisticsUtils;
 
     @Autowired
     UsedDealService usedDealService;
@@ -484,31 +484,31 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         }
         String brandName = Constants.expressModeArray[io.getBrand()].split(",")[1];
         //22-05点查数据库物流信息，其余时间按时间段区分查询渠道
-//        if (da >= time && da < time + curren * 17) {//5-22
-//            if ((da >= time && da < time + curren)//5-6
-//                    || (da >= time + curren * 2 && da < time + curren * 3)//7-8
-//                    || (da >= time + curren * 4 && da < time + curren * 5)//9-10
-//                    || (da >= time + curren * 6 && da < time + curren * 7)//11-12
-//                    || (da >= time + curren * 8 && da < time + curren * 9)//13-14
-//                    || (da >= time + curren * 10 && da < time + curren * 11)//15-16
-//                    || (da >= time + curren * 12 && da < time + curren * 13)//17-18
-//                    || (da >= time + curren * 14 && da < time + curren * 15)//19-20
-//                    || (da >= time + curren * 16 && da < time + curren * 17)) {//21-22
-//                //查询第三方物流信息
-//                String brand = Constants.expressModeArray[io.getBrand()].split(",")[0];
-//                LogisticsInfo data = LogisticsUtils.findLogisticsInfo(brand, io.getNo());
-//                if (data != null) {
-//                    if (!CommonUtils.checkFull(data.getData())) {
-//                        String lInfo = io.getData();
-//                        if (!CommonUtils.checkFull(lInfo)) {
-//                            String[] array = lInfo.split("##");
-//                            io.setData(data.getData() + "##" + array[0] + "##" + array[1] + "##" + array[2]);
-//                        }
-//                        logisticsInfoService.update(io);
-//                    }
-//                }
-//            }
-//        }
+        if (da >= time && da < time + curren * 17) {//5-22
+            if ((da >= time && da < time + curren)//5-6
+                    || (da >= time + curren * 2 && da < time + curren * 3)//7-8
+                    || (da >= time + curren * 4 && da < time + curren * 5)//9-10
+                    || (da >= time + curren * 6 && da < time + curren * 7)//11-12
+                    || (da >= time + curren * 8 && da < time + curren * 9)//13-14
+                    || (da >= time + curren * 10 && da < time + curren * 11)//15-16
+                    || (da >= time + curren * 12 && da < time + curren * 13)//17-18
+                    || (da >= time + curren * 14 && da < time + curren * 15)//19-20
+                    || (da >= time + curren * 16 && da < time + curren * 17)) {//21-22
+                //查询第三方物流信息
+                String brand = Constants.expressModeArray[io.getBrand()].split(",")[0];
+                UsedDealLogistics data = logisticsUtils.findLogisticsInfo(brand, io.getNo());
+                if (data != null) {
+                    if (!CommonUtils.checkFull(data.getData())) {
+                        String lInfo = io.getData();
+                        if (!CommonUtils.checkFull(lInfo)) {
+                            String[] array = lInfo.split("##");
+                            io.setData(data.getData() + "##" + array[0] + "##" + array[1] + "##" + array[2]);
+                        }
+                        usedDealOrdersService.updateLogisticsData(io);
+                    }
+                }
+            }
+        }
         io.setBrandName(brandName);//物流名称
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);

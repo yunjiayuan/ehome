@@ -284,4 +284,16 @@ public interface UsedDealOrdersDao {
     @Select("select * from UsedDealLogistics where id=#{id}")
     UsedDealLogistics logisticsDetails(@Param("id") long id);
 
+    /***
+     * 更新物流信息
+     * @param usedDealLogistics
+     * @return
+     */
+    @Update("<script>" +
+            "update usedDealLogistics set" +
+            " data=#{data}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateLogisticsData(UsedDealLogistics usedDealLogistics);
+
 }
