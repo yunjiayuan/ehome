@@ -5,10 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.FollowInfoService;
 import com.busi.service.UserInfoService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +33,9 @@ public class FollowInfoController extends BaseController implements FollowInfoAp
 
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    private MqUtils mqUtils;
 
     /***
      * 加关注
@@ -74,6 +74,8 @@ public class FollowInfoController extends BaseController implements FollowInfoAp
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_FOLLOW_LIST+followInfo.getUserId(),0);
         redisUtils.expire(Constants.REDIS_KEY_FOLLOW_LIST+followInfo.getFollowUserId(),0);
+        //更新被关注者的粉丝数据
+        mqUtils.updateFollowCounts(followInfo.getFollowUserId(),1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
@@ -93,6 +95,8 @@ public class FollowInfoController extends BaseController implements FollowInfoAp
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_FOLLOW_LIST+userId,0);
         redisUtils.expire(Constants.REDIS_KEY_FOLLOW_LIST+followUserId,0);
+        //更新之前被关注者的粉丝数据
+        mqUtils.updateFollowCounts(followUserId,-1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 

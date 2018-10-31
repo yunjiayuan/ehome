@@ -216,4 +216,25 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 更新粉丝数
+     * @param userId
+     * @param followCounts 正数为新增粉丝的粉丝数 负数为减少的粉丝数
+     */
+    public void updateFollowCounts(long userId,int followCounts){
+
+        //调用MQ同步 图片到图片删除记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "11");//interfaceType 11更新粉丝数
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("followCounts",followCounts);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
 }

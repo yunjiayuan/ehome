@@ -42,6 +42,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
     @Autowired
     FollowInfoService followInfoService;
 
+    @Autowired
+    FollowCountsService followCountsService;
+
     /***
      * 获取指定用户ID的家主页信息
      * @param userId
@@ -210,6 +213,18 @@ public class HomePageInfoController extends BaseController implements HomePageIn
             homePageInfo.setHead(userMap.get("graffitiHead").toString());//头像
             homePageInfo.setGraffitiStatus(1);//涂鸦状态 0当前用户未被涂鸦过 1当前用户已被涂鸦
         }
+        //设置粉丝数
+        Object object = redisUtils.getKey(Constants.REDIS_KEY_FOLLOW_COUNTS+userId);
+        long followCounts = 0;
+        if(object!=null&&!CommonUtils.checkFull(object.toString())){
+            followCounts = Long.parseLong(object.toString());
+        }else{
+            FollowCounts fc = followCountsService.findFollowInfo(userId);
+            if(fc!=null){
+                followCounts = fc.getCounts();
+            }
+        }
+        homePageInfo.setFollowCounts(followCounts);
         //设置其他信息
         homePageInfo.setProType(Integer.parseInt(userMap.get("proType").toString()));//省简称ID
         homePageInfo.setHouseNumber(Long.parseLong(userMap.get("houseNumber").toString()));//门牌号
