@@ -282,6 +282,7 @@ public class HttpUtils {
 
     private static HttpClient wrapClient(String host) {
         HttpClient httpClient = new DefaultHttpClient();
+//        CloseableHttpClient httpClient = HttpClients.createDefault();
         if (host.startsWith("https://")) {
             sslClient(httpClient);
         }
