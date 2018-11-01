@@ -44,12 +44,13 @@ public interface FollowInfoDao {
     FollowInfo findFollowInfo(@Param("userId") long userId, @Param("followUserId") long followUserId);
 
     /***
-     * 查询是否存在关注关系
-     * @param userId 关注者用户ID
+     * 查询关注数 （粉丝数在单独的记录表中）
+     * @param userId     将要查询的用户ID
+     * @return
      */
     @Select("select count(id) from followInfo where userId = #{userId}")
     int findFollowCounts(@Param("userId") long userId);
-
+    
     /***
      * 查询关注列表
      * @param userId     将要查询的用户ID

@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 关注相关接口（全局关注接口 不仅仅适用于生活圈）
@@ -154,5 +151,21 @@ public class FollowInfoController extends BaseController implements FollowInfoAp
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 查询关注数 （粉丝数在单独的记录表中）
+     * @param userId     将要查询的用户ID
+     * @return
+     */
+    @Override
+    public ReturnData findFollowCounts(@PathVariable long userId) {
+        if(userId<=0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
+        }
+        int count = followInfoService.findFollowCounts(userId);
+        Map<String,Integer> map = new HashMap();
+        map.put("followCounts",count);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

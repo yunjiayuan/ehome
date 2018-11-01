@@ -21,6 +21,6 @@ public class FollowCounts {
 
     @Min(value= 0 ,message= "counts参数有误，超出指定范围")
     @Max(value= 99999999999L ,message= "counts参数有误，超出指定范围")
-    private long counts;//被关注者ID
+    private long counts;//粉丝数
 
 }

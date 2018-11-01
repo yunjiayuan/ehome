@@ -42,4 +42,12 @@ public interface FollowInfoApiController {
     ReturnData findFollowList(@PathVariable long userId, @PathVariable int searchType,
                             @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 查询关注数 （粉丝数在单独的记录表中）
+     * @param userId     将要查询的用户ID
+     * @return
+     */
+    @GetMapping("findFollowCounts/{userId}")
+    ReturnData findFollowCounts(@PathVariable long userId);
+
 }
