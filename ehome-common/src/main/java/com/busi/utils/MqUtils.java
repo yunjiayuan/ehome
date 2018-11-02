@@ -237,4 +237,29 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 更新生活圈评论数、点赞数、浏览量、转发量
+     * @param userId   生活圈主人ID
+     * @param blogId   生活圈主键ID
+     * @param type     0点赞 1评论 2转发 3浏览
+     * @param count    变化的具体数值  可为正负数 正数代表增加  负数代表减少
+     */
+    public void updateBlogCounts(long userId,long blogId,int type,int count){
+
+        //调用MQ同步 图片到图片删除记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "12");//interfaceType 12更新生活圈评论数、点赞数、浏览量、转发量
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("blogId",blogId);
+        content.put("count",count);
+        content.put("type",type);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
 }

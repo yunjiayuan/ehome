@@ -21,6 +21,9 @@ public class HomeBlogLike {
     @Min(value = 1, message = "userId参数有误，超出指定范围")
     private long userId;//点赞用户ID
 
+    @Min(value = 1, message = "blogUserId参数有误，超出指定范围")
+    private long blogUserId;//生活圈发布者用户ID
+
     @Min(value = 1, message = "blogId参数有误，超出指定范围")
     private long blogId;//生活圈ID
 

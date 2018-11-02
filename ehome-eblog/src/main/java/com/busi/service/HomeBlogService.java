@@ -3,12 +3,9 @@ package com.busi.service;
 import com.busi.dao.HomeBlogDao;
 import com.busi.entity.HomeBlog;
 import com.busi.entity.PageBean;
-import com.busi.entity.UserInfo;
-import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +34,22 @@ public class HomeBlogService {
     }
 
     /***
-     * 根据生活圈ID查询生活圈详情接口
-     * @param id
+     * 更新生活圈评论数、点赞数、浏览量、转发量
+     * @param homeBlog
+     * @return
      */
-    public HomeBlog findBlogInfo(long id){
-        return homeBlogDao.findBlogInfo(id);
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public int updateBlog(HomeBlog homeBlog){
+        return homeBlogDao.updateBlog(homeBlog);
+    }
+
+    /***
+     * 根据生活圈ID查询生活圈详情接口
+     * @param id      生活圈ID
+     * @param userId  登录者用户ID
+     */
+    public HomeBlog findBlogInfo(long id,long userId){
+        return homeBlogDao.findBlogInfo(id,userId,","+userId+",");
     }
 
     /***
@@ -65,7 +73,7 @@ public class HomeBlogService {
     public PageBean<HomeBlog> findBlogListByFirend(long myId,String[] firendUserIds,int page,int count){
         List<HomeBlog> list;
         Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByFirend(firendUserIds,","+myId+",");
+        list = homeBlogDao.findBlogListByFirend(firendUserIds,myId,","+myId+",");
         return PageUtils.getPageBean(p,list);
     }
 

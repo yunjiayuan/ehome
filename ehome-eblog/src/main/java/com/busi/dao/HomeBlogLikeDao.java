@@ -45,7 +45,21 @@ public interface HomeBlogLikeDao {
             " and blogId = #{blogId}" +
             " order by time desc" +
             "</script>")
-    List<HomeBlogLike> findHomeBlogLike( @Param("blogId") long blogId);
+    List<HomeBlogLike> findHomeBlogLikeList( @Param("blogId") long blogId);
+
+    /***
+     * 验证指定用户对指定生活圈是否点过赞
+     * @param userId  用户ID
+     * @param blogId  将要操作的生活圈ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlogLike" +
+            " where 1=1" +
+            " and blogId = #{blogId}" +
+            " and userId = #{userId}" +
+            "</script>")
+    HomeBlogLike checkHomeBlogLike( @Param("userId") long userId,@Param("blogId") long blogId);
 
 
 }

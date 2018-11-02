@@ -3,6 +3,7 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.HomeBlogLikeService;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
     @Autowired
     private FollowInfoUtils followInfoUtils;
+
+    @Autowired
+    private HomeBlogLikeService homeBlogLikeService;
 
     @Autowired
     RedisUtils redisUtils;
@@ -193,38 +197,21 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
      */
     @Override
     public ReturnData findBlogInfo(@PathVariable long userId,@PathVariable long blogId) {
-        Map<String,Object> blogInfoMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG+userId);
+        Map<String,Object> blogInfoMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG+userId+"_"+blogId);
         if(blogInfoMap==null||blogInfoMap.size()<=0){
-            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId);
+            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId,CommonUtils.getMyId());
             if(homeBlog!=null){
                 //放到缓存中
                 blogInfoMap = CommonUtils.objectToMap(homeBlog);
-                redisUtils.hmset(Constants.REDIS_KEY_EBLOG+userId,blogInfoMap,Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_EBLOG+userId+"_"+blogId,blogInfoMap,Constants.USER_TIME_OUT);
             }
         }
         HomeBlog homeBlog = (HomeBlog) CommonUtils.mapToObject(blogInfoMap,HomeBlog.class);
         if(homeBlog==null){
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        if(CommonUtils.getMyId()!=userId){//排除自己查看自己
-            if(homeBlog.getClassify()==1){//私密
-                return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
-            }
-            if(homeBlog.getClassify()==2){//2给谁看
-                //判断自己是否在 给谁看 的列表中
-                homeBlog.getAccessId();
-
-                return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
-            }
-            if(homeBlog.getClassify()==3){//3不给谁看
-                //判断自己是否在 不给谁看 的列表中
-                homeBlog.getAccessId();
-
-                return returnData(StatusCode.CODE_BLOG_NOT_ACCESS.CODE_VALUE, "您无权限查看该条生活圈", blogInfoMap);
-            }
-        }
         //设置用户信息
-        UserInfo userInfo = userInfoUtils.getUserInfo(userId);
+        UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
         if(userInfo!=null){
             homeBlog.setUserName(userInfo.getName());
             homeBlog.setUserHead(userInfo.getHead());
@@ -232,9 +219,12 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             homeBlog.setHouseNumber(userInfo.getHouseNumber());
         }
         //设置是否喜欢过
-
-        //检测当前登录用户是否有权限查看
-
+        HomeBlogLike homeBlogLike = homeBlogLikeService.checkHomeBlogLike(CommonUtils.getMyId(),blogId);
+        if(homeBlogLike!=null){
+            homeBlog.setIsLike(1);
+        }else{
+            homeBlog.setIsLike(0);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", homeBlog);
     }
 
@@ -251,9 +241,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+userId+"]的生活圈",new JSONObject());
         }
         //查询该条生活圈信息
-        Map<String,Object> blogInfoMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG+userId);
+        Map<String,Object> blogInfoMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG+userId+"_"+blogId);
         if(blogInfoMap==null||blogInfoMap.size()<=0){
-            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId);
+            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId,userId);
             if(homeBlog!=null){
                 blogInfoMap = CommonUtils.objectToMap(homeBlog);
             }
@@ -277,7 +267,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_EBLOG + userId, 0);
+        redisUtils.expire(Constants.REDIS_KEY_EBLOG + userId+"_"+blogId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -339,12 +329,16 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         }
                     }
                 }
+                //将自己加入查询列表中
+                firendUserIds = firendUserIds+","+CommonUtils.getMyId();
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),page,count);
                 break;
             case 1://1查看关注人的生活圈
                 //获取我关注的人的列表
                 String[] followArray = null;
                 String followUserIds = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
+                //将自己加入查询列表中
+                followUserIds = followUserIds+","+CommonUtils.getMyId();
                 if(!CommonUtils.checkFull(followUserIds)){
                     followArray = followUserIds.split(",");
                 }

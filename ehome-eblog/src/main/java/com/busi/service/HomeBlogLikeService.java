@@ -51,11 +51,23 @@ public class HomeBlogLikeService {
      * @param count      每页条数
      * @return
      */
-    public PageBean<HomeBlogLike> findBlogListByFirend(long blogId,int page,int count){
+    public PageBean<HomeBlogLike> findHomeBlogLikeList(long blogId,int page,int count){
         List<HomeBlogLike> list;
         Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogLikeDao.findHomeBlogLike(blogId);
+        list = homeBlogLikeDao.findHomeBlogLikeList(blogId);
         return PageUtils.getPageBean(p,list);
+    }
+
+    /***
+     * 验证指定用户对指定生活圈是否点过赞
+     * @param userId  用户ID
+     * @param blogId  将要操作的生活圈ID
+     * @return false未点赞 true已经点过赞
+     */
+    public HomeBlogLike checkHomeBlogLike(long userId,long blogId){
+        HomeBlogLike homeBlogLike =null;
+        homeBlogLike = homeBlogLikeDao.checkHomeBlogLike(userId, blogId);
+        return homeBlogLike;
     }
 
 }

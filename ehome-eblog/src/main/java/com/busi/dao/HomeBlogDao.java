@@ -26,11 +26,34 @@ public interface HomeBlogDao {
     int add(HomeBlog homeBlog);
 
     /***
-     * 根据生活圈ID查询生活圈详情接口
-     * @param id
+     * 更新生活圈评论数、点赞数、浏览量、转发量
+     * @param homeBlog
+     * @return
      */
-    @Select("select * from HomeBlog where id = #{id} and blogStatus = 0")
-    HomeBlog findBlogInfo(@Param("id") long id);
+    @Update("<script>" +
+            "update homeBlog set"+
+            " shareCount=#{shareCount}," +
+            " likeCount=#{likeCount}," +
+            " lookCount=#{lookCount}," +
+            " commentCount=#{commentCount}" +
+            " where id=#{id}"+
+            "</script>")
+    @Options(useGeneratedKeys = true)
+    int updateBlog(HomeBlog homeBlog);
+
+    /***
+     * 根据生活圈ID查询生活圈详情接口
+     * @param id      生活圈ID
+     * @param userId  未特殊处理的登录者用户ID 用于判断可见范围
+     * @param userIds 处理过的登录者用户ID 用于判断可见范围
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0 or userId=#{userId} )" +
+            " and id = #{id}" +
+            "</script>")
+    HomeBlog findBlogInfo(@Param("id") long id,@Param("userId") long userId,@Param("userIds") String userIds);
 
     /***
      * 删除指定生活圈接口(只更新状态)
@@ -56,10 +79,11 @@ public interface HomeBlogDao {
             " #{item}" +
             "</foreach>" +
             "</if>" +
-            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
+            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0  or userId=#{userId} )" +
+            " and blogStatus = 0" +
             " order by time desc" +
             "</script>")
-    List<HomeBlog> findBlogListByFirend(@Param("firendUserIds") String[] firendUserIds,@Param("userIds") String userIds);
+    List<HomeBlog> findBlogListByFirend(@Param("firendUserIds") String[] firendUserIds,@Param("userId") long userId,@Param("userIds") String userIds);
 
     /***
      * 根据兴趣标签查询列表
@@ -78,11 +102,11 @@ public interface HomeBlogDao {
             " #{item}" +
             "</foreach>" +
             "</if>" +
-            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
+            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0 or userId=#{userId} )" +
             "<if test=\"searchType != 0\">"+
             " and sendType = 2" +
             "</if>" +
-            " and userId != #{userId}" +
+            " and blogStatus = 0" +
             " order by time desc" +
             "</script>")
     List<HomeBlog> findBlogListByTags(@Param("tags") String[] tags, @Param("searchType") int searchType,@Param("userId") long userId,@Param("userIds") String userIds);
@@ -101,6 +125,7 @@ public interface HomeBlogDao {
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
             "</if>" +
             " and userId = #{userId}" +
+            " and blogStatus = 0" +
             " order by time desc" +
             "</script>")
     List<HomeBlog> findBlogListByUserId(@Param("userId") long userId,@Param("userIds") String userIds,@Param("searchType") int searchType);
