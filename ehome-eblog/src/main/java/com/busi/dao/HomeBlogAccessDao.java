@@ -20,8 +20,8 @@ public interface HomeBlogAccessDao {
      * @param homeBlogAccess
      * @return
      */
-    @Insert("insert into HomeBlogAccess(userId,tagName,tagType,time,users) " +
-            "values (#{userId},#{tagName},#{tagType},#{time},#{users})")
+    @Insert("insert into HomeBlogAccess(userId,tagName,time,users) " +
+            "values (#{userId},#{tagName},#{time},#{users})")
     @Options(useGeneratedKeys = true)
     int add(HomeBlogAccess homeBlogAccess);
 
@@ -38,7 +38,7 @@ public interface HomeBlogAccessDao {
             "<if test=\"users != null and users != ''\">" +
             " users=#{users}," +
             "</if>" +
-            " tagType=#{tagType}" +
+            " userId=#{userId}" +
             " where id=#{id}" +
             "</script>")
     int update(HomeBlogAccess homeBlogAccess);
@@ -70,5 +70,16 @@ public interface HomeBlogAccessDao {
             " order by time desc" +
             "</script>")
     List<HomeBlogAccess> findList(@Param("userId") long userId);
+
+    /***
+     * 统计该用户标签数量
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from HomeBlogAccess" +
+            " where userId=#{userId}" +
+            "</script>")
+    int findNum(@Param("userId") long userId);
 
 }

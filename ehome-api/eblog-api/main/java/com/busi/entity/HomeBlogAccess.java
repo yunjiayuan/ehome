@@ -24,10 +24,6 @@ public class HomeBlogAccess {
     @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!#￥$%*()\\-]{0,30}", message = "标签格式有误,标签最长为30字，并且不能包含非法字符")
     private String tagName;            //标签名称
 
-    @Max(value = 1, message = "tagType参数有误，超出指定范围")
-    @Min(value = 0, message = "tagType参数有误，超出指定范围")
-    private int tagType;            //标签类型 0部分可见 1不给谁看
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;                //创建时间
 

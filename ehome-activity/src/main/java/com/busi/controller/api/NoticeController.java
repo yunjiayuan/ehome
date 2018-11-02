@@ -140,10 +140,16 @@ public class NoticeController extends BaseController implements NoticeApiControl
         Map<String, Object> map = null;
         if (findType == 0) {
             Notice notice = noticeService.findSetUp(CommonUtils.getMyId());
+            if (notice == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
             map = CommonUtils.objectToMap(notice);
         } else {
-            Groupsetup gs = noticeService.findsetUpgroup(groupId);
-            map = CommonUtils.objectToMap(gs);
+            Groupsetup gp = noticeService.findsetUpgroup(groupId);
+            if (gp == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            map = CommonUtils.objectToMap(gp);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }

@@ -45,6 +45,17 @@ public class HomeBlogAccessController extends BaseController implements HomeBlog
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //判断该用户标签数量   最多20条
+        int num = homeBlogAccessService.findNum(homeBlogAccess.getUserId());
+        if (num >= 20) {
+            return returnData(StatusCode.CODE_BLOG_LABEL_TAG.CODE_VALUE, "新增标签数量超过上限,新增失败", new JSONObject());
+        }
+        if (!CommonUtils.checkFull(homeBlogAccess.getUsers())) {
+            String[] ids = homeBlogAccess.getUsers().split(",");
+            if (ids.length >= 50) {
+                return returnData(StatusCode.CODE_BLOG_MEMBER_TAG.CODE_VALUE, "标签内成员数量超过上限,新增失败", new JSONObject());
+            }
+        }
         homeBlogAccess.setTime(new Date());
         homeBlogAccessService.add(homeBlogAccess);
 
@@ -61,6 +72,12 @@ public class HomeBlogAccessController extends BaseController implements HomeBlog
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        if (!CommonUtils.checkFull(homeBlogAccess.getUsers())) {
+            String[] ids = homeBlogAccess.getUsers().split(",");
+            if (ids.length >= 50) {
+                return returnData(StatusCode.CODE_BLOG_MEMBER_TAG.CODE_VALUE, "标签内成员数量超过上限,新增失败", new JSONObject());
+            }
         }
         homeBlogAccessService.update(homeBlogAccess);
 
@@ -89,7 +106,7 @@ public class HomeBlogAccessController extends BaseController implements HomeBlog
         }
         int num = homeBlogAccessService.del(tagId, userId);
         if (num <= 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "标签[" + tagId + "]不存在", new JSONObject());
+            return returnData(StatusCode.CODE_BLOG_NOT_TAG.CODE_VALUE, "标签不存在", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -108,11 +125,10 @@ public class HomeBlogAccessController extends BaseController implements HomeBlog
         //开始查询
         HomeBlogAccess blogAccess = homeBlogAccessService.find(tagId);
         if (blogAccess == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            return returnData(StatusCode.CODE_BLOG_NOT_TAG.CODE_VALUE, "标签不存在", new JSONArray());
         }
         List<HomeBlogAccessMembers> list = new ArrayList<>();
         if (!CommonUtils.checkFull(blogAccess.getUsers())) {
-            HomeBlogAccessMembers members = new HomeBlogAccessMembers();
             String[] ids = blogAccess.getUsers().split(",");
             for (int i = 0; i < ids.length; i++) {
                 UserInfo userInfo = null;
@@ -120,6 +136,7 @@ public class HomeBlogAccessController extends BaseController implements HomeBlog
                 if (t > 0) {
                     userInfo = userInfoUtils.getUserInfo(t);
                     if (userInfo != null) {
+                        HomeBlogAccessMembers members = new HomeBlogAccessMembers();
                         members.setUserId(t);
                         members.setName(userInfo.getName());
                         members.setHead(userInfo.getHead());
@@ -151,6 +168,6 @@ public class HomeBlogAccessController extends BaseController implements HomeBlog
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
 
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 }
