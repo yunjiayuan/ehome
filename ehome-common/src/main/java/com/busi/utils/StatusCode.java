@@ -101,6 +101,8 @@ public enum StatusCode {
 
 	//家博博文
 	CODE_BLOG_NOT_TAG(261,"没有该标签"),
+	CODE_BLOG_LABEL_TAG(262,"标签超过上限"),
+	CODE_BLOG_MEMBER_TAG(276,"该标签内成员超过上限"),
 	CODE_BLOG_NOT_ACCESS(263,"用户操作权限不足"),
 	CODE_BLOG_NOT_FOUND(264,"博文不存在"),
 	CODE_BLOG_HAS_LIKE(265,"博文点过赞"),

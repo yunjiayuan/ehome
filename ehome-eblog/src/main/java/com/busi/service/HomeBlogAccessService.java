@@ -78,4 +78,14 @@ public class HomeBlogAccessService {
         return PageUtils.getPageBean(p, list);
     }
 
+    /***
+     * 统计该用户标签数量
+     * @param userId
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int findNum(long userId) {
+        return homeBlogAccessDao.findNum(userId);
+    }
+
 }
