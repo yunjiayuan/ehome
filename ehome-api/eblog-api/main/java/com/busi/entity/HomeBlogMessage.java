@@ -34,8 +34,8 @@ public class HomeBlogMessage {
 
     private int status;                //0正常 1删除
 
-    //与数据库无关字段
-//    private HomeBlog blog;            //博文ID
-//    private HomeBlogComment parentMessage;    //消息回复父级ID
+    private long blog;            //博文ID
+
+    private long parentMessage;    //消息回复父级ID
 
 }

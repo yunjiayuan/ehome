@@ -50,7 +50,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
      */
     @Override
     public ReturnData addComment(@Valid @RequestBody HomeBlogComment homeBlogComment, BindingResult bindingResult) {
-        HomeBlog homeBlog = homeBlogService.findBlogInfo(homeBlogComment.getBlogId(), homeBlogComment.getMasterId());
+        HomeBlog homeBlog = homeBlogService.findInfo(homeBlogComment.getBlogId(), homeBlogComment.getMasterId());
         if (homeBlog == null) {
             return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
         }
@@ -68,10 +68,6 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
 
         String messUsers = "";
         HomeBlogMessage msg = new HomeBlogMessage();
-        HomeBlog b = new HomeBlog();
-        b.setId(homeBlog.getId());
-        HomeBlogComment p = new HomeBlogComment();
-        p.setId(homeBlogComment.getId());
         //ate  0评论 1回复
         long myId = CommonUtils.getMyId();
         long userId = homeBlogComment.getReplayId();
@@ -81,7 +77,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             msg.setNewsType(0);//0评论 1回复 2赞 3转发 4评论@  5回复@  6转发@ 7博文@
         } else if (ate == 1) {
             //消息给被回复人看的
-            if (homeBlogComment.getReplayId() != myId) {
+            if (userId != myId) {
                 msg.setNewsType(1);//0评论 1回复 2赞 3转发 4评论@  5回复@  6转发@ 7博文@
             }
             //消息给博主看的
@@ -91,14 +87,14 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         }
         msg.setUserId(myId);
         msg.setReplayId(userId);        //被评论用户ID
-//        msg.setBlog(b);
+        msg.setBlog(homeBlog.getId());
         msg.setCommentId(homeBlogComment.getId());    //消息ID
         msg.setMasterId(homeBlog.getUserId());
         msg.setContent(content);
         msg.setTime(new Date());
         msg.setNewsState(1);    //1未读
         msg.setStatus(0);    //0正常
-//        msg.setParentMessage(null);    //消息父ID
+        msg.setParentMessage(0);    //消息父ID
         homeBlogCommentService.addMessage(msg);
         //adduser +=","+myId+","+userId;
         //@谁消息
@@ -119,18 +115,18 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                         msg.setUserId(myId);
                         msg.setNewsType(ate == 0 ? 4 : 5);//0评论 1回复 2赞 3转发 4评论@  5回复@  6转发@ 7博文@
                         msg.setReplayId(_muser);        //被@用户ID
-//                        msg.setBlog(b);
+                        msg.setBlog(homeBlog.getId());
                         msg.setCommentId(homeBlogComment.getId());    //消息ID
                         msg.setMasterId(homeBlog.getUserId());
                         msg.setContent(content);    //消息内容待定
                         msg.setTime(new Date());
                         msg.setNewsState(1);    //1未读
                         msg.setStatus(0);    //0正常
-//                        if (ate == 0) {
-//                            msg.setParentMessage(null);    //消息父ID
-//                        } else {
-//                            msg.setParentMessage(p);    //消息父ID
-//                        }
+                        if (ate == 0) {
+                            msg.setParentMessage(0);    //消息父ID
+                        } else {
+                            msg.setParentMessage(homeBlogComment.getId());    //消息父ID
+                        }
                         homeBlogCommentService.addMessage(msg);
                     }
                 }
@@ -147,20 +143,19 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
      */
     @Override
     public ReturnData delComment(@PathVariable long id, @PathVariable long blogId) {
+        HomeBlog homeBlog = homeBlogService.findInfo(blogId, CommonUtils.getMyId());
+        if (homeBlog == null) {
+            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
+        }
         HomeBlogComment comment = homeBlogCommentService.findById(id, blogId);
         if (comment == null) {
             return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "评论不存在", new JSONArray());
         }
-        // 用户删除自己的评论  和  博主
         if (comment.getUserId() == CommonUtils.getMyId() || comment.getMasterId() == CommonUtils.getMyId()) {
             comment.setReplyStatus(1);//1删除
             homeBlogCommentService.update(comment);
         } else {
             return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "无权限删除", new JSONArray());
-        }
-        HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId, comment.getMasterId());
-        if (homeBlog == null) {
-            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
         }
         //更新评论数
         mqUtils.updateBlogCounts(homeBlog.getUserId(), homeBlog.getId(), 1, -1);
@@ -250,6 +245,6 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                 }
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 }

@@ -28,8 +28,8 @@ public class HomeBlogService {
      * @param homeBlog
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int add(HomeBlog homeBlog){
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int add(HomeBlog homeBlog) {
         return homeBlogDao.add(homeBlog);
     }
 
@@ -38,8 +38,8 @@ public class HomeBlogService {
      * @param homeBlog
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateBlog(HomeBlog homeBlog){
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateBlog(HomeBlog homeBlog) {
         return homeBlogDao.updateBlog(homeBlog);
     }
 
@@ -48,8 +48,17 @@ public class HomeBlogService {
      * @param id      生活圈ID
      * @param userId  登录者用户ID
      */
-    public HomeBlog findBlogInfo(long id,long userId){
-        return homeBlogDao.findBlogInfo(id,userId,","+userId+",");
+    public HomeBlog findBlogInfo(long id, long userId) {
+        return homeBlogDao.findBlogInfo(id, userId, "," + userId + ",");
+    }
+
+    /***
+     * 根据生活圈ID查询生活圈详情接口
+     * @param id      生活圈ID
+     * @param userId  登录者用户ID
+     */
+    public HomeBlog findInfo(long id, long userId) {
+        return homeBlogDao.findInfo(id, userId);
     }
 
     /***
@@ -58,7 +67,7 @@ public class HomeBlogService {
      * @param id     将要被删除的生活圈
      * @return
      */
-    public int delBlog(long id,long userId){
+    public int delBlog(long id, long userId) {
         return homeBlogDao.delBlog(id, userId);
     }
 
@@ -70,11 +79,11 @@ public class HomeBlogService {
      * @param count         每页条数
      * @return
      */
-    public PageBean<HomeBlog> findBlogListByFirend(long myId,String[] firendUserIds,int page,int count){
+    public PageBean<HomeBlog> findBlogListByFirend(long myId, String[] firendUserIds, int page, int count) {
         List<HomeBlog> list;
-        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByFirend(firendUserIds,myId,","+myId+",");
-        return PageUtils.getPageBean(p,list);
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogDao.findBlogListByFirend(firendUserIds, myId, "," + myId + ",");
+        return PageUtils.getPageBean(p, list);
     }
 
     /***
@@ -86,11 +95,11 @@ public class HomeBlogService {
      * @param count      每页条数
      * @return
      */
-    public PageBean<HomeBlog> findBlogListByTags(String[] tags,int searchType,long userId,int page,int count){
+    public PageBean<HomeBlog> findBlogListByTags(String[] tags, int searchType, long userId, int page, int count) {
         List<HomeBlog> list;
-        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByTags(tags,searchType,userId,","+userId+",");
-        return PageUtils.getPageBean(p,list);
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogDao.findBlogListByTags(tags, searchType, userId, "," + userId + ",");
+        return PageUtils.getPageBean(p, list);
     }
 
     /***
@@ -99,10 +108,10 @@ public class HomeBlogService {
      * @param userId     被查询用户ID
      * @return
      */
-    public PageBean<HomeBlog> findBlogListByUserId(long userId,int searchType,int page,int count){
+    public PageBean<HomeBlog> findBlogListByUserId(long userId, int searchType, int page, int count) {
         List<HomeBlog> list;
-        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByUserId(userId,","+userId+",",searchType);
-        return PageUtils.getPageBean(p,list);
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogDao.findBlogListByUserId(userId, "," + userId + ",", searchType);
+        return PageUtils.getPageBean(p, list);
     }
 }
