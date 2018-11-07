@@ -131,8 +131,11 @@ public class HomeBlogAccessController extends BaseController implements HomeBlog
         if (!CommonUtils.checkFull(blogAccess.getUsers())) {
             String[] ids = blogAccess.getUsers().split(",");
             for (int i = 0; i < ids.length; i++) {
+                Long t = 0L;
                 UserInfo userInfo = null;
-                Long t = Long.parseLong(ids[i]);
+                if (!CommonUtils.checkFull(ids[i])) {
+                    t = Long.parseLong(ids[i]);
+                }
                 if (t > 0) {
                     userInfo = userInfoUtils.getUserInfo(t);
                     if (userInfo != null) {
