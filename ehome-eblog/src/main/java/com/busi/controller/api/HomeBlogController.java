@@ -327,7 +327,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                             if(userRelationShip==null){
                                 continue;
                             }
-                            if(i==list.size()-1){
+                            if(j==userList.size()-1){
                                 firendUserIds += userRelationShip.getFriendId()+"";
                             }else{
                                 firendUserIds += userRelationShip.getFriendId()+",";
