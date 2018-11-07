@@ -219,12 +219,18 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             homeBlog.setHouseNumber(userInfo.getHouseNumber());
         }
         //设置是否喜欢过
-        HomeBlogLike homeBlogLike = homeBlogLikeService.checkHomeBlogLike(CommonUtils.getMyId(),blogId);
-        if(homeBlogLike!=null){
+        boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+blogId,CommonUtils.getMyId());
+        if(isMember){
             homeBlog.setIsLike(1);
         }else{
             homeBlog.setIsLike(0);
         }
+//        HomeBlogLike homeBlogLike = homeBlogLikeService.checkHomeBlogLike(CommonUtils.getMyId(),blogId);
+//        if(homeBlogLike!=null){
+//            homeBlog.setIsLike(1);
+//        }else{
+//            homeBlog.setIsLike(0);
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", homeBlog);
     }
 
@@ -387,7 +393,12 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setHouseNumber(userInfo.getHouseNumber());
             }
             //设置是否喜欢过状态
-
+            boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+homeBlog.getId(),CommonUtils.getMyId());
+            if(isMember){
+                homeBlog.setIsLike(1);
+            }else{
+                homeBlog.setIsLike(0);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }

@@ -20,8 +20,8 @@ public interface HomeBlogLikeDao {
      * @param homeBlogLike
      * @return
      */
-    @Insert("insert into homeBlogLike(userId,blogId,time) " +
-            "values (#{userId},#{blogId},#{time})")
+    @Insert("insert into homeBlogLike(userId,blogId,blogUserId,time) " +
+            "values (#{userId},#{blogId},#{blogUserId},#{time})")
     @Options(useGeneratedKeys = true)
     int addHomeBlogLike(HomeBlogLike homeBlogLike);
 

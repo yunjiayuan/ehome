@@ -2,21 +2,13 @@ package com.busi.controller.local;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.controller.api.HomeBlogApiController;
 import com.busi.entity.*;
-import com.busi.service.HomeBlogLikeService;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 更新生活圈评论数、点赞数、浏览量、转发量相关接口
@@ -48,6 +40,18 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
         }else{
             if(homeBlog.getLikeCount()!=0){
                 hb.setLikeCount(hb.getLikeCount()+homeBlog.getLikeCount());
+            }
+        }
+        //判断点赞量是否达到推荐级别
+        if(hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
+            //更新生活秀首页推荐列表
+            redisUtils.addList(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
+            List list = null;
+            list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
+            if (list.size() >= Constants.REDIS_KEY_EBLOGLIST_COUNT+1) {
+                //清除缓存中多余的信息
+                redisUtils.expire(Constants.REDIS_KEY_EBLOGLIST, 0);
+                redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);
             }
         }
         //评论量

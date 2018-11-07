@@ -30,6 +30,9 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
     private UserInfoUtils userInfoUtils;
 
     @Autowired
+    private RedisUtils redisUtils;
+
+    @Autowired
     private MqUtils mqUtils;
 
     /***
@@ -48,13 +51,20 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限以用户["+homeBlogLike.getUserId()+"]的身份进行相关操作",new JSONObject());
         }
         //检测是否点过赞
-        HomeBlogLike hbl = homeBlogLikeService.checkHomeBlogLike(homeBlogLike.getUserId(),homeBlogLike.getBlogId());
-        if(hbl!=null){//已经点过赞
+        boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+homeBlogLike.getBlogId(),homeBlogLike.getUserId());
+        if(isMember){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您已经点过赞了",new JSONObject());
+        }else{
+            HomeBlogLike hbl = homeBlogLikeService.checkHomeBlogLike(homeBlogLike.getUserId(),homeBlogLike.getBlogId());
+            if(hbl!=null){//已经点过赞
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您已经点过赞了",new JSONObject());
+            }
         }
         //新增点赞记录
         homeBlogLike.setTime(new Date());
         homeBlogLikeService.addHomeBlogLike(homeBlogLike);
+        //更新缓存中的点赞记录
+        redisUtils.addSetAndTime(Constants.EBLOG_LIKE_LIST+homeBlogLike.getBlogId(),0,homeBlogLike.getUserId());
         //更新当前生活圈的点赞数
         mqUtils.updateBlogCounts(homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,1);
         //更新消息系统 后续开发
@@ -84,6 +94,8 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         homeBlogLikeService.delHomeBlogLike(userId, blogId);
+        //更新缓存中的点赞记录
+        redisUtils.removeSetByValues(Constants.EBLOG_LIKE_LIST+blogId,userId);
         //更新当前生活圈的点赞数
         mqUtils.updateBlogCounts(homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,-1);
 
