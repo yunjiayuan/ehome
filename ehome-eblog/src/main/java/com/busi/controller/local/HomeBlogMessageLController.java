@@ -11,7 +11,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.Date;
 
 /**
@@ -32,11 +31,8 @@ public class HomeBlogMessageLController extends BaseController implements HomeBl
      * @return
      */
     @Override
-    public ReturnData addMessage(@Valid @RequestBody HomeBlogMessage homeBlogMessage, BindingResult bindingResult) {
-        //验证参数格式是否正确
-        if (bindingResult.hasErrors()) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
-        }
+    public ReturnData addMessage(@RequestBody HomeBlogMessage homeBlogMessage, BindingResult bindingResult) {
+
         homeBlogMessage.setNewsState(1);
         homeBlogMessage.setTime(new Date());
         homeBlogCommentService.addMessage(homeBlogMessage);

@@ -262,4 +262,33 @@ public class MqUtils {
         ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
+
+    /***
+     * 新增消息系统同步
+     * @param userId       发出消息用户
+     * @param replayId        接收消息用户
+     * @param blog       博文ID
+     * @param commentId     评论ID
+     * @param contents     消息内容
+     * @param newsType       消息类型 0评论 1回复 2赞 3转发
+     */
+    public void addMessage(long userId,long replayId,long blog,long commentId,String contents,int newsType){
+
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "9");//interfaceType 9同步消息系统
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("replayId",replayId);
+        content.put("blog",blog);
+        content.put("commentId",commentId);
+        content.put("content",contents);
+        content.put("newsType",newsType);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
+
 }
