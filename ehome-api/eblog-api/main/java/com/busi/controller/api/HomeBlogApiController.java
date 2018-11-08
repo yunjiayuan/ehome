@@ -55,14 +55,19 @@ public interface HomeBlogApiController {
     /***
      * 条件查询生活秀接口（只查询生活秀内容）
      * @param userId     被查询用户ID 默认0查询所有
-     * @param searchType 查询类型 0查询首页推荐 1查同城 2查看朋友 3查询关注 4查询兴趣标签 5查询指定用户
+     * @param searchType 查询类型 0查询首页推荐 1查同城 2查看朋友 3查询关注 4查询兴趣标签 5查询指定用户 6查询附近的生活圈（家门口的生活圈）
      * @param tags       被查询兴趣标签ID组合，逗号分隔例如：1,2,3  仅当searchType=4 时有效 默认传null
+     * @param cityId     城市ID 当searchType=1时有效 默认传0
+     * @param lat        纬度 小数点后6位 当searchType=6时有效
+     * @param lon        经度 小数点后6位 当searchType=6时有效
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
      * @return
      */
-    @GetMapping("findBlogVideoList/{userId}/{searchType}/{tags}/{page}/{count}")
-    ReturnData findBlogVideoList(@PathVariable long userId,@PathVariable int searchType,@PathVariable String tags,
-                            @PathVariable int page, @PathVariable int count);
+    @GetMapping("findBlogVideoList/{userId}/{searchType}/{tags}/{cityId}/{lat}/{lon}/{page}/{count}")
+    ReturnData findBlogVideoList(@PathVariable long userId,@PathVariable int searchType,
+                                 @PathVariable String tags,@PathVariable int cityId,
+                                 @PathVariable double lat,@PathVariable double lon,
+                                 @PathVariable int page, @PathVariable int count);
 
 }

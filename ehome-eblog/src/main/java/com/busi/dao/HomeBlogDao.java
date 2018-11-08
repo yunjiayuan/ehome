@@ -20,8 +20,8 @@ public interface HomeBlogDao {
      * @param homeBlog
      * @return
      */
-    @Insert("insert into homeBlog(userId,title,content,contentTxt,imgUrl,videoUrl,videoCoverUrl,audioUrl,sendType,classify,classifyUserIds,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
-            "values (#{userId},#{title},#{content},#{contentTxt},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{sendType},#{classify},#{classifyUserIds},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
+    @Insert("insert into homeBlog(userId,title,content,contentTxt,imgUrl,videoUrl,videoCoverUrl,audioUrl,sendType,classify,classifyUserIds,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,cityId,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
+            "values (#{userId},#{title},#{content},#{contentTxt},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{sendType},#{classify},#{classifyUserIds},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{cityId},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
     @Options(useGeneratedKeys = true)
     int add(HomeBlog homeBlog);
 
@@ -79,6 +79,7 @@ public interface HomeBlogDao {
     /***
      * 查询朋友圈列表
      * @param firendUserIds  好友用户ID组合
+     * @param searchType     博文类型：0所有 1只看视频
      * @param userIds        处理过的登录者用户ID 用于判断可见范围
      * @return
      */
@@ -92,10 +93,13 @@ public interface HomeBlogDao {
             "</foreach>" +
             "</if>" +
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0  or userId=#{userId} )" +
+            "<if test=\"searchType != 0\">" +
+            " and sendType = 2" +
+            "</if>" +
             " and blogStatus = 0" +
             " order by time desc" +
             "</script>")
-    List<HomeBlog> findBlogListByFirend(@Param("firendUserIds") String[] firendUserIds, @Param("userId") long userId, @Param("userIds") String userIds);
+    List<HomeBlog> findBlogListByFirend(@Param("firendUserIds") String[] firendUserIds, @Param("userId") long userId, @Param("userIds") String userIds ,@Param("searchType") int searchType);
 
     /***
      * 根据兴趣标签查询列表
@@ -136,10 +140,31 @@ public interface HomeBlogDao {
             "<if test=\"searchType != 0\">" +
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
             "</if>" +
+            "<if test=\"sendType != 0\">" +
+            " and sendType = 2" +
+            "</if>" +
             " and userId = #{userId}" +
             " and blogStatus = 0" +
             " order by time desc" +
             "</script>")
-    List<HomeBlog> findBlogListByUserId(@Param("userId") long userId, @Param("userIds") String userIds, @Param("searchType") int searchType);
+    List<HomeBlog> findBlogListByUserId(@Param("userId") long userId, @Param("userIds") String userIds, @Param("searchType") int searchType ,@Param("sendType") int sendType);
+
+    /***
+     * 根据城市ID查询 同城生活秀
+     * @param cityId 博文类型：0查自己 1查别人
+     * @param userId 当前用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
+            " and userId != #{userId}" +
+            " and cityId = #{cityId}" +
+            " and sendType = 2" +
+            " and blogStatus = 0" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlog> findBlogListByCityId(@Param("userId") long userId, @Param("userIds") String userIds, @Param("cityId") int cityId);
 
 }
