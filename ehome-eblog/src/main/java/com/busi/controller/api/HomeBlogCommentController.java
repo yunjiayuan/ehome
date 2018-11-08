@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 /**
  * @program: ehome
@@ -54,19 +54,14 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (homeBlog == null) {
             return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
         }
-        //简单过滤目前
-        String content = "";
-        content = homeBlogComment.getContent().replaceAll("<", "&lt;");
-        content = homeBlogComment.getContent().replaceAll(">", "&gt;");
 
-        homeBlogComment.setContent(content);
         homeBlogComment.setTime(new Date());
         homeBlogCommentService.addComment(homeBlogComment);
 
         //更新评论数
         mqUtils.updateBlogCounts(homeBlog.getUserId(), homeBlog.getId(), 1, 1);
 
-        String messUsers = "";
+        //新增消息
         HomeBlogMessage msg = new HomeBlogMessage();
         //ate  0评论 1回复
         long myId = CommonUtils.getMyId();
@@ -74,64 +69,27 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         int ate = homeBlogComment.getReplyType();
         if (ate == 0 && homeBlog.getUserId() != myId) {
             //消息给博主看的
-            msg.setNewsType(0);//0评论 1回复 2赞 3转发 4评论@  5回复@  6转发@ 7博文@
+            msg.setNewsType(0);//0评论 1回复 2赞 3转发
         } else if (ate == 1) {
             //消息给被回复人看的
             if (userId != myId) {
-                msg.setNewsType(1);//0评论 1回复 2赞 3转发 4评论@  5回复@  6转发@ 7博文@
+                msg.setNewsType(1);//0评论 1回复 2赞 3转发
             }
             //消息给博主看的
             if (homeBlog.getUserId() != myId && homeBlog.getUserId() != userId) {//被回复者 不能是当前用户和博主
-                msg.setNewsType(0);//0评论 1回复 2赞 3转发 4评论@  5回复@  6转发@ 7博文@
+                msg.setNewsType(0);//0评论 1回复 2赞 3转发
             }
         }
         msg.setUserId(myId);
         msg.setReplayId(userId);        //被评论用户ID
         msg.setBlog(homeBlog.getId());
-        msg.setCommentId(homeBlogComment.getId());    //消息ID
-        msg.setMasterId(homeBlog.getUserId());
-        msg.setContent(content);
+        msg.setCommentId(homeBlogComment.getId());    //评论ID
+        msg.setContent(homeBlogComment.getContent());
         msg.setTime(new Date());
         msg.setNewsState(1);    //1未读
         msg.setStatus(0);    //0正常
-        msg.setParentMessage(0);    //消息父ID
         homeBlogCommentService.addMessage(msg);
-        //adduser +=","+myId+","+userId;
-        //@谁消息
-        if (content.indexOf("&") != -1) {
-            String regex = "&(\\d+)&";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(content);
-            msg = new HomeBlogMessage();
-            while (matcher.find()) {
-                //	adduser+=","+matcher.group(1);
-                //过滤重复
-                if (messUsers.indexOf(matcher.group(1)) == -1) {
-                    long _muser = Long.valueOf(matcher.group(1));
-                    //自己不能给自己发消息
-                    if (myId != _muser) {
-                        //消息记录去重
-                        messUsers += "," + _muser;
-                        msg.setUserId(myId);
-                        msg.setNewsType(ate == 0 ? 4 : 5);//0评论 1回复 2赞 3转发 4评论@  5回复@  6转发@ 7博文@
-                        msg.setReplayId(_muser);        //被@用户ID
-                        msg.setBlog(homeBlog.getId());
-                        msg.setCommentId(homeBlogComment.getId());    //消息ID
-                        msg.setMasterId(homeBlog.getUserId());
-                        msg.setContent(content);    //消息内容待定
-                        msg.setTime(new Date());
-                        msg.setNewsState(1);    //1未读
-                        msg.setStatus(0);    //0正常
-                        if (ate == 0) {
-                            msg.setParentMessage(0);    //消息父ID
-                        } else {
-                            msg.setParentMessage(homeBlogComment.getId());    //消息父ID
-                        }
-                        homeBlogCommentService.addMessage(msg);
-                    }
-                }
-            }
-        }
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -175,76 +133,48 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        //开始查询
+        //查询评论列表
+        Map<String, Object> map = new HashMap<>();
         PageBean<HomeBlogComment> pageBean;
         pageBean = homeBlogCommentService.findList(blogId, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         List list = null;
+        List list2 = null;
         list = pageBean.getList();
         HomeBlogComment comment = null;
-        String users = "";
-        for (int i = 0; i < list.size(); i++) {
-            comment = (HomeBlogComment) list.get(i);
-            if (comment != null) {
-                //获取用户
-                users += comment.getUserId() + ",";
-                //获取回复用户
-                if (comment.getReplyType() == 1) {
-                    users += comment.getReplayId() + ",";
-                }
-                //获取内容中的@谁  格式   #333#
-                String content = comment.getContent();
-                if (content.indexOf("&") != -1) {
-                    String regex = "&(\\d+)&";
-                    Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher(content);
-                    while (matcher.find()) {
-                        users += matcher.group(1) + ",";
-                    }
-                }
-            }
-        }
-        String[] kes = users.split(",");
-
         for (int j = 0; j < list.size(); j++) {
             comment = (HomeBlogComment) list.get(j);
             if (comment != null) {
-                for (int l = 0; l < kes.length; l++) {
-                    UserInfo userInfo = null;
-                    Long t = Long.parseLong(kes[l]);
-                    if (t > 0) {
-                        userInfo = userInfoUtils.getUserInfo(t);
-                        if (userInfo != null) {
-                            comment.setUserHead(userInfo.getHead());
-                            comment.setUsername(userInfo.getName());
-                        }
-                        if (comment.getReplyType() == 1) {
-                            if (userInfo != null) {
-                                comment.setReplayname(userInfo.getName());
-                            }
-                        }
-                        //获取内容中的@谁 加"名称"  格式   #333_阿里巴巴#
-                        String content = comment.getContent();
-                        if (content.indexOf("&") != -1) {
-                            String regex = "&(\\d+)&";
-                            Pattern pattern = Pattern.compile(regex);
-                            Matcher matcher = pattern.matcher(content);
-
-                            StringBuffer sb = new StringBuffer();
-                            while (matcher.find()) {
-                                if (userInfo != null) {
-                                    matcher.appendReplacement(sb, "&" + matcher.group(1) + "_" + userInfo.getName() + "&");
-                                }
-                            }
-                            matcher.appendTail(sb);
-                            comment.setContent(sb.toString());
-                        }
-                    }
+                UserInfo userInfo = null;
+                userInfo = userInfoUtils.getUserInfo(comment.getUserId());
+                if (userInfo != null) {
+                    comment.setUserHead(userInfo.getHead());
+                    comment.setUserName(userInfo.getName());
                 }
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        //查询回复列表
+        list2 = homeBlogCommentService.findReplyList(blogId);
+        if (list2 != null && list2.size() > 0) {
+            for (int j = 0; j < list2.size(); j++) {
+                comment = (HomeBlogComment) list2.get(j);
+                if (comment != null) {
+                    UserInfo userInfo = null;
+                    userInfo = userInfoUtils.getUserInfo(comment.getReplayId());
+                    if (userInfo != null) {
+                        comment.setReplayName(userInfo.getName());
+                    }
+                    userInfo = userInfoUtils.getUserInfo(comment.getUserId());
+                    if (userInfo != null) {
+                        comment.setUserName(userInfo.getName());
+                    }
+                }
+            }
+            map.put("replyData", list2);
+        }
+        map.put("commentData", list);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

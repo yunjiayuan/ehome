@@ -36,7 +36,7 @@ public class HomeBlogCommentService {
     }
 
     /***
-     * 新增评论消息
+     * 新增消息
      * @param homeBlogMessage
      * @return
      */
@@ -76,6 +76,51 @@ public class HomeBlogCommentService {
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = homeBlogCommentDao.findList(blogId);
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param blogId  博文ID
+     * @return
+     */
+    public List<HomeBlogComment> findReplyList(long blogId) {
+
+        List<HomeBlogComment> list;
+        list = homeBlogCommentDao.findReplyList(blogId);
+        return list;
+    }
+
+    /***
+     * 查询消息列表
+     * @param type  查询类型  0所有 1未读 2已读
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<HomeBlogMessage> findMessageList(int type, long userId, int page, int count) {
+        List<HomeBlogMessage> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogCommentDao.findMessageList(type, userId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 统计该用户未读消息数量
+     * @param userId
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public long getCount(long userId) {
+        return homeBlogCommentDao.getCount(userId);
+    }
+
+    /***
+     * 更新消息状态
+     * @param userId
+     * @return
+     */
+    public int updateState(long userId) {
+        return homeBlogCommentDao.updateState(userId);
     }
 
 }

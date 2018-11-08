@@ -27,12 +27,12 @@ public interface HomeBlogCommentDao {
     int addComment(HomeBlogComment homeBlogComment);
 
     /***
-     * 新增评论消息
+     * 新增消息
      * @param homeBlogMessage
      * @return
      */
-    @Insert("insert into homeBlogMessage(userId,blog,replayId,masterId,commentId,content,time,newsType,newsState,status,parentMessage) " +
-            "values (#{userId},#{blog},#{replayId},#{masterId},#{commentId},#{content},#{time},#{newsType},#{newsState},#{status},#{parentMessage})")
+    @Insert("insert into homeBlogMessage(userId,blog,replayId,commentId,content,time,newsType,newsState,status) " +
+            "values (#{userId},#{blog},#{replayId},#{commentId},#{content},#{time},#{newsType},#{newsState},#{status})")
     @Options(useGeneratedKeys = true)
     int addMessage(HomeBlogMessage homeBlogMessage);
 
@@ -56,16 +56,70 @@ public interface HomeBlogCommentDao {
     int update(HomeBlogComment homeBlogComment);
 
     /***
-     * 查询评论列表
+     * 查询评论列表(只查评论replyType = 0)
      * @param blogId  博文ID
      * @return
      */
     @Select("<script>" +
             "select * from HomeBlogComment" +
             " where 1=1" +
-            " and blogId=#{blogId} and replyStatus=0" +
+            " and blogId=#{blogId} and replyStatus=0 and replyType = 0" +
             " order by time desc" +
             "</script>")
     List<HomeBlogComment> findList(@Param("blogId") long blogId);
+
+    /***
+     * 查询回复列表(只查评论replyType = 1)
+     * @param blogId  博文ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeBlogComment" +
+            " where 1=1" +
+            " and blogId=#{blogId} and replyStatus=0 and replyType = 1" +
+            "</script>")
+    List<HomeBlogComment> findReplyList(@Param("blogId") long blogId);
+
+    /***
+     * 查询消息列表
+     * @param type  查询类型  0所有 1未读 2已读
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeBlogMessage" +
+            " where 1=1" +
+            "<if test=\"type == 1\">" +
+            " and newsState=1" +
+            "</if>" +
+            "<if test=\"type == 2\">" +
+            " and newsState=0" +
+            "</if>" +
+            " and replayId=#{userId} and status=0" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlogMessage> findMessageList(@Param("type") int type, @Param("userId") long userId);
+
+    /***
+     * 统计该用户未读消息数量
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from HomeBlogMessage" +
+            " where replayId=#{userId} and status=0 and newsState=1" +
+            "</script>")
+    int getCount(@Param("userId") long userId);
+
+    /***
+     * 更新未读状态
+     * @param userId
+     * @return
+     */
+    @Update("<script>" +
+            "update HomeBlogMessage set" +
+            " newsState=0" +
+            " where newsState=1 and replayId=#{userId}" +
+            "</script>")
+    int updateState(@Param("userId") long userId);
 
 }
