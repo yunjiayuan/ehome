@@ -61,34 +61,12 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         //更新评论数
         mqUtils.updateBlogCounts(homeBlog.getUserId(), homeBlog.getId(), 1, 1);
 
-        //新增消息
-        HomeBlogMessage msg = new HomeBlogMessage();
-        //ate  0评论 1回复
         long myId = CommonUtils.getMyId();
         long userId = homeBlogComment.getReplayId();
         int ate = homeBlogComment.getReplyType();
-        if (ate == 0 && homeBlog.getUserId() != myId) {
-            //消息给博主看的
-            msg.setNewsType(0);//0评论 1回复 2赞 3转发
-        } else if (ate == 1) {
-            //消息给被回复人看的
-            if (userId != myId) {
-                msg.setNewsType(1);//0评论 1回复 2赞 3转发
-            }
-            //消息给博主看的
-            if (homeBlog.getUserId() != myId && homeBlog.getUserId() != userId) {//被回复者 不能是当前用户和博主
-                msg.setNewsType(0);//0评论 1回复 2赞 3转发
-            }
-        }
-        msg.setUserId(myId);
-        msg.setReplayId(userId);        //被评论用户ID
-        msg.setBlog(homeBlog.getId());
-        msg.setCommentId(homeBlogComment.getId());    //评论ID
-        msg.setContent(homeBlogComment.getContent());
-        msg.setTime(new Date());
-        msg.setNewsState(1);    //1未读
-        msg.setStatus(0);    //0正常
-        homeBlogCommentService.addMessage(msg);
+
+        //新增消息
+        mqUtils.addMessage(myId, userId, homeBlog.getId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

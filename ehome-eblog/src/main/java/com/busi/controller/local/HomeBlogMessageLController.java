@@ -7,7 +7,6 @@ import com.busi.entity.ReturnData;
 import com.busi.service.HomeBlogCommentService;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +30,7 @@ public class HomeBlogMessageLController extends BaseController implements HomeBl
      * @return
      */
     @Override
-    public ReturnData addMessage(@RequestBody HomeBlogMessage homeBlogMessage, BindingResult bindingResult) {
+    public ReturnData addMessage(@RequestBody HomeBlogMessage homeBlogMessage) {
 
         homeBlogMessage.setNewsState(1);
         homeBlogMessage.setTime(new Date());
