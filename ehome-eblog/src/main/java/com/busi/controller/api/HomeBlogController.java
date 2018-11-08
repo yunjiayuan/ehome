@@ -3,7 +3,6 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.HomeBlogLikeService;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResult;
 import org.springframework.data.geo.GeoResults;
 import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
@@ -38,9 +35,6 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
     @Autowired
     private FollowInfoUtils followInfoUtils;
-
-    @Autowired
-    private HomeBlogLikeService homeBlogLikeService;
 
     @Autowired
     RedisUtils redisUtils;

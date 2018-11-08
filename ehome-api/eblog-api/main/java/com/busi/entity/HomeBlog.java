@@ -24,7 +24,7 @@ public class HomeBlog {
     @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!#￥$%*()\\-]{0,30}", message = "标题格式有误,标题最长为30字，并且不能包含非法字符")
     private String title;//标题（最多30个字）
 
-    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!#￥$%*()&<>\\-]{0,10000}", message = "内容格式有误,不能包含非法字符，且不能过1万字")
+    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,，\\.。;；\\:\"'？?！!#@￥$%*（）《》()&|、‘’”“<>\\-]{0,10000}", message = "内容格式有误,不能包含非法字符，且不能过1万字")
     private String content;//内容（最多1万字）
 
     @Length(max = 140, message = "基本内容字数最多140字")
