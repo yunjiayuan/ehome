@@ -276,7 +276,7 @@ public class MqUtils {
 
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
-        header.put("interfaceType", "9");//interfaceType 9同步消息系统
+        header.put("interfaceType", "13");//interfaceType 9同步消息系统
         JSONObject content = new JSONObject();
         content.put("userId",userId);
         content.put("replayId",replayId);
