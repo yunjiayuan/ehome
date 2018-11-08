@@ -124,7 +124,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             ipsHome.setFraction(fraction);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+            redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
 
             List list = null;
             list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
@@ -278,7 +278,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             ipsHome.setFraction(fraction);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+            redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         }
         searchGoods.setFraction(fraction);
         searchGoods.setRefreshTime(new Date());
@@ -432,7 +432,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             }
         }
         //放入缓存
-        redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+        redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         if (list.size() == 101) {
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);

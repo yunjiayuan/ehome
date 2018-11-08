@@ -323,7 +323,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + infoId, 0);
         }
         //放入缓存
-        redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+        redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         if (list.size() == 101) {
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
