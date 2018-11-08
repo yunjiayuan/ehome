@@ -186,9 +186,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         mqUtils.sendFootmarkMQ(homeBlog.getUserId(), t, homeBlog.getImgUrl(), null, null, homeBlog.getId()+"", 2);
         //添加任务
         mqUtils.sendTaskMQ(homeBlog.getUserId(), 1, 1);
-        //添加转发消息
+        //添加转发消息和转发量
         if(homeBlog.getBlogType()==1){
             mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,homeBlog.getReprintContent(),3);
+            mqUtils.updateBlogCounts(homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),2,1);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
@@ -235,6 +236,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 //        }else{
 //            homeBlog.setIsLike(0);
 //        }
+        //添加浏览量
+        mqUtils.updateBlogCounts(homeBlog.getUserId(),homeBlog.getId(),3,1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", homeBlog);
     }
 
