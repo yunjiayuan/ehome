@@ -2,11 +2,9 @@ package com.busi.controller.local;
 
 import com.busi.entity.HomeBlogMessage;
 import com.busi.entity.ReturnData;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
 
 /**
  * 新增生活圈消息接口
@@ -21,5 +19,5 @@ public interface HomeBlogMessageLocalController {
      * @return
      */
     @PostMapping("addMessage")
-    ReturnData addMessage(@Valid @RequestBody HomeBlogMessage homeBlogMessage, BindingResult bindingResult);
+    ReturnData addMessage(@RequestBody HomeBlogMessage homeBlogMessage);
 }
