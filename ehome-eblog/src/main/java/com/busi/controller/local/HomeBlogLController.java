@@ -45,7 +45,7 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
         //判断点赞量是否达到推荐级别
         if(hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
             //更新生活秀首页推荐列表
-            redisUtils.addList(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
+            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
             List list = null;
             list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
             if (list.size() >= Constants.REDIS_KEY_EBLOGLIST_COUNT+1) {
