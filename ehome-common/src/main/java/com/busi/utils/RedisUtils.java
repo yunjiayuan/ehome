@@ -371,15 +371,33 @@ public class RedisUtils {
     }
 
     /**
-     * 将一个元素放入list中 （可以设置失效时间）
+     * 将一个元素放入list中 放入集合的右侧 （可以设置失效时间）
      * @param key 键
      * @param value 值
      * @param time 时间(秒)  0 永不失效
      * @return
      */
-    public boolean addList(String key, Object value, long time) {
+    public boolean addListRight(String key, Object value, long time) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
+            if (time > 0) expire(key, time);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 将一个元素放入list中 放入集合的左侧 （可以设置失效时间）
+     * @param key 键
+     * @param value 值
+     * @param time 时间(秒)  0 永不失效
+     * @return
+     */
+    public boolean addListLeft(String key, Object value, long time) {
+        try {
+            redisTemplate.opsForList().leftPush(key, value);
             if (time > 0) expire(key, time);
             return true;
         } catch (Exception e) {
