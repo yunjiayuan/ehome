@@ -128,7 +128,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                     ipsHome.setAfficheType(1);
                     ipsHome.setFraction(fraction);
 
-                    redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+                    redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
 
                     List list = null;
                     list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
@@ -288,7 +288,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             ipsHome.setAfficheType(1);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+            redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         }
         loveAndFriends.setFraction(fraction);
         loveAndFriends.setRefreshTime(new Date());

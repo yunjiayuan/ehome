@@ -132,7 +132,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             ipsHome.setFraction(fraction);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+            redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
 
             List list = null;
             list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
@@ -285,7 +285,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             ipsHome.setFraction(fraction);
 
             //放入缓存
-            redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+            redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         }
         if (usedDeal.getNegotiable() == 2) {
             usedDeal.setSellingPrice(0);
@@ -490,7 +490,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             }
         }
         //放入缓存
-        redisUtils.addList(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+        redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
         if (list.size() == 101) {
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
