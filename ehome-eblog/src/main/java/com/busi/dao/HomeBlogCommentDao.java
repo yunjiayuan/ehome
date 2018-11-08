@@ -119,7 +119,11 @@ public interface HomeBlogCommentDao {
             "update HomeBlogMessage set" +
             " newsState=0" +
             " where newsState=1 and replayId=#{userId}" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
             "</script>")
-    int updateState(@Param("userId") long userId);
+    int updateState(@Param("userId") long userId, @Param("ids") String[] ids);
 
 }

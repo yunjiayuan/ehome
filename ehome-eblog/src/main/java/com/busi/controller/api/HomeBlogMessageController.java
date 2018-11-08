@@ -49,6 +49,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
+        String ids = "";
         List list = null;
         list = pageBean.getList();
         if (list != null && list.size() > 0) {
@@ -56,6 +57,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
             for (int i = 0; i < list.size(); i++) {
                 mess = (HomeBlogMessage) list.get(i);
                 if (mess != null) {
+                    ids += mess.getId() + ",";
                     UserInfo userInfo = null;
                     userInfo = userInfoUtils.getUserInfo(mess.getUserId());
                     if (userInfo != null) {
@@ -67,7 +69,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
         }
         if (type != 2) {
             //更新消息状态
-            homeBlogCommentService.updateState(userId);
+            homeBlogCommentService.updateState(userId, ids.split(","));
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }

@@ -119,8 +119,8 @@ public class HomeBlogCommentService {
      * @param userId
      * @return
      */
-    public int updateState(long userId) {
-        return homeBlogCommentDao.updateState(userId);
+    public int updateState(long userId, String[] ids) {
+        return homeBlogCommentDao.updateState(userId, ids);
     }
 
 }
