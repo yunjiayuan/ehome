@@ -571,6 +571,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setProTypeId(userInfo.getProType());
                 homeBlog.setHouseNumber(userInfo.getHouseNumber());
             }
+            //添加位置信息
+            if(searchType==1||searchType==6){
+                homeBlog.setDistance(CommonUtils.getShortestDistance(lon,lat,homeBlog.getLongitude(),homeBlog.getLatitude()));
+            }
             //设置是否喜欢过状态
             boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+homeBlog.getId(),CommonUtils.getMyId());
             if(isMember){

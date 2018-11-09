@@ -43,12 +43,13 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
             }
         }
         //判断点赞量是否达到推荐级别
-        if(hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
+        if(hb.getLikeCount()==Constants.EBLOG_LIKE_COUNT){
             //更新生活秀首页推荐列表
             redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
-            List list = null;
-            list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
-            if (list.size() >= Constants.REDIS_KEY_EBLOGLIST_COUNT+1) {
+            long count = redisUtils.getListSize(Constants.REDIS_KEY_EBLOGLIST);
+            if (count > Constants.REDIS_KEY_EBLOGLIST_COUNT) {
+                List list = null;
+                list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
                 //清除缓存中多余的信息
                 redisUtils.expire(Constants.REDIS_KEY_EBLOGLIST, 0);
                 redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);

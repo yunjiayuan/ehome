@@ -42,6 +42,10 @@ public class HomeBlog {
     @Length(max = 100, message = "语音地址格式有误")
     private String audioUrl;//语音地址
 
+    private String songName;//背景音乐的歌名
+
+    private String singer; //背景音乐的歌手
+
     @Max(value = 3, message = "sendType参数有误，超出指定范围")
     @Min(value = 0, message = "sendType参数有误，超出指定范围")
     private int sendType;//发布博文类型：0纯文 1图片 2视频 3音频
@@ -124,6 +128,7 @@ public class HomeBlog {
     private String userHead;    //发布者头像	 与数据库无关字段
     private int proTypeId;      //发布者省简称ID 与数据库无关字段
     private long houseNumber;   //发布者门牌号   与数据库无关字段
+    private double distance;    //距离	 与数据库无关字段
 //  private String shareName;	  //shareUserId 用户名称
 //  private String origUserName;//原始博主用户名 转载使用
 
