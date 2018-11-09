@@ -58,22 +58,22 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限以用户["+homeBlog.getUserId()+"]的身份发布生活圈",new JSONObject());
         }
         //根据发布类型 判断部分参数格式 发布博文类型：0纯文 1图片 2视频 3音频
-        if(homeBlog.getSendType()==0){
+        if(homeBlog.getSendType()==0&&homeBlog.getBlogType()!=1){
             if(CommonUtils.checkFull(homeBlog.getContent())){
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，content不能为空",new JSONObject());
             }
         }
-        if(homeBlog.getSendType()==1){
+        if(homeBlog.getSendType()==1&&homeBlog.getBlogType()!=1){
             if(CommonUtils.checkFull(homeBlog.getImgUrl())){
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，imgUrl不能为空",new JSONObject());
             }
         }
-        if(homeBlog.getSendType()==2){
+        if(homeBlog.getSendType()==2&&homeBlog.getBlogType()!=1){
             if(CommonUtils.checkFull(homeBlog.getVideoUrl())||CommonUtils.checkFull(homeBlog.getVideoCoverUrl())){
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，videoUrl和videoCoverUrl不能为空",new JSONObject());
             }
         }
-        if(homeBlog.getSendType()==3){
+        if(homeBlog.getSendType()==3&&homeBlog.getBlogType()!=1){
             if(CommonUtils.checkFull(homeBlog.getAudioUrl())){
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，audioUrl不能为空",new JSONObject());
             }
