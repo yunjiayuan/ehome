@@ -21,10 +21,12 @@ public class HomeBlog {
     @Min(value = 1, message = "userId参数有误，超出指定范围")
     private long userId;//发布者用户ID
 
-    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!#￥$%*()\\-]{0,30}", message = "标题格式有误,标题最长为30字，并且不能包含非法字符")
+//    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!#￥$%*()\\-\\s*]", message = "标题格式有误,标题最长为30字，并且不能包含非法字符")
+    @Length(max = 30, message = "标题内容不能超过30字")
     private String title;//标题（最多30个字）
 
-    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,，\\.。;；\\:\"'？?！!#@￥$%*（）《》()&|、‘’”“<>\\-]{0,10000}", message = "内容格式有误,不能包含非法字符，且不能过1万字")
+//    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,，\\.。;；\\:\"'？?！!#@￥$%*（）《》()&|、‘’”“<>\\-\\s*]", message = "内容格式有误,不能包含非法字符")
+    @Length(max = 10000, message = "转发评论内容不能超过1万字")
     private String content;//内容（最多1万字）
 
     @Length(max = 140, message = "基本内容字数最多140字")
@@ -85,7 +87,8 @@ public class HomeBlog {
     @Min(value = 0, message = "origUserId参数有误，超出指定范围")
     private long origUserId;//最原始博文的用户ID
 
-    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!#￥$%*()\\-]{0,140}", message = "内容格式有误,标题最长为140字，并且不能包含非法字符")
+//    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,，\\.。;；\\:\"'？?！!#@￥$%*（）《》()&|、‘’”“<>\\-\\s*]", message = "内容格式有误,不能包含非法字符")
+    @Length(max = 140, message = "转发评论内容不能超过140")
     private String reprintContent;//转发时的评论内容（最多140字）
 
     private long accessId;//查看权限ID（对应权限分组表主键ID）
