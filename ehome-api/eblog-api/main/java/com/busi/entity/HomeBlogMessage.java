@@ -1,5 +1,6 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +27,7 @@ public class HomeBlogMessage {
 
     private String content;            //消息内容
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;                //消息时间
 
     private int newsType;                //消息类型 0评论 1回复 2赞 3转发
