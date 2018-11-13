@@ -95,10 +95,10 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                     }
                 }
             }
-        }
-        if (type != 2) {
-            //更新消息状态
-            homeBlogCommentService.updateState(userId, ids.split(","));
+            if (type != 2) {
+                //更新消息状态
+                homeBlogCommentService.updateState(userId, ids.split(","));
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
