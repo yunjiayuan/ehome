@@ -46,7 +46,7 @@ public class HomeBlogTagController extends BaseController implements HomeBlogTag
         } else {
             if (!CommonUtils.checkFull(homeBlogUserTag.getTags())) {
                 String[] ids = homeBlogUserTag.getTags().split(",");
-                if (ids.length >= 10 || ids.length < 3) {
+                if (ids.length > 10 || ids.length < 3) {
                     return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "标签数量超过上限", new JSONObject());
                 }
             }
