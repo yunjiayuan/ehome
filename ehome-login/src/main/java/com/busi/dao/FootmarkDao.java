@@ -89,6 +89,9 @@ public interface FootmarkDao {
             "<if test=\"footmarkType > 0\">" +
             " and footmarkType=#{footmarkType}" +
             "</if>" +
+            "<if test=\"footmarkType == -1\">" +
+            " <![CDATA[ and footmarkType < 6 ]]>" +
+            "</if>" +
             "<if test=\"endDate != null\">" +
             " <![CDATA[ and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) and UNIX_TIMESTAMP(addTime) <= UNIX_TIMESTAMP(#{endDate})+86400000 ]]>" +
 //            " <![CDATA[ and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\") and addTime <= DATE_FORMAT(#{endTime},\"%Y-%m-%d %T\") ]]>" +
@@ -114,6 +117,9 @@ public interface FootmarkDao {
             "</if>" +
             "<if test=\"footmarkType > 0\">" +
             " and footmarkType=#{footmarkType}" +
+            "</if>" +
+            "<if test=\"footmarkType == -1\">" +
+            " <![CDATA[ and footmarkType < 6 ]]>" +
             "</if>" +
             " and footmarkStatus = 0" +
             " order by addTime desc" +

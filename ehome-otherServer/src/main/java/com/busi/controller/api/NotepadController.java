@@ -84,7 +84,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
         //新增任务
         mqUtils.sendTaskMQ(notepad.getUserId(), 1, 9);
         //新增足迹
-        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), null, null, null, notepad.getId() + "," + notepad.getAddType(), 6);
+        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(),  null, null, null, notepad.getId() + "," + notepad.getAddType(), 6);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

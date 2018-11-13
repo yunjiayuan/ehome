@@ -42,7 +42,7 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
     /***
      * 查询足迹列表
      * @param userId  用户ID
-     * @param footmarkType  足迹类型 1.发布公告 2.发布家博 3.图片上传 4.音频上传 5.视频上传  6记事  0.默认全部
+     * @param footmarkType  足迹类型 -1查询除记事以外的  0.默认全部 1.公告 2.生活圈 3.图片 4.音频 5.视频  6记事
      * @param startTime  开始时间
      * @param endTime   结束时间
      * @param page  页码 第几页 起始值1
