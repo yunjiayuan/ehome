@@ -70,4 +70,12 @@ public interface HomeBlogApiController {
                                  @PathVariable double lat,@PathVariable double lon,
                                  @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 检测当前登录用户与被检测用户之间的好友关系和关注关系
+     * @param userId     被检测的用户ID
+     * @return
+     */
+    @GetMapping("checkFirendAndFollowStatus/{userId}")
+    ReturnData checkFirendAndFollowStatus(@PathVariable long userId);
+
 }
