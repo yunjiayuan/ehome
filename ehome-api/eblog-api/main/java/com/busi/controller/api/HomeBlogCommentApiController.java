@@ -38,6 +38,6 @@ public interface HomeBlogCommentApiController {
      * @param count      每页条数
      * @return
      */
-    @GetMapping("findBlogList/{blogId}/{page}/{count}")
-    ReturnData findBlogList(@PathVariable long blogId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findCommentList/{blogId}/{page}/{count}")
+    ReturnData findCommentList(@PathVariable long blogId, @PathVariable int page, @PathVariable int count);
 }
