@@ -106,7 +106,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
      * @return
      */
     @Override
-    public ReturnData findBlogList(@PathVariable long blogId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findCommentList(@PathVariable long blogId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
