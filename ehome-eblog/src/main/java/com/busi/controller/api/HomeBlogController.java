@@ -78,103 +78,110 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，audioUrl不能为空",new JSONObject());
             }
         }
+        if(!CommonUtils.checkFull(homeBlog.getContent())){
+            if(homeBlog.getContent().length()>140){
+                homeBlog.setContentTxt(homeBlog.getContent().substring(0,140));
+            }else{
+                homeBlog.setContentTxt(homeBlog.getContent());
+            }
+        }
         //处理特殊字符
-        String title = homeBlog.getTitle();
-        if(!CommonUtils.checkFull(title)){
-            title = title.replaceAll("\"","&quot;");
-            title = title.replaceAll("&","&amp;");
-            title = title.replaceAll(" ","&nbsp;");
-            title = title.replaceAll("<","&lt;");
-            title = title.replaceAll(">","&gt;");
-            homeBlog.setTitle(title);
-        }
-        String content = homeBlog.getContent();
-        if(!CommonUtils.checkFull(content)){
-            //String content = "<p>&8228_139&发读&88_6&</p><p>&88_2&发奋读书发奋读&23_6&</p>";
-            int maxlen = 140;
-            //表情匹配
-            String rep ="";
-            boolean flag = false;
-            List<String> list = new ArrayList<String>();
-            String [] con = content.split("</p>");
-            for (int i = 0; i < con.length; i++) {
-                if(maxlen>0){
-                    String [] newCon = con[i].split("<p>");
-                    //处理特殊没有<p>情况
-                    String userall ="";
-                    if(newCon!=null &&newCon.length>0){
-                        if(newCon.length<=1){
-                            userall = newCon[0];
-                        }else{
-                            userall = newCon[1];
-                        }
-                    }
-                    //开头P
-                    list.add("<p>");
-                    //定义截取140字符长度
-                    for (int j = 0; j < userall.length(); j++) {
-                        if(maxlen<=0){
-                            break;
-                        }
-                        if("&".equals(userall.charAt(j)+"") || (flag && ";".equals(userall.charAt(j)+""))){
-                            if(flag){
-                                flag= false;
-                                rep+=userall.charAt(j);
-                                if(rep.indexOf("_")!=-1){
-                                    //列如：&222_8&
-                                    //拆分 用户ID 和 用户Id对应名称长度
-                                    String [] s = rep.split("_");
-                                    rep = s[0]+"&";
-                                    //8&
-                                    String [] c = s[1].split("&");
-                                    //减去名称长度
-                                    maxlen -= Integer.valueOf(c[0]);
-                                }else if(rep.indexOf(";")!=-1){
-                                    //列如：&amp;
-                                    maxlen --;
-                                }
-                                //名字长度计算后超maxlen 舍去
-                                if(maxlen<=0){
-                                    continue;
-                                }
-                                list.add(rep+"");
-                                rep="";
-                                continue;
-                            }else{
-                                flag= true;
-                            }
-                        }
-                        if(flag){
-                            rep+=userall.charAt(j);
-                        }else{
-                            list.add(userall.charAt(j)+"");
-                            maxlen --;
-                        }
-                    }
-                    //结尾P
-                    list.add("</p>");
-                }
-            }
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < list.size(); i++) {
-                sb.append(list.get(i));
-            }
-            homeBlog.setContentTxt(sb.toString());	//截取基本内容
-            //删除内容中的ID_字符长度数字
-            if(content.indexOf("&")!=-1){
-                String regex = "&(\\d+_\\d+)&";
-                Pattern pattern = Pattern.compile(regex);
-                Matcher matcher = pattern.matcher(content);
-                StringBuffer sb2 = new StringBuffer();
-                while (matcher.find()) {
-                    String uid = matcher.group(1).split("_")[0]; //&888_3&
-                    matcher.appendReplacement(sb2, "&"+uid+"&");
-                }
-                matcher.appendTail(sb2);
-                content = sb2.toString();
-            }
-            homeBlog.setContent(content);//截取全部内容
-        }
+//        String title = homeBlog.getTitle();
+//        if(!CommonUtils.checkFull(title)){
+//            title = title.replaceAll("\"","&quot;");
+//            title = title.replaceAll("&","&amp;");
+//            title = title.replaceAll(" ","&nbsp;");
+//            title = title.replaceAll("<","&lt;");
+//            title = title.replaceAll(">","&gt;");
+//            homeBlog.setTitle(title);
+//        }
+//        String content = homeBlog.getContent();
+//        if(!CommonUtils.checkFull(content)){
+//            //String content = "<p>&8228_139&发读&88_6&</p><p>&88_2&发奋读书发奋读&23_6&</p>";
+//            int maxlen = 140;
+//            //表情匹配
+//            String rep ="";
+//            boolean flag = false;
+//            List<String> list = new ArrayList<String>();
+//            String [] con = content.split("</p>");
+//            for (int i = 0; i < con.length; i++) {
+//                if(maxlen>0){
+//                    String [] newCon = con[i].split("<p>");
+//                    //处理特殊没有<p>情况
+//                    String userall ="";
+//                    if(newCon!=null &&newCon.length>0){
+//                        if(newCon.length<=1){
+//                            userall = newCon[0];
+//                        }else{
+//                            userall = newCon[1];
+//                        }
+//                    }
+//                    //开头P
+//                    list.add("<p>");
+//                    //定义截取140字符长度
+//                    for (int j = 0; j < userall.length(); j++) {
+//                        if(maxlen<=0){
+//                            break;
+//                        }
+//                        if("&".equals(userall.charAt(j)+"") || (flag && ";".equals(userall.charAt(j)+""))){
+//                            if(flag){
+//                                flag= false;
+//                                rep+=userall.charAt(j);
+//                                if(rep.indexOf("_")!=-1){
+//                                    //列如：&222_8&
+//                                    //拆分 用户ID 和 用户Id对应名称长度
+//                                    String [] s = rep.split("_");
+//                                    rep = s[0]+"&";
+//                                    //8&
+//                                    String [] c = s[1].split("&");
+//                                    //减去名称长度
+//                                    maxlen -= Integer.valueOf(c[0]);
+//                                }else if(rep.indexOf(";")!=-1){
+//                                    //列如：&amp;
+//                                    maxlen --;
+//                                }
+//                                //名字长度计算后超maxlen 舍去
+//                                if(maxlen<=0){
+//                                    continue;
+//                                }
+//                                list.add(rep+"");
+//                                rep="";
+//                                continue;
+//                            }else{
+//                                flag= true;
+//                            }
+//                        }
+//                        if(flag){
+//                            rep+=userall.charAt(j);
+//                        }else{
+//                            list.add(userall.charAt(j)+"");
+//                            maxlen --;
+//                        }
+//                    }
+//                    //结尾P
+//                    list.add("</p>");
+//                }
+//            }
+//            StringBuffer sb = new StringBuffer();
+//            for (int i = 0; i < list.size(); i++) {
+//                sb.append(list.get(i));
+//            }
+//            homeBlog.setContentTxt(sb.toString());	//截取基本内容
+//            //删除内容中的ID_字符长度数字
+//            if(content.indexOf("&")!=-1){
+//                String regex = "&(\\d+_\\d+)&";
+//                Pattern pattern = Pattern.compile(regex);
+//                Matcher matcher = pattern.matcher(content);
+//                StringBuffer sb2 = new StringBuffer();
+//                while (matcher.find()) {
+//                    String uid = matcher.group(1).split("_")[0]; //&888_3&
+//                    matcher.appendReplacement(sb2, "&"+uid+"&");
+//                }
+//                matcher.appendTail(sb2);
+//                content = sb2.toString();
+//            }
+//            homeBlog.setContent(content);//截取全部内容
+//        }
         //开始新增
         homeBlog.setTime(new Date());
         homeBlogService.add(homeBlog);
@@ -584,6 +591,65 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 检测当前登录用户与被检测用户之间的好友关系和关注关系
+     * @param userId     被检测的用户ID
+     * @return
+     */
+    @Override
+    public ReturnData checkFirendAndFollowStatus(@PathVariable long userId) {
+        //验证参数
+        if(userId<0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+        }
+        //判断自己是否与该用户是好友关系
+        int isFriend = 0;//是否为好友 0不是好友  1是好友
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
+        if(list!=null){//缓存一定存在好友关系 否则该账号异常
+            boolean forFlag = false;
+            for(int i=0;i<list.size();i++){
+                if(forFlag){
+                    break;
+                }
+                Map map = (Map) list.get(i);
+                if(map!=null&&map.size()>0){
+                    List userList = (List) map.get("userList");
+                    if(userList==null||userList.size()<=0){
+                        continue;
+                    }
+                    for(int j=0;j <userList.size();j++){
+                        UserRelationShip userRelationShip = (UserRelationShip) userList.get(j);
+                        if(userRelationShip != null&&userRelationShip.getFriendId()==userId){
+                            isFriend = 1;
+                            forFlag = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        //查询关注关系
+        int isFollow = 0;//是否已关注 0未关注 1已关注
+        String[] followArray = null;
+        String followUserIds = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
+        if(!CommonUtils.checkFull(followUserIds)){
+            followArray = followUserIds.split(",");
+        }
+        if(followArray!=null){
+            for (int i = 0; i < followArray.length; i++) {
+                if(userId==Long.parseLong(followArray[i])){
+                    isFollow = 1;
+                    break;
+                }
+            }
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("isFriend",isFriend);
+        map.put("isFollow",isFollow);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     public static boolean ckcometnP(String str){
