@@ -36,8 +36,11 @@ public class HomeBlogMessage {
 
     private int status;                //0正常 1删除
 
-
-    private String userName;  		//评论用户 名称	-查询后从内存获取最新  与数据库无关字段
-    private String userHead;  		//评论用户 头像	-查询后从内存获取最新  与数据库无关字段
+    //与数据库无关字段
+    private String userName;        //评论用户 名称
+    private String userHead;        //评论用户 头像
+    private int blogType;            //博文类型
+    private String blogFirstImg;    //图片博文第一张图片
+    private String blogTitle;        //博文标题
 
 }

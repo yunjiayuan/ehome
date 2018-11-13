@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.HomeBlog;
 import com.busi.entity.HomeBlogComment;
 import com.busi.entity.HomeBlogMessage;
 import org.apache.ibatis.annotations.*;
@@ -125,5 +126,22 @@ public interface HomeBlogCommentDao {
             "</foreach>" +
             "</script>")
     int updateState(@Param("userId") long userId, @Param("ids") String[] ids);
+
+    /***
+     * 查询朋友圈列表
+     * @param blIds  博文IDs
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            " and id in" +
+            "<foreach collection='blIds' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and blogStatus = 0" +
+            "</script>")
+    List<HomeBlog> findIdList(@Param("blIds") String[] blIds);
+
 
 }

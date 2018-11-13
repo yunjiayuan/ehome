@@ -1,6 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.HomeBlogCommentDao;
+import com.busi.entity.HomeBlog;
 import com.busi.entity.HomeBlogComment;
 import com.busi.entity.HomeBlogMessage;
 import com.busi.entity.PageBean;
@@ -76,6 +77,18 @@ public class HomeBlogCommentService {
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = homeBlogCommentDao.findList(blogId);
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询博文列表
+     * @param blIds  博文IDS
+     * @return
+     */
+    public List<HomeBlog> findIdList(String[] blIds) {
+
+        List<HomeBlog> list;
+        list = homeBlogCommentDao.findIdList(blIds);
+        return list;
     }
 
     /***

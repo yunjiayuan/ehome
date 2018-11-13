@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.HomeBlogCommentService;
+import com.busi.service.HomeBlogService;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
 import com.busi.utils.UserInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ import java.util.Map;
  */
 @RestController
 public class HomeBlogMessageController extends BaseController implements HomeBlogMessageApiController {
+
+    @Autowired
+    private HomeBlogService homeBlogService;
 
     @Autowired
     private UserInfoUtils userInfoUtils;
@@ -50,19 +55,43 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         String ids = "";
+        String blIds = "";
         List list = null;
+        List list2 = null;
+        HomeBlogMessage mess = null;
         list = pageBean.getList();
         if (list != null && list.size() > 0) {
-            HomeBlogMessage mess = null;
             for (int i = 0; i < list.size(); i++) {
                 mess = (HomeBlogMessage) list.get(i);
                 if (mess != null) {
                     ids += mess.getId() + ",";
-                    UserInfo userInfo = null;
-                    userInfo = userInfoUtils.getUserInfo(mess.getUserId());
-                    if (userInfo != null) {
-                        mess.setUserHead(userInfo.getHead());
-                        mess.setUserName(userInfo.getName());
+                    blIds += mess.getBlog() + ",";
+                }
+            }
+            list2 = homeBlogCommentService.findIdList(blIds.split(","));
+            if (list2 != null && list2.size() > 0) {
+                HomeBlog homeBlog = null;
+                for (int j = 0; j < list2.size(); j++) {
+                    homeBlog = (HomeBlog) list2.get(j);
+                    if (homeBlog != null) {
+                        for (int i = 0; i < list.size(); i++) {
+                            mess = (HomeBlogMessage) list.get(i);
+                            if (mess != null) {
+                                if (mess.getBlog() == homeBlog.getId()) {
+                                    UserInfo userInfo = null;
+                                    userInfo = userInfoUtils.getUserInfo(mess.getUserId());
+                                    if (userInfo != null) {
+                                        mess.setUserHead(userInfo.getHead());
+                                        mess.setUserName(userInfo.getName());
+                                    }
+                                    mess.setBlogTitle(homeBlog.getTitle());
+                                    mess.setBlogType(homeBlog.getBlogType());
+                                    if (!CommonUtils.checkFull(homeBlog.getImgUrl())) {
+                                        mess.setBlogFirstImg(homeBlog.getImgUrl().split(",")[0]);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
