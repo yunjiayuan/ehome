@@ -78,6 +78,17 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，audioUrl不能为空",new JSONObject());
             }
         }
+        //处理特殊字符
+        byte[] b_text = homeBlog.getContent().getBytes();
+        for (int i = 0; i < b_text.length; i++){
+            if((b_text[i] & 0xF8)==0xF0){
+                for (int j = 0; j < 4; j++) {
+                    b_text[i+j]=0x30;
+                }
+                i+=3;
+            }
+        }
+        homeBlog.setContent(new String(b_text));
         if(!CommonUtils.checkFull(homeBlog.getContent())){
             if(homeBlog.getContent().length()>140){
                 homeBlog.setContentTxt(homeBlog.getContent().substring(0,140));
@@ -85,7 +96,6 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setContentTxt(homeBlog.getContent());
             }
         }
-        //处理特殊字符
 //        String title = homeBlog.getTitle();
 //        if(!CommonUtils.checkFull(title)){
 //            title = title.replaceAll("\"","&quot;");
@@ -447,7 +457,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         PageBean<HomeBlog> pageBean = null;
         switch (searchType) {
             case 0://0查询首页推荐
-                List eblogList = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, (page-1)*count, page*count);
+                List eblogList = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, (page-1)*count, (page-1)*count+count);
                 pageBean = new PageBean<HomeBlog>();
                 pageBean.setSize(eblogList.size());
                 pageBean.setPageNum(page);
