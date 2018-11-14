@@ -79,7 +79,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         //处理特殊字符
-        byte[] b_text = homeBlog.getContent().getBytes();
+        String content = homeBlog.getContent();
+        content = content.replaceAll("0000","#@#@#");
+        byte[] b_text = content.getBytes();
         for (int i = 0; i < b_text.length; i++){
             if((b_text[i] & 0xF8)==0xF0){
                 for (int j = 0; j < 4; j++) {
@@ -88,7 +90,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 i+=3;
             }
         }
-        homeBlog.setContent(new String(b_text));
+        content = new String(b_text);
+        content = content.replaceAll("0000","");
+        content = content.replaceAll("#@#@#","0000");
+        homeBlog.setContent(content);
         if(!CommonUtils.checkFull(homeBlog.getContent())){
             if(homeBlog.getContent().length()>140){
                 homeBlog.setContentTxt(homeBlog.getContent().substring(0,140));
