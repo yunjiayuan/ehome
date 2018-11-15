@@ -66,6 +66,8 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
         }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_EBLOG + homeBlog.getUserId()+"_"+homeBlog.getId(), 0);
+        //重新将生活圈加载到缓存
+        redisUtils.hmset(Constants.REDIS_KEY_EBLOG+homeBlog.getUserId()+"_"+homeBlog.getId(),CommonUtils.objectToMap(hb),Constants.USER_TIME_OUT);
         //更新生活秀首页推荐列表
         List list = null;
         list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
