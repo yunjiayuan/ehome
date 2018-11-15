@@ -226,7 +226,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     public ReturnData findBlogInfo(@PathVariable long userId,@PathVariable long blogId) {
         Map<String,Object> blogInfoMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG+userId+"_"+blogId);
         if(blogInfoMap==null||blogInfoMap.size()<=0){
-            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId,CommonUtils.getMyId());
+            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId,userId);
             if(homeBlog!=null){
                 //放到缓存中
                 blogInfoMap = CommonUtils.objectToMap(homeBlog);
