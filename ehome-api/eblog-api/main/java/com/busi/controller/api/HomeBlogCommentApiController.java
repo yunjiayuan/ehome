@@ -40,4 +40,15 @@ public interface HomeBlogCommentApiController {
      */
     @GetMapping("findCommentList/{blogId}/{page}/{count}")
     ReturnData findCommentList(@PathVariable long blogId, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询生活圈指定评论下的回复记录接口
+     * @param contentId     评论ID
+     * @param page       页码 第几页 起始值1
+     * @param count      每页条数
+     * @return
+     */
+    @GetMapping("findReplyList/{contentId}/{page}/{count}")
+    ReturnData findReplyList(@PathVariable long contentId, @PathVariable int page, @PathVariable int count);
+
 }

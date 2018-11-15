@@ -22,8 +22,8 @@ public interface HomeBlogCommentDao {
      * @param homeBlogComment
      * @return
      */
-    @Insert("insert into HomeBlogComment(userId,blogId,replayId,masterId,content,time,replyType,replyStatus) " +
-            "values (#{userId},#{blogId},#{replayId},#{masterId},#{content},#{time},#{replyType},#{replyStatus})")
+    @Insert("insert into HomeBlogComment(userId,blogId,replayId,masterId,content,time,replyType,replyStatus,fatherId) " +
+            "values (#{userId},#{blogId},#{replayId},#{masterId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId})")
     @Options(useGeneratedKeys = true)
     int addComment(HomeBlogComment homeBlogComment);
 
@@ -70,16 +70,17 @@ public interface HomeBlogCommentDao {
     List<HomeBlogComment> findList(@Param("blogId") long blogId);
 
     /***
-     * 查询回复列表(只查评论replyType = 1)
-     * @param blogId  博文ID
+     * 查询回复列表(只查回复replyType = 1)
+     * @param contentId  评论ID
      * @return
      */
     @Select("<script>" +
             "select * from HomeBlogComment" +
             " where 1=1" +
-            " and blogId=#{blogId} and replyStatus=0 and replyType = 1" +
+            " and fatherId=#{contentId} and replyStatus=0 and replyType = 1" +
+            " order by time desc" +
             "</script>")
-    List<HomeBlogComment> findReplyList(@Param("blogId") long blogId);
+    List<HomeBlogComment> findReplyList(@Param("contentId") long contentId);
 
     /***
      * 查询消息列表
@@ -143,5 +144,17 @@ public interface HomeBlogCommentDao {
             "</script>")
     List<HomeBlog> findIdList(@Param("blIds") String[] blIds);
 
+    /***
+     * 查询回复列表(只查回复replyType = 1)
+     * @param commentId  评论ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeBlogComment" +
+            " where 1=1" +
+            " and fatherId=#{commentId} and replyStatus = 0 and replyType=1" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlogComment> findMessList(@Param("commentId") long commentId);
 
 }

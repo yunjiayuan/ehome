@@ -93,13 +93,25 @@ public class HomeBlogCommentService {
 
     /***
      * 查询回复列表
-     * @param blogId  博文ID
+     * @param contentId  评论ID
      * @return
      */
-    public List<HomeBlogComment> findReplyList(long blogId) {
+    public PageBean<HomeBlogComment> findReplyList(long contentId, int page, int count) {
+        List<HomeBlogComment> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogCommentDao.findReplyList(contentId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param commentId  评论ID
+     * @return
+     */
+    public List<HomeBlogComment> findMessList(long commentId) {
 
         List<HomeBlogComment> list;
-        list = homeBlogCommentDao.findReplyList(blogId);
+        list = homeBlogCommentDao.findMessList(commentId);
         return list;
     }
 

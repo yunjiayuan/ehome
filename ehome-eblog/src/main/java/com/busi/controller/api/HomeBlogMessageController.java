@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.HomeBlogCommentService;
-import com.busi.service.HomeBlogService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
 import com.busi.utils.UserInfoUtils;
@@ -25,9 +24,6 @@ import java.util.Map;
  */
 @RestController
 public class HomeBlogMessageController extends BaseController implements HomeBlogMessageApiController {
-
-    @Autowired
-    private HomeBlogService homeBlogService;
 
     @Autowired
     private UserInfoUtils userInfoUtils;
