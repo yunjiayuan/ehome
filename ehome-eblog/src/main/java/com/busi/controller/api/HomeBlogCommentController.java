@@ -100,18 +100,18 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (comment == null) {
             return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "评论不存在", new JSONArray());
         }
-        //查询该条生活圈信息
-        Map<String, Object> blogMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG + comment.getMasterId() + "_" + comment.getBlogId());
-        if (blogMap == null || blogMap.size() <= 0) {
-            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
-        }
-        //判断操作人权限
-        long userId = comment.getUserId();//评论者ID
-        long myId = CommonUtils.getMyId();//登陆者ID
-        long masterId = comment.getMasterId();//博主ID
-        if (myId != userId && myId != masterId) {
-            return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "参数有误，当前用户[" + myId + "]无权限删除用户[" + masterId + "]的生活圈评论", new JSONObject());
-        }
+//        //查询该条生活圈信息
+//        Map<String, Object> blogMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG + comment.getMasterId() + "_" + comment.getBlogId());
+//        if (blogMap == null || blogMap.size() <= 0) {
+//            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
+//        }
+//        //判断操作人权限
+//        long userId = comment.getUserId();//评论者ID
+//        long myId = CommonUtils.getMyId();//登陆者ID
+//        long masterId = comment.getMasterId();//博主ID
+//        if (myId != userId && myId != masterId) {
+//            return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "参数有误，当前用户[" + myId + "]无权限删除用户[" + masterId + "]的生活圈评论", new JSONObject());
+//        }
         comment.setReplyStatus(1);//1删除
         homeBlogCommentService.update(comment);
         List list = null;
@@ -143,10 +143,12 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                             list2 = homeBlogCommentService.findMessList(comment.getFatherId());
                             if (list2 != null && list2.size() > 0) {
                                 HomeBlogComment message = null;
-                                for (int j = 0; j < 5; j++) {
-                                    message = (HomeBlogComment) list2.get(j);
-                                    if (message != null) {
-                                        messageList.add(message);
+                                for (int j = 0; j < list2.size(); j++) {
+                                    if (j < 5) {
+                                        message = (HomeBlogComment) list2.get(j);
+                                        if (message != null) {
+                                            messageList.add(message);
+                                        }
                                     }
                                 }
                                 redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getFatherId(), messageList, 0);
@@ -254,7 +256,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                 }
                 //获取缓存中回复列表
                 list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getId(), 0, -1);
-                if (list != null) {
+                if (list != null && list.size() > 0) {
                     for (int i = 0; i < list.size(); i++) {//回复
                         HomeBlogComment message = null;
                         message = (HomeBlogComment) list.get(i);
@@ -272,18 +274,20 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                     comment.setMessageList(list);
                 } else {
                     //查询数据库 （获取最新五条回复）
-                    list2 = homeBlogCommentService.findMessList(comment.getFatherId());
+                    list2 = homeBlogCommentService.findMessList(comment.getId());
                     if (list2 != null && list2.size() > 0) {
                         HomeBlogComment message = null;
-                        for (int l = 0; l < 5; l++) {
-                            message = (HomeBlogComment) list2.get(l);
-                            if (message != null) {
-                                messageArrayList.add(message);
+                        for (int l = 0; l < list2.size(); l++) {
+                            if (l < 5) {
+                                message = (HomeBlogComment) list2.get(l);
+                                if (message != null) {
+                                    messageArrayList.add(message);
+                                }
+                                comment.setMessageList(list2);
                             }
                         }
-                        comment.setMessageList(list2);
                         //更新缓存
-                        redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getFatherId(), messageArrayList, 0);
+                        redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getId(), messageArrayList, 0);
                     }
                 }
             }
