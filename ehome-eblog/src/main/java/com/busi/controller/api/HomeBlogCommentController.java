@@ -67,11 +67,11 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         } else {//新增回复
             List list = null;
             //先添加到缓存集合(七天失效)
-            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), homeBlogComment, Constants.USER_TIME_OUT);
+            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOG_REPLY + homeBlogComment.getFatherId(), homeBlogComment, Constants.USER_TIME_OUT);
             //再保证5条数据
-            list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), 0, -1);
+            list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_REPLY + homeBlogComment.getFatherId(), 0, -1);
             //清除缓存中的回复信息
-            redisUtils.expire(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_EBLOG_REPLY + homeBlogComment.getFatherId(), 0);
             if (list != null && list.size() > 5) {//限制五条回复
                 //缓存中获取最新五条回复
                 HomeBlogComment message = null;
@@ -85,7 +85,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                     }
                 }
                 if (messageList.size() == 5) {
-                    redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), messageList, 0);
+                    redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + homeBlogComment.getFatherId(), messageList, 0);
                 }
             }
         }
@@ -135,14 +135,14 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             List list3 = null;
             List<HomeBlogComment> messageList = new ArrayList<>();
             //获取缓存中回复列表
-            list3 = redisUtils.getList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getFatherId(), 0, -1);
+            list3 = redisUtils.getList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getFatherId(), 0, -1);
             if (list3 != null && list3.size() > 0) {
                 for (int i = 0; i < list3.size(); i++) {
                     HomeBlogComment comment1 = (HomeBlogComment) list3.get(i);
                     if (comment1 != null) {
                         if (comment1.getId() == id) {
                             //清除缓存中的回复信息
-                            redisUtils.expire(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getFatherId(), 0);
+                            redisUtils.expire(Constants.REDIS_KEY_EBLOG_REPLY + comment.getFatherId(), 0);
                             //数据库获取最新五条回复
                             list2 = homeBlogCommentService.findMessList(comment.getFatherId());
                             if (list2 != null && list2.size() > 0) {
@@ -155,7 +155,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                                         }
                                     }
                                 }
-                                redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getFatherId(), messageList, 0);
+                                redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getFatherId(), messageList, 0);
                             }
                             break;
                         }
@@ -266,7 +266,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                     comment.setProTypeId(userInfo.getProType());
                 }
                 //获取缓存中回复列表
-                list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getId(), 0, -1);
+                list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), 0, -1);
                 if (list != null && list.size() > 0) {
                     for (int i = 0; i < list.size(); i++) {//回复
                         HomeBlogComment message = null;
@@ -298,7 +298,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                             }
                         }
                         //更新缓存
-                        redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + comment.getId(), messageArrayList, 0);
+                        redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), messageArrayList, 0);
                     }
                 }
             }
