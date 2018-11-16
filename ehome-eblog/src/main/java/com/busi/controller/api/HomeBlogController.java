@@ -462,7 +462,14 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         PageBean<HomeBlog> pageBean = null;
         switch (searchType) {
             case 0://0查询首页推荐
-                List eblogList = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, (page-1)*count, (page-1)*count+count);
+                long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOGLIST);
+                int pageCount = page*count;
+                if(pageCount>countTotal){
+                    pageCount = -1;
+                }else{
+                    pageCount = pageCount-1;
+                }
+                List eblogList = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, (page-1)*count, pageCount);
                 pageBean = new PageBean<HomeBlog>();
                 pageBean.setSize(eblogList.size());
                 pageBean.setPageNum(page);
