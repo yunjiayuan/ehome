@@ -37,6 +37,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     private FollowInfoUtils followInfoUtils;
 
     @Autowired
+    private UserRelationShipUtils userRelationShipUtils;
+
+    @Autowired
     RedisUtils redisUtils;
 
     @Autowired
@@ -80,21 +83,21 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         }
         //处理特殊字符
         String content = homeBlog.getContent();
-        content = content.replaceAll("0000","#@#@#");
-        byte[] b_text = content.getBytes();
-        for (int i = 0; i < b_text.length; i++){
-            if((b_text[i] & 0xF8)==0xF0){
-                for (int j = 0; j < 4; j++) {
-                    b_text[i+j]=0x30;
+        if(!CommonUtils.checkFull(content)){
+            content = content.replaceAll("0000","#@#@#");
+            byte[] b_text = content.getBytes();
+            for (int i = 0; i < b_text.length; i++){
+                if((b_text[i] & 0xF8)==0xF0){
+                    for (int j = 0; j < 4; j++) {
+                        b_text[i+j]=0x30;
+                    }
+                    i+=3;
                 }
-                i+=3;
             }
-        }
-        content = new String(b_text);
-        content = content.replaceAll("0000","");
-        content = content.replaceAll("#@#@#","0000");
-        homeBlog.setContent(content);
-        if(!CommonUtils.checkFull(homeBlog.getContent())){
+            content = new String(b_text);
+            content = content.replaceAll("0000","");
+            content = content.replaceAll("#@#@#","0000");
+            homeBlog.setContent(content);
             if(homeBlog.getContent().length()>140){
                 homeBlog.setContentTxt(homeBlog.getContent().substring(0,140));
             }else{
@@ -485,7 +488,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             case 2://0查看朋友的生活秀
                 //从缓存中获取好友列表
                 List list = null;
-                list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
+                list = userRelationShipUtils.getFirendList(CommonUtils.getMyId());
                 if(list==null||list.size()<=0){//缓存无好友列表存在 直接返回
                     pageBean = new PageBean<HomeBlog>();
                     pageBean.setList(new ArrayList<>());
@@ -629,7 +632,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         //判断自己是否与该用户是好友关系
         int isFriend = 0;//是否为好友 0不是好友  1是好友
         List list = null;
-        list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
+        list = userRelationShipUtils.getFirendList(CommonUtils.getMyId());
         if(list!=null){//缓存一定存在好友关系 否则该账号异常
             boolean forFlag = false;
             for(int i=0;i<list.size();i++){
