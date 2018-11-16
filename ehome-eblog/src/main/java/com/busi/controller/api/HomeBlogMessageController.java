@@ -81,7 +81,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                                         mess.setUserName(userInfo.getName());
                                     }
                                     mess.setBlogTitle(homeBlog.getTitle());
-                                    mess.setBlogType(homeBlog.getBlogType());
+                                    mess.setBlogType(homeBlog.getSendType());
                                     if (!CommonUtils.checkFull(homeBlog.getImgUrl())) {
                                         mess.setBlogFirstImg(homeBlog.getImgUrl().split(",")[0]);
                                     }

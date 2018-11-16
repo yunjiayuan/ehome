@@ -196,15 +196,24 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                         HomeBlogComment comment2 = null;
                         comment2 = (HomeBlogComment) commentList.get(j);
                         if (comment2 != null) {
-                            if (comment.getId() != comment2.getId()) {
-                                commentList.add(comment);
+                            if (comment.getId() == comment2.getId()) {
+                                redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, 1, comment);
+                                continue;
                             }
                         }
                     }
                 }
             }
+//            for (int j = 0; j < commentList.size(); j++) {
+//                commentList2 = new ArrayList();
+//                if (!commentList2.contains(commentList.get(j))) {
+//                    commentList2.add(commentList.get(j));
+//                }
+//            }
             //更新缓存
-            redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList, 0);
+            redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList2, 0);
+            //获取最新缓存
+            commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, page * count);
         }
 
 //        if (commentList == null) {
