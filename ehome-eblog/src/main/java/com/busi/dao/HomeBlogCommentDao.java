@@ -41,7 +41,7 @@ public interface HomeBlogCommentDao {
      * 根据ID查询
      * @param id
      */
-    @Select("select * from HomeBlogComment where id = #{id} and blogId = #{blogId}")
+    @Select("select * from HomeBlogComment where id = #{id} and blogId = #{blogId} and replyStatus=0")
     HomeBlogComment find(@Param("id") long id, @Param("blogId") long blogId);
 
     /***
