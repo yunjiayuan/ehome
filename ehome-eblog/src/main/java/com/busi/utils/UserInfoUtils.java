@@ -4,7 +4,6 @@ import com.busi.entity.UserInfo;
 import com.busi.fegin.UserInfoLocalControllerFegin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.util.Map;
 
 /**
