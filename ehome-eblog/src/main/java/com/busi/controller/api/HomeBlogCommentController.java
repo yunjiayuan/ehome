@@ -66,14 +66,16 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             redisUtils.addListLeft(Constants.REDIS_KEY_EBLOG_COMMENT + homeBlogComment.getBlogId(), homeBlogComment, Constants.USER_TIME_OUT);
         } else {//新增回复
             List list = null;
-            List<HomeBlogComment> messageList = new ArrayList<>();
             //先添加到缓存集合(七天失效)
             redisUtils.addListLeft(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), homeBlogComment, Constants.USER_TIME_OUT);
             //再保证5条数据
             list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), 0, -1);
+            //清除缓存中的回复信息
+            redisUtils.expire(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), 0);
             if (list != null && list.size() > 5) {//限制五条回复
                 //缓存中获取最新五条回复
                 HomeBlogComment message = null;
+                List<HomeBlogComment> messageList = new ArrayList<>();
                 for (int j = 0; j < list.size(); j++) {
                     if (j < 5) {
                         message = (HomeBlogComment) list.get(j);
@@ -82,7 +84,9 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                         }
                     }
                 }
-                redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), messageList, 0);
+                if (messageList.size() == 5) {
+                    redisUtils.pushList(Constants.REDIS_KEY_EBLOG_MESSAGE + homeBlogComment.getFatherId(), messageList, 0);
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -185,7 +189,14 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         List<HomeBlogComment> messageArrayList = new ArrayList<>();
         PageBean<HomeBlogComment> pageBean = null;
 //        Map<String, Object> map = new HashMap<>();
-        commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, page * count);
+        long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOG_COMMENT + blogId);
+        int pageCount = page * count;
+        if (pageCount > countTotal) {
+            pageCount = -1;
+        } else {
+            pageCount = pageCount - 1;
+        }
+        commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, pageCount);
         //获取数据库中评论列表
         if (commentList == null || commentList.size() < count) {
             pageBean = homeBlogCommentService.findList(blogId, page, count);
