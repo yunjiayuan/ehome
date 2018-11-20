@@ -157,4 +157,15 @@ public interface HomeBlogCommentDao {
             "</script>")
     List<HomeBlogComment> findMessList(@Param("commentId") long commentId);
 
+    /***
+     * 统计该评论下回复数量
+     * @param commentId  评论ID
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from HomeBlogComment" +
+            " where fatherId=#{commentId} and replyStatus=0 and replyType=1" +
+            "</script>")
+    int getReplayCount(@Param("commentId") long commentId);
+
 }

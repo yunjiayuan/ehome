@@ -201,21 +201,26 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (commentList == null || commentList.size() < count) {
             pageBean = homeBlogCommentService.findList(blogId, page, count);
             commentList2 = pageBean.getList();
-            for (int i = 0; i < commentList2.size(); i++) {
-                HomeBlogComment comment = null;
-                comment = (HomeBlogComment) commentList2.get(i);
-                if (comment != null) {
-                    for (int j = 0; j < commentList.size(); j++) {
-                        HomeBlogComment comment2 = null;
-                        comment2 = (HomeBlogComment) commentList.get(j);
-                        if (comment2 != null) {
-                            if (comment.getId() == comment2.getId()) {
-                                redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, 1, comment);
-                                continue;
+            if (commentList2 != null && commentList2.size() > 0) {
+                for (int i = 0; i < commentList2.size(); i++) {
+                    HomeBlogComment comment = null;
+                    comment = (HomeBlogComment) commentList2.get(i);
+                    if (comment != null) {
+                        for (int j = 0; j < commentList.size(); j++) {
+                            HomeBlogComment comment2 = null;
+                            comment2 = (HomeBlogComment) commentList.get(j);
+                            if (comment2 != null) {
+                                if (comment.getId() == comment2.getId()) {
+                                    redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, 1, comment2);
+                                }
                             }
                         }
                     }
                 }
+                //更新缓存
+                redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList2, 0);
+                //获取最新缓存
+                commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, page * count);
             }
 //            for (int j = 0; j < commentList.size(); j++) {
 //                commentList2 = new ArrayList();
@@ -223,12 +228,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
 //                    commentList2.add(commentList.get(j));
 //                }
 //            }
-            //更新缓存
-            redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList2, 0);
-            //获取最新缓存
-            commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, page * count);
         }
-
 //        if (commentList == null) {
 //            pageBean = homeBlogCommentService.findList(blogId, page, count);
 //            commentList = pageBean.getList();
@@ -283,6 +283,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                         }
                     }
                     comment.setMessageList(list);
+                    comment.setReplyNumber(list.size());
                 } else {
                     //查询数据库 （获取最新五条回复）
                     list2 = homeBlogCommentService.findMessList(comment.getId());
@@ -294,9 +295,10 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                                 if (message != null) {
                                     messageArrayList.add(message);
                                 }
-                                comment.setMessageList(list2);
                             }
                         }
+                        comment.setMessageList(messageArrayList);
+                        comment.setReplyNumber(messageArrayList.size());
                         //更新缓存
                         redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), messageArrayList, 0);
                     }
@@ -331,6 +333,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
+        long num = 0;
         UserInfo userInfo = null;
         list = pageBean.getList();
         if (list != null && list.size() > 0) {
@@ -351,7 +354,12 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                     }
                 }
             }
+            //消息
+            num = homeBlogCommentService.getReplayCount(contentId);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        Map<String, Object> map = new HashMap<>();
+        map.put("num", num);
+        map.put("list", list);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

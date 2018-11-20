@@ -148,4 +148,14 @@ public class HomeBlogCommentService {
         return homeBlogCommentDao.updateState(userId, ids);
     }
 
+    /***
+     * 统计该评论下回复数量
+     * @param commentId  评论ID
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public long getReplayCount(long commentId) {
+        return homeBlogCommentDao.getReplayCount(commentId);
+    }
+
 }

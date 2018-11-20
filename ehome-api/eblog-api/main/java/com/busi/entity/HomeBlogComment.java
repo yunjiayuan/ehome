@@ -43,6 +43,7 @@ public class HomeBlogComment {
     private String userHead;        //评论用户 头像
     private int proTypeId;          //评论用户 省简称ID
     private long houseNumber;       //评论用户 门牌号
+    private long replyNumber;       //回复数
     private List   messageList;      //回复集合
 
 
