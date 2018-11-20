@@ -104,18 +104,18 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (comment == null) {
             return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "评论不存在", new JSONArray());
         }
-//        //查询该条生活圈信息
-//        Map<String, Object> blogMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG + comment.getMasterId() + "_" + comment.getBlogId());
-//        if (blogMap == null || blogMap.size() <= 0) {
-//            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
-//        }
-//        //判断操作人权限
-//        long userId = comment.getUserId();//评论者ID
-//        long myId = CommonUtils.getMyId();//登陆者ID
-//        long masterId = comment.getMasterId();//博主ID
-//        if (myId != userId && myId != masterId) {
-//            return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "参数有误，当前用户[" + myId + "]无权限删除用户[" + masterId + "]的生活圈评论", new JSONObject());
-//        }
+        //查询该条生活圈信息
+        Map<String, Object> blogMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG + comment.getMasterId() + "_" + comment.getBlogId());
+        if (blogMap == null || blogMap.size() <= 0) {
+            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
+        }
+        //判断操作人权限
+        long userId = comment.getUserId();//评论者ID
+        long myId = CommonUtils.getMyId();//登陆者ID
+        long masterId = comment.getMasterId();//博主ID
+        if (myId != userId && myId != masterId) {
+            return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "参数有误，当前用户[" + myId + "]无权限删除用户[" + masterId + "]的生活圈评论", new JSONObject());
+        }
         comment.setReplyStatus(1);//1删除
         homeBlogCommentService.update(comment);
         List list = null;
