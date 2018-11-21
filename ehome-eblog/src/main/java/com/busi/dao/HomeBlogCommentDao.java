@@ -145,6 +145,19 @@ public interface HomeBlogCommentDao {
     List<HomeBlog> findIdList(@Param("blIds") String[] blIds);
 
     /***
+     * 查询指定生活圈
+     * @param id  博文ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            " and id = #{id}" +
+            " and blogStatus = 0" +
+            "</script>")
+    HomeBlog findId(@Param("id") long id);
+
+    /***
      * 查询回复列表(只查回复replyType = 1)
      * @param commentId  评论ID
      * @return

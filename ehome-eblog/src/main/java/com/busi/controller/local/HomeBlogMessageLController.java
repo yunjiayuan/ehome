@@ -2,6 +2,7 @@ package com.busi.controller.local;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.HomeBlogComment;
 import com.busi.entity.HomeBlogMessage;
 import com.busi.entity.ReturnData;
 import com.busi.service.HomeBlogCommentService;
@@ -35,6 +36,16 @@ public class HomeBlogMessageLController extends BaseController implements HomeBl
         homeBlogMessage.setNewsState(1);
         homeBlogMessage.setTime(new Date());
         homeBlogCommentService.addMessage(homeBlogMessage);
+        if (homeBlogMessage.getNewsState() == 3) {
+            HomeBlogComment comment = new HomeBlogComment();
+            comment.setReplyType(2);
+            comment.setTime(new Date());
+            comment.setBlogId(homeBlogMessage.getBlog());
+            comment.setUserId(homeBlogMessage.getUserId());
+            comment.setContent(homeBlogMessage.getContent());
+            comment.setMasterId(homeBlogMessage.getReplayId());
+            homeBlogCommentService.addComment(comment);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

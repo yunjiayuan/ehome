@@ -31,7 +31,7 @@ public class HomeBlogComment {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;                //评论的时间
 
-    private int replyType;             //0评论 1回复
+    private int replyType;             //0评论 1回复 2转发评论
 
     private int replyStatus;            //0正常 1删除
 

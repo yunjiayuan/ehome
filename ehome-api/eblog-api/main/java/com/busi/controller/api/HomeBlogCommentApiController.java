@@ -38,8 +38,8 @@ public interface HomeBlogCommentApiController {
      * @param count      每页条数
      * @return
      */
-    @GetMapping("findCommentList/{blogId}/{page}/{count}")
-    ReturnData findCommentList(@PathVariable long blogId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findCommentList/{type}/{blogId}/{page}/{count}")
+    ReturnData findCommentList(@PathVariable int type,@PathVariable long blogId, @PathVariable int page, @PathVariable int count);
 
     /***
      * 查询生活圈指定评论下的回复记录接口

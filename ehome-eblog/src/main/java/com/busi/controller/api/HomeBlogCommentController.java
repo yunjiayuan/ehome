@@ -171,12 +171,13 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
     /***
      * 查询生活圈评论记录接口
      * @param blogId     生活圈ID
+     * @param type       0评论 1转发评论
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
      * @return
      */
     @Override
-    public ReturnData findCommentList(@PathVariable long blogId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findCommentList(@PathVariable int type, @PathVariable long blogId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -188,47 +189,82 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         List commentList2 = null;
         List<HomeBlogComment> messageArrayList = new ArrayList<>();
         PageBean<HomeBlogComment> pageBean = null;
-//        Map<String, Object> map = new HashMap<>();
-        long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOG_COMMENT + blogId);
-        int pageCount = page * count;
-        if (pageCount > countTotal) {
-            pageCount = -1;
-        } else {
-            pageCount = pageCount - 1;
-        }
-        commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, pageCount);
-        //获取数据库中评论列表
-        if (commentList == null || commentList.size() < count) {
+        if (type == 1) {//查询转发评论
             pageBean = homeBlogCommentService.findList(blogId, page, count);
-            commentList2 = pageBean.getList();
-            if (commentList2 != null && commentList2.size() > 0) {
-                for (int i = 0; i < commentList2.size(); i++) {
+            commentList = pageBean.getList();
+            if (commentList != null && commentList.size() > 0) {
+                for (int j = 0; j < commentList.size(); j++) {//评论
+                    UserInfo userInfo = null;
                     HomeBlogComment comment = null;
-                    comment = (HomeBlogComment) commentList2.get(i);
-                    if (comment != null) {
-                        for (int j = 0; j < commentList.size(); j++) {
-                            HomeBlogComment comment2 = null;
-                            comment2 = (HomeBlogComment) commentList.get(j);
-                            if (comment2 != null) {
-                                if (comment.getId() == comment2.getId()) {
-                                    redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, 1, comment2);
+                    comment = (HomeBlogComment) commentList.get(j);
+                    if (comment != null && comment.getReplyType() == 2) {
+                        userInfo = userInfoUtils.getUserInfo(comment.getUserId());
+                        if (userInfo != null) {
+                            comment.setUserHead(userInfo.getHead());
+                            comment.setUserName(userInfo.getName());
+                            comment.setHouseNumber(userInfo.getHouseNumber());
+                            comment.setProTypeId(userInfo.getProType());
+                        }
+                        //查询数据库 （获取最新五条回复）
+                        list = homeBlogCommentService.findMessList(comment.getId());
+                        if (list != null && list.size() > 0) {
+                            HomeBlogComment message = null;
+                            for (int l = 0; l < list.size(); l++) {
+                                if (l < 5) {
+                                    message = (HomeBlogComment) list.get(l);
+                                    if (message != null) {
+                                        messageArrayList.add(message);
+                                    }
+                                }
+                            }
+                            comment.setMessageList(messageArrayList);
+                            comment.setReplyNumber(messageArrayList.size());
+                        }
+                    }
+                }
+            }
+        } else {
+//        Map<String, Object> map = new HashMap<>();
+            long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOG_COMMENT + blogId);
+            int pageCount = page * count;
+            if (pageCount > countTotal) {
+                pageCount = -1;
+            } else {
+                pageCount = pageCount - 1;
+            }
+            commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, pageCount);
+            //获取数据库中评论列表
+            if (commentList == null || commentList.size() < count) {
+                pageBean = homeBlogCommentService.findList(blogId, page, count);
+                commentList2 = pageBean.getList();
+                if (commentList2 != null && commentList2.size() > 0) {
+                    for (int i = 0; i < commentList2.size(); i++) {
+                        HomeBlogComment comment = null;
+                        comment = (HomeBlogComment) commentList2.get(i);
+                        if (comment != null) {
+                            for (int j = 0; j < commentList.size(); j++) {
+                                HomeBlogComment comment2 = null;
+                                comment2 = (HomeBlogComment) commentList.get(j);
+                                if (comment2 != null) {
+                                    if (comment.getId() == comment2.getId()) {
+                                        redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, 1, comment2);
+                                    }
                                 }
                             }
                         }
                     }
+                    //更新缓存
+                    redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList2, 0);
+                    //获取最新缓存
+                    commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, page * count);
                 }
-                //更新缓存
-                redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList2, 0);
-                //获取最新缓存
-                commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, page * count);
-            }
 //            for (int j = 0; j < commentList.size(); j++) {
 //                commentList2 = new ArrayList();
 //                if (!commentList2.contains(commentList.get(j))) {
 //                    commentList2.add(commentList.get(j));
 //                }
 //            }
-        }
+            }
 //        if (commentList == null) {
 //            pageBean = homeBlogCommentService.findList(blogId, page, count);
 //            commentList = pageBean.getList();
@@ -250,57 +286,58 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
 //                redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList, 0);
 //            }
 //        }
-        if (commentList == null) {
-            commentList = new ArrayList();
-        }
-        for (int j = 0; j < commentList.size(); j++) {//评论
-            UserInfo userInfo = null;
-            HomeBlogComment comment = null;
-            comment = (HomeBlogComment) commentList.get(j);
-            if (comment != null) {
-                userInfo = userInfoUtils.getUserInfo(comment.getUserId());
-                if (userInfo != null) {
-                    comment.setUserHead(userInfo.getHead());
-                    comment.setUserName(userInfo.getName());
-                    comment.setHouseNumber(userInfo.getHouseNumber());
-                    comment.setProTypeId(userInfo.getProType());
-                }
-                //获取缓存中回复列表
-                list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), 0, -1);
-                if (list != null && list.size() > 0) {
-                    for (int i = 0; i < list.size(); i++) {//回复
-                        HomeBlogComment message = null;
-                        message = (HomeBlogComment) list.get(i);
-                        if (message != null) {
-                            userInfo = userInfoUtils.getUserInfo(message.getReplayId());
-                            if (userInfo != null) {
-                                message.setReplayName(userInfo.getName());
-                            }
-                            userInfo = userInfoUtils.getUserInfo(message.getUserId());
-                            if (userInfo != null) {
-                                message.setUserName(userInfo.getName());
-                            }
-                        }
+            if (commentList == null) {
+                commentList = new ArrayList();
+            }
+            for (int j = 0; j < commentList.size(); j++) {//评论
+                UserInfo userInfo = null;
+                HomeBlogComment comment = null;
+                comment = (HomeBlogComment) commentList.get(j);
+                if (comment != null) {
+                    userInfo = userInfoUtils.getUserInfo(comment.getUserId());
+                    if (userInfo != null) {
+                        comment.setUserHead(userInfo.getHead());
+                        comment.setUserName(userInfo.getName());
+                        comment.setHouseNumber(userInfo.getHouseNumber());
+                        comment.setProTypeId(userInfo.getProType());
                     }
-                    comment.setMessageList(list);
-                    comment.setReplyNumber(list.size());
-                } else {
-                    //查询数据库 （获取最新五条回复）
-                    list2 = homeBlogCommentService.findMessList(comment.getId());
-                    if (list2 != null && list2.size() > 0) {
-                        HomeBlogComment message = null;
-                        for (int l = 0; l < list2.size(); l++) {
-                            if (l < 5) {
-                                message = (HomeBlogComment) list2.get(l);
-                                if (message != null) {
-                                    messageArrayList.add(message);
+                    //获取缓存中回复列表
+                    list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), 0, -1);
+                    if (list != null && list.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {//回复
+                            HomeBlogComment message = null;
+                            message = (HomeBlogComment) list.get(i);
+                            if (message != null) {
+                                userInfo = userInfoUtils.getUserInfo(message.getReplayId());
+                                if (userInfo != null) {
+                                    message.setReplayName(userInfo.getName());
+                                }
+                                userInfo = userInfoUtils.getUserInfo(message.getUserId());
+                                if (userInfo != null) {
+                                    message.setUserName(userInfo.getName());
                                 }
                             }
                         }
-                        comment.setMessageList(messageArrayList);
-                        comment.setReplyNumber(messageArrayList.size());
-                        //更新缓存
-                        redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), messageArrayList, 0);
+                        comment.setMessageList(list);
+                        comment.setReplyNumber(list.size());
+                    } else {
+                        //查询数据库 （获取最新五条回复）
+                        list2 = homeBlogCommentService.findMessList(comment.getId());
+                        if (list2 != null && list2.size() > 0) {
+                            HomeBlogComment message = null;
+                            for (int l = 0; l < list2.size(); l++) {
+                                if (l < 5) {
+                                    message = (HomeBlogComment) list2.get(l);
+                                    if (message != null) {
+                                        messageArrayList.add(message);
+                                    }
+                                }
+                            }
+                            comment.setMessageList(messageArrayList);
+                            comment.setReplyNumber(messageArrayList.size());
+                            //更新缓存
+                            redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), messageArrayList, 0);
+                        }
                     }
                 }
             }

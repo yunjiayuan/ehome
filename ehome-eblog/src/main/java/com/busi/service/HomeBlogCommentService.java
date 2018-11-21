@@ -92,6 +92,16 @@ public class HomeBlogCommentService {
     }
 
     /***
+     * 查询博文
+     * @param id 博文ID
+     * @return
+     */
+    public HomeBlog findId(long id) {
+        return homeBlogCommentDao.findId(id);
+    }
+
+
+    /***
      * 查询回复列表
      * @param contentId  评论ID
      * @return
