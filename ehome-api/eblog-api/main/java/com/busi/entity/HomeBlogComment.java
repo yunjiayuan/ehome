@@ -35,7 +35,9 @@ public class HomeBlogComment {
 
     private int replyStatus;            //0正常 1删除
 
-    private long fatherId;     //评论回复父级ID
+    private long fatherId;              //评论根父级ID
+
+    private long secondFatherId;         //评论次父级ID
 
     //与数据库无关字段
     private String replayName;    //被回复用户名称
@@ -44,7 +46,7 @@ public class HomeBlogComment {
     private int proTypeId;          //评论用户 省简称ID
     private long houseNumber;       //评论用户 门牌号
     private long replyNumber;       //回复数
-    private List   messageList;      //回复集合
+    private List messageList;      //回复集合
 
 
 }

@@ -22,8 +22,8 @@ public interface HomeBlogCommentDao {
      * @param homeBlogComment
      * @return
      */
-    @Insert("insert into HomeBlogComment(userId,blogId,replayId,masterId,content,time,replyType,replyStatus,fatherId) " +
-            "values (#{userId},#{blogId},#{replayId},#{masterId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId})")
+    @Insert("insert into HomeBlogComment(userId,blogId,replayId,masterId,content,time,replyType,replyStatus,fatherId,secondFatherId) " +
+            "values (#{userId},#{blogId},#{replayId},#{masterId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId})")
     @Options(useGeneratedKeys = true)
     int addComment(HomeBlogComment homeBlogComment);
 
