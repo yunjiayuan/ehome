@@ -121,8 +121,20 @@ public class HomeBlogCommentService {
     public List<HomeBlogComment> findMessList(long commentId) {
 
         List<HomeBlogComment> list;
-        list = homeBlogCommentDao.findMessList(commentId);
+        list = homeBlogCommentDao.findReplyList(commentId);
         return list;
+    }
+
+    /***
+     * 查询转发评论列表
+     * @param id  生活圈ID
+     * @return
+     */
+    public PageBean<HomeBlogComment> findForwardList(long id, int page, int count) {
+        List<HomeBlogComment> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogCommentDao.findForwardList(id);
+        return PageUtils.getPageBean(p, list);
     }
 
     /***

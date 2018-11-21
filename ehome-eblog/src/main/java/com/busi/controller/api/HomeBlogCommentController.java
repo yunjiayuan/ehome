@@ -190,7 +190,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         List<HomeBlogComment> messageArrayList = new ArrayList<>();
         PageBean<HomeBlogComment> pageBean = null;
         if (type == 1) {//查询转发评论
-            pageBean = homeBlogCommentService.findList(blogId, page, count);
+            pageBean = homeBlogCommentService.findForwardList(blogId, page, count);
             commentList = pageBean.getList();
             if (commentList != null && commentList.size() > 0) {
                 for (int j = 0; j < commentList.size(); j++) {//评论

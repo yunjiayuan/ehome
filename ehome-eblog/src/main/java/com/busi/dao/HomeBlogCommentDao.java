@@ -83,6 +83,19 @@ public interface HomeBlogCommentDao {
     List<HomeBlogComment> findReplyList(@Param("contentId") long contentId);
 
     /***
+     * 查询转发评论列表(只查回复replyType = 2)
+     * @param blogId  生活圈ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeBlogComment" +
+            " where 1=1" +
+            " and blogId=#{blogId} and replyStatus=0 and replyType = 2" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlogComment> findForwardList(@Param("blogId") long blogId);
+
+    /***
      * 查询消息列表
      * @param type  查询类型  0所有 1未读 2已读
      * @return
@@ -156,19 +169,6 @@ public interface HomeBlogCommentDao {
             " and blogStatus = 0" +
             "</script>")
     HomeBlog findId(@Param("id") long id);
-
-    /***
-     * 查询回复列表(只查回复replyType = 1)
-     * @param commentId  评论ID
-     * @return
-     */
-    @Select("<script>" +
-            "select * from HomeBlogComment" +
-            " where 1=1" +
-            " and fatherId=#{commentId} and replyStatus = 0 and replyType=1" +
-            " order by time desc" +
-            "</script>")
-    List<HomeBlogComment> findMessList(@Param("commentId") long commentId);
 
     /***
      * 统计该评论下回复数量
