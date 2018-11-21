@@ -55,15 +55,21 @@ public class NotepadController extends BaseController implements NotepadApiContr
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        int num = 0;
         Notepad note = null;
-        if (notepad.getAddType() == 1) {//记事  （每天只能有一条）
-            note = notepadService.findDayInfo(notepad.getUserId(), notepad.getThisDateId());
-            if (note != null) {
-                return returnData(StatusCode.CODE_NOTEPAD_REPEAT_ERROR.CODE_VALUE, "新增记事失败，今天已有记事！", new JSONObject());
+        if (notepad.getAddType() == 1) {//记事
+//            note = notepadService.findDayInfo(notepad.getUserId(), notepad.getThisDateId());
+//            if (note != null) {
+//                return returnData(StatusCode.CODE_NOTEPAD_REPEAT_ERROR.CODE_VALUE, "新增记事失败，今天已有记事！", new JSONObject());
+//            }
+            //判断该用户记事数量   每天最多10条
+            num = notepadService.findNum(notepad.getUserId(), notepad.getAddType());
+            if (num >= 10) {
+                return returnData(StatusCode.CODE_NOTEPAD_REPEAT_ERROR.CODE_VALUE, "新增记事数量超过上限,新增失败", new JSONObject());
             }
         } else {
             //判断该用户日程数量   每天最多10条
-            int num = notepadService.findNum(notepad.getUserId());
+            num = notepadService.findNum(notepad.getUserId(), notepad.getAddType());
             if (num >= 10) {
                 return returnData(StatusCode.CODE_NOTEPAD_SCHEDULE_ERROR.CODE_VALUE, "新增日程数量超过上限,新增失败", new JSONObject());
             }
@@ -84,7 +90,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
         //新增任务
         mqUtils.sendTaskMQ(notepad.getUserId(), 1, 9);
         //新增足迹
-        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(),  null, null, null, notepad.getId() + "," + notepad.getAddType(), 6);
+        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), null, null, null, notepad.getId() + "," + notepad.getAddType(), 6);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

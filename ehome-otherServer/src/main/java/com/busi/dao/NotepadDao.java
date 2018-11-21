@@ -59,14 +59,16 @@ public interface NotepadDao {
     /***
      * 统计该用户当天日程数量
      * @param userId
+     * @param type 0日程 1记事
      * @return
      */
     @Select("<script>" +
             "select count(id) from notepad" +
-            " where userId=#{userId} and addType=0" +
+            " where userId=#{userId}" +
+            " and addType = #{type}" +
             " and TO_DAYS(time)=TO_DAYS(NOW())" +
             "</script>")
-    int findNum(@Param("userId") long userId);
+    int findNum(@Param("userId") long userId, @Param("type") long type);
 
     /***
      * 删除

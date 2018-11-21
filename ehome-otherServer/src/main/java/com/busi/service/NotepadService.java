@@ -57,11 +57,12 @@ public class NotepadService {
     /***
      * 统计该用户当天日程数量
      * @param userId
+     * @param type 0日程 1记事
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int findNum(long userId) {
-        return notepadDao.findNum(userId);
+    public int findNum(long userId, int type) {
+        return notepadDao.findNum(userId, type);
     }
 
     /***
