@@ -36,7 +36,7 @@ public class HomeBlogMessageLController extends BaseController implements HomeBl
         homeBlogMessage.setNewsState(1);
         homeBlogMessage.setTime(new Date());
         homeBlogCommentService.addMessage(homeBlogMessage);
-        if (homeBlogMessage.getNewsState() == 3) {
+        if (homeBlogMessage.getNewsType() == 3) {
             HomeBlogComment comment = new HomeBlogComment();
             comment.setReplyType(2);
             comment.setTime(new Date());
