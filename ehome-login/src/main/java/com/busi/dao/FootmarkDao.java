@@ -120,6 +120,7 @@ public interface FootmarkDao {
             "</if>" +
             "<if test=\"footmarkType == -1\">" +
             " <![CDATA[ and footmarkType < 6 ]]>" +
+            " and TO_DAYS(addTime)=TO_DAYS(NOW())" +
             "</if>" +
             " and footmarkStatus = 0" +
             " order by addTime desc" +
