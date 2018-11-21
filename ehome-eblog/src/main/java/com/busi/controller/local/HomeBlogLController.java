@@ -69,35 +69,37 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
         //重新将生活圈加载到缓存
         redisUtils.hmset(Constants.REDIS_KEY_EBLOG+homeBlog.getUserId()+"_"+homeBlog.getId(),CommonUtils.objectToMap(hb),Constants.USER_TIME_OUT);
         //更新生活秀首页推荐列表
-        List list = null;
-        list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
-        if(list!=null){
-            boolean falg = false;
-            for (int i = 0; i < list.size(); i++) {
-                HomeBlog redisHomeBlog = (HomeBlog) list.get(i);
-                if(redisHomeBlog!=null){
-                    if(redisHomeBlog.getId()==hb.getId()){//推荐列表中存在 更新
-                        redisUtils.updateListByIndex(Constants.REDIS_KEY_EBLOGLIST,i,hb);
-                        falg = true;
-                        break;
+        if(hb.getBlogType()!=1){//转发不进入首页推荐列表
+            List list = null;
+            list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
+            if(list!=null){
+                boolean falg = false;
+                for (int i = 0; i < list.size(); i++) {
+                    HomeBlog redisHomeBlog = (HomeBlog) list.get(i);
+                    if(redisHomeBlog!=null){
+                        if(redisHomeBlog.getId()==hb.getId()){//推荐列表中存在 更新
+                            redisUtils.updateListByIndex(Constants.REDIS_KEY_EBLOGLIST,i,hb);
+                            falg = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if(!falg){//推荐列表中不存在
+                if(!falg){//推荐列表中不存在
+                    //判断点赞量是否达到推荐级别
+                    if(hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
+                        redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
+                    }
+                }
+                if (list.size() > Constants.REDIS_KEY_EBLOGLIST_COUNT) {
+                    //清除缓存中多余的信息
+                    redisUtils.expire(Constants.REDIS_KEY_EBLOGLIST, 0);
+                    redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);
+                }
+            }else{//不存在
                 //判断点赞量是否达到推荐级别
                 if(hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
                     redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
                 }
-            }
-            if (list.size() > Constants.REDIS_KEY_EBLOGLIST_COUNT) {
-                //清除缓存中多余的信息
-                redisUtils.expire(Constants.REDIS_KEY_EBLOGLIST, 0);
-                redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);
-            }
-        }else{//不存在
-            //判断点赞量是否达到推荐级别
-            if(hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
-                redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());

@@ -95,6 +95,7 @@ public interface HomeBlogDao {
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0  or userId=#{userId} )" +
             "<if test=\"searchType != 0\">" +
             " and sendType = 2" +
+            " and blogType != 1" +
             "</if>" +
             " and blogStatus = 0" +
             " order by time desc" +
@@ -121,6 +122,7 @@ public interface HomeBlogDao {
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0 or userId=#{userId} )" +
             "<if test=\"searchType != 0\">" +
             " and sendType = 2" +
+            " and blogType != 1" +
             "</if>" +
             " and blogStatus = 0" +
             " order by time desc" +
@@ -130,6 +132,7 @@ public interface HomeBlogDao {
     /***
      * 根据指定用户ID查询列表
      * @param searchType 博文类型：0查自己 1查别人
+     * @param sendType   博文类型：0所有 1只看视频
      * @param userId     被查询用户ID
      * @param userIds    处理过的登录者用户ID 用于判断可见范围
      * @return
@@ -142,6 +145,7 @@ public interface HomeBlogDao {
             "</if>" +
             "<if test=\"sendType != 0\">" +
             " and sendType = 2" +
+            " and blogType != 1" +
             "</if>" +
             " and userId = #{userId}" +
             " and blogStatus = 0" +
@@ -162,6 +166,7 @@ public interface HomeBlogDao {
             " and userId != #{userId}" +
             " and cityId = #{cityId}" +
             " and sendType = 2" +
+            " and blogType != 1" +
             " and blogStatus = 0" +
             " order by time desc" +
             "</script>")
