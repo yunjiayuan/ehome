@@ -28,7 +28,12 @@ public class HomeBlogLookController extends BaseController implements HomeBlogLo
      */
     @Override
     public ReturnData updateLook(@PathVariable long userId, @PathVariable long blogId) {
-
+        if(userId<=0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+        }
+        if(blogId<=0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"blogId参数有误",new JSONObject());
+        }
         //更新评论数
         mqUtils.updateBlogCounts(userId, blogId, 3, 1);
 
