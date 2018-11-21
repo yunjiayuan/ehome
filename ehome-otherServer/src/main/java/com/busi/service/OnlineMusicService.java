@@ -36,6 +36,15 @@ public class OnlineMusicService {
     }
 
     /***
+     * 根据ID查询
+     * @param id
+     * @return
+     */
+    public OnlineMusic findMusic(long id) {
+        return onlineMusicDao.findMusic(id);
+    }
+
+    /***
      * 查询歌曲列表
      * @param name  歌名或歌手
      * @param songType 歌曲类型：0.热歌榜 1.流行 2.纯音乐 3.摇滚 4.神曲 5.DJ 6.电音趴 7.说唱 8.国风 9.欧美（PS：仅在name为空时有效）

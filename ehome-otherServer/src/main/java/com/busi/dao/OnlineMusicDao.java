@@ -26,6 +26,13 @@ public interface OnlineMusicDao {
     int add(OnlineMusic onlineMusic);
 
     /***
+     * 根据Id查询足迹
+     * @param id
+     */
+    @Select("select * from OnlineMusic where id=#{id}")
+    OnlineMusic findMusic(@Param("id") long id);
+
+    /***
      * 查询歌曲列表
      * @param name  歌名或歌手
      * @return

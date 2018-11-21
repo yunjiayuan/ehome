@@ -7,6 +7,7 @@ import com.busi.entity.OnlineMusic;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.service.OnlineMusicService;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @program: ehome
@@ -38,6 +41,21 @@ public class OnlineMusicController extends BaseController implements OnlineMusic
         onlineMusicService.add(onlineMusic);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
+
+    /***
+     * 查询详情
+     * @return
+     */
+    @Override
+    public ReturnData findMusic(@PathVariable long id) {
+        //查询数据库
+        OnlineMusic posts = onlineMusicService.findMusic(id);
+        if (posts == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", posts);
+    }
+
 
     /***
      * 查询歌曲列表
