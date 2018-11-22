@@ -20,8 +20,8 @@ public interface HomeBlogDao {
      * @param homeBlog
      * @return
      */
-    @Insert("insert into homeBlog(userId,title,content,contentTxt,imgUrl,videoUrl,videoCoverUrl,audioUrl,singer,songName,sendType,classify,classifyUserIds,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,cityId,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
-            "values (#{userId},#{title},#{content},#{contentTxt},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{singer},#{songName},#{sendType},#{classify},#{classifyUserIds},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{cityId},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
+    @Insert("insert into homeBlog(userId,title,content,contentTxt,imgUrl,videoUrl,videoCoverUrl,audioUrl,musicId,singer,songName,sendType,classify,classifyUserIds,tag,blogType,shareBlogId,shareUserId,origBlogId,origUserId,reprintContent,accessId,blogStatus,longitude,latitude,position,cityId,anonymousType,shareInfo,reward,firstPayUserId,solve,time) " +
+            "values (#{userId},#{title},#{content},#{contentTxt},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{audioUrl},#{musicId},#{singer},#{songName},#{sendType},#{classify},#{classifyUserIds},#{tag},#{blogType},#{shareBlogId},#{shareUserId},#{origBlogId},#{origUserId},#{reprintContent},#{accessId},#{blogStatus},#{longitude},#{latitude},#{position},#{cityId},#{anonymousType},#{shareInfo},#{reward},#{firstPayUserId},#{solve},#{time})")
     @Options(useGeneratedKeys = true)
     int add(HomeBlog homeBlog);
 
@@ -171,5 +171,18 @@ public interface HomeBlogDao {
             " order by time desc" +
             "</script>")
     List<HomeBlog> findBlogListByCityId(@Param("userId") long userId, @Param("userIds") String userIds, @Param("cityId") int cityId);
+
+    /***
+     * 查询点赞数够级别的生活秀列表
+     * @param likeCount 赞数
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            " and likeCount > #{likeCount}" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlog> findBlogListBylikeCount(@Param("likeCount") long likeCount);
 
 }

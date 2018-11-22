@@ -5,6 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.validation.BindingResult;
@@ -370,6 +371,15 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         switch (searchType) {
             case 0://0查询首页推荐
                 long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOGLIST);
+                //处理服务器宕机问题
+                if(countTotal<=0){
+                    PageBean<HomeBlog> pb = homeBlogService.findBlogListBylikeCount(Constants.EBLOG_LIKE_COUNT-1,1,Constants.REDIS_KEY_EBLOGLIST_COUNT);
+                    List<HomeBlog> list = pb.getList();
+                    if(list!=null){
+                        //放入缓存中
+                        redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);
+                    }
+                }
                 int pageCount = page*count;
                 if(pageCount>countTotal){
                     pageCount = -1;

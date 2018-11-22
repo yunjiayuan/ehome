@@ -44,6 +44,8 @@ public class HomeBlog {
     @Length(max = 100, message = "语音地址格式有误")
     private String audioUrl;//语音地址
 
+    private long musicId;//音乐主键Id
+
     private String songName;//背景音乐的歌名
 
     private String singer; //背景音乐的歌手

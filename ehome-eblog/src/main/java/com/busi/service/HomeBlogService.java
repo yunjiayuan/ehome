@@ -131,4 +131,18 @@ public class HomeBlogService {
         list = homeBlogDao.findBlogListByCityId(userId,"," + userId + ",", cityId);
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * 查询点赞数够级别的生活秀列表
+     * @param likeCount 赞数
+     * @param page
+     * @param count
+     * @return
+     */
+    public PageBean<HomeBlog> findBlogListBylikeCount(int likeCount, int page, int count) {
+        List<HomeBlog> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogDao.findBlogListBylikeCount(likeCount);
+        return PageUtils.getPageBean(p, list);
+    }
 }
