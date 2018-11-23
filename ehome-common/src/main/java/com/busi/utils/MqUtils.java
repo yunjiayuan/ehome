@@ -291,4 +291,25 @@ public class MqUtils {
         MQProducer.sendMsg(activeMQQueue,sendMsg);
     }
 
+    /***
+     * 更新生活圈 评论回复数
+     * @param commentId  将要修改的评论ID
+     * @param count      变化的具体数值  可为正负数 正数代表增加  负数代表减少
+     */
+    public void updateCommentCounts(long commentId,int count){
+
+        //调用MQ同步 图片到图片删除记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "14");//interfaceType 14更新生活圈 评论回复数
+        JSONObject content = new JSONObject();
+        content.put("commentId",commentId);
+        content.put("count",count);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
+
 }
