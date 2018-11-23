@@ -89,7 +89,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                 }
             }
             //更新回复数
-
+            mqUtils.updateCommentCounts(homeBlogComment.getFatherId(), 1);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -165,7 +165,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                 }
             }
             //更新回复数
-
+            mqUtils.updateCommentCounts(comment.getFatherId(), 1);
         }
         //更新评论数
         mqUtils.updateBlogCounts(comment.getMasterId(), blogId, 1, -1);
