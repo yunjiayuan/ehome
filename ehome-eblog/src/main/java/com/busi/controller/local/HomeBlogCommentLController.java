@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @program: ehome
  * @description:更新生活圈指定评论回复数相关接口
@@ -31,7 +33,17 @@ public class HomeBlogCommentLController extends BaseController implements HomeBl
     public ReturnData updateCommentNum(@RequestBody HomeBlogComment homeBlogComment) {
         HomeBlogComment comment = homeBlogCommentService.findById(homeBlogComment.getId());
         //清除缓存
-        redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + homeBlogComment.getBlogId(), 1, comment);
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + comment.getBlogId(), 0, -1);
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                HomeBlogComment comment2 = (HomeBlogComment) list.get(i);
+                if (comment2.getId() == comment.getId()) {
+                    redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + comment.getBlogId(), 1, comment2);
+                    break;
+                }
+            }
+        }
         //更新数据库
         if (comment.getReplyNumber() <= 0) {
             if (homeBlogComment.getReplyNumber() > 0) {
