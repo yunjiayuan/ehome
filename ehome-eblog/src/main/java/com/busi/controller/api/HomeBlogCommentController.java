@@ -88,6 +88,8 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                     redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + homeBlogComment.getFatherId(), messageList, 0);
                 }
             }
+            //更新回复数
+
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -100,7 +102,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
      */
     @Override
     public ReturnData delComment(@PathVariable long id, @PathVariable long blogId) {
-        HomeBlogComment comment = homeBlogCommentService.findById(id, blogId);
+        HomeBlogComment comment = homeBlogCommentService.findById(id);
         if (comment == null) {
             return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "评论不存在", new JSONArray());
         }
@@ -162,6 +164,8 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                     }
                 }
             }
+            //更新回复数
+
         }
         //更新评论数
         mqUtils.updateBlogCounts(comment.getMasterId(), blogId, 1, -1);

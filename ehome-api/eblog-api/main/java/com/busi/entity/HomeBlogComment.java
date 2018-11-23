@@ -39,13 +39,14 @@ public class HomeBlogComment {
 
     private long secondFatherId;         //评论次父级ID
 
+    private long replyNumber;       //回复数
+
     //与数据库无关字段
     private String replayName;    //被回复用户名称
     private String userName;        //评论用户 名称
     private String userHead;        //评论用户 头像
     private int proTypeId;          //评论用户 省简称ID
     private long houseNumber;       //评论用户 门牌号
-    private long replyNumber;       //回复数
     private List messageList;      //回复集合
 
 

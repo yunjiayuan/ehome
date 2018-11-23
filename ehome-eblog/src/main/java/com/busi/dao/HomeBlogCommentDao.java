@@ -41,8 +41,8 @@ public interface HomeBlogCommentDao {
      * 根据ID查询
      * @param id
      */
-    @Select("select * from HomeBlogComment where id = #{id} and blogId = #{blogId} and replyStatus=0")
-    HomeBlogComment find(@Param("id") long id, @Param("blogId") long blogId);
+    @Select("select * from HomeBlogComment where id = #{id} and replyStatus=0")
+    HomeBlogComment find(@Param("id") long id);
 
     /***
      * 更新删除状态
@@ -55,6 +55,18 @@ public interface HomeBlogCommentDao {
             " where id=#{id}" +
             "</script>")
     int update(HomeBlogComment homeBlogComment);
+
+    /***
+     * 更新回复数
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update homeBlogComment set" +
+            " replyNumber=#{replyNumber}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateCommentNum(HomeBlogComment homeBlogComment);
 
     /***
      * 查询评论列表(只查评论replyType = 0)

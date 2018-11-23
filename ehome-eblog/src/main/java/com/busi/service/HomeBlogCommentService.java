@@ -50,8 +50,18 @@ public class HomeBlogCommentService {
      * 查询指定评论
      * @return
      */
-    public HomeBlogComment findById(long id, long blogId) {
-        return homeBlogCommentDao.find(id, blogId);
+    public HomeBlogComment findById(long id) {
+        return homeBlogCommentDao.find(id);
+    }
+
+    /***
+     * 更新评论回复数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateCommentNum(HomeBlogComment homeBlogAccess) {
+        return homeBlogCommentDao.updateCommentNum(homeBlogAccess);
     }
 
     /***
