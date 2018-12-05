@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -368,6 +369,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"count参数有误",new JSONObject());
         }
         PageBean<HomeBlog> pageBean = null;
+        Map<String,Distance> distanceMap = new HashMap<>();
+//        String str = "^(-)?[0-9]{1,3}+(.[0-9]{1,6})?$";//匹配（正负）整数3位，小数6位的正则表达式
         switch (searchType) {
             case 0://0查询首页推荐
                 long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOGLIST);
@@ -397,6 +400,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 if(cityId<0){
                     return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"cityId参数有误",new JSONObject());
                 }
+                //验证参数
+//                if(lon<0||lat<0||!String.valueOf(lon).matches(str) || !String.valueOf(lat).matches(str)){
+//                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"位置坐标参数格式有误",new JSONObject());
+//                }
                 pageBean = homeBlogService.findBlogListByCityId(userId,cityId,page,count);
                 break;
             case 2://0查看朋友的生活秀
@@ -472,10 +479,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 break;
             case 6://6查询附近的生活圈（家门口的生活圈）
                 //验证参数
-                String str = "^(-)?[0-9]{1,3}+(.[0-9]{1,6})?$";//匹配（正负）整数3位，小数6位的正则表达式
-                if(lon<0||lat<0||!String.valueOf(lon).matches(str) || !String.valueOf(lat).matches(str)){
-                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"位置坐标参数格式有误",new JSONObject());
-                }
+//                String str = "^(-)?[0-9]{1,3}+(.[0-9]{1,6})?$";//匹配（正负）整数3位，小数6位的正则表达式
+//                if(lon<0||lat<0||!String.valueOf(lon).matches(str) || !String.valueOf(lat).matches(str)){
+//                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"位置坐标参数格式有误",new JSONObject());
+//                }
                 GeoResults<GeoLocation<String>> geoResults =  redisUtils.getPosition(Constants.REDIS_KEY_USER_POSITION_LIST,lat,lon, Constants.RADIUS,0,Constants.LIMIT);
                 Iterator iter  = geoResults.getContent().iterator();
                 String nearUserIds = "";
@@ -493,6 +500,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                             continue;
                         }
                         nearUserIds +=userIdString+",";
+                        distanceMap.put(userIdString,distance);
                     }
                 }
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),nearUserIds.split(","),1,page,count);
@@ -519,7 +527,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
             //添加位置信息
             if(searchType==1||searchType==6){
-                homeBlog.setDistance(CommonUtils.getShortestDistance(lon,lat,homeBlog.getLongitude(),homeBlog.getLatitude()));
+                Distance distance = distanceMap.get(homeBlog.getUserId()+"");
+                homeBlog.setDistance(new BigDecimal(distance.getValue()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
             //设置是否喜欢过状态
             boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+homeBlog.getId(),CommonUtils.getMyId());

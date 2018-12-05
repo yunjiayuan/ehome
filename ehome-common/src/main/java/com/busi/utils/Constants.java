@@ -77,7 +77,7 @@ public class Constants {
     /** 短信平台配置 结束**/
 
     /** 附近的人配置 开始**/
-    public static final int RADIUS = 10000;//附近的人半径范围 单位M
+    public static final int RADIUS = 30000;//附近的人半径范围 单位M
     public static final int LIMIT = 200;//附近的人查询的人数
     /** 附近的人配置 结束**/
 
