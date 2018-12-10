@@ -56,6 +56,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
             e.printStackTrace();
         }
         int num = 0;
+        int type = -1;//类型区分：6记事 7日程
         Notepad note = null;
         if (notepad.getAddType() == 1) {//记事
 //            note = notepadService.findDayInfo(notepad.getUserId(), notepad.getThisDateId());
@@ -67,6 +68,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
             if (num >= 10) {
                 return returnData(StatusCode.CODE_NOTEPAD_REPEAT_ERROR.CODE_VALUE, "新增记事数量超过上限,新增失败", new JSONObject());
             }
+            type = 6;
         } else {
             //判断该用户日程数量   每天最多10条
             num = notepadService.findNum(notepad.getUserId(), notepad.getAddType());
@@ -83,6 +85,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
                 e.printStackTrace();
             }
             notepad.setAlarmTime(time);
+            type = 7;
         }
         notepad.setTime(new Date());
         notepad.setThenTime(thenTime);
@@ -90,7 +93,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
         //新增任务
         mqUtils.sendTaskMQ(notepad.getUserId(), 1, 9);
         //新增足迹
-        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), notepad.getImgUrls(), null, null, notepad.getId() + "", 6);
+        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), notepad.getImgUrls(), null, null, notepad.getId() + "", type);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
