@@ -19,7 +19,7 @@ public class HomeBlogMessage {
 
     private long userId;            //发出消息用户
 
-    private long replayId;            //接收消息用户
+    private long replayId;            //被回复用户
 
     private long blog;                  //博文ID
 
@@ -37,6 +37,7 @@ public class HomeBlogMessage {
     private int status;                //0正常 1删除
 
     //与数据库无关字段
+    private String replayName;      //被回复用户名称
     private String userName;        //评论用户 名称
     private String userHead;        //评论用户 头像
     private int blogType;            //博文类型

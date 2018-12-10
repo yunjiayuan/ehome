@@ -54,6 +54,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
         String blIds = "";
         List list = null;
         List list2 = null;
+        UserInfo userInfo = null;
         HomeBlogMessage mess = null;
         list = pageBean.getList();
         if (list != null && list.size() > 0) {
@@ -74,7 +75,6 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                             mess = (HomeBlogMessage) list.get(i);
                             if (mess != null) {
                                 if (mess.getBlog() == homeBlog.getId()) {
-                                    UserInfo userInfo = null;
                                     userInfo = userInfoUtils.getUserInfo(mess.getUserId());
                                     if (userInfo != null) {
                                         mess.setUserHead(userInfo.getHead());
@@ -82,6 +82,10 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                                     }
                                     mess.setBlogTitle(homeBlog.getTitle());
                                     mess.setBlogType(homeBlog.getSendType());
+                                    if (mess.getReplayId() > 0) {
+                                        userInfo = userInfoUtils.getUserInfo(mess.getReplayId());
+                                        mess.setReplayName(userInfo.getName());
+                                    }
                                     if (!CommonUtils.checkFull(homeBlog.getImgUrl())) {
                                         mess.setBlogFirstImg(homeBlog.getImgUrl().split(",")[0]);
                                     }
