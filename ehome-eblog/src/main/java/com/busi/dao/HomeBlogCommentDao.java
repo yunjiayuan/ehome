@@ -121,7 +121,7 @@ public interface HomeBlogCommentDao {
             "<if test=\"type == 2\">" +
             " and newsState=0" +
             "</if>" +
-            " and replayId=#{userId} and status=0" +
+            " and masterId=#{userId} and status=0" +
             " order by time desc" +
             "</script>")
     List<HomeBlogMessage> findMessageList(@Param("type") int type, @Param("userId") long userId);
@@ -133,7 +133,7 @@ public interface HomeBlogCommentDao {
      */
     @Select("<script>" +
             "select count(id) from HomeBlogMessage" +
-            " where replayId=#{userId} and status=0 and newsState=1" +
+            " where masterId=#{userId} and status=0 and newsState=1" +
             "</script>")
     int getCount(@Param("userId") long userId);
 
@@ -145,7 +145,7 @@ public interface HomeBlogCommentDao {
     @Update("<script>" +
             "update HomeBlogMessage set" +
             " newsState=0" +
-            " where newsState=1 and replayId=#{userId}" +
+            " where newsState=1 and masterId=#{userId}" +
             " and id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +

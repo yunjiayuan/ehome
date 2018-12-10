@@ -43,7 +43,7 @@ public class HomeBlogMessageLController extends BaseController implements HomeBl
             comment.setBlogId(homeBlogMessage.getBlog());
             comment.setUserId(homeBlogMessage.getUserId());
             comment.setContent(homeBlogMessage.getContent());
-            comment.setMasterId(homeBlogMessage.getReplayId());
+            comment.setMasterId(homeBlogMessage.getMasterId());
             homeBlogCommentService.addComment(comment);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
