@@ -21,6 +21,8 @@ public class HomeBlogMessage {
 
     private long replayId;            //被回复用户
 
+    private long masterId;            //博主用户ID
+
     private long blog;                  //博文ID
 
     private long commentId;            //评论ID
