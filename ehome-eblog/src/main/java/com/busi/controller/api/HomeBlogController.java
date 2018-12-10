@@ -119,7 +119,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         mqUtils.sendTaskMQ(homeBlog.getUserId(), 1, 1);
         //添加转发消息和转发量
         if(homeBlog.getBlogType()==1){
-            mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,homeBlog.getReprintContent(),3);
+            mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,homeBlog.getReprintContent(),3);
             mqUtils.updateBlogCounts(homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),2,1);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
@@ -526,7 +526,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setHouseNumber(userInfo.getHouseNumber());
             }
             //添加位置信息
-            if(searchType==1||searchType==6){
+            if(searchType==1){
+                homeBlog.setDistance(CommonUtils.getShortestDistance(lon,lat,homeBlog.getLongitude(),homeBlog.getLatitude()));
+            }
+            if(searchType==6){
                 Distance distance = distanceMap.get(homeBlog.getUserId()+"");
                 homeBlog.setDistance(new BigDecimal(distance.getValue()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             }

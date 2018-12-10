@@ -68,7 +68,7 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
         //更新当前生活圈的点赞数
         mqUtils.updateBlogCounts(homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,1);
         //更新消息系统 后续开发
-        mqUtils.addMessage(homeBlogLike.getUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,"",2);
+        mqUtils.addMessage(homeBlogLike.getUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,"",2);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
