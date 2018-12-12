@@ -859,6 +859,31 @@ public class CommonUtils {
 	public static String getOrderNumber(long userId,String orderType){
 		return CommonUtils.strToMD5(orderType+userId+new Date().getTime()+CommonUtils.getRandom(6,0),16);
 	}
+
+	/***
+	 * 处理特殊字符 过滤mysql中不能存储的特殊字符 如网络表情符号等
+	 * @param content
+	 * @return
+	 */
+	public static String filteringContent(String content){
+		if(checkFull(content)){
+			return "";
+		}
+		content = content.replaceAll("0000","#@#@#");
+		byte[] b_text = content.getBytes();
+		for (int i = 0; i < b_text.length; i++){
+			if((b_text[i] & 0xF8)==0xF0){
+				for (int j = 0; j < 4; j++) {
+					b_text[i+j]=0x30;
+				}
+				i+=3;
+			}
+		}
+		content = new String(b_text);
+		content = content.replaceAll("0000","");
+		content = content.replaceAll("#@#@#","0000");
+		return content;
+	}
 //	public static void main(String[] args) {
 ////		System.out.println(checkBankCard("6225768308550119"));
 //		System.out.println(checkPhone("15901213694"));

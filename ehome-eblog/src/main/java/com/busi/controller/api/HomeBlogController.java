@@ -86,20 +86,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         //处理特殊字符
         String content = homeBlog.getContent();
         if(!CommonUtils.checkFull(content)){
-            content = content.replaceAll("0000","#@#@#");
-            byte[] b_text = content.getBytes();
-            for (int i = 0; i < b_text.length; i++){
-                if((b_text[i] & 0xF8)==0xF0){
-                    for (int j = 0; j < 4; j++) {
-                        b_text[i+j]=0x30;
-                    }
-                    i+=3;
-                }
-            }
-            content = new String(b_text);
-            content = content.replaceAll("0000","");
-            content = content.replaceAll("#@#@#","0000");
-            homeBlog.setContent(content);
+            homeBlog.setContent(CommonUtils.filteringContent(content));
             if(homeBlog.getContent().length()>140){
                 homeBlog.setContentTxt(homeBlog.getContent().substring(0,140));
             }else{
@@ -119,8 +106,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         mqUtils.sendTaskMQ(homeBlog.getUserId(), 1, 1);
         //添加转发消息和转发量
         if(homeBlog.getBlogType()==1){
-            mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,homeBlog.getReprintContent(),3);
             mqUtils.updateBlogCounts(homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),2,1);
+            if(homeBlog.getOrigUserId()!=homeBlog.getUserId()){
+                mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,homeBlog.getReprintContent(),3);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
