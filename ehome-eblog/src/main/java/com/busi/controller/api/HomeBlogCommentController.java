@@ -55,9 +55,10 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         long userId = homeBlogComment.getReplayId();
         int ate = homeBlogComment.getReplyType();
 
-        //新增消息
-        mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
-
+        if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {
+            //新增消息
+            mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+        }
         if (homeBlogComment.getReplyType() == 0) {//新增评论
             //更新评论数
             mqUtils.updateBlogCounts(homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), 1, 1);
