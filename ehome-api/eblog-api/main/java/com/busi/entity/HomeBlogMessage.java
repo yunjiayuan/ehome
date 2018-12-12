@@ -44,7 +44,6 @@ public class HomeBlogMessage {
     private String userHead;        //评论用户 头像
     private int blogType;            //博文类型
     private String blogFirstImg;    //图片博文第一张图片
-    private String videoCoverUrl;    //视频封面地址
     private String blogTitle;        //博文标题
 
 }

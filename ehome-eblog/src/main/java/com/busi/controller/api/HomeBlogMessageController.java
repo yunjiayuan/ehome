@@ -93,10 +93,11 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                                     //返回图片
                                     if (!CommonUtils.checkFull(homeBlog.getImgUrl())) {
                                         mess.setBlogFirstImg(homeBlog.getImgUrl().split(",")[0]);
-                                    }
-                                    //返回视频封面
-                                    if (!CommonUtils.checkFull(homeBlog.getVideoCoverUrl())) {
-                                        mess.setVideoCoverUrl(homeBlog.getVideoCoverUrl());
+                                    } else {
+                                        //返回视频封面
+                                        if (!CommonUtils.checkFull(homeBlog.getVideoCoverUrl())) {
+                                            mess.setBlogFirstImg(homeBlog.getVideoCoverUrl());
+                                        }
                                     }
                                 }
                             }
