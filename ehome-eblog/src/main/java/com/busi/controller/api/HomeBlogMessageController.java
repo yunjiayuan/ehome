@@ -61,8 +61,8 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
             for (int i = 0; i < list.size(); i++) {
                 mess = (HomeBlogMessage) list.get(i);
                 if (mess != null) {
-                    ids += mess.getId() + ",";
-                    blIds += mess.getBlog() + ",";
+                    ids += mess.getId() + ",";//消息ID
+                    blIds += mess.getBlog() + ",";//博文ID
                 }
             }
             list2 = homeBlogCommentService.findIdList(blIds.split(","));
@@ -90,8 +90,13 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                                         userInfo = userInfoUtils.getUserInfo(mess.getReplayId());
                                         mess.setReplayName(userInfo.getName());
                                     }
+                                    //返回图片
                                     if (!CommonUtils.checkFull(homeBlog.getImgUrl())) {
                                         mess.setBlogFirstImg(homeBlog.getImgUrl().split(",")[0]);
+                                    }
+                                    //返回视频封面
+                                    if (!CommonUtils.checkFull(homeBlog.getVideoCoverUrl())) {
+                                        mess.setVideoCoverUrl(homeBlog.getVideoCoverUrl());
                                     }
                                 }
                             }
