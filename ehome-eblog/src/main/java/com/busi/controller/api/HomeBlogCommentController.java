@@ -48,6 +48,11 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (blogMap == null || blogMap.size() <= 0) {
             return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
         }
+        //处理特殊字符
+        String content = homeBlogComment.getContent();
+        if (!CommonUtils.checkFull(content)) {
+            homeBlogComment.setContent(CommonUtils.filteringContent(content));
+        }
         homeBlogComment.setTime(new Date());
         homeBlogCommentService.addComment(homeBlogComment);
 
