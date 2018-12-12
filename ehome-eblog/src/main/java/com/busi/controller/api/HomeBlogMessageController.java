@@ -61,8 +61,8 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
             for (int i = 0; i < list.size(); i++) {
                 mess = (HomeBlogMessage) list.get(i);
                 if (mess != null) {
-                    ids += mess.getId() + ",";
-                    blIds += mess.getBlog() + ",";
+                    ids += mess.getId() + ",";//消息ID
+                    blIds += mess.getBlog() + ",";//博文ID
                 }
             }
             list2 = homeBlogCommentService.findIdList(blIds.split(","));
