@@ -61,7 +61,9 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
             for (int i = 0; i < list.size(); i++) {
                 mess = (HomeBlogMessage) list.get(i);
                 if (mess != null) {
-                    ids += mess.getId() + ",";//消息ID
+                    if (mess.getNewsState() == 1) {
+                        ids += mess.getId() + ",";//消息ID
+                    }
                     blIds += mess.getBlog() + ",";//博文ID
                 }
             }
@@ -105,7 +107,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                     }
                 }
             }
-            if (type != 2) {
+            if (!CommonUtils.checkFull(ids)) {
                 //更新消息状态
                 homeBlogCommentService.updateState(userId, ids.split(","));
             }
