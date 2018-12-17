@@ -28,7 +28,7 @@ public interface ChatSquareApiController {
      * @return
      */
     @PutMapping("updateChatSquare")
-    ReturnData updateChatSquare (@Valid @RequestBody ChatSquare chatSquare, BindingResult bindingResult);
+    ReturnData updateChatSquare(@Valid @RequestBody ChatSquare chatSquare, BindingResult bindingResult);
 
     /***
      * 清除用户马甲信息
@@ -45,4 +45,13 @@ public interface ChatSquareApiController {
      */
     @GetMapping("findChatSquareUserInfo/{userIds}")
     ReturnData findChatSquareUserInfo(@PathVariable String userIds);
+
+    /***
+     * 初始化聊天广场每个聊天室在线人员
+     * @param proTypeId  省Id
+     * @return
+     */
+    @GetMapping("initialChatroom/{proTypeId}")
+    ReturnData initialChatroom(@PathVariable int proTypeId);
+
 }
