@@ -152,9 +152,9 @@ public interface LoveAndFriendsDao {
             "select * from loveAndFriends" +
             " where 1=1" +
             "<if test=\"sort == 0 \">" +
-            " and sex=#{sex}" +
-            " and age=#{age}" +
-            " and income=#{income}" +
+            " and sex!=#{sex}" +
+            " and age!=#{age}" +
+            " and income>=#{income}" +
             "</if>" +
             "<if test=\"sort == 1 and screen!=0\">" +
             " and sex=#{screen}" +
