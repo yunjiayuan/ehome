@@ -227,7 +227,6 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                                 }
                             }
                             comment.setMessageList(messageArrayList);
-//                            comment.setReplyNumber(messageArrayList.size());
                         }
                     }
                 }
@@ -328,7 +327,6 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                             }
                         }
                         comment.setMessageList(list);
-//                        comment.setReplyNumber(list.size());
                     } else {
                         //查询数据库 （获取最新五条回复）
                         list2 = homeBlogCommentService.findMessList(comment.getId());
@@ -338,12 +336,19 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                                 if (l < 5) {
                                     message = (HomeBlogComment) list2.get(l);
                                     if (message != null) {
+                                        userInfo = userInfoUtils.getUserInfo(message.getReplayId());
+                                        if (userInfo != null) {
+                                            message.setReplayName(userInfo.getName());
+                                        }
+                                        userInfo = userInfoUtils.getUserInfo(message.getUserId());
+                                        if (userInfo != null) {
+                                            message.setUserName(userInfo.getName());
+                                        }
                                         messageArrayList.add(message);
                                     }
                                 }
                             }
                             comment.setMessageList(messageArrayList);
-//                            comment.setReplyNumber(messageArrayList.size());
                             //更新缓存
                             redisUtils.pushList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getId(), messageArrayList, 0);
                         }
