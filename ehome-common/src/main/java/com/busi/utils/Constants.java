@@ -206,6 +206,8 @@ public class Constants {
     public static final String REDIS_KEY_IPS_USEDDEAL = "ips_usedDeal_";//userId与二手公告对象关系对照
     public static final String REDIS_KEY_IPS_SEARCHGOODS = "ips_searchGoods_";//userId与寻人寻物失物招领对象的关系对照
     public static final String REDIS_KEY_IPS_COLLECT = "ips_collect_";//userId与公告收藏对象的关系对照
+    public static final String REDIS_KEY_IPS_WORKRESUME = "ips_workResume_";//userId与简历对象的关系对照
+    public static final String REDIS_KEY_IPS_WORKRECRUIT = "ips_workRecruit_";//userId与招聘对象的关系对照
 
     //redis 2库相关key配置(otherServer)
     public static final String REDIS_KEY_IPS_TASK = "task_";//userId与任务对象的关系对照
