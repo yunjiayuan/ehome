@@ -25,6 +25,8 @@ public class HomeBlogMessage {
 
     private long blog;                  //博文ID
 
+    private long origBlogId;            //原始博文ID（只用于转发）
+
     private long commentId;            //评论ID
 
     private String content;            //消息内容

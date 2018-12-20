@@ -64,7 +64,11 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                     if (mess.getNewsState() == 1) {
                         ids += mess.getId() + ",";//消息ID
                     }
-                    blIds += mess.getBlog() + ",";//博文ID
+                    if (mess.getNewsType() == 3) {//转发
+                        blIds += mess.getOrigBlogId() + ",";//博文ID
+                    } else {
+                        blIds += mess.getBlog() + ",";//博文ID
+                    }
                 }
             }
             list2 = homeBlogCommentService.findIdList(blIds.split(","));
@@ -76,16 +80,33 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                         for (int i = 0; i < list.size(); i++) {
                             mess = (HomeBlogMessage) list.get(i);
                             if (mess != null) {
-                                if (mess.getBlog() == homeBlog.getId()) {
+                                boolean flag = false;
+                                if (mess.getNewsType() == 3 && mess.getOrigBlogId() == homeBlog.getId()) {
+                                    flag = true;
+                                }
+                                if (mess.getNewsType() != 3 && mess.getBlog() == homeBlog.getId()) {
+                                    flag = true;
+                                }
+                                if (flag) {
                                     userInfo = userInfoUtils.getUserInfo(mess.getUserId());
                                     if (userInfo != null) {
                                         mess.setUserHead(userInfo.getHead());
                                         mess.setUserName(userInfo.getName());
                                     }
+                                    String blogTitle = "";
                                     if (!CommonUtils.checkFull(homeBlog.getTitle())) {
-                                        mess.setBlogTitle(homeBlog.getTitle());
+                                        blogTitle = homeBlog.getTitle();
                                     } else {
-                                        mess.setBlogTitle(homeBlog.getContentTxt());
+                                        blogTitle = homeBlog.getContentTxt();
+                                    }
+                                    if (mess.getNewsType() == 3) {//转发
+                                        if (!CommonUtils.checkFull(blogTitle)) {
+                                            mess.setBlogTitle("转发：" + blogTitle);
+                                        } else {
+                                            mess.setBlogTitle("转发");
+                                        }
+                                    } else {
+                                        mess.setBlogTitle(blogTitle);
                                     }
                                     mess.setBlogType(homeBlog.getSendType());
                                     if (mess.getReplayId() > 0) {

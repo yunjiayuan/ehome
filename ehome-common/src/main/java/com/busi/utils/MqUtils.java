@@ -268,12 +268,13 @@ public class MqUtils {
      * @param userId       发出消息用户
      * @param replayId        被回复用户ID
      * @param masterId        博主用户ID
-     * @param blog       博文ID
+     * @param blog              博文ID
+     * @param origBlogId      原始博文ID（只用于转发）
      * @param commentId     评论ID
      * @param contents     消息内容
      * @param newsType       消息类型 0评论 1回复 2赞 3转发
      */
-    public void addMessage(long userId,long replayId,long masterId,long blog,long commentId,String contents,int newsType){
+    public void addMessage(long userId,long replayId,long masterId,long blog,long origBlogId,long commentId,String contents,int newsType){
 
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
@@ -283,6 +284,7 @@ public class MqUtils {
         content.put("replayId",replayId);
         content.put("masterId",masterId);
         content.put("blog",blog);
+        content.put("origBlogId",origBlogId);
         content.put("commentId",commentId);
         content.put("content",contents);
         content.put("newsType",newsType);
