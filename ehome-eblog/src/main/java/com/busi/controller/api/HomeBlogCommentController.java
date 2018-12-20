@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.activation.CommandMap;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -48,6 +49,10 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         if (blogMap == null || blogMap.size() <= 0) {
             return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
         }
+        HomeBlog homeBlog = (HomeBlog) CommonUtils.mapToObject(blogMap, HomeBlog.class);
+        if (homeBlog == null) {
+            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "生活圈不存在", new JSONArray());
+        }
         //处理特殊字符
         String content = homeBlogComment.getContent();
         if (!CommonUtils.checkFull(content)) {
@@ -64,19 +69,22 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         long userId = homeBlogComment.getReplayId();
         int ate = homeBlogComment.getReplyType();
 
-        if (ate == 0 || ate == 2) {//评论
-            if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {//评论者不是博主
-                //新增消息（博主）
-                mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+        if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {//评论者不是博主
+            //新增消息(博主)
+            if (homeBlog.getBlogType() == 1) {//转发
+                mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlog.getOrigBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+            } else {
+                mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), 0, homeBlogComment.getId(), homeBlogComment.getContent(), ate);
             }
-        } else {//回复
+        }
+        if (ate == 1) {//回复
             if (homeBlogComment.getUserId() != userId) {//回复者不是被回复者
                 //新增消息(被回复者)
-                mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
-            }
-            if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {//回复者不是博主
-                //新增消息(博主)
-                mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+                if (homeBlog.getBlogType() == 1) {//转发
+                    mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlog.getOrigBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+                } else {
+                    mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), 0, homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+                }
             }
         }
         if (homeBlogComment.getReplyType() == 0) {//新增评论
