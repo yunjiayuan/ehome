@@ -74,17 +74,17 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
             list2 = homeBlogCommentService.findIdList(blIds.split(","));
             if (list2 != null && list2.size() > 0) {
                 HomeBlog homeBlog = null;
-                for (int j = 0; j < list2.size(); j++) {
-                    homeBlog = (HomeBlog) list2.get(j);
-                    if (homeBlog != null) {
-                        for (int i = 0; i < list.size(); i++) {
-                            mess = (HomeBlogMessage) list.get(i);
-                            if (mess != null) {
+                for (int i = 0; i < list.size(); i++) {
+                    mess = (HomeBlogMessage) list.get(i);
+                    if (mess != null) {
+                        for (int j = 0; j < list2.size(); j++) {
+                            homeBlog = (HomeBlog) list2.get(j);
+                            if (homeBlog != null) {
                                 boolean flag = false;
                                 if (mess.getOrigBlogId() > 0 && mess.getOrigBlogId() == homeBlog.getId()) {
                                     flag = true;
                                 }
-                                if (mess.getOrigBlogId() == 0  && mess.getBlog() == homeBlog.getId()) {
+                                if (mess.getOrigBlogId() == 0 && mess.getBlog() == homeBlog.getId()) {
                                     flag = true;
                                 }
                                 if (flag) {
@@ -122,7 +122,6 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                                             mess.setBlogFirstImg(homeBlog.getVideoCoverUrl());
                                         }
                                     }
-                                    break;
                                 }
                             }
                         }
