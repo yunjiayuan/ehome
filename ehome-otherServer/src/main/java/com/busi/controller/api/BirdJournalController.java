@@ -493,7 +493,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
         object = redisUtils.hget(Constants.REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT, "today_" + myId);
         if (object != null) {
             my_coverTodaystimes = Long.valueOf(String.valueOf(object));
-            if (my_coverTodaystimes >= numLimit) {
+            if (my_coverTodaystimes > numLimit) {
                 return returnData(StatusCode.CODE_BIRD_FEED_FULL.CODE_VALUE, "今日喂鸟次数已用尽，明天再来吧！", new JSONObject());
             }
         }
