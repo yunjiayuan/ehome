@@ -131,6 +131,10 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
      */
     @Override
     public ReturnData delComment(@PathVariable long id, @PathVariable long blogId) {
+        List list = null;
+        List list2 = null;
+        List list3 = null;
+        List messList = null;
         HomeBlogComment comment = homeBlogCommentService.findById(id);
         if (comment == null) {
             return returnData(StatusCode.CODE_BLOG_USER_NOTLOGIN.CODE_VALUE, "评论不存在", new JSONArray());
@@ -149,23 +153,38 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         }
         comment.setReplyStatus(1);//1删除
         homeBlogCommentService.update(comment);
-        List list = null;
-        if (comment.getReplyType() == 0) {
+        //同时删除此评论下回复
+        String ids = "";
+        messList = homeBlogCommentService.findMessList(id);
+        if (messList != null && messList.size() > 0) {
+            for (int i = 0; i < messList.size(); i++) {
+                HomeBlogComment message = null;
+                message = (HomeBlogComment) messList.get(i);
+                if (message != null) {
+                    ids += message.getId() + ",";
+                }
+            }
+            //更新回复删除状态
+            homeBlogCommentService.updateReplyState(ids.split(","));
+        }
+        //更新生活圈评论数
+        mqUtils.updateBlogCounts(comment.getMasterId(), blogId, 1, -1);
+        if (comment.getReplyType() == 0 || comment.getReplyType() == 2) {
+            //获取缓存中评论列表
             list = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, 0, -1);
             if (list != null && list.size() > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     HomeBlogComment comment2 = (HomeBlogComment) list.get(i);
                     if (comment2.getId() == id) {
+                        //更新评论缓存
                         redisUtils.removeList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, 1, comment2);
+                        //更新此评论下的回复缓存
+                        redisUtils.expire(Constants.REDIS_KEY_EBLOG_REPLY + comment.getFatherId(), 0);
                         break;
                     }
                 }
             }
-            //更新评论数
-            mqUtils.updateBlogCounts(comment.getMasterId(), blogId, 1, -1);
         } else {
-            List list2 = null;
-            List list3 = null;
             List<HomeBlogComment> messageList = new ArrayList<>();
             //获取缓存中回复列表
             list3 = redisUtils.getList(Constants.REDIS_KEY_EBLOG_REPLY + comment.getFatherId(), 0, -1);

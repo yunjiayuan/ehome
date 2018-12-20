@@ -181,6 +181,15 @@ public class HomeBlogCommentService {
     }
 
     /***
+     * 更新回复删除状态
+     * @param ids
+     * @return
+     */
+    public int updateReplyState(String[] ids) {
+        return homeBlogCommentDao.updateReplyState(ids);
+    }
+
+    /***
      * 统计该评论下回复数量
      * @param commentId  评论ID
      * @return

@@ -154,6 +154,22 @@ public interface HomeBlogCommentDao {
     int updateState(@Param("userId") long userId, @Param("ids") String[] ids);
 
     /***
+     * 更新回复删除状态
+     * @param ids
+     * @return
+     */
+    @Update("<script>" +
+            "update HomeBlogComment set" +
+            " replyStatus=1" +
+            " where replyType=1" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int updateReplyState(@Param("ids") String[] ids);
+
+    /***
      * 查询朋友圈列表
      * @param blIds  博文IDs
      * @return
