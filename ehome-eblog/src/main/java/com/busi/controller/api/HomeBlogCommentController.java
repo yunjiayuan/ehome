@@ -64,9 +64,20 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         long userId = homeBlogComment.getReplayId();
         int ate = homeBlogComment.getReplyType();
 
-        if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {
-            //新增消息
-            mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+        if (homeBlogComment.getReplyType() == 0 || homeBlogComment.getReplyType() == 2) {//评论
+            if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {//评论者不是博主
+                //新增消息（博主）
+                mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+            }
+        } else {//回复
+            if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {//回复者不是博主
+                //新增消息(博主)
+                mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+                if (homeBlogComment.getUserId() != homeBlogComment.getReplayId()) {//回复者不是被回复者
+                    //新增消息(被回复者)
+                    mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+                }
+            }
         }
         if (homeBlogComment.getReplyType() == 0) {//新增评论
             //放入缓存(七天失效)
