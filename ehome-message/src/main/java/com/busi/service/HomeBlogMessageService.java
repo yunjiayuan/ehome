@@ -31,6 +31,7 @@ public class HomeBlogMessageService implements MessageAdapter {
             long replayId = Long.parseLong(body.getString("replayId"));
             long masterId = Long.parseLong(body.getString("masterId"));
             long blog = Long.parseLong(body.getString("blog"));
+            long origBlogId = Long.parseLong(body.getString("origBlogId"));
             long commentId = Integer.parseInt(body.getString("commentId"));
             int newsType = Integer.parseInt(body.getString("newsType"));
             String content = body.getString("content");
@@ -39,6 +40,7 @@ public class HomeBlogMessageService implements MessageAdapter {
             homeBlogMessage.setReplayId(replayId);
             homeBlogMessage.setMasterId(masterId);
             homeBlogMessage.setBlog(blog);
+            homeBlogMessage.setOrigBlogId(origBlogId);
             homeBlogMessage.setCommentId(commentId);
             homeBlogMessage.setNewsType(newsType);
             homeBlogMessage.setContent(content);
