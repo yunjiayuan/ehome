@@ -38,4 +38,12 @@ public interface UserHeadNotesApiController {
     @PutMapping("updateWelcomeVideo")
     ReturnData updateWelcomeVideo (@Valid @RequestBody UserHeadNotes userHeadNotes, BindingResult bindingResult);
 
+    /***
+     * 删除欢迎视频接口
+     * @param userId 被删除欢迎视频的用户ID
+     * @return
+     */
+    @GetMapping("delWelcomeVideo/{userId}")
+    ReturnData delWelcomeVideo(@PathVariable long userId);
+
 }
