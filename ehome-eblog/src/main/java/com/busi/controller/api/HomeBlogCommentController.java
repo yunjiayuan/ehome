@@ -65,11 +65,11 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         homeBlogComment.setTime(new Date());
         homeBlogCommentService.addComment(homeBlogComment);
 
-        long myId = CommonUtils.getMyId();
+        long myId = homeBlogComment.getUserId();
         long userId = homeBlogComment.getReplayId();
         int ate = homeBlogComment.getReplyType();
 
-        if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {//评论者不是博主
+        if (myId != homeBlogComment.getMasterId()) {//评论者不是博主
             //新增消息(博主)
             if (homeBlog.getBlogType() == 1) {//转发
                 mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlog.getOrigBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
@@ -78,7 +78,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             }
         }
         if (ate == 1) {//回复
-            if (homeBlogComment.getUserId() != userId) {//回复者不是被回复者
+            if (myId != userId) {//回复者不是被回复者
                 //新增消息(被回复者)
                 if (homeBlog.getBlogType() == 1) {//转发
                     mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlog.getOrigBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);

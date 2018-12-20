@@ -164,7 +164,7 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
      */
     @Override
     public ReturnData initialChatroom(@PathVariable int proTypeId) {
-        if (proTypeId < 0) {
+        if (proTypeId < 0 || proTypeId > 33) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "proTypeId参数有误", new JSONObject());
         }
         //查询缓存

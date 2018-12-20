@@ -22,7 +22,7 @@ public class HomeBlogComment {
 
     private long userId;            //评论用户ID
 
-    private long replayId;            //被回复用户ID  我回复@XXX:
+    private long replayId;            //被评论(回复)用户ID
 
     private long masterId;            //博主用户ID
 

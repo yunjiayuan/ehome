@@ -64,7 +64,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                     if (mess.getNewsState() == 1) {
                         ids += mess.getId() + ",";//消息ID
                     }
-                    if (mess.getNewsType() == 3) {//转发
+                    if (mess.getOrigBlogId() > 0) {//转发
                         blIds += mess.getOrigBlogId() + ",";//博文ID
                     } else {
                         blIds += mess.getBlog() + ",";//博文ID
@@ -81,10 +81,10 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                             mess = (HomeBlogMessage) list.get(i);
                             if (mess != null) {
                                 boolean flag = false;
-                                if (mess.getNewsType() == 3 && mess.getOrigBlogId() == homeBlog.getId()) {
+                                if (mess.getOrigBlogId() > 0 && mess.getOrigBlogId() == homeBlog.getId()) {
                                     flag = true;
                                 }
-                                if (mess.getNewsType() != 3 && mess.getBlog() == homeBlog.getId()) {
+                                if (mess.getOrigBlogId() == 0  && mess.getBlog() == homeBlog.getId()) {
                                     flag = true;
                                 }
                                 if (flag) {
@@ -122,6 +122,7 @@ public class HomeBlogMessageController extends BaseController implements HomeBlo
                                             mess.setBlogFirstImg(homeBlog.getVideoCoverUrl());
                                         }
                                     }
+                                    break;
                                 }
                             }
                         }
