@@ -70,13 +70,13 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                 mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
             }
         } else {//回复
+            if (homeBlogComment.getUserId() != userId) {//回复者不是被回复者
+                //新增消息(被回复者)
+                mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+            }
             if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {//回复者不是博主
                 //新增消息(博主)
                 mqUtils.addMessage(myId, homeBlogComment.getMasterId(), homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
-                if (homeBlogComment.getUserId() != userId) {//回复者不是被回复者
-                    //新增消息(被回复者)
-                    mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
-                }
             }
         }
         if (homeBlogComment.getReplyType() == 0) {//新增评论
