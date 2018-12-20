@@ -78,7 +78,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             }
         }
         if (ate == 1) {//回复
-            if (myId != userId) {//回复者不是被回复者
+            if (myId != userId && userId != homeBlogComment.getMasterId()) {//回复者不是被回复者并且不是博主
                 //新增消息(被回复者)
                 if (homeBlog.getBlogType() == 1) {//转发
                     mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlog.getOrigBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
