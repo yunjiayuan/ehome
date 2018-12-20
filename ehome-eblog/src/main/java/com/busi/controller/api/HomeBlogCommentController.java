@@ -66,7 +66,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
 
         if (homeBlogComment.getUserId() != homeBlogComment.getMasterId()) {
             //新增消息
-            mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
+            mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
         }
         if (homeBlogComment.getReplyType() == 0) {//新增评论
             //放入缓存(七天失效)
