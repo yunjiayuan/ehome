@@ -117,4 +117,25 @@ public class UserHeadNotesController extends BaseController implements UserHeadN
         redisUtils.expire(Constants.REDIS_KEY_USER_HEADNOTES+userHeadNotes.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
+    /***
+     * 删除欢迎视频接口
+     * @param userId
+     * @return
+     */
+    @Override
+    public ReturnData delWelcomeVideo(@Valid @PathVariable long userId) {
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=userId){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限修改用户["+userId+"]的欢迎视频",new JSONObject());
+        }
+        UserHeadNotes userHeadNotes = new UserHeadNotes();
+        userHeadNotes.setUserId(userId);
+        userHeadNotes.setWelcomeVideoCoverPath("");
+        userHeadNotes.setWelcomeVideoPath("");
+        //开始修改
+        userHeadNotesService.updateWelcomeVideo(userHeadNotes);
+        //将缓存中数据 清除
+        redisUtils.expire(Constants.REDIS_KEY_USER_HEADNOTES+userHeadNotes.getUserId(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
 }

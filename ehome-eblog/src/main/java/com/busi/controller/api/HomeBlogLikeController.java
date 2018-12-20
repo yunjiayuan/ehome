@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 生活圈 点赞 相关接口
@@ -50,6 +52,15 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
         if(CommonUtils.getMyId()!=homeBlogLike.getUserId()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限以用户["+homeBlogLike.getUserId()+"]的身份进行相关操作",new JSONObject());
         }
+        //查询该条生活圈信息
+        Map<String, Object> blogMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG + homeBlogLike.getBlogUserId() + "_" + homeBlogLike.getBlogId());
+        if (blogMap == null || blogMap.size() <= 0) {
+            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "被点赞的生活圈不存在或已被作者删除", new JSONArray());
+        }
+        HomeBlog homeBlog = (HomeBlog) CommonUtils.mapToObject(blogMap, HomeBlog.class);
+        if (homeBlog == null) {
+            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "被点赞的生活圈不存在或已被作者删除", new JSONArray());
+        }
         //检测是否点过赞
         boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+homeBlogLike.getBlogId(),homeBlogLike.getUserId());
         if(isMember){
@@ -69,7 +80,11 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
         mqUtils.updateBlogCounts(homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,1);
         //更新消息系统 后续开发
         if(homeBlogLike.getUserId()!=homeBlogLike.getBlogUserId()){//解决自己给自己点赞 新增消息的问题
-            mqUtils.addMessage(homeBlogLike.getUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,0,"",2);
+            if (homeBlog.getBlogType() == 1) {//转发
+                mqUtils.addMessage(homeBlogLike.getUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),homeBlog.getOrigBlogId(),0,"",2);
+            }else{
+                mqUtils.addMessage(homeBlogLike.getUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,0,"",2);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
