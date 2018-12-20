@@ -65,8 +65,6 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             mqUtils.addMessage(myId, userId, homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), homeBlogComment.getId(), homeBlogComment.getContent(), ate);
         }
         if (homeBlogComment.getReplyType() == 0) {//新增评论
-            //更新评论数
-            mqUtils.updateBlogCounts(homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), 1, 1);
             //放入缓存(七天失效)
             redisUtils.addListLeft(Constants.REDIS_KEY_EBLOG_COMMENT + homeBlogComment.getBlogId(), homeBlogComment, Constants.USER_TIME_OUT);
         } else {//新增回复
@@ -96,6 +94,9 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             //更新回复数
             mqUtils.updateCommentCounts(homeBlogComment.getFatherId(), 1);
         }
+        //更新评论数
+        mqUtils.updateBlogCounts(homeBlogComment.getMasterId(), homeBlogComment.getBlogId(), 1, 1);
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
