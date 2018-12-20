@@ -51,7 +51,11 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
         //处理特殊字符
         String content = homeBlogComment.getContent();
         if (!CommonUtils.checkFull(content)) {
-            homeBlogComment.setContent(CommonUtils.filteringContent(content));
+            if (!CommonUtils.checkFull(CommonUtils.filteringContent(content))) {
+                homeBlogComment.setContent(CommonUtils.filteringContent(content));
+            } else {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "content参数有误，包含非法字符！", new JSONArray());
+            }
         }
         homeBlogComment.setTime(new Date());
         homeBlogCommentService.addComment(homeBlogComment);
