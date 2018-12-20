@@ -97,18 +97,33 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         homeBlog.setTime(new Date());
         homeBlogService.add(homeBlog);
         //添加足迹
-        String t = homeBlog.getTitle();
-        if(CommonUtils.checkFull(t)){
-            t = homeBlog.getContentTxt();
+        String title = homeBlog.getTitle();
+        String imageUrl = "";
+        if(homeBlog.getBlogType()==1){
+            String reprintContent = homeBlog.getReprintContent();
+            if(CommonUtils.checkFull(reprintContent)){
+                title = "转发生活圈";
+            }else{
+                title = reprintContent;
+            }
+        }else{
+            if(CommonUtils.checkFull(title)){
+                title = homeBlog.getContentTxt();
+            }
         }
-        mqUtils.sendFootmarkMQ(homeBlog.getUserId(), t, homeBlog.getImgUrl(), null, null, homeBlog.getId()+"", 2);
+        if(homeBlog.getSendType()==1){//图片
+            imageUrl = homeBlog.getImgUrl();
+        }else if(homeBlog.getSendType()==2){//视频
+            imageUrl = homeBlog.getVideoCoverUrl();
+        }
+        mqUtils.sendFootmarkMQ(homeBlog.getUserId(), title,imageUrl , homeBlog.getVideoUrl(), homeBlog.getAudioUrl(), homeBlog.getId()+"", 2);
         //添加任务
         mqUtils.sendTaskMQ(homeBlog.getUserId(), 1, 1);
         //添加转发消息和转发量
         if(homeBlog.getBlogType()==1){
             mqUtils.updateBlogCounts(homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),2,1);
             if(homeBlog.getOrigUserId()!=homeBlog.getUserId()){
-                mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,homeBlog.getReprintContent(),3);
+                mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,0,homeBlog.getReprintContent(),3);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
