@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.HomeBlogLikeService;
+import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,9 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
 
     @Autowired
     private HomeBlogLikeService homeBlogLikeService;
+
+    @Autowired
+    private HomeBlogService homeBlogService;
 
     @Autowired
     private UserInfoUtils userInfoUtils;
@@ -55,7 +59,14 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
         //查询该条生活圈信息
         Map<String, Object> blogMap = redisUtils.hmget(Constants.REDIS_KEY_EBLOG + homeBlogLike.getBlogUserId() + "_" + homeBlogLike.getBlogId());
         if (blogMap == null || blogMap.size() <= 0) {
-            return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "被点赞的生活圈不存在或已被作者删除", new JSONArray());
+            HomeBlog homeBlog = homeBlogService.findBlogInfo(homeBlogLike.getBlogId(),homeBlogLike.getBlogUserId());
+            if(homeBlog!=null){
+                //放到缓存中
+                blogMap = CommonUtils.objectToMap(homeBlog);
+                redisUtils.hmset(Constants.REDIS_KEY_EBLOG+homeBlogLike.getBlogUserId()+"_"+homeBlogLike.getBlogId(),blogMap,Constants.USER_TIME_OUT);
+            }else{
+                return returnData(StatusCode.CODE_BLOG_NOT_FOUND.CODE_VALUE, "被点赞的生活圈不存在或已被作者删除", new JSONArray());
+            }
         }
         HomeBlog homeBlog = (HomeBlog) CommonUtils.mapToObject(blogMap, HomeBlog.class);
         if (homeBlog == null) {
