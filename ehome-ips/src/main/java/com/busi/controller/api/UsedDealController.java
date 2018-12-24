@@ -48,6 +48,18 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //处理特殊字符
+        String title = usedDeal.getTitle();
+        String content = usedDeal.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            usedDeal.setContent(filteringTitle);
+            usedDeal.setContent(filteringContent);
+        }
         //验证地区
         if (!CommonUtils.checkProvince_city_district(0, usedDeal.getProvince(), usedDeal.getCity(), usedDeal.getDistrict())) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
@@ -199,6 +211,18 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //处理特殊字符
+        String title = usedDeal.getTitle();
+        String content = usedDeal.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            usedDeal.setContent(filteringTitle);
+            usedDeal.setContent(filteringContent);
         }
         //验证修改人权限
         if (CommonUtils.getMyId() != usedDeal.getUserId()) {
