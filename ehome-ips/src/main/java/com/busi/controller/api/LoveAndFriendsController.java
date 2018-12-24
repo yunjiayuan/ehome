@@ -49,6 +49,18 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //处理特殊字符
+        String title = loveAndFriends.getTitle();
+        String content = loveAndFriends.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            loveAndFriends.setContent(filteringTitle);
+            loveAndFriends.setContent(filteringContent);
+        }
         //查询缓存 缓存中不存在 查询数据库（是否已发布过）
         Map<String, Object> loveAndFriendsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId());
         if (loveAndFriendsMap == null || loveAndFriendsMap.size() <= 0) {
@@ -110,9 +122,6 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 loveAndFriends.setReleaseTime(new Date());
                 loveAndFriendsService.add(loveAndFriends);
 
-                //放入缓存
-                loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
-                redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
                 //新增home
                 if (loveAndFriends.getFraction() > 70) {
                     IPS_Home ipsHome = new IPS_Home();
@@ -209,6 +218,18 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         //验证修改人权限
         if (CommonUtils.getMyId() != loveAndFriends.getUserId()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + loveAndFriends.getUserId() + "]的婚恋交友信息", new JSONObject());
+        }
+        //处理特殊字符
+        String title = loveAndFriends.getTitle();
+        String content = loveAndFriends.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            loveAndFriends.setContent(filteringTitle);
+            loveAndFriends.setContent(filteringContent);
         }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), 0);

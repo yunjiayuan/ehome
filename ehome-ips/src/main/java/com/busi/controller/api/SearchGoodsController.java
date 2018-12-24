@@ -49,6 +49,18 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //处理特殊字符
+        String title = searchGoods.getTitle();
+        String content = searchGoods.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            searchGoods.setContent(filteringTitle);
+            searchGoods.setContent(filteringContent);
+        }
         //验证地区
         if (!CommonUtils.checkProvince_city_district(0, searchGoods.getProvince(), searchGoods.getCity(), searchGoods.getDistrict())) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
@@ -193,6 +205,18 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //处理特殊字符
+        String title = searchGoods.getTitle();
+        String content = searchGoods.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            searchGoods.setContent(filteringTitle);
+            searchGoods.setContent(filteringContent);
         }
         //验证修改人权限
         if (CommonUtils.getMyId() != searchGoods.getUserId()) {

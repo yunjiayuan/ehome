@@ -213,6 +213,7 @@ public class Constants {
     public static final String REDIS_KEY_IPS_COLLECT = "ips_collect_";//userId与公告收藏对象的关系对照
     public static final String REDIS_KEY_IPS_WORKRESUME = "ips_workResume_";//userId与简历对象的关系对照
     public static final String REDIS_KEY_IPS_WORKRECRUIT = "ips_workRecruit_";//userId与招聘对象的关系对照
+    public static final String REDIS_KEY_IPS_WORKDOWNLOAD = "ips_workDownload_";//企业与被下载简历对象的关系对照
 
     //redis 2库相关key配置(otherServer)
     public static final String REDIS_KEY_IPS_TASK = "task_";//userId与任务对象的关系对照

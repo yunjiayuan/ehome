@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.*;
 
@@ -47,6 +48,18 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //处理特殊字符
+        String title = otherPosts.getTitle();
+        String content = otherPosts.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            otherPosts.setContent(filteringTitle);
+            otherPosts.setContent(filteringContent);
         }
         //计算公告分数
         int fraction = 0;//公告分数
@@ -87,7 +100,7 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         otherPostsService.add(otherPosts);
 
         //新增任务
-        mqUtils.sendTaskMQ(otherPosts.getUserId(),1,3);
+        mqUtils.sendTaskMQ(otherPosts.getUserId(), 1, 3);
         //新增足迹
         mqUtils.sendFootmarkMQ(otherPosts.getUserId(), otherPosts.getTitle(), null, null, null, otherPosts.getId() + "," + 6, 1);
 
@@ -137,6 +150,18 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //处理特殊字符
+        String title = otherPosts.getTitle();
+        String content = otherPosts.getContent();
+        if (!CommonUtils.checkFull(content) || !CommonUtils.checkFull(title)) {
+            String filteringTitle = CommonUtils.filteringContent(title);
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            otherPosts.setContent(filteringTitle);
+            otherPosts.setContent(filteringContent);
+        }
         //验证修改人权限
         if (CommonUtils.getMyId() != otherPosts.getUserId()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + otherPosts.getUserId() + "]的其他公告信息", new JSONObject());
@@ -185,6 +210,7 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
 
     /**
      * 查询
+     *
      * @param id
      * @return
      */
@@ -202,13 +228,13 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
             //新增浏览记录
-            mqUtils.sendLookMQ(CommonUtils.getMyId(),id,posts.getTitle(),6);
+            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), 6);
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
             redisUtils.hmset(Constants.REDIS_KEY_IPS_OTHERPOSTS + posts.getId(), otherPostsMap, Constants.USER_TIME_OUT);
         }
         //新增浏览记录
-        mqUtils.sendLookMQ(CommonUtils.getMyId(),id,otherPostsMap.get("title").toString(),1);
+        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), 1);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }
