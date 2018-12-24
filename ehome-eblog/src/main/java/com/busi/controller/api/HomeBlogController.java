@@ -84,6 +84,11 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         //处理特殊字符
+        String title = homeBlog.getContent();
+        if(!CommonUtils.checkFull(title)){
+            title = CommonUtils.filteringContent(title);
+            homeBlog.setTitle(title);
+        }
         String content = homeBlog.getContent();
         if(!CommonUtils.checkFull(content)){
             homeBlog.setContent(CommonUtils.filteringContent(content));
@@ -97,7 +102,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         homeBlog.setTime(new Date());
         homeBlogService.add(homeBlog);
         //添加足迹
-        String title = homeBlog.getTitle();
+//        String title = homeBlog.getTitle();
         String imageUrl = "";
         if(homeBlog.getBlogType()==1){
             String reprintContent = homeBlog.getReprintContent();
