@@ -84,7 +84,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         //处理特殊字符
-        String title = homeBlog.getContent();
+        String title = homeBlog.getTitle();
         if(!CommonUtils.checkFull(title)){
             title = CommonUtils.filteringContent(title);
             homeBlog.setTitle(title);

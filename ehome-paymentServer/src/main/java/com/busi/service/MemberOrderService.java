@@ -178,7 +178,7 @@ public class MemberOrderService extends BaseController implements PayBaseService
                     ums.setVipMembershipLevel(1);//暂定为1一级VIP高级会员
                     ums.setMemberShipStatus(2);//VIP高级会员
                     //计算VIP高级会员到期时间
-                    Date date = new Date(new Date().getTime()+monthNumber*31*24*60*60*1000);
+                    Date date = new Date(new Date().getTime()+monthNumber*31*24*60*60*1000L);
                     ums.setVipExpireTime(date);//VIP高级会员到期时间
                     ums.setUserId(pay.getUserId());
                     userMemberControllerFegin.addUserMember(ums);
