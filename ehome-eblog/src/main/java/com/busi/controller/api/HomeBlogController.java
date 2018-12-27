@@ -251,7 +251,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             case 0://0查看朋友的生活圈
                 //从缓存中获取好友列表
                 List list = null;
-                list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
+//                list = redisUtils.getList(Constants.REDIS_KEY_USERFRIENDLIST+CommonUtils.getMyId(),0,-1);
+                list = userRelationShipUtils.getFirendList(CommonUtils.getMyId());
                 if(list==null||list.size()<=0){//缓存无好友列表存在 直接返回
                     pageBean = new PageBean<HomeBlog>();
                     pageBean.setList(new ArrayList<>());
@@ -274,24 +275,25 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                             if(userRelationShip==null){
                                 continue;
                             }
-                            if(j==userList.size()-1){
-                                firendUserIds += userRelationShip.getFriendId()+"";
-                            }else{
-                                firendUserIds += userRelationShip.getFriendId()+",";
-                            }
+//                            if(j==userList.size()-1){
+//                                firendUserIds += userRelationShip.getFriendId()+"";
+//                            }else{
+//                                firendUserIds += userRelationShip.getFriendId()+",";
+//                            }
+                            firendUserIds += userRelationShip.getFriendId()+",";
                         }
                     }
                 }
                 //将自己加入查询列表中
-                firendUserIds = firendUserIds+","+CommonUtils.getMyId();
+                firendUserIds = firendUserIds+CommonUtils.getMyId();
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),0,page,count);
                 break;
             case 1://1查看关注人的生活圈
                 //获取我关注的人的列表
                 String[] followArray = null;
                 String followUserIds = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
-                //将自己加入查询列表中
-                followUserIds = followUserIds+","+CommonUtils.getMyId();
+                //将自己加入查询列表中  关注暂时不查自己的
+//                followUserIds = followUserIds+","+CommonUtils.getMyId();
                 if(!CommonUtils.checkFull(followUserIds)){
                     followArray = followUserIds.split(",");
                 }
@@ -441,24 +443,25 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                             if(userRelationShip==null){
                                 continue;
                             }
-                            if(j==userList.size()-1){
-                                firendUserIds += userRelationShip.getFriendId()+"";
-                            }else{
-                                firendUserIds += userRelationShip.getFriendId()+",";
-                            }
+//                            if(j==userList.size()-1){
+//                                firendUserIds += userRelationShip.getFriendId()+"";
+//                            }else{
+//                                firendUserIds += userRelationShip.getFriendId()+",";
+//                            }
+                            firendUserIds += userRelationShip.getFriendId()+",";
                         }
                     }
                 }
                 //将自己加入查询列表中
-                firendUserIds = firendUserIds+","+CommonUtils.getMyId();
+                firendUserIds = firendUserIds+CommonUtils.getMyId();
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),1,page,count);
                 break;
             case 3://1查看关注人的生活秀
                 //获取我关注的人的列表
                 String[] followArray = null;
                 String followUserIds = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
-                //将自己加入查询列表中
-                followUserIds = followUserIds+","+CommonUtils.getMyId();
+                //将自己加入查询列表中 关注暂时不查自己的
+//                followUserIds = followUserIds+","+CommonUtils.getMyId();
                 if(!CommonUtils.checkFull(followUserIds)){
                     followArray = followUserIds.split(",");
                 }
