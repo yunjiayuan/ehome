@@ -100,6 +100,6 @@ public class WorkResume {
 
     private int downState;          //	下载状态：0未下载   1已下载
 
-    private int perfectType; 		// 完善类型 0基本信息 1求职意向 2我的亮点(仅更新是有效)
+    private int perfectType; 		// 完善类型 0基本信息 1求职意向 2我的亮点(仅更新简历时有效)
 
 }

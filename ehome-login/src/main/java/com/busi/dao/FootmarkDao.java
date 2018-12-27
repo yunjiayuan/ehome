@@ -94,10 +94,12 @@ public interface FootmarkDao {
             "</if>" +
             "<if test=\"endDate != null\">" +
             " <![CDATA[ and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) and UNIX_TIMESTAMP(addTime) <= UNIX_TIMESTAMP(#{endDate}) ]]>" +
+//            " <![CDATA[ and addTime >= date_sub(#{beginDate}, interval 0 day) and addTime <= date_add(#{endDate}, interval 1 day) ]]>" +  后新增可用语句
 //            " <![CDATA[ and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\") and addTime <= DATE_FORMAT(#{endTime},\"%Y-%m-%d %T\") ]]>" +
             "</if>" +
             "<if test=\"endDate == null\">" +
             " and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) " +
+//            " and addTime >= date_sub(#{beginDate}, interval 0 day) " +
             "</if>" +
             " and footmarkStatus = 0" +
             " order by addTime desc" +
