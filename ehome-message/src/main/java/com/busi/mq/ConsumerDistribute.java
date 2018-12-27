@@ -149,6 +149,7 @@ public class ConsumerDistribute {
                     break;
                 case "11"://更新粉丝数
                     messageAdapter = followCountsService;
+                    break;
                 case "12"://更新生活圈评论数、点赞数、浏览量、转发量
                     messageAdapter = homeBlogService;
                     break;
