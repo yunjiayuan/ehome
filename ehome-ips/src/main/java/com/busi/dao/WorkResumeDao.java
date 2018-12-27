@@ -136,7 +136,7 @@ public interface WorkResumeDao {
             "<if test=\"perfectType == 0 \">" +
             " name=#{name}," +
             " sex=#{sex}," +
-            " name=#{name}," +
+            " birthDay=#{birthDay}," +
             " jobType=#{jobType}," +
             " highestEducation=#{highestEducation}," +
             " workExperience=#{workExperience}," +

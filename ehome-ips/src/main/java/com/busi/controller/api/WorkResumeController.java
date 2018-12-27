@@ -160,18 +160,13 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         UserAccountSecurity userAccountSecurity = null;
         userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(CommonUtils.getMyId());
         if (CommonUtils.checkFull(userAccountSecurity.getPhone()) || CommonUtils.checkFull(userAccountSecurity.getEmail())) {
-//            return returnData(StatusCode.CODE_NOT_BIND_PHONE_ERROR.CODE_VALUE, "该用户未绑定手机邮箱!", new JSONObject());
+            return returnData(StatusCode.CODE_NOT_BIND_PHONE_ERROR.CODE_VALUE, "该用户未绑定手机邮箱!", new JSONObject());
         }
+        // 根据perfectType判断更新类型
+        // perfectType 完善类型 0基本信息 1求职意向 2我的亮点 3职位名称
         workResume.setRefreshTime(new Date());
-        if (workResume.getPerfectType() == 0) {//完善类型 0基本信息 1求职意向 2我的亮点 3职位名称
-            workResumeService.updateResume(workResume);
-        } else if (workResume.getPerfectType() == 1) { //1求职意向
-            workResumeService.updateResume(workResume);
-        } else if (workResume.getPerfectType() == 2) {//2我的亮点
-            workResumeService.updateResume(workResume);
-        } else {//3职位名称
-            workResumeService.updateResume(workResume);
-        }
+        workResumeService.updateResume(workResume);
+
         int integrity = 0; //0待完善   1完整
         if (!CommonUtils.checkFull(workResume.getHighlights())) {
             integrity = 1;
