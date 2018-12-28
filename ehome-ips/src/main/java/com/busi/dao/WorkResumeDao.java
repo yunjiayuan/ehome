@@ -174,7 +174,7 @@ public interface WorkResumeDao {
     WorkResumeIntegrity findIntegrity(@Param("userId") long userId, @Param("id") long id);
 
     /***
-     * 更新简历的完整度
+     * 更新简历亮点的完整度
      * @param workResumeIntegrity
      * @return
      */
@@ -523,11 +523,10 @@ public interface WorkResumeDao {
      */
     @Update("<script>" +
             "update workEducation set" +
-            " companyName=#{companyName}," +
-            " positionName=#{positionName}," +
-            " startTime=#{startTime}," +
-            " endTime=#{endTime}," +
-            " content=#{content}" +
+            " schoolName=#{schoolName}," +
+            " proTypeId=#{proTypeId}," +
+            " majorName=#{majorName}," +
+            " graduationTime=#{graduationTime}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateEducation(WorkEducation workEducation);

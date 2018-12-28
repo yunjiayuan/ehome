@@ -579,27 +579,30 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             WorkResume wr = workResumeService.findById(we.getResumeId());
             if (wr != null) {
                 we.setState(1);
+                workResumeService.delExperience(we);
                 //更新简历中工作经验ID
-                String[] experience = wr.getExperienceId().split(",");
-                for (int i = 0; i < experience.length; i++) {
-                    if (Long.parseLong(experience[i]) == id) {
-                        String experienceIds = wr.getExperienceId().replace(id + "", "");
-                        experienceIds = experienceIds.replace(",,", ",");
-                        if (experienceIds.indexOf(",") == 0) {//处理逗号出现在第一位
-                            experienceIds = experienceIds.substring(1);//从下标1开始截取“experienceIds”为截取结果
+                String[] experience = null;
+                if (!CommonUtils.checkFull(wr.getExperienceId())) {
+                    experience = wr.getExperienceId().split(",");
+                    for (int i = 0; i < experience.length; i++) {
+                        if (Long.parseLong(experience[i]) == id) {
+                            String experienceIds = wr.getExperienceId().replace(id + "", "");
+                            experienceIds = experienceIds.replace(",,", ",");
+                            if (experienceIds.indexOf(",") == 0) {//处理逗号出现在第一位
+                                experienceIds = experienceIds.substring(1);//从下标1开始截取“experienceIds”为截取结果
+                            }
+                            wr.setExperienceId(experienceIds);
+                            workResumeService.updateExperience(wr);
+                            break;
                         }
-                        wr.setExperienceId(experienceIds);
-                        workResumeService.updateExperience(wr);
-                        break;
                     }
                 }
-                workResumeService.delExperience(we);
                 if (CommonUtils.checkFull(wr.getExperienceId())) {
                     //更新完整度
                     WorkResumeIntegrity wri = workResumeService.findIntegrity(wr.getId(), wr.getUserId());
                     if (wri != null) {
                         wri.setWorkExperience(0);
-                        workResumeService.updateIntegrity(wri);
+                        workResumeService.updateIntegrity2(wri);
                     } else {
                         WorkResumeIntegrity integrity1 = new WorkResumeIntegrity();
                         integrity1.setWorkExperience(0);
@@ -628,10 +631,12 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         if (is == null) {
             return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "编辑工作经验失败，简历不存在！", new JSONObject());
         }
-        String[] experience = is.getExperienceId().split(",");
-        for (int i = 0; i < experience.length; i++) {
-            if (Long.parseLong(experience[i]) == workExperience.getId()) {
-                workResumeService.updateExp(workExperience);
+        if (!CommonUtils.checkFull(is.getExperienceId())) {
+            String[] experience = is.getExperienceId().split(",");
+            for (int i = 0; i < experience.length; i++) {
+                if (Long.parseLong(experience[i]) == workExperience.getId()) {
+                    workResumeService.updateExp(workExperience);
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -694,7 +699,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         }
         WorkResume is = workResumeService.findById(workEducation.getResumeId());
         if (is == null) {
-            return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "新增工作经验失败，简历不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "新增教育经历失败，简历不存在！", new JSONObject());
         }
         workEducation.setAddTime(new Date());
         workResumeService.addEducation(workEducation);
@@ -708,7 +713,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         WorkResumeIntegrity wri = workResumeService.findIntegrity(is.getId(), is.getUserId());
         if (wri != null) {
             wri.setWorkEducation(1);
-            workResumeService.updateIntegrity(wri);
+            workResumeService.updateIntegrity3(wri);
         } else {
             WorkResumeIntegrity integrity1 = new WorkResumeIntegrity();
             integrity1.setWorkEducation(1);
@@ -730,27 +735,29 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             WorkResume wr = workResumeService.findById(we.getResumeId());
             if (wr != null) {
                 we.setState(1);
+                workResumeService.delEducation(we);
                 //更新简历中工作经验ID
-                String[] educationIds = wr.getEducationId().split(",");
-                for (int i = 0; i < educationIds.length; i++) {
-                    if (Long.parseLong(educationIds[i]) == id) {
-                        String ids = wr.getEducationId().replace(id + "", "");
-                        ids = ids.replace(",,", ",");
-                        if (ids.indexOf(",") == 0) {//处理逗号出现在第一位
-                            ids = ids.substring(1);//从下标1开始截取“experienceIds”为截取结果
+                if (!CommonUtils.checkFull(wr.getEducationId())) {
+                    String[] educationIds = wr.getEducationId().split(",");
+                    for (int i = 0; i < educationIds.length; i++) {
+                        if (Long.parseLong(educationIds[i]) == id) {
+                            String ids = wr.getEducationId().replace(id + "", "");
+                            ids = ids.replace(",,", ",");
+                            if (ids.indexOf(",") == 0) {//处理逗号出现在第一位
+                                ids = ids.substring(1);//从下标1开始截取“experienceIds”为截取结果
+                            }
+                            wr.setEducationId(ids);
+                            workResumeService.updateEducationId(wr);
+                            break;
                         }
-                        wr.setEducationId(ids);
-                        workResumeService.updateEducationId(wr);
-                        break;
                     }
                 }
-                workResumeService.delEducation(we);
                 if (CommonUtils.checkFull(wr.getEducationId())) {
                     //更新完整度
                     WorkResumeIntegrity wri = workResumeService.findIntegrity(wr.getId(), wr.getUserId());
                     if (wri != null) {
                         wri.setWorkEducation(0);
-                        workResumeService.updateIntegrity(wri);
+                        workResumeService.updateIntegrity3(wri);
                     } else {
                         WorkResumeIntegrity integrity1 = new WorkResumeIntegrity();
                         integrity1.setWorkEducation(0);
@@ -779,10 +786,12 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         if (is == null) {
             return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "编辑教育经历失败，简历不存在！", new JSONObject());
         }
-        String[] educationIds = is.getEducationId().split(",");
-        for (int i = 0; i < educationIds.length; i++) {
-            if (Long.parseLong(educationIds[i]) == workEducation.getId()) {
-                workResumeService.updateEducation(workEducation);
+        if (!CommonUtils.checkFull(is.getEducationId())) {
+            String[] educationIds = is.getEducationId().split(",");
+            for (int i = 0; i < educationIds.length; i++) {
+                if (Long.parseLong(educationIds[i]) == workEducation.getId()) {
+                    workResumeService.updateEducation(workEducation);
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -790,7 +799,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
 
     /***
      * 查询教育经历详情
-     * @param id  工作经验ID
+     * @param id  教育经历ID
      * @return
      */
     @Override
@@ -803,7 +812,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         if (is == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", is);
     }
 
     /***
@@ -828,7 +837,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
     /***
