@@ -38,6 +38,10 @@ public class UserJurisdiction {
   @Min(value= 0 ,message= "被访问权限参数有误，超出指定范围")
   private long accessRights;//自己家被访问权限 1允许任何人  2禁止任何人  3 仅好友访问权限
 
+  @Max(value = 2, message = "开关灯状态参数有误，超出指定范围")
+  @Min(value= 0 ,message= "开关灯状态参数有误，超出指定范围")
+  private long switchLamp;//开关灯状态值 1 默认开灯  2关灯
+
   private int redisStatus;//该对象在缓存中的存在形式  0空对象 无数据库对应数据  1数据已有对应数据  与数据无关字段
 
 }

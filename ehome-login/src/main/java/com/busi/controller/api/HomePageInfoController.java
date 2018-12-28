@@ -86,6 +86,7 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         homePageInfo.setLivingRoom(Integer.parseInt(userJurisdictionMap.get("livingRoom").toString()));//客厅锁状态 1未上锁 2已上锁
         homePageInfo.setHomeStore(Integer.parseInt(userJurisdictionMap.get("homeStore").toString()));//家店锁状态 1未上锁 2已上锁
         homePageInfo.setStorageRoom(Integer.parseInt(userJurisdictionMap.get("storageRoom").toString()));//储存室锁状态 1未上锁 2已上锁
+        homePageInfo.setSwitchLamp(Integer.parseInt(userJurisdictionMap.get("switchLamp").toString()));//开关灯状态值 0 默认开灯  1关灯
         int accessRights = Integer.parseInt(userJurisdictionMap.get("accessRights").toString());//访问权限 0允许任何人  1禁止任何人  2 仅好友
         //判断被访问者是不是自己
         int isFriend = 0;//是否为好友 0不是好友  1是好友
