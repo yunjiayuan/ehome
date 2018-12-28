@@ -3,6 +3,7 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.FollowCountsService;
 import com.busi.service.FollowInfoService;
 import com.busi.service.UserInfoService;
 import com.busi.utils.*;
@@ -30,6 +31,9 @@ public class FollowInfoController extends BaseController implements FollowInfoAp
 
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    FollowCountsService followCountsService;
 
     @Autowired
     private MqUtils mqUtils;
@@ -163,9 +167,23 @@ public class FollowInfoController extends BaseController implements FollowInfoAp
         if(userId<=0){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
-        int count = followInfoService.findFollowCounts(userId);
-        Map<String,Integer> map = new HashMap();
+        long count = followInfoService.findFollowCounts(userId);
+        //设置粉丝数
+        Object object = redisUtils.getKey(Constants.REDIS_KEY_FOLLOW_COUNTS+userId);
+        long fansCounts = 0;
+        if(object!=null&&!CommonUtils.checkFull(object.toString())){
+            fansCounts = Long.parseLong(object.toString());
+        }else{
+            FollowCounts fc = followCountsService.findFollowInfo(userId);
+            if(fc!=null){
+                fansCounts = fc.getCounts();
+                //放入缓存
+                redisUtils.set(Constants.REDIS_KEY_FOLLOW_COUNTS+userId,fansCounts+"",Constants.USER_TIME_OUT);
+            }
+        }
+        Map<String,Long> map = new HashMap();
         map.put("followCounts",count);
+        map.put("fansCounts",fansCounts);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

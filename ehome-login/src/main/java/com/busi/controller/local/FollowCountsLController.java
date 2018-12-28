@@ -5,6 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.FollowCounts;
 import com.busi.entity.ReturnData;
 import com.busi.service.FollowCountsService;
+import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class FollowCountsLController extends BaseController implements FollowCou
         if(fc==null){//新增
             if(followCounts.getCounts()>0){// 正数为新增粉丝的粉丝数 负数为减少的粉丝数
                 followCountsService.add(followCounts);
+                //放入缓存
+                redisUtils.set(Constants.REDIS_KEY_FOLLOW_COUNTS+followCounts.getUserId(),followCounts.getCounts()+"",Constants.USER_TIME_OUT);
             }
         }else{//更新
             if(fc.getCounts()<=0){//处理粉丝数为0时 不能再减的问题
@@ -46,6 +49,8 @@ public class FollowCountsLController extends BaseController implements FollowCou
                 fc.setCounts(fc.getCounts()+followCounts.getCounts());
             }
             followCountsService.update(fc);
+            //放入缓存
+            redisUtils.set(Constants.REDIS_KEY_FOLLOW_COUNTS+fc.getUserId(),fc.getCounts()+"",Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
