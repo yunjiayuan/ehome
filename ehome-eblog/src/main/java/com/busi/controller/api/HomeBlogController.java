@@ -98,6 +98,12 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setContentTxt(homeBlog.getContent());
             }
         }
+        String reprintContent = homeBlog.getReprintContent();
+        if(!CommonUtils.checkFull(reprintContent)){
+            reprintContent = CommonUtils.filteringContent(reprintContent);
+            homeBlog.setReprintContent(reprintContent);
+        }
+
         //开始新增
         homeBlog.setTime(new Date());
         homeBlogService.add(homeBlog);
@@ -105,7 +111,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 //        String title = homeBlog.getTitle();
         String imageUrl = "";
         if(homeBlog.getBlogType()==1){
-            String reprintContent = homeBlog.getReprintContent();
+//            String reprintContent = homeBlog.getReprintContent();
             if(CommonUtils.checkFull(reprintContent)){
                 title = "转发生活圈";
             }else{
