@@ -48,6 +48,8 @@ public class HomePageInfo {
 
     private int accessRights;//访问权限 0允许任何人  1禁止任何人  2 已是好友可以访问   3不是好友禁止访问
 
+    private int switchLamp;//开关灯状态值 0 默认开灯  1关灯
+
     private int isFollow;//0未关注  1已关注
 
     private long followCounts;//粉丝数

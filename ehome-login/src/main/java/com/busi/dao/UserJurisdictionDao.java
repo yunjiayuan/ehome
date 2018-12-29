@@ -18,7 +18,7 @@ public interface UserJurisdictionDao {
      * @param userJurisdiction
      * @return
      */
-    @Insert("insert into UserJurisdiction(userId,garden,livingRoom,homeStore,storageRoom,accessRights) values (#{userId},#{garden},#{livingRoom},#{homeStore},#{storageRoom},#{accessRights})")
+    @Insert("insert into UserJurisdiction(userId,garden,livingRoom,homeStore,storageRoom,accessRights,switchLamp) values (#{userId},#{garden},#{livingRoom},#{homeStore},#{storageRoom},#{accessRights},#{switchLamp})")
     @Options(useGeneratedKeys = true)
     int add(UserJurisdiction userJurisdiction);
 
@@ -43,6 +43,9 @@ public interface UserJurisdictionDao {
             "</if>" +
             "<if test=\"accessRights != 0\">"+
             " accessRights=#{accessRights}," +
+            "</if>" +
+            "<if test=\"switchLamp != 0\">"+
+            " switchLamp=#{switchLamp}," +
             "</if>" +
             "<if test=\"userId != 0\">"+
             " userId=#{userId}" +
