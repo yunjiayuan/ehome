@@ -106,7 +106,20 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
         //开始新增
         homeBlog.setTime(new Date());
+        if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0){//制作假数据
+            if(homeBlog.getUserId()==9999||homeBlog.getUserId()==10076||homeBlog.getUserId()==10053){
+                Random ra =new Random();
+                Random ra2 =new Random();
+                Random ra3 =new Random();
+                homeBlog.setUserId(ra.nextInt(10000)+1);
+                homeBlog.setLikeCount(ra2.nextInt(30000)+10000);
+                homeBlog.setLookCount(ra3.nextInt(30000)+30000);
+            }
+        }
         homeBlogService.add(homeBlog);
+        if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0&&homeBlog.getLikeCount()>10000){//制作假数据
+            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, homeBlog, 0);
+        }
         //添加足迹
 //        String title = homeBlog.getTitle();
         String imageUrl = "";

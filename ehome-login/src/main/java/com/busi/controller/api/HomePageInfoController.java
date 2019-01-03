@@ -235,7 +235,7 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         homePageInfo.setSex(Integer.parseInt(userMap.get("sex").toString()));//性别
         homePageInfo.setIsNewUser(Integer.parseInt(userMap.get("isNewUser").toString()));//是否为新用户  0新用户 1已领新人红包(老用户)
         homePageInfo.setWelcomeInfoStatus(Integer.parseInt(userMap.get("welcomeInfoStatus").toString()));//系统欢迎消息状态 0表示未发送  1表示已发送
-        homePageInfo.setFlag(0);//临时参数 1禁止查看会员中心 方便IOS平台审核
+        homePageInfo.setFlag(1);//临时参数 1禁止查看会员中心 方便IOS平台审核
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",homePageInfo);
     }
 }
