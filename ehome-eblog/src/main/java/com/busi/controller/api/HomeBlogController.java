@@ -111,7 +111,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 Random ra =new Random();
                 Random ra2 =new Random();
                 Random ra3 =new Random();
-                homeBlog.setUserId(ra.nextInt(10000)+1);
+                homeBlog.setUserId(ra.nextInt(9999)+1);
                 homeBlog.setLikeCount(ra2.nextInt(30000)+10000);
                 homeBlog.setLookCount(ra3.nextInt(30000)+30000);
             }
@@ -570,6 +570,45 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setIsLike(1);
             }else{
                 homeBlog.setIsLike(0);
+            }
+        }
+        if(list.size()<count){//补充假数据
+            Random random = new Random();
+            String userIds = "";
+            for(int i=0;i<100;i++){
+                long newUserId = random.nextInt(10000) + 1;
+                if(i==0){
+                    userIds = newUserId+"";
+                }else{
+                    userIds += ","+newUserId;
+                }
+            }
+            PageBean<HomeBlog> newPageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),userIds.split(","),1,1,100);
+            List<HomeBlog> newList  = newPageBean.getList();
+            for (int i = 0; i < newList.size(); i++) {
+                HomeBlog homeBlog = newList.get(i);
+                if(homeBlog==null){
+                    continue;
+                }
+                //设置用户信息
+                UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
+                if(userInfo!=null){
+                    homeBlog.setUserName(userInfo.getName());
+                    homeBlog.setUserHead(userInfo.getHead());
+                    homeBlog.setProTypeId(userInfo.getProType());
+                    homeBlog.setHouseNumber(userInfo.getHouseNumber());
+                }
+                //添加位置信息
+                int radius = random.nextInt(10000)+500;
+                homeBlog.setDistance(radius);
+                //设置是否喜欢过状态
+                boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+homeBlog.getId(),CommonUtils.getMyId());
+                if(isMember){
+                    homeBlog.setIsLike(1);
+                }else{
+                    homeBlog.setIsLike(0);
+                }
+                list.add(homeBlog);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
