@@ -69,6 +69,14 @@ public class UserAccountSecurityLController extends BaseController implements  U
                 u =(UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap,UserAccountSecurity.class);
             }
         }
+        //处理特殊字符  20190107  ZHJJ
+        String name = userAccountSecurity.getOtherPlatformAccount();
+        if (!CommonUtils.checkFull(name)) {
+            String filteringTitle = CommonUtils.filteringContent(name);
+            if (!CommonUtils.checkFull(filteringTitle)) {
+                userAccountSecurity.setOtherPlatformAccount(filteringTitle);
+            }
+        }
         if(u==null){//新增
             count =userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
         }else{//更新
