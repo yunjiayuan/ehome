@@ -327,7 +327,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
      * @return
      */
     @Override
-    public ReturnData queryResumeList(@PathVariable int jobProvince, @PathVariable int highestEducation, @PathVariable String positionName, @PathVariable int jobCity, @PathVariable int jobDistrict, @PathVariable int jobType1, @PathVariable int jobType2, @PathVariable int workExperience, @PathVariable int startSalary, @PathVariable int endSalary, @PathVariable int page, @PathVariable int count) {
+    public ReturnData queryRecruitList(@PathVariable int jobProvince, @PathVariable int highestEducation, @PathVariable String positionName, @PathVariable int jobCity, @PathVariable int jobDistrict, @PathVariable int jobType1, @PathVariable int jobType2, @PathVariable int workExperience, @PathVariable int startSalary, @PathVariable int endSalary, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());

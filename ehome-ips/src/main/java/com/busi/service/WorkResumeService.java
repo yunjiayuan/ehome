@@ -268,7 +268,7 @@ public class WorkResumeService {
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (!CommonUtils.checkFull(positionName)) {
             list = workResumeDao.findRecruitList(userId, positionName);
-        }else{
+        } else {
             list = workResumeDao.findRecruitList1(userId, jobProvince, jobCity, jobDistrict,
                     jobType1, jobType2, workExperience, startSalary, endSalary, highestEducation);
         }
@@ -558,6 +558,38 @@ public class WorkResumeService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int countDownloader(long id, int type) {
         return workResumeDao.countDownloader(id, type);
+    }
+
+    /***
+     * 更新简历主动投递数
+     * @param workResume
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateDelivery(WorkResume workResume) {
+        return workResumeDao.updateDelivery(workResume);
+    }
+
+    /***
+     * 批量查询指定的简历
+     * @param id
+     * @return
+     */
+    public List<WorkResume> findResumeList(String[] id) {
+        List<WorkResume> list;
+        list = workResumeDao.findResumeList(id);
+        return list;
+    }
+
+    /***
+     * 批量查询指定的简历
+     * @param id
+     * @return
+     */
+    public List<WorkDowRecord> findDowRecords(long userId, String[] id) {
+        List<WorkDowRecord> list;
+        list = workResumeDao.findDowRecords(userId, id);
+        return list;
     }
 
 }

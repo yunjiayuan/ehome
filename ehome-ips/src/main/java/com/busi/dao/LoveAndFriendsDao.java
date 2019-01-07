@@ -182,4 +182,20 @@ public interface LoveAndFriendsDao {
             "</script>")
     List<LoveAndFriends> findUList(@Param("userId") long userId);
 
+    /***
+     * 分页条件查询 按userId查询
+     * @param userId   用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from loveAndFriends" +
+            " where auditType = 2" +
+            "<if test=\"userId != 0\">" +
+            " and userId = #{userId}" +
+            "</if>" +
+            " and deleteType = 1" +
+            " order by refreshTime desc" +
+            "</script>")
+    List<LoveAndFriends> findHList(@Param("userId") long userId);
+
 }

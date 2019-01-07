@@ -55,7 +55,7 @@ public interface UsedDealOrdersDao {
      * 根据Id查询订单
      * @param id
      */
-    @Select("select * from UsedDealOrders where id=#{id} and ordersState < 3 and ordersType = 0 or ordersType > 2")
+    @Select("select * from UsedDealOrders where id=#{id} and ordersState < 3 and (ordersType = 0 or ordersType > 2)")
     UsedDealOrders findDelOrId(@Param("id") long id);
 
     /***

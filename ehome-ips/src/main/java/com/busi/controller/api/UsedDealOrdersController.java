@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -123,7 +120,9 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         usedDealOrdersService.addOrders(usedDealOrders);
         usedDealService.updateStatus(usedDeal);
 
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        Map<String, Object> map = new HashMap<>();
+        map.put("infoId", usedDealOrders.getId());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
@@ -240,7 +239,29 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+        List list = null;
+        list = pageBean.getList();
+        UsedDealOrders t = null;
+        UserInfo userCache = null;
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                t = (UsedDealOrders) list.get(i);
+                if (t != null) {
+                    if (identity == 1) {
+                        userCache = userInfoUtils.getUserInfo(t.getUserId());
+                    } else {
+                        userCache = userInfoUtils.getUserInfo(t.getMyId());
+                    }
+                    if (userCache != null) {
+                        t.setName(userCache.getName());
+                        t.setHead(userCache.getHead());
+                        t.setProTypeId(userCache.getProType());
+                        t.setHouseNumber(userCache.getHouseNumber());
+                    }
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 
     /***

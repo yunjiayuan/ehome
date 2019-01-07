@@ -57,43 +57,61 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         OtherPosts posts = null;
         UsedDeal usedDeal = null;
         SearchGoods searchGoods = null;
+        PageBean<UsedDeal> dealPage = null;
+        PageBean<OtherPosts> otherPage = null;
+        PageBean<SearchGoods> goodsPage = null;
+        PageBean<LoveAndFriends> lovePage = null;
         LoveAndFriends loveAndFriends = null;
         List<IPS_Home> ips = new ArrayList<>();
         homeList = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 100);
-        if (userId > 0) {
+        if (userId > 0 || homeList == null || homeList.size() <= 0) {
             //开始查询
-            PageBean<UsedDeal> dealPage = usedDealService.findList(userId, page, count);
-            PageBean<OtherPosts> otherPage = otherPostsService.findList(userId, page, count);
-            PageBean<SearchGoods> goodsPage = searchGoodsService.findList(userId, page, count);
-            PageBean<LoveAndFriends> lovePage = loveAndFriendsService.findUList(userId, page, count);
+            if (userId <= 0) {
+                dealPage = usedDealService.findList(0, page, count);
+                goodsPage = searchGoodsService.findList(0, page, count);
+                lovePage = loveAndFriendsService.findHList(0, page, count);
+            } else {
+                dealPage = usedDealService.findList(userId, page, count);
+                otherPage = otherPostsService.findList(userId, page, count);
+                goodsPage = searchGoodsService.findList(userId, page, count);
+                lovePage = loveAndFriendsService.findHList(userId, page, count);
+            }
             List loveList = lovePage.getList();
             List dealList = dealPage.getList();
-            List otherList = otherPage.getList();
+            List otherList = null;
+            if (otherPage != null) {
+                otherList = otherPage.getList();
+            }
             List goodsList = goodsPage.getList();
             if (dealList != null && dealList.size() > 0) {
                 for (int j = 0; j < dealList.size(); j++) {
-                    if (j < 4) {
-                        usedDeal = (UsedDeal) dealList.get(j);
-                        if (usedDeal != null) {
-                            IPS_Home ipsHome = new IPS_Home();
-                            ipsHome.setInfoId(usedDeal.getId());
-                            ipsHome.setTitle(usedDeal.getTitle());
-                            ipsHome.setUserId(usedDeal.getUserId());
-                            ipsHome.setContent(usedDeal.getContent());
-                            ipsHome.setReleaseTime(usedDeal.getReleaseTime());
-                            ipsHome.setRefreshTime(usedDeal.getRefreshTime());
-                            ipsHome.setAuditType(2);
-                            ipsHome.setDeleteType(1);
-                            ipsHome.setAfficheType(2);
-                            ipsHome.setFraction(usedDeal.getFraction());
+                    usedDeal = (UsedDeal) dealList.get(j);
+                    if (usedDeal != null) {
+                        IPS_Home ipsHome = new IPS_Home();
+                        ipsHome.setInfoId(usedDeal.getId());
+                        ipsHome.setTitle(usedDeal.getTitle());
+                        ipsHome.setUserId(usedDeal.getUserId());
+                        ipsHome.setContent(usedDeal.getContent());
+                        ipsHome.setMediumImgUrl(usedDeal.getImgUrl());
+                        ipsHome.setReleaseTime(usedDeal.getReleaseTime());
+                        ipsHome.setRefreshTime(usedDeal.getRefreshTime());
+                        ipsHome.setAuditType(2);
+                        ipsHome.setDeleteType(1);
+                        ipsHome.setAfficheType(2);
+                        ipsHome.setFraction(usedDeal.getFraction());
+                        if (userId > 0 && j < 4) {
                             ips.add(ipsHome);
+                        } else {
+                            if (usedDeal.getFraction() >= 70) {
+                                ips.add(ipsHome);
+                            }
                         }
                     }
                 }
             }
             if (otherList != null && otherList.size() > 0) {
                 for (int j = 0; j < otherList.size(); j++) {
-                    if (j < 4) {
+                    if (userId > 0 && j < 4) {
                         posts = (OtherPosts) otherList.get(j);
                         if (posts != null) {
                             IPS_Home ipsHome = new IPS_Home();
@@ -114,44 +132,52 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             }
             if (goodsList != null && goodsList.size() > 0) {
                 for (int j = 0; j < goodsList.size(); j++) {
-                    if (j < 4) {
-                        searchGoods = (SearchGoods) goodsList.get(j);
-                        if (searchGoods != null) {
-                            IPS_Home ipsHome = new IPS_Home();
-                            ipsHome.setInfoId(searchGoods.getId());
-                            ipsHome.setTitle(searchGoods.getTitle());
-                            ipsHome.setUserId(searchGoods.getUserId());
-                            ipsHome.setContent(searchGoods.getContent());
-                            ipsHome.setReleaseTime(searchGoods.getAddTime());
-                            ipsHome.setMediumImgUrl(searchGoods.getImgUrl());
-                            ipsHome.setRefreshTime(searchGoods.getRefreshTime());
-                            ipsHome.setAuditType(2);
-                            ipsHome.setDeleteType(1);
-                            ipsHome.setAfficheType(searchGoods.getSearchType() + 2);
-                            ipsHome.setFraction(searchGoods.getFraction());
+                    searchGoods = (SearchGoods) goodsList.get(j);
+                    if (searchGoods != null) {
+                        IPS_Home ipsHome = new IPS_Home();
+                        ipsHome.setInfoId(searchGoods.getId());
+                        ipsHome.setTitle(searchGoods.getTitle());
+                        ipsHome.setUserId(searchGoods.getUserId());
+                        ipsHome.setContent(searchGoods.getContent());
+                        ipsHome.setReleaseTime(searchGoods.getAddTime());
+                        ipsHome.setMediumImgUrl(searchGoods.getImgUrl());
+                        ipsHome.setRefreshTime(searchGoods.getRefreshTime());
+                        ipsHome.setAuditType(2);
+                        ipsHome.setDeleteType(1);
+                        ipsHome.setAfficheType(searchGoods.getSearchType() + 2);
+                        ipsHome.setFraction(searchGoods.getFraction());
+                        if (userId > 0 && j < 4) {
                             ips.add(ipsHome);
+                        } else {
+                            if (searchGoods.getFraction() >= 70) {
+                                ips.add(ipsHome);
+                            }
                         }
                     }
                 }
             }
             if (loveList != null && loveList.size() > 0) {
                 for (int j = 0; j < loveList.size(); j++) {
-                    if (j < 4) {
-                        loveAndFriends = (LoveAndFriends) loveList.get(j);
-                        if (loveAndFriends != null) {
-                            IPS_Home ipsHome = new IPS_Home();
-                            ipsHome.setInfoId(loveAndFriends.getId());
-                            ipsHome.setTitle(loveAndFriends.getTitle());
-                            ipsHome.setUserId(loveAndFriends.getUserId());
-                            ipsHome.setContent(loveAndFriends.getContent());
-                            ipsHome.setMediumImgUrl(loveAndFriends.getImgUrl());
-                            ipsHome.setRefreshTime(loveAndFriends.getRefreshTime());
-                            ipsHome.setReleaseTime(loveAndFriends.getReleaseTime());
-                            ipsHome.setAuditType(2);
-                            ipsHome.setDeleteType(1);
-                            ipsHome.setAfficheType(1);
-                            ipsHome.setFraction(loveAndFriends.getFraction());
+                    loveAndFriends = (LoveAndFriends) loveList.get(j);
+                    if (loveAndFriends != null) {
+                        IPS_Home ipsHome = new IPS_Home();
+                        ipsHome.setInfoId(loveAndFriends.getId());
+                        ipsHome.setTitle(loveAndFriends.getTitle());
+                        ipsHome.setUserId(loveAndFriends.getUserId());
+                        ipsHome.setContent(loveAndFriends.getContent());
+                        ipsHome.setMediumImgUrl(loveAndFriends.getImgUrl());
+                        ipsHome.setRefreshTime(loveAndFriends.getRefreshTime());
+                        ipsHome.setReleaseTime(loveAndFriends.getReleaseTime());
+                        ipsHome.setAuditType(2);
+                        ipsHome.setDeleteType(1);
+                        ipsHome.setAfficheType(1);
+                        ipsHome.setFraction(loveAndFriends.getFraction());
+                        if (userId > 0 && j < 4) {
                             ips.add(ipsHome);
+                        } else {
+                            if (loveAndFriends.getFraction() >= 70) {
+                                ips.add(ipsHome);
+                            }
                         }
                     }
                 }
@@ -169,14 +195,19 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
                     return 1;
                 }
             });
+            //更新到缓存
+            if (userId <= 0) {
+                if (ips != null && ips.size() > 0) {
+                    redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, ips);
+                }
+            }
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, ips);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, homeList);
     }
 
-    /**
+    /***
      * 刷新公告时间
-     *
      * @param infoId      公告ID
      * @param userId      用户ID
      * @param afficheType 公告类别标志：1婚恋交友,2二手手机,3寻人,4寻物,5失物招领,6其他 7发简历找工作 8发布招聘（注：后续添加）
@@ -332,9 +363,8 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /**
+    /***
      * 置顶公告
-     *
      * @param infoId
      * @param userId
      * @param frontPlaceType 0未置顶  1当前分类置顶  2推荐列表置顶

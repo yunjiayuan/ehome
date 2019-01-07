@@ -71,8 +71,8 @@ public interface WorkResumeApiController {
      * @param count 每页条数
      * @return
      */
-    @GetMapping("queryResumeList/{jobProvince}/{highestEducation}/{positionName}/{jobCity}/{jobDistrict}/{jobType1}/{jobType2}/{workExperience}/{startSalary}/{endSalary}/{page}/{count}")
-    ReturnData queryResumeList(@PathVariable int jobProvince, @PathVariable int highestEducation, @PathVariable String positionName, @PathVariable int jobCity, @PathVariable int jobDistrict, @PathVariable int jobType1, @PathVariable int jobType2, @PathVariable int workExperience, @PathVariable int startSalary, @PathVariable int endSalary, @PathVariable int page, @PathVariable int count);
+    @GetMapping("queryRecruitList/{jobProvince}/{highestEducation}/{positionName}/{jobCity}/{jobDistrict}/{jobType1}/{jobType2}/{workExperience}/{startSalary}/{endSalary}/{page}/{count}")
+    ReturnData queryRecruitList(@PathVariable int jobProvince, @PathVariable int highestEducation, @PathVariable String positionName, @PathVariable int jobCity, @PathVariable int jobDistrict, @PathVariable int jobType1, @PathVariable int jobType2, @PathVariable int workExperience, @PathVariable int startSalary, @PathVariable int endSalary, @PathVariable int page, @PathVariable int count);
 
     /***
      * @param userId

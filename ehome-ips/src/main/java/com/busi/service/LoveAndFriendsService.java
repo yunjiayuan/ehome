@@ -144,4 +144,21 @@ public class LoveAndFriendsService {
 
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * home推荐列表用
+     * @param userId   用户ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<LoveAndFriends> findHList(long userId, int page, int count) {
+
+        List<LoveAndFriends> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = loveAndFriendsDao.findHList(userId);
+
+        return PageUtils.getPageBean(p, list);
+    }
+
 }

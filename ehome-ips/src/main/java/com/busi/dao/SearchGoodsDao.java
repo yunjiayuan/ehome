@@ -212,8 +212,10 @@ public interface SearchGoodsDao {
 
     @Select("<script>" +
             "select * from searchGoods" +
-            " where userId = #{userId}" +
-            " and auditType = 2" +
+            " where auditType = 2" +
+            "<if test=\"userId != 0\">" +
+            " and userId = #{userId}" +
+            "</if>" +
             " and deleteType = 1" +
             " order by refreshTime desc" +
             "</script>")

@@ -640,10 +640,10 @@ public interface WorkResumeDao {
             "select * from WorkDowRecord" +
             " where 1=1" +
             "<if test=\"identity == 0\">" +
-            " resumeUserId=#{userId}," +
+            " and resumeUserId=#{userId}" +
             "</if>" +
             "<if test=\"identity != 0\">" +
-            " userId=#{userId}," +
+            " and userId=#{userId}" +
             "</if>" +
             " order by addTime desc" +
             "</script>")
@@ -668,4 +668,47 @@ public interface WorkResumeDao {
             " and resumeId=#{id} and addTime >= date_sub(now(), interval 14 day)" +
             "</script>")
     int countDownloader(@Param("id") long id, @Param("type") int type);
+
+    /***
+     * 更新简历主动投递数
+     * @param workResume
+     * @return
+     */
+    @Update("<script>" +
+            "update workResume set" +
+            " delivery=#{delivery}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateDelivery(WorkResume workResume);
+
+    /***
+     * 批量查询指定的简历
+     * @param id
+     * @return
+     */
+    @Select("<script>" +
+            "select * from WorkResume" +
+            " where 1=1" +
+            " and id in" +
+            "<foreach collection='id' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<WorkResume> findResumeList(@Param("ids") String[] id);
+
+    /***
+     * 批量查询指定的下载记录
+     * @param id
+     * @return
+     */
+    @Select("<script>" +
+            "select * from WorkDowRecord" +
+            " where userId=#{userId}" +
+            " and id in" +
+            "<foreach collection='id' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<WorkDowRecord> findDowRecords(@Param("userId") long userId, @Param("ids") String[] id);
+
 }

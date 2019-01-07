@@ -46,4 +46,7 @@ public class WorkEnterprise {
 
     private long downloads;        // 下载简历总量
 
+    //与数据库无关
+    private String delImgUrls;//将要删除的图片地址组合 “,”分隔
+
 }
