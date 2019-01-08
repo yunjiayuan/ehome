@@ -8,11 +8,13 @@ package com.busi.utils;
 public class Constants {
     /**超时时间常量配置 开始**/
     public static final String MSG_ID ="msg_id_";
-//    public static final int MSG_TIME_OUT_SECOND_30 =30;/30秒有效期
-    public static final int MSG_TIME_OUT_MINUTE_10 =60*10;//10分钟有效期
+//    public static final int MSG_TIME_OUT_SECOND_30 =30;//30秒有效期
     public static final int TIME_OUT_MINUTE_5 =60*5;//5分钟有效期
+    public static final int MSG_TIME_OUT_MINUTE_10 =60*10;//10分钟有效期
+    public static final int TIME_OUT_MINUTE_15 =60*15;//15分钟有效期
+    public static final int TIME_OUT_MINUTE_45 =60*45;//45分钟有效期
+    public static final int MSG_TIME_OUT_HOUR_1 =60*60;//1小时有效期
     public static final int TIME_OUT_MINUTE_60_24_1 =60*60*24;//1天有效期
-//    public static final int MSG_TIME_OUT_HOUR_1 =60*60;//1小时有效期
 //    public static final int MSG_TIME_OUT_DAY_7 =60*60*24*7;//七天有效期
     public static final String MSG_REGISTER_MQ ="msg_register_mq";//注册队列名称
     public static final int USER_TIME_OUT =60*60*24*7;//对象在缓存中的生命周期 7天有效期
@@ -210,11 +212,13 @@ public class Constants {
     public static final String REDIS_KEY_IPS_LOVEANDFRIEND = "ips_loveAndFriend_";//userId与婚恋交友对象关系对照
     public static final String REDIS_KEY_IPS_OTHERPOSTS = "ips_otherPosts_";//userId与其他公告对象关系对照
     public static final String REDIS_KEY_IPS_USEDDEAL = "ips_usedDeal_";//userId与二手公告对象关系对照
+    public static final String REDIS_KEY_IPS_USEDDEALORDERS = "ips_usedDealOrders_";//userId与二手订单对象关系对照
     public static final String REDIS_KEY_IPS_SEARCHGOODS = "ips_searchGoods_";//userId与寻人寻物失物招领对象的关系对照
     public static final String REDIS_KEY_IPS_COLLECT = "ips_collect_";//userId与公告收藏对象的关系对照
     public static final String REDIS_KEY_IPS_WORKRESUME = "ips_workResume_";//userId与简历对象的关系对照
     public static final String REDIS_KEY_IPS_WORKRECRUIT = "ips_workRecruit_";//userId与招聘对象的关系对照
     public static final String REDIS_KEY_IPS_WORKDOWNLOAD = "ips_workDownload_";//企业与被下载简历对象的关系对照
+
 
     //redis 2库相关key配置(otherServer)
     public static final String REDIS_KEY_IPS_TASK = "task_";//userId与任务对象的关系对照
