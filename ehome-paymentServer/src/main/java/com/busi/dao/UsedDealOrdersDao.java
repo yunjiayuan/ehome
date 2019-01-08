@@ -21,7 +21,7 @@ public interface UsedDealOrdersDao {
     @Update("<script>" +
             "update usedDealOrders set" +
             " ordersType=1" +
-            " where id=#{id} and myId=#{myId}" +
+            " where orderNumber=#{orderNumber} and myId=#{myId}" +
             "</script>")
     int updateUsedDealOrdersType(UsedDealOrders usedDealOrders);
 
