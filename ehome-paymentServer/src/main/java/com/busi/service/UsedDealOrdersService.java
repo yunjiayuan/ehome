@@ -2,11 +2,11 @@ package com.busi.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.dao.UsedDealOrdersDao;
 import com.busi.entity.Pay;
 import com.busi.entity.Purse;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UsedDealOrders;
+import com.busi.fegin.UsedDealOrdersLControllerFegin;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class UsedDealOrdersService extends BaseController implements PayBaseServ
     private MqUtils mqUtils;
 
     @Autowired
-    UsedDealOrdersDao usedDealOrdersDao;
+    UsedDealOrdersLControllerFegin usedDealOrdersLControllerFegin;
 
     /***
      * 修改订单支付状态为 已支付
@@ -66,7 +66,7 @@ public class UsedDealOrdersService extends BaseController implements PayBaseServ
         //开始扣款支付
         mqUtils.sendPurseMQ(pay.getUserId(),13,0,money*-1);//人民币转出
         //回调业务
-        usedDealOrdersDao.updateUsedDealOrdersType(usedDealOrders);
+        usedDealOrdersLControllerFegin.updatePayType(usedDealOrders);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }
