@@ -49,6 +49,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
     @Autowired
     RedPacketsInfoOrderService redPacketsInfoOrderService;
 
+    @Autowired
+    UsedDealOrdersService usedDealOrdersService;
+
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -233,8 +236,8 @@ public class PaymentController extends BaseController implements PaymentApiContr
             case 6://购买创始元老级会员支付
                 payBaseService = memberOrderService;
                 break;
-            case 7://公告栏二手购买订单支付
-
+            case 7://公告栏需求汇二手购买订单支付
+                payBaseService = usedDealOrdersService;
                 break;
             case 8://家门口厨房购买订单支付
 
