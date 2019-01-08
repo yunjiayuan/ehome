@@ -66,8 +66,8 @@ public interface WorkRecruitApiController {
      * @param employmentStatus     录用状态:默认0不限 1面试 2录用  （仅在identity=1时有效）
      * @return
      */
-    @GetMapping("findDowResume/{identity}/{userId}/{queryType}/{recruitId}/{employmentStatus}/{page}/{count}")
-    ReturnData findDowResume(@PathVariable int identity, @PathVariable long userId, @PathVariable int queryType, @PathVariable long recruitId, @PathVariable int employmentStatus, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findApplyList/{identity}/{userId}/{queryType}/{recruitId}/{employmentStatus}/{page}/{count}")
+    ReturnData findApplyList(@PathVariable int identity, @PathVariable long userId, @PathVariable int queryType, @PathVariable long recruitId, @PathVariable int employmentStatus, @PathVariable int page, @PathVariable int count);
 
     /***
      * 新增面试通知

@@ -57,11 +57,11 @@ public class UsedDealOrdersService {
     }
 
     /***
-     * 根据ID查询订单(详情)
+     * 根据编号查询订单(详情)
      * @param id
      * @return
      */
-    public UsedDealOrders findDetailsOrId(long id) {
+    public UsedDealOrders findDetailsOrId(String id) {
         return usedDealOrdersDao.findDetailsOrId(id);
     }
 
@@ -138,6 +138,16 @@ public class UsedDealOrdersService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateDelivery(UsedDealOrders usedDealOrders) {
         return usedDealOrdersDao.updateDelivery(usedDealOrders);
+    }
+
+    /***
+     * 更新订单付款状态
+     * @param usedDealOrders
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updatePayType(UsedDealOrders usedDealOrders) {
+        return usedDealOrdersDao.updatePayType(usedDealOrders);
     }
 
     /***

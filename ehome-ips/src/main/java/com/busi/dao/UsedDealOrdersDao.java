@@ -81,11 +81,11 @@ public interface UsedDealOrdersDao {
 
 
     /***
-     * 根据Id查询订单
+     * 根据订单编号查询订单
      * @param id
      */
-    @Select("select * from UsedDealOrders where id=#{id} and ordersState=0")
-    UsedDealOrders findDetailsOrId(@Param("id") long id);
+    @Select("select * from UsedDealOrders where orderNumber LIKE #{id} and ordersState=0")
+    UsedDealOrders findDetailsOrId(@Param("id") String id);
 
     /***
      * 根据Id查询物流
@@ -121,6 +121,18 @@ public interface UsedDealOrdersDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateDelivery(UsedDealOrders usedDealOrders);
+
+    /***
+     * 更新付款状态
+     * @param usedDealOrders
+     * @return
+     */
+    @Update("<script>" +
+            "update usedDealOrders set" +
+            " ordersType=1," +
+            " where orderNumber LIKE #{orderNumber} and myId=#{myId}" +
+            "</script>")
+    int updatePayType(UsedDealOrders usedDealOrders);
 
     /***
      * 更新收货状态

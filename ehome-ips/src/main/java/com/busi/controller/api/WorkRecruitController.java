@@ -208,7 +208,7 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
      * @return
      */
     @Override
-    public ReturnData findDowResume(@PathVariable int identity, @PathVariable long userId, @PathVariable int queryType, @PathVariable long recruitId, @PathVariable int employmentStatus, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findApplyList(@PathVariable int identity, @PathVariable long userId, @PathVariable int queryType, @PathVariable long recruitId, @PathVariable int employmentStatus, @PathVariable int page, @PathVariable int count) {
         String ids = "";
         JSONObject obb = null;
         List recruitList = null;

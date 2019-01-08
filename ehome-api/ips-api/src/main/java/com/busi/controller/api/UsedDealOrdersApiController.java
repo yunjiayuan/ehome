@@ -83,12 +83,12 @@ public interface UsedDealOrdersApiController {
 
     /***
      * 查看订单详情
-     * @param infoId  订单Id
+     * @param infoId  订单编号
      * @param identity  身份区分：1买家 2商家
      * @return
      */
     @GetMapping("ordersDetails/{infoId}/{identity}")
-    ReturnData ordersDetails(@PathVariable long infoId, @PathVariable int identity);
+    ReturnData ordersDetails(@PathVariable String infoId, @PathVariable int identity);
 
     /***
      * 统计各类订单数量

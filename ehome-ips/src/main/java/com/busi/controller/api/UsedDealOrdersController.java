@@ -138,10 +138,10 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         //放入缓存
         // 付款超时 45分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(usedDealOrders);
-        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + usedDealOrders.getId(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + noRandom, ordersMap, Constants.TIME_OUT_MINUTE_45);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("infoId", usedDealOrders.getId());
+        map.put("infoId", usedDealOrders.getOrderNumber());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -179,7 +179,7 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         }
         usedDealOrdersService.delOrders(io);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -218,11 +218,11 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         }
         usedDealOrdersService.updateDelivery(io);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), 0);
         //放入缓存
         // 收货超时 两周
         Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 14);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 14);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -243,10 +243,10 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
 
         usedDealOrdersService.updateCollect(io);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), 0);
         //放入缓存
         Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, 0);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), ordersMap, 0);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -329,11 +329,11 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         io.setExtendFrequency(io.getExtendFrequency() + 1);//延长次数
         usedDealOrdersService.timeExpand(io);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), 0);
         //放入缓存
         //收货超时 两周
         Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 14);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 14);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -364,10 +364,10 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
             //清除缓存中的二手信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + iup.getId(), 0);
             //清除缓存中的二手订单信息
-            redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), 0);
             //放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 7);
+            redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 7);
         } else {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "商品不存在！", new JSONObject());
         }
@@ -381,7 +381,7 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
      * @return
      */
     @Override
-    public ReturnData ordersDetails(@PathVariable long infoId, @PathVariable int identity) {
+    public ReturnData ordersDetails(@PathVariable String infoId, @PathVariable int identity) {
         //查询缓存 缓存中不存在 查询数据库
         UsedDealOrders io = null;
         Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_USEDDEALORDERS + infoId);

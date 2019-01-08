@@ -48,14 +48,14 @@ public interface WorkRecruitDao {
      */
     @Update("<script>" +
             "update workEnterprise set" +
-            " corporateName=#{corporateName}" +
-            " industry=#{industry}" +
-            " companySize=#{companySize}" +
-            " companyNature=#{companyNature}" +
-            " companypProfile=#{companypProfile}" +
-            " jobProvince=#{jobProvince}" +
-            " jobDistrict=#{jobDistrict}" +
-            " jobCity=#{jobCity}" +
+            " corporateName=#{corporateName}," +
+            " industry=#{industry}," +
+            " companySize=#{companySize}," +
+            " companyNature=#{companyNature}," +
+            " companypProfile=#{companypProfile}," +
+            " jobProvince=#{jobProvince}," +
+            " jobDistrict=#{jobDistrict}," +
+            " jobCity=#{jobCity}," +
             " imgUrl=#{imgUrl}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -74,7 +74,7 @@ public interface WorkRecruitDao {
      * @param userId
      * @return
      */
-    @Select("select * from WorkApplyRecord where userId=#{userId} and resumeId=#{resumeId} and recruitId=#{recruitId and state=0 }")
+    @Select("select * from WorkApplyRecord where userId=#{userId} and resumeId=#{resumeId} and recruitId=#{recruitId} and state=0 ")
     WorkApplyRecord findApply(@Param("userId") long userId, @Param("resumeId") long resumeId, @Param("recruitId") long recruitId);
 
     /***
