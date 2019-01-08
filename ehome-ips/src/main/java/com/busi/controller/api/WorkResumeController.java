@@ -565,7 +565,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             integrity1.setUserId(is.getUserId());
             workResumeService.addIntegrity(integrity1);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "xinzen ", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /**
@@ -991,7 +991,6 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         }
         List list = null;
         WorkResume resume = null;
-        WorkDowRecord wd = null;
         PageBean<WorkDowRecord> pageBean = null;
         pageBean = workResumeService.findDowList(identity, CommonUtils.getMyId(), page, count);
         if (pageBean == null) {
@@ -1005,7 +1004,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
                     WorkDowRecord wdr = (WorkDowRecord) list.get(i);
                     userCache = userInfoUtils.getUserInfo(wdr.getResumeUserId());
                     if (userCache != null) {
-                        resume = workResumeService.findById(wd.getResumeId());
+                        resume = workResumeService.findById(wdr.getResumeId());
                         if (resume != null && !CommonUtils.checkFull(resume.getBirthDay())) {
                             wdr.setAge(CommonUtils.getAge(resume.getBirthDay()));//年龄
                         }

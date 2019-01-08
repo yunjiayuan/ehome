@@ -558,7 +558,7 @@ public interface WorkResumeDao {
      * @param userId
      * @return
      */
-    @Select("select * from WorkEnterprise where userId=#{userId} and TO_DAYS(lastDowDate)=TO_DAYS(NOW())")
+    @Select("select * from WorkDowLimit where userId=#{userId} and TO_DAYS(lastDowDate)=TO_DAYS(NOW())")
     WorkDowLimit findDowLimit(@Param("userId") long userId);
 
     /***
@@ -625,8 +625,8 @@ public interface WorkResumeDao {
      * @param workApplyRecord
      * @return
      */
-    @Insert("insert into workApplyRecord(userId,resumeId,recruitId,resumeId,companyId,addTime,refreshTime,state,employmentStatus,enterpriseFeedback,dowtype) " +
-            "values (#{userId},#{resumeId},#{recruitId},#{resumeId},#{companyId},#{addTime},#{refreshTime},#{state},#{employmentStatus},#{enterpriseFeedback},#{dowtype})")
+    @Insert("insert into workApplyRecord(userId,resumeId,recruitId,companyId,addTime,refreshTime,state,employmentStatus,enterpriseFeedback,dowtype) " +
+            "values (#{userId},#{resumeId},#{recruitId},#{companyId},#{addTime},#{refreshTime},#{state},#{employmentStatus},#{enterpriseFeedback},#{dowtype})")
     @Options(useGeneratedKeys = true)
     int addApplyRecord(WorkApplyRecord workApplyRecord);
 

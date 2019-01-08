@@ -377,6 +377,7 @@ public interface WorkRecruitDao {
             " and highestEducation in" +
             "<foreach collection='educational' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
+            "</foreach>" +
             "</if>" +
             " <if test=\"updateTime > -1 and updateTime == 0\">" +
             " and refreshTime > date_sub(now(), interval 1 day)" +

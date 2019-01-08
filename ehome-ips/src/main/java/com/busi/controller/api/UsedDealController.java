@@ -337,9 +337,8 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
-    /**
+    /***
      * 查询详情
-     *
      * @param id
      * @return
      */
@@ -358,6 +357,12 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
+            //商品是下架状态或者查看者不是本人时禁止查看
+            if (posts.getSellType() != 1) {
+                if (posts.getUserId() != CommonUtils.getMyId()) {
+                    return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "您要查看的二手商品已下架或已被主人删除", new JSONObject());
+                }
+            }
             UserInfo userInfo = null;
             userInfo = userInfoUtils.getUserInfo(posts.getUserId());
             if (userInfo != null) {
@@ -368,14 +373,32 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
                 posts.setProTypeId(userInfo.getProType());
                 posts.setHouseNumber(userInfo.getHouseNumber());
             }
-            //新增浏览记录
-            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), 2);
+            if (posts.getSellType() == 1) {
+                if (posts.getUserId() != CommonUtils.getMyId()) {
+                    //新增浏览记录
+                    mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), 2);
+                }
+            }
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
             redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEAL + id, otherPostsMap, Constants.USER_TIME_OUT);
         } else {
-            //新增浏览记录
-            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), 2);
+            posts = (UsedDeal) CommonUtils.mapToObject(otherPostsMap, UsedDeal.class);
+            if (posts == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            //商品是下架状态或者查看者不是本人时禁止查看
+            if (posts.getSellType() != 1) {
+                if (posts.getUserId() != CommonUtils.getMyId()) {
+                    return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "您要查看的二手商品已下架或已被主人删除", new JSONObject());
+                }
+            }
+            if (posts.getSellType() == 1) {
+                if (posts.getUserId() != CommonUtils.getMyId()) {
+                    //新增浏览记录
+                    mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), 2);
+                }
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }

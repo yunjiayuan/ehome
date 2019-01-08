@@ -28,6 +28,9 @@ import java.util.*;
 public class UsedDealOrdersController extends BaseController implements UsedDealOrdersApiController {
 
     @Autowired
+    RedisUtils redisUtils;
+
+    @Autowired
     UserInfoUtils userInfoUtils;
 
     @Autowired
@@ -120,6 +123,23 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         usedDealOrdersService.addOrders(usedDealOrders);
         usedDealService.updateStatus(usedDeal);
 
+        //更新home
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
+        for (int i = 0; i < list.size(); i++) {
+            IPS_Home home = (IPS_Home) list.get(i);
+            if (home.getAfficheType() == 2 && home.getInfoId() == usedDeal.getId()) {
+                redisUtils.removeList(Constants.REDIS_KEY_IPS_HOMELIST, 1, home);
+            }
+        }
+        //清除缓存中的二手信息
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + usedDeal.getId(), 0);
+
+        //放入缓存
+        // 付款超时 45分钟
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(usedDealOrders);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + usedDealOrders.getId(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", usedDealOrders.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
@@ -158,6 +178,8 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
             }
         }
         usedDealOrdersService.delOrders(io);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -195,7 +217,12 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
             usedDealOrdersService.updateLogistics(ls);
         }
         usedDealOrdersService.updateDelivery(io);
-
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+        //放入缓存
+        // 收货超时 两周
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 14);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -215,6 +242,11 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         io.setReceivingTime(new Date());
 
         usedDealOrdersService.updateCollect(io);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+        //放入缓存
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, 0);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -296,6 +328,12 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         }
         io.setExtendFrequency(io.getExtendFrequency() + 1);//延长次数
         usedDealOrdersService.timeExpand(io);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+        //放入缓存
+        //收货超时 两周
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 14);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -322,6 +360,14 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
 
             usedDealOrdersService.cancelOrders(io);//更新订单
             usedDealService.updateStatus(iup);//更新二手
+
+            //清除缓存中的二手信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + iup.getId(), 0);
+            //清除缓存中的二手订单信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), 0);
+            //放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+            redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getId(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1 * 7);
         } else {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "商品不存在！", new JSONObject());
         }
@@ -336,23 +382,31 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
      */
     @Override
     public ReturnData ordersDetails(@PathVariable long infoId, @PathVariable int identity) {
-        UsedDealOrders io = usedDealOrdersService.findDetailsOrId(infoId);
-        if (io == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
+        //查询缓存 缓存中不存在 查询数据库
+        UsedDealOrders io = null;
+        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_USEDDEALORDERS + infoId);
+        if (ordersMap == null || ordersMap.size() <= 0) {
+            io = usedDealOrdersService.findDetailsOrId(infoId);
+            if (io == null) {
+                return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
+            }
+            UserInfo userInfo = null;
+            if (identity == 1) {
+                userInfo = userInfoUtils.getUserInfo(io.getUserId());
+            } else {
+                userInfo = userInfoUtils.getUserInfo(io.getMyId());
+            }
+            if (userInfo != null) {
+                io.setName(userInfo.getName());
+                io.setHead(userInfo.getHead());
+                io.setProTypeId(userInfo.getProType());
+                io.setHouseNumber(userInfo.getHouseNumber());
+            }
+            //放入缓存
+            ordersMap = CommonUtils.objectToMap(io);
+            redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + infoId, ordersMap, Constants.USER_TIME_OUT);
         }
-        UserInfo userInfo = null;
-        if (identity == 1) {
-            userInfo = userInfoUtils.getUserInfo(io.getUserId());
-        } else {
-            userInfo = userInfoUtils.getUserInfo(io.getMyId());
-        }
-        if (userInfo != null) {
-            io.setName(userInfo.getName());
-            io.setHead(userInfo.getHead());
-            io.setProTypeId(userInfo.getProType());
-            io.setHouseNumber(userInfo.getHouseNumber());
-        }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
     }
 
     /***
