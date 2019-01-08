@@ -129,7 +129,7 @@ public interface UsedDealOrdersDao {
      */
     @Update("<script>" +
             "update usedDealOrders set" +
-            " ordersType=1" +
+            " ordersType=#{ordersType}" +
             " where orderNumber = #{orderNumber} and myId=#{myId}" +
             "</script>")
     int updatePayType(UsedDealOrders usedDealOrders);
