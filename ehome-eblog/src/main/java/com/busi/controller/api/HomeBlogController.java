@@ -572,7 +572,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setIsLike(0);
             }
         }
-        if(list.size()<count){//补充假数据
+        if(list.size()<count&&searchType==6){//家门口补充假数据
             Random random = new Random();
             String userIds = "";
             for(int i=0;i<100;i++){
