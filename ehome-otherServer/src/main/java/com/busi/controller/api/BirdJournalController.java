@@ -569,7 +569,6 @@ public class BirdJournalController extends BaseController implements BirdJournal
                         if (romAwardsId % 2 != 0) {//奇数返现金
                             currencyType = 0;
                             redNum = rand.nextInt(300) + 1;
-                            double spareMoney = redNum / 100.0;
                         } else {
                             redNum = rand.nextInt(50) + 51;
                             currencyType = 2;

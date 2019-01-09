@@ -561,12 +561,12 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         int sellCont1 = usedDealService.findNum(userId, 1);//已上架
         int sellCont2 = usedDealService.findNum(userId, 2);//已卖出,已下架
-        int sellCont3 = usedDealService.findNum(userId, 0);//商家订单总数  暂未实现
+        int sellCont3 = usedDealService.findNum(userId, 0);//商家订单总数
 
         Map<String, Integer> map = new HashMap<>();
         map.put("sellCont1", sellCont1);
         map.put("sellCont2", sellCont2);
-        map.put("sellCont3", 0);
+        map.put("sellCont3", sellCont3);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

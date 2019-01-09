@@ -264,4 +264,16 @@ public interface UsedDealDao {
             "</script>")
     int findNum(@Param("userId") long userId, @Param("type") int type);
 
+    /***
+     * 统计已上架,已卖出已下架,我的订单数量
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from UsedDealOrders" +
+            " where userId=#{userId}" +
+            " and ordersState &lt; 2" +
+            "</script>")
+    int findNum2(@Param("userId") long userId);
+
 }

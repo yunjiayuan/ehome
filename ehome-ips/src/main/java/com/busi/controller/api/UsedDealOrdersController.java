@@ -85,7 +85,6 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         usedDealOrders.setAfficheType(2);
         usedDealOrders.setSellingPrice(usedDeal.getSellingPrice());
         usedDealOrders.setPinkageType(usedDeal.getPinkageType());//是否包邮
-        usedDealOrders.setMoney(usedDeal.getSellingPrice() + usedDealOrders.getPostage());
         usedDealOrders.setAddressId(shippingAddress.getId());
         usedDealOrders.setAddress(shippingAddress.getAddress());
         usedDealOrders.setAddress_city(shippingAddress.getCity());
@@ -112,6 +111,7 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
                 }
             }
         }
+        usedDealOrders.setMoney(usedDeal.getSellingPrice() + usedDealOrders.getPostage());
         //新增物流信息
         UsedDealLogistics ls = new UsedDealLogistics();
         ls.setUserId(usedDealOrders.getUserId());
