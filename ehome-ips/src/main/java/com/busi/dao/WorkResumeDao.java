@@ -694,7 +694,7 @@ public interface WorkResumeDao {
             " #{item}" +
             "</foreach>" +
             "</script>")
-    List<WorkResume> findResumeList(@Param("ids") String[] id);
+    List<WorkResume> findResumeList(@Param("id") String[] id);
 
     /***
      * 批量查询指定的下载记录
@@ -709,6 +709,6 @@ public interface WorkResumeDao {
             " #{item}" +
             "</foreach>" +
             "</script>")
-    List<WorkDowRecord> findDowRecords(@Param("userId") long userId, @Param("ids") String[] id);
+    List<WorkDowRecord> findDowRecords(@Param("userId") long userId, @Param("id") String[] id);
 
 }

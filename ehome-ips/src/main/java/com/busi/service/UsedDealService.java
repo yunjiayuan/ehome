@@ -182,7 +182,11 @@ public class UsedDealService {
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int findNum(long userId, int type) {
-        return usedDealDao.findNum(userId, type);
+        if (type == 0) {
+            return usedDealDao.findNum2(userId);
+        } else {
+            return usedDealDao.findNum(userId, type);
+        }
     }
 
 }

@@ -14,9 +14,10 @@ public interface SearchUserApiController {
 
     /**
      * 精确找人接口
+     *
      * @param searchType 查找类型 0门牌号查找(默认) 1手机号查找
-     * @param param 当searchType=0时，此处为省简称与门牌号组合，格式：0_1003001
-     *               当searchType=1时，此处为手机号，格式为：15901213694
+     * @param param      当searchType=0时，此处为省简称与门牌号组合，格式：0_1003001
+     *                   当searchType=1时，此处为手机号，格式为：15901213694
      * @return
      */
     @GetMapping("accurateSearchUser/{searchType}/{param}")
@@ -24,23 +25,24 @@ public interface SearchUserApiController {
 
     /**
      * 条件找人接口
-     * @param name     用户名
-     * @param beginAge 起始年龄（包含） 默认0
-     * @param endAge   结束年龄（包含） 默认0 endAge>beginAge
-     * @param sex      性别 0不限 1男2女
-     * @param province 省  -1为不限
-     * @param city     市  -1为不限
-     * @param district 区  -1为不限
-     * @param studyrank 学历  0：不限  1:"中专",2:"专科",3:"本科",4:"双学士",5:"硕士",6:"博士",7:"博士后",8:"其他"
+     *
+     * @param name          用户名
+     * @param beginAge      起始年龄（包含） 默认0
+     * @param endAge        结束年龄（包含） 默认0 endAge>beginAge
+     * @param sex           性别 0不限 1男2女
+     * @param province      省  -1为不限
+     * @param city          市  -1为不限
+     * @param district      区  -1为不限
+     * @param studyrank     学历  0：不限  1:"中专",2:"专科",3:"本科",4:"双学士",5:"硕士",6:"博士",7:"博士后",8:"其他"
      * @param maritalstatus 婚否  0：不限  1:"已婚",2:"未婚",3:"离异",4:"丧偶"
-     * @param page     页码 第几页 起始值1
-     * @param count    每页条数
+     * @param page          页码 第几页 起始值1
+     * @param count         每页条数
      * @return
      */
     @GetMapping("fuzzySearchUser/{name}/{beginAge}/{endAge}/{sex}/{province}/{city}/{district}/{studyrank}/{maritalstatus}/{page}/{count}")
     ReturnData fuzzySearchUser(@PathVariable String name, @PathVariable int beginAge, @PathVariable int endAge,
                                @PathVariable int sex, @PathVariable int province, @PathVariable int city,
-                               @PathVariable int district,@PathVariable int studyrank, @PathVariable int maritalstatus,
+                               @PathVariable int district, @PathVariable int studyrank, @PathVariable int maritalstatus,
                                @PathVariable int page, @PathVariable int count);
 
     /***
@@ -51,5 +53,12 @@ public interface SearchUserApiController {
      * @return
      */
     @GetMapping("nearbySearchUser/{sex}/{lat}/{lon}")
-    ReturnData nearbySearchUser(@PathVariable int sex,@PathVariable double lat,@PathVariable double lon);
+    ReturnData nearbySearchUser(@PathVariable int sex, @PathVariable double lat, @PathVariable double lon);
+
+    /***
+     * 随机艳遇蛋人员
+     * @return
+     */
+    @GetMapping("randomPeople")
+    ReturnData randomPeople();
 }
