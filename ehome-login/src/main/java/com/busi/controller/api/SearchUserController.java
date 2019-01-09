@@ -250,7 +250,8 @@ public class SearchUserController extends BaseController implements SearchUserAp
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Random random = new Random();
         JSONArray jsonArray = new JSONArray();
-        userInfo = userInfoService.findUserById(CommonUtils.getMyId());
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
+        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
         if (userInfo == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
