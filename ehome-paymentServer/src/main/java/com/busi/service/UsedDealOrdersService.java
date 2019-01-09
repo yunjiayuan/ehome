@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -61,6 +62,7 @@ public class UsedDealOrdersService extends BaseController implements PayBaseServ
         }
         //更改状态 防止重复支付
         usedDealOrders.setOrdersType(1);
+        usedDealOrders.setPaymentTime(new Date());
         redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + pay.getOrderNumber(), 0);
         redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEALORDERS + pay.getOrderNumber(), CommonUtils.objectToMap(usedDealOrders), Constants.TIME_OUT_MINUTE_60_24_1*7);
         //开始扣款支付
