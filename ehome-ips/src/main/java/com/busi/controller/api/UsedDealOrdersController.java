@@ -28,6 +28,9 @@ import java.util.*;
 public class UsedDealOrdersController extends BaseController implements UsedDealOrdersApiController {
 
     @Autowired
+    private MqUtils mqUtils;
+
+    @Autowired
     RedisUtils redisUtils;
 
     @Autowired
@@ -242,6 +245,10 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         io.setReceivingTime(new Date());
 
         usedDealOrdersService.updateCollect(io);
+
+        //支付商家
+        mqUtils.sendPurseMQ(io.getUserId(), 14, 0, io.getMoney());
+
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + io.getOrderNumber(), 0);
         //放入缓存

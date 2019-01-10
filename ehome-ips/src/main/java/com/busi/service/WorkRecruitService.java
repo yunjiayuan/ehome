@@ -81,6 +81,15 @@ public class WorkRecruitService {
     }
 
     /***
+     * 职位申请记录
+     * @param userId
+     * @return
+     */
+    public WorkApplyRecord findApply2(long userId, long resumeId, long companyId) {
+        return workRecruitDao.findApply2(userId, resumeId, companyId);
+    }
+
+    /***
      * 新增职位申请记录
      * @param workApplyRecord
      * @return
@@ -283,7 +292,7 @@ public class WorkRecruitService {
             list = workRecruitDao.queryResumeList1(userId, positionName);
         } else {
             list = workRecruitDao.queryResumeList2(userId, jobProvince, jobCity, jobDistrict, positionType1, positionType2,
-                    workingLife, sex, education, photo, updateTime, startSalary, endSalary);
+                    workingLife, sex, education.split(","), photo, updateTime, startSalary, endSalary);
         }
         return PageUtils.getPageBean(p, list);
     }

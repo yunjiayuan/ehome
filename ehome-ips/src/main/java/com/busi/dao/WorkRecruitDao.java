@@ -78,6 +78,15 @@ public interface WorkRecruitDao {
     WorkApplyRecord findApply(@Param("userId") long userId, @Param("resumeId") long resumeId, @Param("recruitId") long recruitId);
 
     /***
+     * 职位申请记录
+     * @param userId
+     * @return
+     */
+    @Select("select * from WorkApplyRecord where userId=#{userId} and resumeId=#{resumeId} and companyId=#{companyId} and state=0 ")
+    WorkApplyRecord findApply2(@Param("userId") long userId, @Param("resumeId") long resumeId, @Param("companyId") long companyId);
+
+
+    /***
      * 新增职位申请记录
      * @param workApplyRecord
      * @return
@@ -148,15 +157,15 @@ public interface WorkRecruitDao {
             " #{item}" +
             "</foreach>" +
             "</script>")
-    List<WorkRecruit> findRecruitList(@Param("ids") String[] id);
+    List<WorkRecruit> findRecruitList(@Param("id") String[] id);
 
     /***
      * 新增面试通知
      * @param workInterview
      * @return
      */
-    @Insert("insert into workInterview(userId,companyId,resumeUserId,resumeId,addTime,name,sex,highestEducation,workExperience,highlights,jobType2,jobProvince,corporateName) " +
-            "values (#{userId},#{companyId},#{resumeUserId},#{resumeId},#{addTime},#{name},#{sex},#{highestEducation},#{workExperience},#{highlights},#{jobType2},#{jobProvince},#{corporateName})")
+    @Insert("insert into workInterview(userId,companyId,notifiedUserId,resumeId,addTime,corporateName,positionName,address,contactPeople,contactsPhone,interviewTime,remarks,deleteState) " +
+            "values (#{userId},#{companyId},#{notifiedUserId},#{resumeId},#{addTime},#{corporateName},#{positionName},#{address},#{contactPeople},#{contactsPhone},#{interviewTime},#{remarks},#{deleteState})")
     @Options(useGeneratedKeys = true)
     int addInterview(WorkInterview workInterview);
 
@@ -167,9 +176,9 @@ public interface WorkRecruitDao {
      */
     @Update("<script>" +
             "update workInterview set" +
-            " contactPeople=#{contactPeople}" +
-            " contactsPhone=#{contactsPhone}" +
-            " interviewTime=#{interviewTime}" +
+            " contactPeople=#{contactPeople}," +
+            " contactsPhone=#{contactsPhone}," +
+            " interviewTime=#{interviewTime}," +
             " remarks=#{remarks}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -221,7 +230,7 @@ public interface WorkRecruitDao {
      */
     @Update("<script>" +
             "update workApplyRecord set" +
-            " refreshTime=#{refreshTime}" +
+            " refreshTime=#{refreshTime}," +
             " employmentStatus=#{employmentStatus}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -259,7 +268,6 @@ public interface WorkRecruitDao {
     @Update("<script>" +
             "update workRecruit set" +
             " address=#{address}," +
-            " browseAmount=#{browseAmount}," +
             " contactPeople=#{contactPeople}," +
             " contactsPhone=#{contactsPhone}," +
             " educational=#{educational}," +
@@ -373,9 +381,9 @@ public interface WorkRecruitDao {
             " <if test=\"photo > 0\">" +
             " and opusImgUrl != null" +
             "</if>" +
-            " <if test=\"educational != null and educational != ''\">" +
+            " <if test=\"education != null and education != ''\">" +
             " and highestEducation in" +
-            "<foreach collection='educational' index='index' item='item' open='(' separator=',' close=')'>" +
+            "<foreach collection='education' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</if>" +
@@ -391,7 +399,7 @@ public interface WorkRecruitDao {
             " ORDER BY refreshTime DESC" +
             "</script>")
     List<WorkResume> queryResumeList2(@Param("userId") long userId, @Param("jobProvince") int jobProvince, @Param("jobCity") int jobCity, @Param("jobDistrict") int jobDistrict, @Param("positionType1") int positionType1,
-                                      @Param("positionType2") int positionType2, @Param("workingLife") int workingLife, @Param("sex") int sex, @Param("education") String education, @Param("photo") int photo, @Param("updateTime") int updateTime, @Param("startSalary") int startSalary, @Param("endSalary") int endSalary);
+                                      @Param("positionType2") int positionType2, @Param("workingLife") int workingLife, @Param("sex") int sex, @Param("education") String[] education, @Param("photo") int photo, @Param("updateTime") int updateTime, @Param("startSalary") int startSalary, @Param("endSalary") int endSalary);
 
     /***
      * 刷新招聘信息
@@ -412,11 +420,12 @@ public interface WorkRecruitDao {
      */
     @Select("<script>" +
             "<if test=\"type == 0 \">" +
-            "select count(id) from WorkApplyRecord where state=0 companyId = #{userId} and dowtype=0" +
+            "select count(id) from WorkApplyRecord where companyId = #{userId} and dowtype=0" +
             "</if>" +
             "<if test=\"type == 1 \">" +
-            "select count(id) from WorkRecruit where userId = #{userId} and state=0" +
+            "select count(id) from WorkRecruit where userId = #{userId}" +
             "</if>" +
+            " and state=0" +
             "</script>")
     int findSupervise(@Param("userId") long userId, @Param("type") int type);
 

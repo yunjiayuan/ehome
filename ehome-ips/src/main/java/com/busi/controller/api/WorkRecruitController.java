@@ -381,7 +381,7 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        WorkApplyRecord record = workRecruitService.findApply(workApplyRecord.getUserId(), workApplyRecord.getResumeId(), workApplyRecord.getCompanyId());
+        WorkApplyRecord record = workRecruitService.findApply2(workApplyRecord.getUserId(), workApplyRecord.getResumeId(), workApplyRecord.getCompanyId());
         if (record != null) {
             workApplyRecord.setRefreshTime(new Date());
             workRecruitService.updateInterviewLabel(workApplyRecord);
@@ -526,8 +526,8 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
      * @param sex  性别
      * @param education  学历要求(仅在条件查询简历时可用,空时为不限)
      * @param photo  照片  仅在条件查询简历时有效  0不限  1有照片的
-     * @param startSalary  薪资水平:起
-     * @param endSalary  薪资水平:始
+     * @param startSalary  薪资水平:始
+     * @param endSalary  薪资水平:终
      * @param positionName  职位名称
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
