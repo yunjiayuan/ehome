@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class OnlineMusicController extends BaseController implements OnlineMusic
      */
     @Override
     public ReturnData addMusic(@Valid @RequestBody OnlineMusic onlineMusic, BindingResult bindingResult) {
+        onlineMusic.setAddTime(new Date());
         onlineMusicService.add(onlineMusic);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

@@ -20,13 +20,13 @@ public interface OnlineMusicDao {
      * @param onlineMusic
      * @return
      */
-    @Insert("insert into OnlineMusic(singer,songType,songName,lengthTime,coverUrl,musicUrl,grade) " +
-            "values (#{singer},#{songType},#{songName},#{lengthTime},#{coverUrl},#{musicUrl},#{grade})")
+    @Insert("insert into OnlineMusic(singer,songType,songName,lengthTime,coverUrl,musicUrl,grade,addTime) " +
+            "values (#{singer},#{songType},#{songName},#{lengthTime},#{coverUrl},#{musicUrl},#{grade},#{addTime})")
     @Options(useGeneratedKeys = true)
     int add(OnlineMusic onlineMusic);
 
     /***
-     * 根据Id查询足迹
+     * 根据Id查询
      * @param id
      */
     @Select("select * from OnlineMusic where id=#{id}")
@@ -42,7 +42,7 @@ public interface OnlineMusicDao {
             " where 1=1" +
             " and singer LIKE #{name}" +
             " or songName LIKE #{name}" +
-            " order by grade desc" +
+            " order by grade,id desc" +
             "</script>")
     List<OnlineMusic> findPaging(@Param("name") String name);
 
@@ -55,7 +55,7 @@ public interface OnlineMusicDao {
             "select * from OnlineMusic" +
             " where 1=1" +
             " and songType = #{songType}" +
-            " order by grade desc" +
+            " order by grade,id desc" +
             "</script>")
     List<OnlineMusic> findPaging2(@Param("songType") int songType);
 }
