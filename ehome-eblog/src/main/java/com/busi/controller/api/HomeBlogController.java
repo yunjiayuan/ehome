@@ -107,7 +107,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         //开始新增
         homeBlog.setTime(new Date());
         if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0){//制作假数据
-            if(homeBlog.getUserId()==9999||homeBlog.getUserId()==10076||homeBlog.getUserId()==10053){
+            if(homeBlog.getUserId()==9999||homeBlog.getUserId()==10076||homeBlog.getUserId()==56555){
                 Random ra =new Random();
                 Random ra2 =new Random();
                 Random ra3 =new Random();
