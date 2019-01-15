@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.Collect;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -30,16 +31,15 @@ public interface CollectDao {
      * @param myId
      * @return
      */
-//    @Delete("delete from collect where id in (#{ids}) and myId=#{myId}")
     @Delete("<script>" +
             "delete from collect" +
             " where id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
-                " #{item}"+
-            "</foreach>"+
+            " #{item}" +
+            "</foreach>" +
             " and myId=#{myId}" +
             "</script>")
-    int del(@Param("ids") String[] ids , @Param("myId") long myId);
+    int del(@Param("ids") String[] ids, @Param("myId") long myId);
 
     /***
      * 根据Id统计被收藏次数
@@ -47,7 +47,7 @@ public interface CollectDao {
      * @param afficheType
      */
     @Select("select COUNT(id) from collect where infoId=#{infoId} and afficheType=#{afficheType}")
-    int findUserById(@Param("infoId") long infoId,@Param("afficheType") int afficheType);
+    int findUserById(@Param("infoId") long infoId, @Param("afficheType") int afficheType);
 
     /***
      * 分页查询 默认按时间降序排序
@@ -57,10 +57,17 @@ public interface CollectDao {
     @Select("<script>" +
             "select * from collect" +
             " where 1=1" +
-            "<if test=\"myId > 0\">"+
+            "<if test=\"myId > 0\">" +
             " and myId=#{myId}" +
             "</if>" +
             " order by time desc" +
             "</script>")
     List<Collect> findList(@Param("myId") long myId);
+
+    /***
+     * 根据用户&公告主键ID查询
+     * @param id
+     */
+    @Select("select * from Collect where infoId=#{id} and myId=#{myId}")
+    Collect findUserId(@Param("id") long id, @Param("myId") long myId);
 }

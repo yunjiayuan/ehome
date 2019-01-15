@@ -1,7 +1,10 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 /**
  * @program: 在线音乐
@@ -27,5 +30,8 @@ public class OnlineMusic {
     private String musicUrl;      //歌曲地址
 
     private int grade;        //等级
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date addTime;     //添加时间
 
 }

@@ -150,6 +150,13 @@ public interface UsedDealDao {
     @Select("select * from usedDeal where id=#{id} and deleteType=1 and auditType=2")
     UsedDeal findUserById(@Param("id") long id);
 
+    /***
+     * 根据Id查询（定时任务）
+     * @param id
+     */
+    @Select("select * from usedDeal where id=#{id} and deleteType=1 and auditType=2 and sellType = 3")
+    UsedDeal findUserById2(@Param("id") long id);
+
 
     /***
      * 分页查询

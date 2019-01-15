@@ -9,6 +9,7 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 /**
@@ -27,8 +28,8 @@ public class CollectService {
      * @param collect
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int add( Collect collect){
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int add(Collect collect) {
         return collectDao.add(collect);
     }
 
@@ -38,9 +39,19 @@ public class CollectService {
      * @param userId
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int del(String[] ids ,long userId){
-        return collectDao.del(ids,userId);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int del(String[] ids, long userId) {
+        return collectDao.del(ids, userId);
+    }
+
+    /***
+     * 根据用户&公告主键ID查询
+     * @param id
+     * @param userId
+     * @return
+     */
+    public Collect findUserId(long id, long userId) {
+        return collectDao.findUserId(id, userId);
     }
 
     /***
@@ -49,8 +60,8 @@ public class CollectService {
      * @param afficheType
      * @return
      */
-    public int findUserById(long infoId ,int afficheType){
-        return collectDao.findUserById(infoId,afficheType);
+    public int findUserById(long infoId, int afficheType) {
+        return collectDao.findUserById(infoId, afficheType);
     }
 
 
@@ -64,9 +75,9 @@ public class CollectService {
     public PageBean<Collect> findList(long myId, int page, int count) {
 
         List<Collect> list;
-        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = collectDao.findList(myId);
 
-        return PageUtils.getPageBean(p,list);
+        return PageUtils.getPageBean(p, list);
     }
 }
