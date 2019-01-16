@@ -165,6 +165,40 @@ public interface BirdJournalDao {
     int del(@Param("id") long id);
 
     /***
+     * 条件删除喂鸟数据
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from BirdFeedingData" +
+            " where 1=1" +
+            "<if test=\"birdCount == userIdstart\">" +
+            " and userId &lt; (#{userIdstart} + #{count} * 7) and userId >= (#{userIdstart} + #{count} * 6)" +
+            "</if>" +
+            "<if test=\"birdCount == userIdstart + count\">" +
+            " and userId &lt; (#{userIdstart} + #{count} * 8) and userId >= (#{userIdstart} + #{count} * 7)" +
+            "</if>" +
+            "<if test=\"birdCount == userIdstart + count * 2\">" +
+            " and userId &lt; (#{userIdstart} + #{count}) and userId >= #{userIdstart}" +
+            "</if>" +
+            "<if test=\"birdCount == userIdstart + count * 3\">" +
+            " and userId &lt; (#{userIdstart} + #{count} * 2) and userId >= (#{userIdstart} + #{count})" +
+            "</if>" +
+            "<if test=\"birdCount == userIdstart + count * 4\">" +
+            " and userId &lt; (#{userIdstart} + #{count} * 3) and userId >= (#{userIdstart} + #{count} * 2)" +
+            "</if>" +
+            "<if test=\"birdCount == userIdstart + count * 5\">" +
+            " and userId &lt; (#{userIdstart} + #{count} * 4) and userId >= (#{userIdstart} + #{count} * 3)" +
+            "</if>" +
+            "<if test=\"birdCount == userIdstart + count * 6\">" +
+            " and userId &lt; (#{userIdstart} + #{count} * 5) and userId >= (#{userIdstart} + #{count} * 4)" +
+            "</if>" +
+            "<if test=\"birdCount == userIdstart + count * 7\">" +
+            " and userId &lt; (#{userIdstart} + #{count} * 6) and userId >= (#{userIdstart} + #{count} * 5)" +
+            "</if>" +
+            "</script>")
+    int batchDel(@Param("birdCount") int birdCount, @Param("userIdstart") int userIdstart, @Param("count") int count);
+
+    /***
      * 根据userId查询喂鸟记录
      * @param userId
      */

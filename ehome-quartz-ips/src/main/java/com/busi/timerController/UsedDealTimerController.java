@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * quartz定时器:二手
- * author：SunTianJie
+ * author：ZHJJ
  * create time：2019/1/11 14:04
  */
 @Slf4j
@@ -53,7 +53,7 @@ public class UsedDealTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 5 16 * * ?") // 启动执行
+    @Scheduled(cron = "0 54 17 * * ?") //
     public void usedDealTimer() throws Exception {
         log.info("开始查询数据库中待处理的二手超时订单，并加装到内存中...");
         while (true) {

@@ -142,6 +142,14 @@ public class BirdJournalService {
         return birdJournalDao.del(id);
     }
 
+    /***
+     * 条件删除喂鸟记录
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int batchDel(int birdCount, int userIdstart, int count) {
+        return birdJournalDao.batchDel(birdCount, userIdstart, count);
+    }
 
     /***
      * 根据userId查询
