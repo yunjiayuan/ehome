@@ -106,7 +106,8 @@ public class Constants {
     /** 喂鸟相关配置 开始**/
     public  static final int FEEDBIRDTOTALCOUNT = 10;		//普通用户每天最多喂鸟10次
     public  static final int FEEDBIRDFULL = 10;		    //喂饱次数(产生一个金蛋)
-    public  static final long  EGGCOUNTDOWN= 1000 * 60 * 60 * 10;//产蛋时间 10个小时
+    public  static final long EGGCOUNTDOWN= 1000 * 60 * 60 * 10;//产蛋时间 10个小时
+    public  static int birdCount = 13870;//喂鸟定时任务（userId）
     /** 喂鸟相关配置 结束**/
 
     /** 公告置顶配置 开始**/

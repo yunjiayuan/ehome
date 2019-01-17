@@ -101,6 +101,19 @@ public interface LoveAndFriendsDao {
     int updateTime(LoveAndFriends loveAndFriends);
 
     /***
+     * 更新浏览量
+     * @param loveAndFriends
+     * @return
+     */
+    @Update("<script>" +
+            "update loveAndFriends set" +
+            " seeNumber=#{seeNumber}" +
+            " where id=#{id} and userId=#{userId} " +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int updateSee(LoveAndFriends loveAndFriends);
+
+    /***
      * 置顶公告
      * @param loveAndFriends
      * @return

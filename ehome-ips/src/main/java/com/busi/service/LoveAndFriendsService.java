@@ -75,6 +75,16 @@ public class LoveAndFriendsService {
     }
 
     /***
+     * 更新浏览量
+     * @param loveAndFriends
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateSee(LoveAndFriends loveAndFriends) {
+        return loveAndFriendsDao.updateSee(loveAndFriends);
+    }
+
+    /***
      * 置顶公告
      * @param loveAndFriends
      * @return
