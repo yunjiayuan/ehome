@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.UserInfo;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -78,30 +79,30 @@ public interface UserInfoDao {
     @Select("<script>" +
             "select * from userInfo" +
             " where 1=1" +
-            "<if test=\"name != null and name != ''\">"+
+            "<if test=\"name != null and name != ''\">" +
             " and name like CONCAT('%',#{name},'%')" +
             "</if>" +
-            "<if test=\"beginAge > 0 \">"+
-            " and TIMESTAMPDIFF(YEAR,birthday,CURDATE()) >= #{beginAge}"+
+            "<if test=\"beginAge > 0 \">" +
+            " and TIMESTAMPDIFF(YEAR,birthday,CURDATE()) >= #{beginAge}" +
             "</if>" +
-            "<if test=\"endAge >= beginAge and endAge > 0 \">"+
-            " and #{endAge} >= TIMESTAMPDIFF(YEAR,birthday,CURDATE())"+
+            "<if test=\"endAge >= beginAge and endAge > 0 \">" +
+            " and #{endAge} >= TIMESTAMPDIFF(YEAR,birthday,CURDATE())" +
             "</if>" +
-            "<if test=\"sex != 0 \">"+
+            "<if test=\"sex != 0 \">" +
             " and sex = #{sex}" +
             "</if>" +
-            "<if test=\"province != -1 \">"+
+            "<if test=\"province != -1 \">" +
             " and province = #{province}" +
             "</if>" +
-            "<if test=\"city != -1 \">"+
+            "<if test=\"city != -1 \">" +
             " and city = #{city}" +
             "</if>" +
-            "<if test=\"district != -1 \">"+
+            "<if test=\"district != -1 \">" +
             " and district = #{district}" +
             "</if>" +
-            " and studyrank = #{studyrank}"+
-            " and maritalstatus = #{maritalstatus}"+
-            " and accountStatus = 0"+
+            " and studyrank = #{studyrank}" +
+            " and maritalstatus = #{maritalstatus}" +
+            " and accountStatus = 0" +
             " order by time desc" +
             "</script>")
 //    @SelectProvider(type=UserInfoService.class,method="getFindListSql")
@@ -117,133 +118,140 @@ public interface UserInfoDao {
      */
 //    @Update(("update userInfo set name=#{name} where userId=#{userId}"))
     @Update("<script>" +
-            "update userInfo set"+
-            "<if test=\"name != null and name != ''\">"+
+            "update userInfo set" +
+            "<if test=\"name != null and name != ''\">" +
             " name=#{name}," +
             "</if>" +
-            "<if test=\"sex == 1 or sex == 2\">"+
+            "<if test=\"sex == 1 or sex == 2\">" +
             " sex=#{sex}," +
             "</if>" +
-            "<if test=\"birthday != null\">"+
+            "<if test=\"birthday != null\">" +
             " birthday=#{birthday}," +
             "</if>" +
-            "<if test=\"studyRank != 0\">"+
+            "<if test=\"studyRank != 0\">" +
             " studyRank=#{studyRank}," +
             "</if>" +
-            "<if test=\"job != 0\">"+
+            "<if test=\"job != 0\">" +
             " job=#{job}," +
             "</if>" +
-            "<if test=\"maritalStatus != 0\">"+
+            "<if test=\"maritalStatus != 0\">" +
             " maritalStatus=#{maritalStatus}," +
             "</if>" +
-            "<if test=\"nation != 0\">"+
+            "<if test=\"nation != 0\">" +
             " nation=#{nation}," +
             "</if>" +
-            "<if test=\"gxqm != null and gxqm != ''\">"+
+            "<if test=\"gxqm != null and gxqm != ''\">" +
             " gxqm=#{gxqm}," +
             "</if>" +
-            "<if test=\"sentiment != null and sentiment != ''\">"+
+            "<if test=\"sentiment != null and sentiment != ''\">" +
             " sentiment=#{sentiment}," +
             "</if>" +
-            "<if test=\"company != null and company != ''\">"+
+            "<if test=\"company != null and company != ''\">" +
             " company=#{company}," +
             "</if>" +
-            "<if test=\"position != null and position != ''\">"+
+            "<if test=\"position != null and position != ''\">" +
             " position=#{position}," +
             "</if>" +
             " country=#{country}," +
             " birthPlace_province=#{birthPlace_province}," +
             " birthPlace_city=#{birthPlace_city}," +
             " birthPlace_district=#{birthPlace_district}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int update(UserInfo userInfo);
 
     /**
      * 搬家更新
+     *
      * @param userInfo
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " proType=#{proType}," +
             " houseNumber=#{houseNumber}," +
             " password=#{password}," +
             " accountStatus=#{accountStatus}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateByHouseMoving(UserInfo userInfo);
 
     /**
      * 修改头像  需求把涂鸦图像置空
+     *
      * @param userInfo
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " head=#{head}," +
             " graffitiHead=\"\"" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateUserHead(UserInfo userInfo);
 
     /**
      * 修改用户密码
+     *
      * @param userInfo
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " password=#{newPassword}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int changePassWord(UserInfo userInfo);
 
     /**
      * 修改涂鸦头像
+     *
      * @param userInfo
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " graffitiHead=#{graffitiHead}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateUserGraffitiHead(UserInfo userInfo);
 
     /**
      * 修改访问权限
+     *
      * @param userInfo
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " accessRights=#{accessRights}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateUserAccessRights(UserInfo userInfo);
 
     /**
      * 修改新用户系统欢迎消息状态接口
+     *
      * @param userInfo
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " welcomeInfoStatus=#{welcomeInfoStatus}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateWelcomeInfoStatus(UserInfo userInfo);
 
     /**
      * 修改新用户系统欢迎消息状态接口
+     *
      * @param userInfo
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " isNewUser=#{isNewUser}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateIsNewUser(UserInfo userInfo);
 
@@ -253,9 +261,9 @@ public interface UserInfoDao {
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " phone=#{phone}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateBindPhone(UserInfo userInfo);
 
@@ -265,10 +273,17 @@ public interface UserInfoDao {
      * @return
      */
     @Update("<script>" +
-            "update userInfo set"+
+            "update userInfo set" +
             " otherPlatformKey=#{otherPlatformKey}," +
             " otherPlatformType=#{otherPlatformType}" +
-            " where userId=#{userId}"+
+            " where userId=#{userId}" +
             "</script>")
     int updateBindOther(UserInfo userInfo);
+
+    /***
+     * 条件查找用户信息
+     * @return
+     */
+    @Select("select * from userInfo where (userId > 10000 and userId &lt; 13870) or (userId > 53870 ) ")
+    List<UserInfo> findCondition();
 }

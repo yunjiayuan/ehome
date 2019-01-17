@@ -25,13 +25,14 @@ public class UserInfoService {
 
     @Autowired
     private UserInfoDao userInfoDao;
+
     /***
      * 新增用户
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int add( UserInfo userInfo){
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int add(UserInfo userInfo) {
         return userInfoDao.add(userInfo);
     }
 
@@ -40,15 +41,16 @@ public class UserInfoService {
      * @param id
      * @return
      */
-    public UserInfo findUserById(long id){
+    public UserInfo findUserById(long id) {
         return userInfoDao.findUserById(id);
     }
+
     /***
      * 根据用户手机号查询userInfo信息
      * @param phone
      * @return
      */
-    public UserInfo findUserByPhone(String phone){
+    public UserInfo findUserByPhone(String phone) {
         return userInfoDao.findUserByPhone(phone);
     }
 
@@ -58,8 +60,8 @@ public class UserInfoService {
      * @param otherPlatformKey
      * @return
      */
-    public UserInfo findUserByOtherPlatform(int otherPlatformType, String otherPlatformKey){
-        return userInfoDao.findUserByOtherPlat(otherPlatformType,otherPlatformKey);
+    public UserInfo findUserByOtherPlatform(int otherPlatformType, String otherPlatformKey) {
+        return userInfoDao.findUserByOtherPlat(otherPlatformType, otherPlatformKey);
     }
 
     /***
@@ -68,8 +70,8 @@ public class UserInfoService {
      * @param houseNumber
      * @return
      */
-    public UserInfo findUserByHouseNumber(int proType, String houseNumber){
-        return userInfoDao.findUserByHouseNumber(proType,houseNumber);
+    public UserInfo findUserByHouseNumber(int proType, String houseNumber) {
+        return userInfoDao.findUserByHouseNumber(proType, houseNumber);
     }
 
     /***
@@ -77,9 +79,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int update(UserInfo userInfo){
-        return  userInfoDao.update(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update(UserInfo userInfo) {
+        return userInfoDao.update(userInfo);
     }
 
     /***
@@ -87,9 +89,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int delete(UserInfo userInfo){
-        return  userInfoDao.delete(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delete(UserInfo userInfo) {
+        return userInfoDao.delete(userInfo);
     }
 
     /***
@@ -97,9 +99,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateByHouseMoving(UserInfo userInfo){
-        return  userInfoDao.updateByHouseMoving(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateByHouseMoving(UserInfo userInfo) {
+        return userInfoDao.updateByHouseMoving(userInfo);
     }
 
     /***
@@ -107,9 +109,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateHead(UserInfo userInfo){
-        return  userInfoDao.updateUserHead(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateHead(UserInfo userInfo) {
+        return userInfoDao.updateUserHead(userInfo);
     }
 
     /***
@@ -117,9 +119,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int changePassWord(UserInfo userInfo){
-        return  userInfoDao.changePassWord(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changePassWord(UserInfo userInfo) {
+        return userInfoDao.changePassWord(userInfo);
     }
 
     /***
@@ -127,9 +129,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateUserGraffitiHead(UserInfo userInfo){
-        return  userInfoDao.updateUserGraffitiHead(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateUserGraffitiHead(UserInfo userInfo) {
+        return userInfoDao.updateUserGraffitiHead(userInfo);
     }
 
     /***
@@ -137,9 +139,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateUserAccessRights(UserInfo userInfo){
-        return  userInfoDao.updateUserAccessRights(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateUserAccessRights(UserInfo userInfo) {
+        return userInfoDao.updateUserAccessRights(userInfo);
     }
 
     /***
@@ -147,9 +149,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateIsNewUser(UserInfo userInfo){
-        return  userInfoDao.updateIsNewUser(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateIsNewUser(UserInfo userInfo) {
+        return userInfoDao.updateIsNewUser(userInfo);
     }
 
     /***
@@ -157,9 +159,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateWelcomeInfoStatus(UserInfo userInfo){
-        return  userInfoDao.updateWelcomeInfoStatus(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateWelcomeInfoStatus(UserInfo userInfo) {
+        return userInfoDao.updateWelcomeInfoStatus(userInfo);
     }
 
     /***
@@ -167,9 +169,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateBindPhone(UserInfo userInfo){
-        return  userInfoDao.updateBindPhone(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateBindPhone(UserInfo userInfo) {
+        return userInfoDao.updateBindPhone(userInfo);
     }
 
     /***
@@ -177,9 +179,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int updateBindOther(UserInfo userInfo){
-        return  userInfoDao.updateBindOther(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateBindOther(UserInfo userInfo) {
+        return userInfoDao.updateBindOther(userInfo);
     }
 
     /***
@@ -187,9 +189,9 @@ public class UserInfoService {
      * @param userInfo
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int perfectUserInfo(UserInfo userInfo){
-        return  userInfoDao.perfectUserInfo(userInfo);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int perfectUserInfo(UserInfo userInfo) {
+        return userInfoDao.perfectUserInfo(userInfo);
     }
 
     /***
@@ -198,23 +200,23 @@ public class UserInfoService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<UserInfo> findList(String name, int beginAge, int endAge,int sex, int province, int city,
-                                       int district, int studyrank, int maritalstatus,int page, int count) {
+    public PageBean<UserInfo> findList(String name, int beginAge, int endAge, int sex, int province, int city,
+                                       int district, int studyrank, int maritalstatus, int page, int count) {
         //对可为空的参数进行特殊处理 避免mybatis空值拼接检索匹配不到的问题
-        if(CommonUtils.checkFull(name)){
+        if (CommonUtils.checkFull(name)) {
             name = null;
         }
         List<UserInfo> list;
-        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = userInfoDao.findList(name,beginAge,endAge,sex,province,city, district,studyrank, maritalstatus);
-        for(int i=0;i<list.size();i++){
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = userInfoDao.findList(name, beginAge, endAge, sex, province, city, district, studyrank, maritalstatus);
+        for (int i = 0; i < list.size(); i++) {
             UserInfo u = list.get(i);
-            if(u!=null){
+            if (u != null) {
                 u.setPassword("");//过滤登录密码
                 u.setIm_password("");//过滤环信登录密码
             }
         }
-        return PageUtils.getPageBean(p,list);
+        return PageUtils.getPageBean(p, list);
     }
 //    public String getFindListSql(@Param("name") String name, @Param("beginAge") int beginAge, @Param("endAge") int endAge,
 //                                 @Param("sex") int sex, @Param("province") int province, @Param("city") int city,
@@ -243,4 +245,14 @@ public class UserInfoService {
 //        sql.append(" and maritalstatus = #{maritalstatus}");
 //        return sql.toString();
 //    }
+
+    /***
+     * 条件查找用户信息
+     * @return
+     */
+    public List<UserInfo> findCondition() {
+        List<UserInfo> list;
+        list = userInfoDao.findCondition();
+        return list;
+    }
 }
