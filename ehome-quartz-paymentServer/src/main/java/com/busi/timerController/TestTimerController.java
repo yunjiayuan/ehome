@@ -35,7 +35,7 @@ public class TestTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0/5 * * * * ?") // 启动执行
+//    @Scheduled(cron = "0/5 * * * * ?") // 启动执行
     public void usedDealTimer() throws Exception {
         log.info("启动测试定时任务...");
 

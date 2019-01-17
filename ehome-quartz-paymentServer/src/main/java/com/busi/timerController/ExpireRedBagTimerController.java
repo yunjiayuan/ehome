@@ -1,7 +1,7 @@
 package com.busi.timerController;
 
-//import com.busi.entity.RedPacketsInfo;
-//import com.busi.service.RedPacketsInfoService;
+import com.busi.entity.RedPacketsInfo;
+import com.busi.service.RedPacketsInfoService;
 import com.busi.utils.Constants;
 import com.busi.utils.MqUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class ExpireRedBagTimerController {
     private MqUtils mqUtils;
 
     @Autowired
-//    RedPacketsInfoService redPacketsInfoService;
+    RedPacketsInfoService redPacketsInfoService;
 
     /**
      * Cron表达式的格式：秒 分 时 日 月 周 年(可选)。
@@ -50,33 +50,33 @@ public class ExpireRedBagTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 25 16 * * ?")
-//    @Scheduled(cron = "0 23 14 * * ?") // 每天下午2点23执行一次
+//    @Scheduled(cron = "0 14 18 * * ?")
+    @Scheduled(cron = "0 23 14 * * ?") // 每天下午2点23执行一次
     public void expireRedBagTimer() throws Exception {
         log.info("开始处理已过期红包...");
-//        RedPacketsInfo r = null;
-//        int countTime = Constants.TIME_OUT_MINUTE_60_24_1 * 1000;
-//        long nowTime = new Date().getTime();
-//        List<Object> arrList = new ArrayList<Object>();
-//        List list = redPacketsInfoService.findEmpty();
-//        if (list != null) {
-//            for (int i = 0; i < list.size(); i++) {
-//                r = (RedPacketsInfo) list.get(i);
-//                if (r != null) {
-//                    //判断该红包是否已过期 24小时
-//                    long sendTime = r.getSendTime().getTime();
-//                    if (nowTime - sendTime > countTime) {//已过期
-//                        //更新红包
-//                        r.setRedPacketsStatus(1);
-//                        arrList.add(r);
-//                        redPacketsInfoService.updateEmptyStatus(r);
-//                        //更新缓存、钱包、账单
-//                        mqUtils.sendPurseMQ(r.getSendUserId(), 12, 0, r.getRedPacketsMoney());
-//                    }
-//                }
-//            }
-//        }
-//        log.info("动态更新了(" + arrList.size() + ")个已过期红包状态...");
+        RedPacketsInfo r = null;
+        int countTime = Constants.TIME_OUT_MINUTE_60_24_1 * 1000;
+        long nowTime = new Date().getTime();
+        List<Object> arrList = new ArrayList<Object>();
+        List list = redPacketsInfoService.findEmpty();
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                r = (RedPacketsInfo) list.get(i);
+                if (r != null) {
+                    //判断该红包是否已过期 24小时
+                    long sendTime = r.getSendTime().getTime();
+                    if (nowTime - sendTime > countTime) {//已过期
+                        //更新红包
+                        r.setRedPacketsStatus(1);
+                        arrList.add(r);
+                        redPacketsInfoService.updateEmptyStatus(r);
+                        //更新缓存、钱包、账单
+                        mqUtils.sendPurseMQ(r.getSendUserId(), 12, 0, r.getRedPacketsMoney());
+                    }
+                }
+            }
+        }
+        log.info("动态更新了(" + arrList.size() + ")个已过期红包状态...");
     }
 
 

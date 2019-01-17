@@ -17,7 +17,7 @@ server:
 #简单日志打印
 logging:
   level:
-    com.busi.dao: debug #dao的路径 和 打印级别
+    com.busi.dao:  #dao的路径 和 打印级别
 
 spring:
   application:
