@@ -1,7 +1,7 @@
 package com.busi.timerController;
 
 import com.busi.entity.BirdFeedingData;
-import com.busi.service.BirdJournalService;
+import com.busi.servive.BirdJournalService;
 import com.busi.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -81,15 +81,6 @@ public interface RedPacketsInfoDao {
     @Update("update redPacketsInfo set redPacketsStatus = #{redPacketsStatus},receiveTime = #{receiveTime} where receiveUserId = #{receiveUserId} and id = #{id}")
     int updateRedPacketsStatus(RedPacketsInfo redPacketsInfo);
 
-
-    /***
-     * 红包过期后更新红包状态
-     * @param redPacketsInfo
-     * @return
-     */
-    @Update("update redPacketsInfo set redPacketsStatus = #{redPacketsStatus} where sendUserId = #{sendUserId} and id = #{id}")
-    int updateEmptyStatus(RedPacketsInfo redPacketsInfo);
-
     /***
      * 更改红包删除状态
      * @param userId
@@ -99,10 +90,4 @@ public interface RedPacketsInfoDao {
     @Update("update redPacketsInfo set delStatus = #{delStatus} where  (sendUserId = #{userId} or receiveUserId = #{userId}) and id = #{id}")
     int updateRedPacketsDelStatus(@Param("userId") long userId,@Param("id") String id);
 
-    /***
-     * 查询接收红包时间为空的
-     * @return
-     */
-    @Select("select * from redPacketsInfo where redPacketsStatus=0 and receiveTime is null")
-    List<RedPacketsInfo> findEmpty();
 }

@@ -115,15 +115,6 @@ public class UsedDealService {
     }
 
     /***
-     * 根据ID查询（定时任务）
-     * @param id
-     * @return
-     */
-    public UsedDeal findUserById2(long id) {
-        return usedDealDao.findUserById2(id);
-    }
-
-    /***
      * 分页查询
      * @param sort  排序条件:0默认排序，1最新发布，2价格最低，3价格最高，4离我最近
      * @param userId  用户ID

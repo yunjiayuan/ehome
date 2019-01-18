@@ -151,6 +151,14 @@ public interface UsedDealDao {
     UsedDeal findUserById(@Param("id") long id);
 
     /***
+     * 根据Id查询（定时任务）
+     * @param id
+     */
+    @Select("select * from usedDeal where id=#{id} and deleteType=1 and auditType=2 and sellType = 3")
+    UsedDeal findUserById2(@Param("id") long id);
+
+
+    /***
      * 分页查询
      * @param sort  排序条件:0默认排序，1最新发布，2价格最低，3价格最高，4离我最近
      * @param userId  用户ID

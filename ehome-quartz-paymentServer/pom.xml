@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>com.ehome</groupId>
-            <artifactId>ehome-paymentServer</artifactId>
+            <artifactId>paymentServer-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

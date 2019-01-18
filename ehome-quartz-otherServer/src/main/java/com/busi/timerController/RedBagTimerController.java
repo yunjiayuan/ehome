@@ -1,7 +1,7 @@
 package com.busi.timerController;
 
 import com.busi.entity.RedBagRain;
-import com.busi.service.TaskService;
+import com.busi.servive.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;

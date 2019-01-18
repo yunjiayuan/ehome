@@ -141,13 +141,4 @@ public class TaskService {
         return PageUtils.getPageBean(p, list);
     }
 
-    /***
-     * 删除过期中奖人员数据
-     * @return
-     */
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int batchDel() {
-        return taskDao.batchDel();
-    }
-
 }

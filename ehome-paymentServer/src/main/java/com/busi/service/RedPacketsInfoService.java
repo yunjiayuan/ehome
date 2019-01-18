@@ -44,16 +44,6 @@ public class RedPacketsInfoService {
     }
 
     /***
-     * 查询接收红包时间为空的
-     * @return
-     */
-    public List<RedPacketsInfo> findEmpty() {
-        List<RedPacketsInfo> list;
-        list = redPacketsInfoDao.findEmpty();
-        return list;
-    }
-
-    /***
      * 根据用户ID查询红包记录列表
      * @param userId
      * @return
@@ -94,16 +84,6 @@ public class RedPacketsInfoService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateRedPacketsStatus(RedPacketsInfo redPacketsInfo) {
         return redPacketsInfoDao.updateRedPacketsStatus(redPacketsInfo);
-    }
-
-    /***
-     * 红包过期后更新红包状态
-     * @param redPacketsInfo
-     * @return
-     */
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int updateEmptyStatus(RedPacketsInfo redPacketsInfo) {
-        return redPacketsInfoDao.updateEmptyStatus(redPacketsInfo);
     }
 
     /***
