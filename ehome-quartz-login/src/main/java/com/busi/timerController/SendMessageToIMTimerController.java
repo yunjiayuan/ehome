@@ -71,7 +71,7 @@ public class SendMessageToIMTimerController {
             "创始元老级会员知道什么意思吗，未来真能赚到钱？跪求答案。",
             "生活圈的概念应该比朋友圈的概念好，你觉得呢？都不理我呀。"};
 
-    @Scheduled(cron = "0 26 10 * * ?") // 每分钟执行一次
+    @Scheduled(cron = "0/1 * * * * ?") // 每分钟执行一次
     public void expireRedBagTimer() throws Exception {
         try {
             log.info("开始向环信用户随机发送消息...");
@@ -102,12 +102,12 @@ public class SendMessageToIMTimerController {
                     int messageId = random.nextInt(message.length);//从预设消息中随机选取
                     long sendUserId = random.nextInt(40000) + 13870;//从机器人用户中随机选取
                     UserInfo userInfo = (UserInfo) sendList.get(i);
-                    IMTokenCacheBean imTokenCacheBean;
-                    Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + sendUserId);
-                    Map<String, Object> userMap2 = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+                    IMTokenCacheBean imTokenCacheBean = IMUserUtils.getToken();;
+                    Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + 9999);
+                    Map<String, Object> userMap2 = redisUtils.hmget(Constants.REDIS_KEY_USER + 10076);
                     UserInfo sendUser = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
                     UserInfo receiveUsers = (UserInfo) CommonUtils.mapToObject(userMap2, UserInfo.class);
-//                    IMUserUtils.sendMessageToIMUser(message[messageId], sendUser, receiveUsers, imTokenCacheBean.getAccess_token(), 0);
+                    IMUserUtils.sendMessageToIMUser(message[messageId], sendUser, receiveUsers, imTokenCacheBean.getAccess_token(), 0);
                     Thread.sleep(1000);//等待1秒 避免环信并发压力太大 收不到消息
                 }
             }
