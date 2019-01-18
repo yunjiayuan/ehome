@@ -53,16 +53,16 @@ public class UsedDealTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 54 17 * * ?") //
+    @Scheduled(cron = "0 11 11 * * ?") //
     public void usedDealTimer() throws Exception {
         log.info("开始查询数据库中待处理的二手超时订单，并加装到内存中...");
         while (true) {
             UsedDeal used = null;
             UsedDealOrders order = null;
             List ipsOrderList = null;
-            int countTime = Constants.TIME_OUT_MINUTE_45;// 45分钟
-            int countTime1 = Constants.TIME_OUT_MINUTE_60_24_1 * 7;// 一周
-            int countTime2 = Constants.TIME_OUT_MINUTE_60_24_1 * 14;// 两周
+            int countTime = Constants.TIME_OUT_MINUTE_45 * 1000;// 45分钟
+            int countTime1 = Constants.TIME_OUT_MINUTE_60_24_1 * 7 * 1000;// 一周
+            int countTime2 = Constants.TIME_OUT_MINUTE_60_24_1 * 14 * 1000;// 两周
             long nowTime = new Date().getTime();// 系统时间
             ipsOrderList = usedDealOrdersService.findOrderList2();
             if (ipsOrderList != null && ipsOrderList.size() > 0) {
