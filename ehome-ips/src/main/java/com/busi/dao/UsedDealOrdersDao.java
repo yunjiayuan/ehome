@@ -178,22 +178,6 @@ public interface UsedDealOrdersDao {
     List<UsedDealOrders> findOrderList(@Param("identity") int identity, @Param("userId") long userId, @Param("ordersType") int ordersType, @Param("ids") String[] ids);
 
     /***
-     * 查询所有二手订单
-     * @param //ordersType 订单类型: -1默认全部 0待付款(未付款),1待发货(已付款未发货),2待收货(已发货未收货),3待评价(已收货未评价), 4用户取消订单  5卖家取消订单  6付款超时
-     * @return
-     */
-    @Select("<script>" +
-            "select * from UsedDealOrders" +
-            " where 1=1" +
-            " and ordersType in" +
-            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
-            " #{item}" +
-            "</foreach>" +
-            " and ordersState = 0" +
-            "</script>")
-    List<UsedDealOrders> findOrderList2(@Param("ids") String[] ids);
-
-    /***
      * 延长收货时间
      * @param usedDealOrders
      * @return
@@ -325,20 +309,4 @@ public interface UsedDealOrdersDao {
             "</script>")
     int updateLogisticsData(UsedDealLogistics usedDealLogistics);
 
-    /***
-     * 批量更新状态
-     * @param ids
-     * @return
-     */
-    @Update("<script>" +
-            "update UsedDealOrders set" +
-            " ordersType=#{ordersType}" +
-            " receivingTime=#{receivingTime}" +
-            " where id in" +
-            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
-            " #{item}" +
-            "</foreach>" +
-            " and ordersState=0" +
-            "</script>")
-    int updateState(@Param("ids") String[] ids);
 }

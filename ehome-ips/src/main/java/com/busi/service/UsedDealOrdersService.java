@@ -180,18 +180,6 @@ public class UsedDealOrdersService {
     }
 
     /***
-     * 查询所有二手订单
-     * @param //ordersType 订单类型: -1默认全部 0待付款(未付款),1待发货(已付款未发货),2待收货(已发货未收货),3待评价(已收货未评价), 4用户取消订单  5卖家取消订单  6付款超时
-     * @return
-     */
-    public List<UsedDealOrders> findOrderList2() {
-        List<UsedDealOrders> list;
-        String ids = "0,1,2";
-        list = usedDealOrdersDao.findOrderList2(ids.split(","));
-        return list;
-    }
-
-    /***
      * 延长订单收货时间
      * @param usedDealOrders
      * @return
@@ -293,16 +281,6 @@ public class UsedDealOrdersService {
      */
     public UsedDealLogistics logisticsDetails(long id) {
         return usedDealOrdersDao.logisticsDetails(id);
-    }
-
-    /***
-     * 批量更新状态
-     * @param ids
-     * @return
-     */
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int updateState(String[] ids) {
-        return usedDealOrdersDao.updateState(ids);
     }
 
 }

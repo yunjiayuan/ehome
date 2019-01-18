@@ -148,14 +148,4 @@ public interface TaskDao {
             "</script>")
     List<RedBagRain> findRedBagList();
 
-    /***
-     * 删除过期中奖人员数据
-     * @return
-     */
-    @Delete("<script>" +
-            "delete from RedBagRain" +
-            " where userId >= 13870 and userId &lt;= 53870" +
-            "</script>")
-    int batchDel();
-
 }

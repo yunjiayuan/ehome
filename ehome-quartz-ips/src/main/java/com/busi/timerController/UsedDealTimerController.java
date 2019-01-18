@@ -2,8 +2,8 @@ package com.busi.timerController;
 
 import com.busi.entity.UsedDeal;
 import com.busi.entity.UsedDealOrders;
-import com.busi.service.UsedDealOrdersService;
-import com.busi.service.UsedDealService;
+import com.busi.servive.UsedDealOrdersService;
+import com.busi.servive.UsedDealService;
 import com.busi.utils.Constants;
 import com.busi.utils.MqUtils;
 import lombok.extern.slf4j.Slf4j;

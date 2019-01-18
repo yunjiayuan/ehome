@@ -1,7 +1,7 @@
 package com.busi.timerController;
 
 import com.busi.entity.RedPacketsInfo;
-import com.busi.service.RedPacketsInfoService;
+import com.busi.servive.RedPacketsInfoService;
 import com.busi.utils.Constants;
 import com.busi.utils.MqUtils;
 import lombok.extern.slf4j.Slf4j;
