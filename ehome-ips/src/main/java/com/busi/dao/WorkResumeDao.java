@@ -160,6 +160,9 @@ public interface WorkResumeDao {
             "<if test=\"perfectType == 3 \">" +
             " positionName=#{positionName}," +
             "</if>" +
+            "<if test=\"perfectType == 4 \">" +
+            " opusImgUrl=#{opusImgUrl}," +
+            "</if>" +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")

@@ -3,10 +3,8 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.IPS_Home;
-import com.busi.entity.SearchGoods;
-import com.busi.entity.PageBean;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
+import com.busi.service.CollectService;
 import com.busi.service.SearchGoodsService;
 import com.busi.utils.*;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -36,6 +34,9 @@ public class SearchGoodsController extends BaseController implements SearchGoods
 
     @Autowired
     SearchGoodsService searchGoodsService;
+
+    @Autowired
+    CollectService collectService;
 
     /***
      * 新增
@@ -349,6 +350,13 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             num = (int) otherPostsMap.get("searchType");
             mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), num + 2);
         }
+        int collection = 0;
+        Collect collect1 = null;
+        collect1 = collectService.findUserId(id, (int) otherPostsMap.get("searchType") + 2);
+        if (collect1 != null) {
+            collection = 1;
+        }
+        otherPostsMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }
 

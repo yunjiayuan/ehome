@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.CollectService;
 import com.busi.service.LoveAndFriendsService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    CollectService collectService;
 
     /***
      * 新增
@@ -431,9 +435,16 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 //        }
         loveAndFriends.setMatching(matching + "%");// 设置匹配度
 
+        int collection = 0;
+        Collect collect1 = null;
+        collect1 = collectService.findUserId(id, 1);
+        if (collect1 != null) {
+            collection = 1;
+        }
         //放入缓存
         loveAndFriendsMap = CommonUtils.objectToMap(loveAndFriends);
         redisUtils.hmset(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId(), loveAndFriendsMap, Constants.USER_TIME_OUT);
+        loveAndFriendsMap.put("collection", collection);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", loveAndFriendsMap);
     }

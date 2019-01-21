@@ -3,9 +3,11 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.Collect;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.entity.OtherPosts;
+import com.busi.service.CollectService;
 import com.busi.service.OtherPostsService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,8 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
     @Autowired
     MqUtils mqUtils;
 
+    @Autowired
+    CollectService collectService;
 
     /***
      * 新增
@@ -233,6 +237,13 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
             otherPostsMap = CommonUtils.objectToMap(posts);
             redisUtils.hmset(Constants.REDIS_KEY_IPS_OTHERPOSTS + posts.getId(), otherPostsMap, Constants.USER_TIME_OUT);
         }
+        int collection = 0;
+        Collect collect1 = null;
+        collect1 = collectService.findUserId(id, 6);
+        if (collect1 != null) {
+            collection = 1;
+        }
+        otherPostsMap.put("collection", collection);
         //新增浏览记录
         mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), 1);
 

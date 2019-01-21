@@ -47,9 +47,9 @@ public class WorkResume {
 
     private int workExperience;    //工作经验
 
-    private int startSalary;        //期望薪资:起
+    private int startSalary;        //期望薪资:开始
 
-    private int endSalary;        //期望薪资:始
+    private int endSalary;        //期望薪资:结束
 
     private int jobProvince;        // 求职区域：省
 

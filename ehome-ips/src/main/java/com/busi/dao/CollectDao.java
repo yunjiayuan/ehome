@@ -37,9 +37,9 @@ public interface CollectDao {
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
-            " and myId=#{myId}" +
+            " and myId=#{myId} afficheType=#{afficheType}" +
             "</script>")
-    int del(@Param("ids") String[] ids, @Param("myId") long myId);
+    int del(@Param("ids") String[] ids, @Param("myId") long myId, @Param("afficheType") int afficheType);
 
     /***
      * 根据Id统计被收藏次数
@@ -68,6 +68,6 @@ public interface CollectDao {
      * 根据用户&公告主键ID查询
      * @param id
      */
-    @Select("select * from Collect where infoId=#{id} and myId=#{myId}")
-    Collect findUserId(@Param("id") long id, @Param("myId") long myId);
+    @Select("select * from Collect where infoId=#{id} and afficheType=#{afficheType}")
+    Collect findUserId(@Param("id") long id, @Param("afficheType") int afficheType);
 }
