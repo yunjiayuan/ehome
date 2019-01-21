@@ -3,7 +3,7 @@ package com.busi.timerController;
 import com.busi.entity.UserInfo;
 import com.busi.iMUtils.IMTokenCacheBean;
 import com.busi.iMUtils.IMUserUtils;
-import com.busi.service.UserInfoService;
+import com.busi.servive.UserInfoService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
