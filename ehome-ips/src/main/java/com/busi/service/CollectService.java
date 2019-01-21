@@ -40,18 +40,18 @@ public class CollectService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int del(String[] ids, long userId, int afficheType) {
-        return collectDao.del(ids, userId, afficheType);
+    public int del(String[] ids, long userId) {
+        return collectDao.del(ids, userId);
     }
 
     /***
      * 根据用户&公告主键ID查询
      * @param id
-     * @param afficheType
+     * @param userId
      * @return
      */
-    public Collect findUserId(long id, int afficheType) {
-        return collectDao.findUserId(id, afficheType);
+    public Collect findUserId(long id, long userId) {
+        return collectDao.findUserId(id, userId);
     }
 
     /***

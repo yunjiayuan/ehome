@@ -50,36 +50,43 @@ public class CollectController extends BaseController implements CollectApiContr
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         Collect collect1 = null;
-        collect1 = collectService.findUserId(collect.getInfoId(), collect.getAfficheType());
+        collect1 = collectService.findUserId(collect.getInfoId(), collect.getMyId());
         if (collect1 != null) {
             return returnData(StatusCode.CODE_IPS_COLLECTION.CODE_VALUE, "你已收藏过", new JSONObject());
         }
         collect.setTime(new Date());
         collectService.add(collect);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_COLLECT + collect.getAfficheType(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_COLLECT + collect.getMyId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 删除
-     * @param afficheType 公告类型
+     * @param myId 用户ID
      * @param ids 将要删除的收藏ID
      * @return
      */
     @Override
-    public ReturnData delCollect(@PathVariable int afficheType, @PathVariable String ids) {
+    public ReturnData delCollect(@PathVariable long myId, @PathVariable String ids) {
         //验证参数
+        if (myId <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "myId参数有误", new JSONObject());
+        }
         if (CommonUtils.checkFull(ids)) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "ids参数有误", new JSONObject());
         }
+        //验证删除权限
+        if (CommonUtils.getMyId() != myId) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + myId + "]的收藏记录", new JSONObject());
+        }
         //查询数据库
-        int look = collectService.del(ids.split(","), CommonUtils.getMyId(), afficheType);
+        int look = collectService.del(ids.split(","), myId);
         if (look <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "公告收藏记录[" + ids + "]不存在", new JSONObject());
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_COLLECT + afficheType, 0);
+        redisUtils.expire(Constants.REDIS_KEY_IPS_COLLECT + myId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
