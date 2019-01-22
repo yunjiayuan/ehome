@@ -239,7 +239,7 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         }
         int collection = 0;
         Collect collect1 = null;
-        collect1 = collectService.findUserId(id, 6);
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId());
         if (collect1 != null) {
             collection = 1;
         }
