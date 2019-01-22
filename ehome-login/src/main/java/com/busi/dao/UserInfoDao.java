@@ -284,6 +284,6 @@ public interface UserInfoDao {
      * 条件查找用户信息
      * @return
      */
-    @Select("select * from userInfo where (userId > 10000 and userId &lt; 13870) or (userId > 53870 ) ")
+    @Select("select * from userInfo where (userId > 10000 and 13870 > userId) or (userId > 53870 ) ")
     List<UserInfo> findCondition();
 }

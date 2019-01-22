@@ -50,6 +50,8 @@ public class UserRelationShip {
 
   private int sex; // 性别
 
+  private String birthday; // 生日
+
   private int proType; // 省简称
 
   private long houseNumber; // 门牌号

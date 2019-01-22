@@ -65,7 +65,7 @@ public class HomeBlogTagController extends BaseController implements HomeBlogTag
         HomeBlogUserTag userTag = homeBlogTagService.find(userId);
         Map<String, String> map = new HashMap<>();
         if (userTag == null) {
-            map.put("tag", "0,1,2,3,4");
+            map.put("tag", "1,2,3,4,5");
         } else {
             map.put("tag", userTag.getTags());
         }

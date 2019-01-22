@@ -271,6 +271,7 @@ public class UserRelationShipController extends BaseController implements UserRe
                     userRelationShip.setHouseNumber(Long.parseLong(userMap.get("houseNumber").toString()));
                     userRelationShip.setHead(userMap.get("head").toString());
                     userRelationShip.setSex(Integer.parseInt(userMap.get("sex").toString()));
+                    userRelationShip.setBirthday(userMap.get("birthday").toString());
                     if(userMap.get("gxqm")!=null&&!CommonUtils.checkFull(userMap.get("gxqm").toString())){
                         userRelationShip.setGxqm(userMap.get("gxqm").toString());
                     }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.CollectService;
 import com.busi.service.UsedDealService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
 
     @Autowired
     UsedDealService usedDealService;
+
+    @Autowired
+    CollectService collectService;
 
     /***
      * 新增二手公告
@@ -400,6 +404,13 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
                 }
             }
         }
+        int collection = 0;
+        Collect collect1 = null;
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId());
+        if (collect1 != null) {
+            collection = 1;
+        }
+        otherPostsMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }
 

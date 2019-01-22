@@ -352,7 +352,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         }
         int collection = 0;
         Collect collect1 = null;
-        collect1 = collectService.findUserId(id, (int) otherPostsMap.get("searchType") + 2);
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId());
         if (collect1 != null) {
             collection = 1;
         }
