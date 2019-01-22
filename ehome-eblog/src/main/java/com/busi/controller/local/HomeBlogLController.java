@@ -43,15 +43,11 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
             }
         }
         //评论量
-        if(hb.getCommentCount()<=0){
-            if(homeBlog.getCommentCount()>0){
-                hb.setCommentCount(hb.getCommentCount()+homeBlog.getCommentCount());
-            }
-        }else{
-            if(homeBlog.getCommentCount()!=0){
-                hb.setCommentCount(hb.getCommentCount()+homeBlog.getCommentCount());
-            }
+        long commentCount = hb.getCommentCount()+homeBlog.getCommentCount();
+        if(commentCount<=0){
+            commentCount = 0;
         }
+        hb.setCommentCount(commentCount);
         //浏览量 只会增加
         if(homeBlog.getLookCount()!=0){
             hb.setLookCount(hb.getLookCount()+homeBlog.getLookCount());
