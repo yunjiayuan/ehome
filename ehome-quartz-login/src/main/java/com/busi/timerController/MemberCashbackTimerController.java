@@ -33,7 +33,7 @@ public class MemberCashbackTimerController {
     @Autowired
     UserMembershipService userMembershipService;
 
-    @Scheduled(cron = "0/5 * * * * ?") // 每5秒执行一次
+    @Scheduled(cron = "0 0 0 * * ?") // 每5秒执行一次
     public void cashbackMembership() {
         log.info("开始执行元老级会员满1年返现100元功能...");
         List list = userMembershipService.findMembershipList2();
