@@ -168,7 +168,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             homeBlogCommentService.updateReplyState(ids.split(","));
         }
         //更新生活圈评论数
-        int num = 1 + ids.length();
+        int num = messList.size();
         mqUtils.updateBlogCounts(comment.getMasterId(), blogId, 1, -num);
         if (comment.getReplyType() == 0 || comment.getReplyType() == 2) {
             //获取缓存中评论列表
@@ -218,6 +218,8 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
             //更新回复数
             mqUtils.updateCommentCounts(comment.getFatherId(), -1);
         }
+        //更新生活圈评论数
+        mqUtils.updateBlogCounts(comment.getMasterId(), blogId, 1, -1);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

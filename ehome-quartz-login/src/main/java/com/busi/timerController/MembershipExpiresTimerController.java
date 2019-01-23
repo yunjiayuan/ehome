@@ -31,7 +31,7 @@ public class MembershipExpiresTimerController {
     @Autowired
     UserMembershipService userMembershipService;
 
-    @Scheduled(cron = "0/5 * * * * ?") // 每秒执行一次
+    @Scheduled(cron = "0 55 2 * * ?") // 每秒执行一次
     public void membershipExpiresTimer() throws Exception {
         log.info("开始处理到期会员...");
         int memberShipStatus = 0;//用户当前会员状态  1：普通会员  2：vip高级会员  3：元老级会员  4：创始元老级会员

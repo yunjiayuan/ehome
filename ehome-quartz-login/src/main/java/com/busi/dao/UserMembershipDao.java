@@ -39,7 +39,7 @@ public interface UserMembershipDao {
      */
     @Update("<script>" +
             "update UserMembership set" +
-            "memberShipStatus=#{memberShipStatus}," +
+            " memberShipStatus=#{memberShipStatus}," +
             "regularMembershipLevel=#{regularMembershipLevel}" +
             " where userId=#{userId}" +
             "</script>")
@@ -52,7 +52,7 @@ public interface UserMembershipDao {
      */
     @Update("<script>" +
             "update UserMembership set" +
-            "memberShipLevelStatus=#{memberShipLevelStatus}," +
+            " memberShipLevelStatus=#{memberShipLevelStatus}" +
             " where userId=#{userId}" +
             "</script>")
     int update3(UserMembership userMembership);

@@ -71,7 +71,7 @@ public class SendMessageToIMTimerController {
             "创始元老级会员知道什么意思吗，未来真能赚到钱？跪求答案。",
             "生活圈的概念应该比朋友圈的概念好，你觉得呢？都不理我呀。"};
 
-    @Scheduled(cron = "0/1 * * * * ?") // 每分钟执行一次
+//    @Scheduled(cron = "0/1 * * * * ?") // 每分钟执行一次
     public void expireRedBagTimer() throws Exception {
         try {
             log.info("开始向环信用户随机发送消息...");
