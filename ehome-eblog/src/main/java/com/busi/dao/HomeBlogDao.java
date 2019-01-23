@@ -80,6 +80,7 @@ public interface HomeBlogDao {
      * 查询朋友圈列表
      * @param firendUserIds  好友用户ID组合
      * @param searchType     博文类型：0所有 1只看视频
+     * @param timeType       查询时间类型：0不限制 1只看今天发布视频
      * @param userIds        处理过的登录者用户ID 用于判断可见范围
      * @return
      */
@@ -97,10 +98,13 @@ public interface HomeBlogDao {
             " and sendType = 2" +
             " and blogType != 1" +
             "</if>" +
+            "<if test=\"timeType == 1\">" +
+            " and to_days(time) = to_days(now())" +
+            "</if>" +
             " and blogStatus = 0" +
             " order by time desc" +
             "</script>")
-    List<HomeBlog> findBlogListByFirend(@Param("firendUserIds") String[] firendUserIds, @Param("userId") long userId, @Param("userIds") String userIds ,@Param("searchType") int searchType);
+    List<HomeBlog> findBlogListByFirend(@Param("firendUserIds") String[] firendUserIds, @Param("userId") long userId, @Param("userIds") String userIds ,@Param("searchType") int searchType,@Param("timeType") int timeType);
 
     /***
      * 根据兴趣标签查询列表

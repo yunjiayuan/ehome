@@ -76,14 +76,15 @@ public class HomeBlogService {
      * @param myId          当前登录者用户ID
      * @param firendUserIds 好友用户ID组合
      * @param searchType    博文类型：0所有 1只看视频
+     * @param timeType      查询时间类型：0不限制 1只看今天发布视频
      * @param page          页码 第几页 起始值1
      * @param count         每页条数
      * @return
      */
-    public PageBean<HomeBlog> findBlogListByFirend(long myId, String[] firendUserIds,int searchType, int page, int count) {
+    public PageBean<HomeBlog> findBlogListByFirend(long myId, String[] firendUserIds,int searchType,int timeType, int page, int count) {
         List<HomeBlog> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByFirend(firendUserIds, myId, "," + myId + ",",searchType);
+        list = homeBlogDao.findBlogListByFirend(firendUserIds, myId, "," + myId + ",",searchType,timeType);
         return PageUtils.getPageBean(p, list);
     }
 

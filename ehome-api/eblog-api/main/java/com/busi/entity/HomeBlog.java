@@ -61,7 +61,7 @@ public class HomeBlog {
     @Length(max = 3000, message = "classifyUserIds参数有误，超出指定范围")
     private String classifyUserIds;//允许或者不允许查看的用户ID组合，逗号分隔， 当classify=2或者classify=3时有效
 
-    @Max(value = 31, message = "tag参数有误，超出指定范围")
+    @Max(value = 38, message = "tag参数有误，超出指定范围")
     @Min(value = 0, message = "tag参数有误，超出指定范围")
     private int tag;//标签类型 0吐槽1接棒2名人3明星4企业5单位6政府7官员8店主9学生10媒体11附近12草根13热点14文化15财经16情感17健康18旅游19教育20美食21体育22时尚23汽车24杂谈25IT26星座27校园28房产29其他30分享31求助
 

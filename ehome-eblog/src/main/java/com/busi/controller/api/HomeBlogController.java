@@ -305,7 +305,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 }
                 //将自己加入查询列表中
                 firendUserIds = firendUserIds+CommonUtils.getMyId();
-                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),0,page,count);
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),0,0,page,count);
                 break;
             case 1://1查看关注人的生活圈
                 //获取我关注的人的列表
@@ -321,7 +321,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     pageBean.setList(new ArrayList<>());
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
                 }
-                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray,0,page,count);
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray,0,0,page,count);
                 break;
             case 2://2查看兴趣话题
                 if(CommonUtils.checkFull(tags)){
@@ -473,7 +473,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 }
                 //将自己加入查询列表中
                 firendUserIds = firendUserIds+CommonUtils.getMyId();
-                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),1,page,count);
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),firendUserIds.split(","),1,0,page,count);
                 break;
             case 3://1查看关注人的生活秀
                 //获取我关注的人的列表
@@ -489,7 +489,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     pageBean.setList(new ArrayList<>());
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
                 }
-                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray,1,page,count);
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray,1,0,page,count);
                 break;
             case 4://2查看兴趣话题
                 if(CommonUtils.checkFull(tags)){
@@ -534,7 +534,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         distanceMap.put(userIdString,distance);
                     }
                 }
-                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),nearUserIds.split(","),1,page,count);
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),nearUserIds.split(","),1,1,page,count);
                 break;
         }
         if(pageBean==null){
@@ -583,7 +583,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     userIds += ","+newUserId;
                 }
             }
-            PageBean<HomeBlog> newPageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),userIds.split(","),1,1,100);
+            PageBean<HomeBlog> newPageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),userIds.split(","),1,0,1,100);
             List<HomeBlog> newList  = newPageBean.getList();
             for (int i = 0; i < newList.size(); i++) {
                 HomeBlog homeBlog = newList.get(i);
