@@ -216,6 +216,7 @@ public class LoginController extends BaseController implements LoginApiControlle
         map.put("proType",userMap.get("proType"));
         map.put(Constants.REDIS_KEY_HOUSENUMBER,userMap.get(Constants.REDIS_KEY_HOUSENUMBER));
         map.put("im_password",userMap.get("im_password"));//环信的登录密码
+        map.put("name",userMap.get("name"));//用于新用户注册 环信设置昵称
         if(accountStatus==1){//未激活
             return returnData(StatusCode.CODE_ACCOUNT_NOT_ACTIVATED.CODE_VALUE,"该账号未激活",map);
         }
