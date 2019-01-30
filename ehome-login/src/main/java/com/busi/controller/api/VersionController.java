@@ -45,7 +45,7 @@ public class VersionController extends BaseController implements VersionApiContr
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         String myId = request.getHeader("myId");//
-        if(CommonUtils.checkFull(myId)||!"17".equals(myId)){//只有固定用户才能更新
+        if(CommonUtils.checkFull(myId)||!"10076".equals(myId)){//只有固定用户才能更新
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限进行此操作！",new JSONObject());
         }
         versionService.update(version);
