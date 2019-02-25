@@ -261,7 +261,8 @@ public interface WorkResumeDao {
      * @param jobDistrict  求职区域：地区或县
      * @param jobType1  一级求职类型
      * @param jobType2  二级求职类型
-     * @param workExperience  工作经验
+     * @param workExperienceStart  工作年限起始值（包含）
+     * @param workExperienceEnd    工作年限结束值（包含）
      * @param startSalary  期望薪资:开始
      * @param endSalary 期望薪资:结束
      * @param highestEducation 最高学历
@@ -292,8 +293,11 @@ public interface WorkResumeDao {
             " <if test=\"startSalary >= 0 and endSalary &lt; 0\">" +
             " and startSalary >= #{startSalary}" +
             "</if>" +
-            " <if test=\"workingLife >= 0\">" +
-            " and workingLife >= #{workingLife}" +
+            " <if test=\"workExperienceStart != -1\">" +
+            " and workingLife >= #{workExperienceStart}" +
+            "</if>" +
+            " <if test=\"workExperienceEnd != -1\">" +
+            " and #{workExperienceEnd} >= workingLife" +
             "</if>" +
             " <if test=\"highestEducation >= 0\">" +
             " and educational >= #{highestEducation}" +
@@ -301,7 +305,7 @@ public interface WorkResumeDao {
             " ORDER BY refreshTime DESC" +
             "</script>")
     List<WorkRecruit> findRecruitList1(@Param("userId") long userId, @Param("jobProvince") int jobProvince, @Param("jobCity") int jobCity, @Param("jobDistrict") int jobDistrict, @Param("jobType1") int jobType1,
-                                       @Param("jobType2") int jobType2, @Param("workExperience") int workExperience, @Param("startSalary") int startSalary, @Param("endSalary") int endSalary, @Param("highestEducation") int highestEducation);
+                                       @Param("jobType2") int jobType2, @Param("workExperienceStart") int workExperienceStart, @Param("workExperienceEnd") int workExperienceEnd, @Param("startSalary") int startSalary, @Param("endSalary") int endSalary, @Param("highestEducation") int highestEducation);
 
     /***
      * 统计我的求职下各类信息数量

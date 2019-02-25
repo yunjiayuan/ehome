@@ -253,7 +253,8 @@ public class WorkResumeService {
      * @param jobDistrict  求职区域：地区或县
      * @param jobType1  一级求职类型
      * @param jobType2  二级求职类型
-     * @param workExperience  工作经验
+     * @param workExperienceStart  工作年限起始值（包含）
+     * @param workExperienceEnd    工作年限结束值（包含）
      * @param startSalary  期望薪资:开始
      * @param endSalary 期望薪资:结束
      * @param highestEducation 最高学历
@@ -262,7 +263,7 @@ public class WorkResumeService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<WorkRecruit> findRecruitList(long userId, int jobProvince, int highestEducation, String positionName, int jobCity, int jobDistrict, int jobType1, int jobType2, int workExperience, int startSalary, int endSalary, int page, int count) {
+    public PageBean<WorkRecruit> findRecruitList(long userId, int jobProvince, int highestEducation, String positionName, int jobCity, int jobDistrict, int jobType1, int jobType2, int workExperienceStart, int workExperienceEnd, int startSalary, int endSalary, int page, int count) {
 
         List<WorkRecruit> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
@@ -270,7 +271,7 @@ public class WorkResumeService {
             list = workResumeDao.findRecruitList(userId, positionName);
         } else {
             list = workResumeDao.findRecruitList1(userId, jobProvince, jobCity, jobDistrict,
-                    jobType1, jobType2, workExperience, startSalary, endSalary, highestEducation);
+                    jobType1, jobType2, workExperienceStart,workExperienceEnd, startSalary, endSalary, highestEducation);
         }
         return PageUtils.getPageBean(p, list);
     }

@@ -291,8 +291,12 @@ public class WorkRecruitService {
         if (!CommonUtils.checkFull(positionName)) {
             list = workRecruitDao.queryResumeList1(userId, positionName);
         } else {
+            String [] educationArray = null;
+            if(!CommonUtils.checkFull(education)){
+                educationArray = education.split(",");
+            }
             list = workRecruitDao.queryResumeList2(userId, jobProvince, jobCity, jobDistrict, positionType1, positionType2,
-                    workingLife, sex, education.split(","), photo, updateTime, startSalary, endSalary);
+                    workingLife, sex,educationArray , photo, updateTime, startSalary, endSalary);
         }
         return PageUtils.getPageBean(p, list);
     }

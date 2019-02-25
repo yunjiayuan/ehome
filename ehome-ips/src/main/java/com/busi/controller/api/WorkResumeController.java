@@ -323,7 +323,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
      * @param jobDistrict  求职区域：地区或县
      * @param jobType1  一级求职类型
      * @param jobType2  二级求职类型
-     * @param workExperience  工作经验
+     * @param workExperience  工作经验 -1：不限   0：应届生   1：1年以下   2：1-3年   3：3-5年   4：5-10年   5：10年以上
      * @param startSalary  期望薪资:开始
      * @param endSalary 期望薪资:结束
      * @param highestEducation 最高学历
@@ -338,9 +338,35 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
+        //处理工作年限
+        int workExperienceStart = -1;
+        int workExperienceEnd = -1;
+        if(workExperience==0){
+            workExperienceStart = 0;
+            workExperienceEnd = 0;
+        }
+        if(workExperience==1){
+            workExperienceStart = 0;
+            workExperienceEnd = 1;
+        }
+        if(workExperience==2){
+            workExperienceStart = 1;
+            workExperienceEnd = 3;
+        }
+        if(workExperience==3){
+            workExperienceStart = 3;
+            workExperienceEnd = 5;
+        }
+        if(workExperience==4){
+            workExperienceStart = 5;
+            workExperienceEnd = 10;
+        }
+        if(workExperience==5){
+            workExperienceStart = 10;
+        }
         //开始查询
         PageBean<WorkRecruit> pageBean;
-        pageBean = workResumeService.findRecruitList(CommonUtils.getMyId(), jobProvince, highestEducation, positionName, jobCity, jobDistrict, jobType1, jobType2, workExperience, startSalary, endSalary, page, count);
+        pageBean = workResumeService.findRecruitList(CommonUtils.getMyId(), jobProvince, highestEducation, positionName, jobCity, jobDistrict, jobType1, jobType2, workExperienceStart,workExperienceEnd, startSalary, endSalary, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

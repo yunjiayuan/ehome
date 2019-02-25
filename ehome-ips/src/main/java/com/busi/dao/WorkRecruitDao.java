@@ -376,9 +376,9 @@ public interface WorkRecruitDao {
             " and workExperience >= #{workingLife}" +
             "</if>" +
             " <if test=\"sex > 0\">" +
-            " and sex >= #{sex}" +
+            " and sex == #{sex}" +
             "</if>" +
-            " <if test=\"photo > 0\">" +
+            " <if test=\"photo == 1\">" +
             " and opusImgUrl != null" +
             "</if>" +
             " <if test=\"education != null and education != ''\">" +
@@ -387,13 +387,13 @@ public interface WorkRecruitDao {
             " #{item}" +
             "</foreach>" +
             "</if>" +
-            " <if test=\"updateTime > -1 and updateTime == 0\">" +
+            " <if test=\"updateTime == 1\">" +
             " and refreshTime > date_sub(now(), interval 1 day)" +
             "</if>" +
-            " <if test=\"updateTime > -1 and updateTime == 1\">" +
+            " <if test=\"updateTime == 2\">" +
             " and refreshTime > date_sub(now(), interval 3 day)" +
             "</if>" +
-            " <if test=\"updateTime > -1 and updateTime > 1\">" +
+            " <if test=\"updateTime == 3\">" +
             " and refreshTime > date_sub(now(), interval 7 day)" +
             "</if>" +
             " ORDER BY refreshTime DESC" +

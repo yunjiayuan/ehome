@@ -515,9 +515,9 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
 
     /***
      * 条件查询简历信息
-     * @param jobProvince  工作区域:省 默认0
-     * @param jobCity  工作区域:城市 默认0
-     * @param jobDistrict  工作区域:地区或县 默认0
+     * @param jobProvince  工作区域:省 默认-1
+     * @param jobCity  工作区域:城市 默认-1
+     * @param jobDistrict  工作区域:地区或县 默认-1
      * @param positionType1     一级分类:职位名称
      * @param positionType2     二级分类:职位类型
      * @param updateTime  更新时间  0不限  1一天以内  2三天以内  3七天以内
