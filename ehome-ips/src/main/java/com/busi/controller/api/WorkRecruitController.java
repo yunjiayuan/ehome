@@ -163,34 +163,35 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
         long days7 = 1000 * 60 * 60 * 24 * 7;
         long days90 = 1000 * 60 * 60 * 24 * 90;
         WorkRecruit is = workRecruitService.findRecruit(workApplyRecord.getRecruitId());//招聘信息[不能是自己]
+        if(is==null)return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您申请的招聘信息已过期或已被删除，再看看其他职位吧!", new JSONObject());
         WorkResume is2 = workResumeService.findById(workApplyRecord.getResumeId());//投递简历
+        if(is2==null)return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您将要投递的简历不存在!", new JSONObject());
+        if (CommonUtils.getMyId() == is.getUserId()) return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "很抱歉，您不能申请自己名下企业的职位!", new JSONObject());
         long currentTime = new Date().getTime();//当前时间
-        if (is != null && is2 != null && CommonUtils.getMyId() != is.getUserId()) {
-            WorkApplyRecord record = workRecruitService.findApply(workApplyRecord.getUserId(), workApplyRecord.getResumeId(), workApplyRecord.getRecruitId());
-            if (record != null) {
-                long refreshTime = record.getRefreshTime().getTime();//刷新时间
-                if ((currentTime - days7) < refreshTime) {//合格状态下判断当前时间与刷新时间，刷新时间是不是在7天以内
-                    return returnData(StatusCode.CODE_POSITION_REPEAT.CODE_VALUE, "新增职位申请失败！您本周已投递过该公司了，请下周再来吧!", new JSONObject());
-                } else if ((currentTime - days90) < refreshTime) {//合格状态下判断当前时间与刷新时间，刷新时间是不是在7天以上90天以内，是则更新刷新时间，反之重新申请
-                    if (record.getEmploymentStatus() > 1) {// 录用状态:0无状态 1通知面试 2录用  3不合格
-                        return returnData(StatusCode.CODE_MATCHING_REPEAT.CODE_VALUE, "新增职位申请失败！您与要申请的职位不匹配，再看看其他的职位吧!", new JSONObject());
-                    }
+        WorkApplyRecord record = workRecruitService.findApply(workApplyRecord.getUserId(), workApplyRecord.getResumeId(), workApplyRecord.getRecruitId());
+        if (record != null) {
+            long refreshTime = record.getRefreshTime().getTime();//刷新时间
+            if ((currentTime - days7) < refreshTime) {//合格状态下判断当前时间与刷新时间，刷新时间是不是在7天以内
+                return returnData(StatusCode.CODE_POSITION_REPEAT.CODE_VALUE, "新增职位申请失败！您本周已投递过该公司了，请下周再来吧!", new JSONObject());
+            } else if ((currentTime - days90) < refreshTime) {//合格状态下判断当前时间与刷新时间，刷新时间是不是在7天以上90天以内，是则更新刷新时间，反之重新申请
+                if (record.getEmploymentStatus() > 1) {// 录用状态:0无状态 1通知面试 2录用  3不合格
+                    return returnData(StatusCode.CODE_MATCHING_REPEAT.CODE_VALUE, "新增职位申请失败！您与要申请的职位不匹配，再看看其他的职位吧!", new JSONObject());
                 }
             }
-            workApplyRecord.setAddTime(date);
-            workApplyRecord.setRefreshTime(date);
-            workApplyRecord.setCompanyId(is.getUserId());
-
-            workRecruitService.addApplyRecord(workApplyRecord);
-
-            //更新招聘信息投递数
-            is.setDeliveryNumber(is.getDeliveryNumber() + 1);
-            workRecruitService.updateDeliveryNumber(is);
-
-            //更新简历主动投递数
-            is2.setDelivery(is2.getDelivery() + 1);
-            workResumeService.updateDelivery(is2);
         }
+        workApplyRecord.setAddTime(date);
+        workApplyRecord.setRefreshTime(date);
+        workApplyRecord.setCompanyId(is.getUserId());
+
+        workRecruitService.addApplyRecord(workApplyRecord);
+
+        //更新招聘信息投递数
+        is.setDeliveryNumber(is.getDeliveryNumber() + 1);
+        workRecruitService.updateDeliveryNumber(is);
+
+        //更新简历主动投递数
+        is2.setDelivery(is2.getDelivery() + 1);
+        workResumeService.updateDelivery(is2);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", workApplyRecord.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);

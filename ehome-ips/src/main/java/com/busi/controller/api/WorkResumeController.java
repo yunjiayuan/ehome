@@ -231,12 +231,22 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         //判断是否是自己的简历（或以企业的身份下载过此份简历，或被投递过）并返回手机邮箱
         WorkDowRecord wd = null;
         wd = workResumeService.findDowRecord(CommonUtils.getMyId(), id);
-        WorkApplyRecord record = workResumeService.findApplyRecord(CommonUtils.getMyId(), id);
-        if (wd != null || is.getUserId() == CommonUtils.getMyId() || record != null) {
+//        WorkApplyRecord record = workResumeService.findApplyRecord(CommonUtils.getMyId(), id);  //此处会返回多条记录 应聘者可能投递对个职位
+//        if (wd != null || is.getUserId() == CommonUtils.getMyId() || record != null) {
+//            if (userAccountSecurity != null) {
+//                if (record != null) {
+//                    employmentStatus = record.getEmploymentStatus();
+//                }
+//                is.setEmail(userAccountSecurity.getEmail());
+//                is.setContactsPhone(userAccountSecurity.getPhone());
+//            }
+//        }
+//        WorkApplyRecord record = workResumeService.findApplyRecord(CommonUtils.getMyId(), id);
+        if (wd != null || is.getUserId() == CommonUtils.getMyId() ) {
             if (userAccountSecurity != null) {
-                if (record != null) {
-                    employmentStatus = record.getEmploymentStatus();
-                }
+//                if (record != null) {
+//                    employmentStatus = record.getEmploymentStatus();
+//                }
                 is.setEmail(userAccountSecurity.getEmail());
                 is.setContactsPhone(userAccountSecurity.getPhone());
             }

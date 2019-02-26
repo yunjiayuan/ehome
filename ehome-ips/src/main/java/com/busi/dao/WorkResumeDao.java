@@ -231,7 +231,7 @@ public interface WorkResumeDao {
      */
     @Update("<script>" +
             "update workResume set" +
-            " integrity=#{integrity}" +
+            " integrity=#{integrity}," +
             " browseAmount=#{browseAmount}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
