@@ -902,10 +902,10 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
                 //放入缓存
                 map = CommonUtils.objectToMap(posts);
                 redisUtils.hmset(Constants.REDIS_KEY_IPS_WORKDOWNLOAD + workDowRecord.getCompanyId() + "_" + workDowRecord.getResumeId(), map, Constants.USER_TIME_OUT);
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "已下载过简历", new JSONObject());
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经下载过该简历了", new JSONObject());
             }
         } else {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "已下载过简历", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经下载过该简历了", new JSONObject());
         }
         //获取会员等级 根据用户会员等级 获取最大次数 后续添加
         UserMembership memberMap = userMembershipUtils.getUserMemberInfo(CommonUtils.getMyId());
@@ -980,6 +980,9 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             is1.setEnterpriseFeedback(1);
             is1.setDowtype(1);
             workResumeService.addApplyRecord(is1);
+
+            //更缓存中的简历下载记录对照关系
+            redisUtils.hmset(Constants.REDIS_KEY_IPS_WORKDOWNLOAD + workDowRecord.getCompanyId() + "_" + workDowRecord.getResumeId(), map, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -1005,9 +1008,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         }
         //判断该用户是否有过简历下载次数记录
         WorkDowLimit walk = workResumeService.findDowLimit(userId);
-        if (walk == null) {
-            numLimit = Constants.DOWRESUME_COUNT; //每天次数限制
-        } else {
+        if (walk != null) {
             if (walk.getDowResumeTimes() <= 0) {//次数用尽
                 return returnData(StatusCode.CODE_DOWRESUME_TOPLIMIT.CODE_VALUE, "下载简历操作失败，今日下载简历次数已用完！", new JSONObject());
             }

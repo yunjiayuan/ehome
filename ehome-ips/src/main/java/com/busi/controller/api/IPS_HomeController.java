@@ -227,10 +227,11 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         OtherPosts posts = null;
         UsedDeal usedDeal = null;
         SearchGoods searchGoods = null;
-        IPS_Home ipsHome = new IPS_Home();
+        IPS_Home ipsHome = null;
         LoveAndFriends loveAndFriends = null;
         list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
         if (afficheType == 1) { //婚恋交友
+            ipsHome = new IPS_Home();
             loveAndFriends = loveAndFriendsService.findByIdUser(userId);
             if (loveAndFriends == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -262,6 +263,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + infoId, 0);
         }
         if (afficheType == 2) {//二手手机
+            ipsHome = new IPS_Home();
             usedDeal = usedDealService.findUserById(infoId);
             if (usedDeal == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -293,6 +295,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + infoId, 0);
         }
         if (afficheType == 3 || afficheType == 4 || afficheType == 5) {//寻人,寻物，失物招领
+            ipsHome = new IPS_Home();
             searchGoods = searchGoodsService.findUserById(infoId);
             if (searchGoods == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -324,6 +327,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + infoId, 0);
         }
         if (afficheType == 6) { //其他
+            ipsHome = new IPS_Home();
             posts = otherPostsService.findUserById(infoId);
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -352,13 +356,29 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             }
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + infoId, 0);
+        }else if(afficheType == 7){//发布招聘
+            ipsHome = new IPS_Home();
+            //等待完善...
+
+
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }else if(afficheType == 8){//发布招聘
+            ipsHome = new IPS_Home();
+            //等待完善...
+
+
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }else{
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        //放入缓存
-        redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
-        if (list.size() == 101) {
-            //清除缓存中的信息
-            redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
-            redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+        if(ipsHome!=null){//防止脏数据进入缓存
+            //放入缓存
+            redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
+            if (list.size() == 101) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_IPS_HOMELIST, 0);
+                redisUtils.pushList(Constants.REDIS_KEY_IPS_HOMELIST, list, 0);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
