@@ -219,6 +219,7 @@ public class Constants {
     public static final String REDIS_KEY_IPS_WORKRESUME = "ips_workResume_";//userId与简历对象的关系对照
     public static final String REDIS_KEY_IPS_WORKRECRUIT = "ips_workRecruit_";//userId与招聘对象的关系对照
     public static final String REDIS_KEY_IPS_WORKDOWNLOAD = "ips_workDownload_";//企业与被下载简历对象的关系对照
+    public static final String REDIS_KEY_KITCHEN = "kitchen_";//厨房关系对照
 
 
     //redis 2库相关key配置(otherServer)
