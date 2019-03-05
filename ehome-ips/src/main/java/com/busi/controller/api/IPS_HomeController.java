@@ -3,10 +3,7 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.LoveAndFriendsService;
-import com.busi.service.OtherPostsService;
-import com.busi.service.SearchGoodsService;
-import com.busi.service.UsedDealService;
+import com.busi.service.*;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +36,12 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
 
     @Autowired
     UsedDealService usedDealService;
+
+    @Autowired
+    WorkResumeService workResumeService;
+
+    @Autowired
+    WorkRecruitService workRecruitService;
 
     /***
      * 查询接口
@@ -228,6 +231,8 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         UsedDeal usedDeal = null;
         SearchGoods searchGoods = null;
         IPS_Home ipsHome = null;
+        WorkResume resume = null;
+        WorkRecruit recruit = null;
         LoveAndFriends loveAndFriends = null;
         list = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 101);
         if (afficheType == 1) { //婚恋交友
@@ -261,8 +266,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             }
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + infoId, 0);
-        }
-        if (afficheType == 2) {//二手手机
+        } else if (afficheType == 2) {//二手手机
             ipsHome = new IPS_Home();
             usedDeal = usedDealService.findUserById(infoId);
             if (usedDeal == null) {
@@ -293,8 +297,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             }
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + infoId, 0);
-        }
-        if (afficheType == 3 || afficheType == 4 || afficheType == 5) {//寻人,寻物，失物招领
+        } else if (afficheType == 3 || afficheType == 4 || afficheType == 5) {//寻人,寻物，失物招领
             ipsHome = new IPS_Home();
             searchGoods = searchGoodsService.findUserById(infoId);
             if (searchGoods == null) {
@@ -325,8 +328,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             }
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + infoId, 0);
-        }
-        if (afficheType == 6) { //其他
+        } else if (afficheType == 6) { //其他
             ipsHome = new IPS_Home();
             posts = otherPostsService.findUserById(infoId);
             if (posts == null) {
@@ -356,22 +358,28 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             }
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_OTHERPOSTS + infoId, 0);
-        }else if(afficheType == 7){//发布招聘
-            ipsHome = new IPS_Home();
-            //等待完善...
-
-
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-        }else if(afficheType == 8){//发布招聘
-            ipsHome = new IPS_Home();
-            //等待完善...
-
+        } else if (afficheType == 7) {//发布招聘
+            resume = workResumeService.findById(infoId);
+            if (resume == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            resume.setRefreshTime(new Date());
+            workResumeService.updateTime(resume);
 
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-        }else{
+        } else if (afficheType == 8) {//发布招聘
+            recruit = workRecruitService.findRecruit(infoId);
+            if (recruit == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            recruit.setRefreshTime(new Date());
+            workRecruitService.refreshRecruit(recruit);
+
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        } else {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        if(ipsHome!=null){//防止脏数据进入缓存
+        if (ipsHome != null) {//防止脏数据进入缓存
             //放入缓存
             redisUtils.addListLeft(Constants.REDIS_KEY_IPS_HOMELIST, ipsHome, 0);
             if (list.size() == 101) {

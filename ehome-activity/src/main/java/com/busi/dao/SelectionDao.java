@@ -205,7 +205,7 @@ public interface SelectionDao {
             " and id=#{infoId} and selectionType=#{selectionType}" +
             "</if>" +
             "<if test=\"s_name != null and s_name != '' and searchType == 2 \">" +
-            " and s_name LIKE #{s_name} and selectionType=#{selectionType}" +
+            " and s_name LIKE CONCAT('%',#{s_name},'%') and selectionType=#{selectionType}" +
             "</if>" +
             "</script>")
     List<SelectionActivities> findsSelectionList3(@Param("searchType") int searchType, @Param("selectionType") int selectionType, @Param("findType") int findType, @Param("infoId") long infoId, @Param("s_name") String s_name);

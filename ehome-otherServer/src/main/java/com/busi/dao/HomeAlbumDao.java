@@ -236,7 +236,7 @@ public interface HomeAlbumDao {
             "<if test=\"roomType > -1\">" +
             " and roomType=#{roomType}" +
             "</if>" +
-            " and name LIKE #{name}" +
+            " and name LIKE CONCAT('%',#{name},'%')" +
             " and albumState=0" +
             " and userId=#{userId}" +
             " order by createTime desc" +
@@ -272,7 +272,7 @@ public interface HomeAlbumDao {
     @Select("<script>" +
             "select * from HomeAlbumPic" +
             " where 1=1" +
-            " and name LIKE #{name}" +
+            " and name LIKE CONCAT('%',#{name},'%')" +
             " and picState=0" +
             " and userId=#{userId}" +
             " order by time desc" +

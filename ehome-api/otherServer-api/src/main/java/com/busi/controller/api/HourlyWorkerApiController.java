@@ -57,15 +57,14 @@ public interface HourlyWorkerApiController {
      * @param userId   用户ID
      * @param lat      纬度
      * @param lon      经度
-     * @param raidus   半径
      * @param name     用户名
      * @param page     页码
      * @param count    条数
      * @param sortType 排序类型：默认【0综合排序】   0综合排序  1距离最近  2服务次数最高  3评分最高
      * @return
      */
-    @GetMapping("findHourlyList/{userId}/{sortType}/{raidus}/{name}/{lat}/{lon}/{page}/{count}")
-    ReturnData findHourlyList(@PathVariable long userId, @PathVariable int sortType, @PathVariable int raidus, @PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findHourlyList/{userId}/{sortType}/{name}/{lat}/{lon}/{page}/{count}")
+    ReturnData findHourlyList(@PathVariable long userId, @PathVariable int sortType, @PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 检测实名状态
@@ -149,7 +148,6 @@ public interface HourlyWorkerApiController {
      */
     @PostMapping("addHourlyType")
     ReturnData addHourlyType(@Valid @RequestBody HourlyWorkerEvaluate hourlyWorkerEvaluate, BindingResult bindingResult);
-
 
 
 }

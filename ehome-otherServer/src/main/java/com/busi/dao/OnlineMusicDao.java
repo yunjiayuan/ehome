@@ -40,8 +40,8 @@ public interface OnlineMusicDao {
     @Select("<script>" +
             "select * from OnlineMusic" +
             " where 1=1" +
-            " and singer LIKE #{name}" +
-            " or songName LIKE #{name}" +
+            " and singer LIKE CONCAT('%',#{name},'%')" +
+            " or songName LIKE CONCAT('%',#{name},'%')" +
             " order by grade,id desc" +
             "</script>")
     List<OnlineMusic> findPaging(@Param("name") String name);
