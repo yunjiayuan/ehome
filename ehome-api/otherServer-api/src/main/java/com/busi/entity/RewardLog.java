@@ -1,0 +1,38 @@
+package com.busi.entity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.util.Date;
+
+/**
+ * 用户奖励统计记录总表 包含红包雨奖励、新用户注册奖励、生活圈小视频奖励等其他活动类奖励
+ */
+@Setter
+@Getter
+public class RewardLog {
+
+  private long id;//主键ID
+
+  @Min(value = 1, message = "userId参数有误")
+  private long userId;//用户ID
+
+  @Min(value = 0, message = "rewardType参数有误，数值超出指定范围")
+  @Max(value = 6, message = "rewardType参数有误，数值超出指定范围")
+  private int rewardType;//奖励类型 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
+
+  @Min(value = 0, message = "rewardMoneyType参数有误，数值超出指定范围")
+  @Max(value = 0, message = "rewardMoneyType参数有误，数值超出指定范围")
+  private int rewardMoneyType;//奖励金额类型 0表示人民币  1表示其他（预留）
+
+  @DecimalMax(value = "8888",message = "rewardMoney参数有误，已超出最大奖励金额")
+  @DecimalMin(value = "0.00",message = "rewardMoney参数有误，奖励金额不能小于0")
+  private double rewardMoney;//奖励的具体金额
+
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+  private Date time;//奖励时间
+
+}
