@@ -155,6 +155,16 @@ public class UserInfoService {
     }
 
     /***
+     * 修改生活圈首次视频发布状态
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateHomeBlogStatus(UserInfo userInfo) {
+        return userInfoDao.updateHomeBlogStatus(userInfo);
+    }
+
+    /***
      * 修改新用户系统欢迎消息状态接口
      * @param userInfo
      * @return

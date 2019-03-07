@@ -32,6 +32,14 @@ public interface UserInfoLocalController {
     ReturnData updateIsNew(@RequestBody UserInfo userInfo);
 
     /***
+     * 更新生活圈首次视频发布状态
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateHomeBlogStatus")
+    ReturnData updateHomeBlogStatus(@RequestBody UserInfo userInfo);
+
+    /***
      * 更新用户手机号绑定状态
      * @param userInfo
      * @return
