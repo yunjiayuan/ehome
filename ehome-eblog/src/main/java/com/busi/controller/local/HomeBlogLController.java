@@ -24,6 +24,9 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
     @Autowired
     RedisUtils redisUtils;
 
+    @Autowired
+    MqUtils mqUtils;
+
     /***
      * 更新生活圈接口
      * @param homeBlog
@@ -96,6 +99,59 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
                 if(hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
                     redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
                 }
+            }
+        }
+        //判断是否该给用户发送奖励  此活动结束后 将一下代码注释即可
+        if(hb.getSendType()==2){//必须为视频
+            double rewardMoney = 0;//奖励金额
+            int rewardType = -1;//4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
+            double[] moneyArray = new double[10000];//奖池 可自定义奖池大小
+            Random random = new Random();
+            if(hb.getLikeCount()==Constants.REWARD_EBLOG_LIKE_COUNT_10000){
+                //大区间为20-30  实际20-25居多
+                //开始构建奖池
+                for(int i=0;i<10000;i++){
+                    moneyArray[i] = (random.nextInt(501) + 2000)/100.0;
+                }
+                //向奖池中添加20-30区间的红包 千分之一概率
+                for(int i=0;i<10;i++){
+                    moneyArray[random.nextInt(10000)] = (random.nextInt(1001) + 2000)/100.0;
+                }
+                //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+                //奖池构建完成 开始随机取值
+                rewardMoney = moneyArray[random.nextInt(10000)];
+                rewardType = 6;
+            }else if(hb.getLikeCount()==Constants.REWARD_EBLOG_LIKE_COUNT_100){
+                //大区间为5-10  实际5-5.5居多
+                //开始构建奖池
+                for(int i=0;i<10000;i++){
+                    moneyArray[i] = (random.nextInt(51) + 500)/100.0;
+                }
+                //向奖池中添加5-10区间的红包 千分之一概率
+                for(int i=0;i<10;i++){
+                    moneyArray[random.nextInt(10000)] = (random.nextInt(501) + 500)/100.0;
+                }
+                //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+                //奖池构建完成 开始随机取值
+                rewardMoney = moneyArray[random.nextInt(10000)];
+                rewardType = 5;
+            }else if(hb.getLikeCount()==Constants.REWARD_EBLOG_LIKE_COUNT_10){
+                //大区间为1-3  实际1-1.5居多
+                //开始构建奖池
+                for(int i=0;i<10000;i++){
+                    moneyArray[i] = (random.nextInt(51) + 100)/100.0;
+                }
+                //向奖池中添加1-3区间的红包 千分之一概率
+                for(int i=0;i<10;i++){
+                    moneyArray[random.nextInt(10000)] = (random.nextInt(201) + 100)/100.0;
+                }
+                //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+                //奖池构建完成 开始随机取值
+                rewardMoney = moneyArray[random.nextInt(10000)];
+                rewardType = 4;
+            }
+            if(rewardType>0){
+                mqUtils.addRewardLog(hb.getUserId(),rewardType,0,rewardMoney);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());

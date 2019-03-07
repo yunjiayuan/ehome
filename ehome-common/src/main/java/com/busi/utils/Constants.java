@@ -147,6 +147,9 @@ public class Constants {
 
     /** 用户奖励提现金额的最低限制 配置 开始**/
     public static final int REWARD_TOTAL_MONEY = 50;//例如 满50元可以提现到钱包
+    public static final int REWARD_EBLOG_LIKE_COUNT_10 = 10;//点赞数临界值 超过临界值 自动奖励用户红包
+    public static final int REWARD_EBLOG_LIKE_COUNT_100 = 100;//点赞数临界值 超过临界值 自动奖励用户红包
+    public static final int REWARD_EBLOG_LIKE_COUNT_10000 = 10000;//点赞数临界值 超过临界值 自动奖励用户红包
     /** 用户奖励提现金额的最低限制 结束**/
 
     /** redis配置 开始**/
