@@ -5,7 +5,6 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.validation.BindingResult;
@@ -149,6 +148,40 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             if(homeBlog.getOrigUserId()!=homeBlog.getUserId()){
                 mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,0,homeBlog.getReprintContent(),3);
             }
+        }
+        //对首次视频类型的生活圈进行处理
+        if(homeBlog.getBlogType()==0&&homeBlog.getSendType()==2){
+            UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
+            if(userInfo==null){
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+            }
+            if(userInfo.getHomeBlogStatus()!=0){
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+            }
+            //奖励首次发布视频红包 红包区间4-4.5居多
+            double rewardMoney = 0;//奖励金额
+            double[] moneyArray = new double[10000];//奖池 可自定义奖池大小
+            Random random = new Random();
+            //开始构建奖池
+            for(int i=0;i<10000;i++){
+                moneyArray[i] = (random.nextInt(51) + 400)/100.0;
+            }
+            //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+//            moneyArray[random.nextInt(10000)] = 88;
+//            moneyArray[random.nextInt(10000)] = 88.88;
+//            moneyArray[random.nextInt(10000)] = 16.88;
+//            moneyArray[random.nextInt(10000)] = 66;
+//            moneyArray[random.nextInt(10000)] = 66.66;
+            //奖池构建完成 开始随机取值
+            rewardMoney = moneyArray[random.nextInt(10000)];
+            mqUtils.addRewardLog(homeBlog.getUserId(),3,0,rewardMoney);
+            //更新用户状态
+            userInfo.setHomeBlogStatus(1);//改为：已发送
+            userInfoUtils.updateHomeBlogStatus(userInfo);
+            Map<String,Object> map = new HashMap();
+            map.put("homeBlogStatus",1);//0表示不显示首次发视频红包 1表示显示首次发视频红包
+            map.put("rewardMoney",rewardMoney+"");//红包金额
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }

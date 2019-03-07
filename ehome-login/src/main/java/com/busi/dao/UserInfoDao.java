@@ -255,6 +255,19 @@ public interface UserInfoDao {
             "</script>")
     int updateIsNewUser(UserInfo userInfo);
 
+    /**
+     * 修改生活圈首次视频发布状态
+     *
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set" +
+            " homeBlogStatus=#{homeBlogStatus}" +
+            " where userId=#{userId}" +
+            "</script>")
+    int updateHomeBlogStatus(UserInfo userInfo);
+
     /***
      * 更新用户手机绑定状态
      * @param userInfo

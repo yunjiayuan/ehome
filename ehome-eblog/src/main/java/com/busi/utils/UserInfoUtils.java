@@ -4,6 +4,8 @@ import com.busi.entity.UserInfo;
 import com.busi.fegin.UserInfoLocalControllerFegin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.Map;
 
 /**
@@ -34,5 +36,14 @@ public class UserInfoUtils {
             userInfo = (UserInfo) CommonUtils.mapToObject(userMap,UserInfo.class);
         }
         return userInfo;
+    }
+
+    /***
+     * 更新用户生活圈首次发布视频标识
+     * @param userInfo
+     * @return
+     */
+    public void updateHomeBlogStatus(@RequestBody UserInfo userInfo) {
+        userInfoLocalControllerFegin.updateHomeBlogStatus(userInfo);
     }
 }

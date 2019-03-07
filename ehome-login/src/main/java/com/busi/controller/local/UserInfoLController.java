@@ -75,6 +75,28 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
     }
 
     /***
+     * 更新生活圈首次视频发布状态
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData updateHomeBlogStatus(@RequestBody UserInfo userInfo) {
+
+        int count = userInfoService.updateHomeBlogStatus(userInfo);
+        if (count <= 0) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "更新生活圈首次视频发布状态失败", new JSONObject());
+        }
+        //更新缓存数据
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+        if (userMap != null && userMap.size() > 0) {//缓存中存在 才更新 不存在不更新
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER + userInfo.getUserId(), "homeBlogStatus", userInfo.getHomeBlogStatus(), Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER + userInfo.getUserId(), Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 更新用户手机号绑定状态
      * @param userInfo
      * @return

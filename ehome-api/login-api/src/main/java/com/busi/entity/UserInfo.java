@@ -126,6 +126,10 @@ public class UserInfo {
 	@Min(value= 0 ,message= "welcomeInfoStatus参数有误，超出指定范围")
 	private int welcomeInfoStatus;//系统欢迎消息状态 0表示未发送  1表示已发送
 
+	@Max(value = 1, message = "homeBlogStatus参数有误，超出指定范围")
+	@Min(value= 0 ,message= "homeBlogStatus参数有误，超出指定范围")
+	private int homeBlogStatus;//生活圈首次视频发布状态 0表示未发送  1表示已发送
+
 	@Max(value = 3, message = "访问权限参数有误，超出指定范围")
 	@Min(value= 0 ,message= "访问权限参数有误，超出指定范围")
 	private int accessRights;//访问权限 1允许任何人  2禁止任何人  3 仅好友访问权限
