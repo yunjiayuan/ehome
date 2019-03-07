@@ -66,6 +66,12 @@ public class ConsumerDistribute {
     @Autowired
     private HomeBlogCommentService homeBlogCommentService;//更新生活圈评论的回复数
 
+    @Autowired
+    private RewardLogService rewardLogService;//新增用户奖励记录
+
+    @Autowired
+    private RewardTotalMoneyLogService rewardTotalMoneyLogService;//更新用户奖励总金额记录
+
     /***
      * 监听消息
      * 消息格式：
@@ -83,7 +89,7 @@ public class ConsumerDistribute {
      *               4:表示用户访问量信息同步 5:表示同步图片删除 6:同步任务系统 7:表示更新钱包余额和钱包明细
      *               8:表示公告系统同步浏览量 9表示新增足迹  10手机号或第三方平台新用户注册时同步安全中心
      *               11:更新粉丝数 12: 更新生活圈评论数、点赞数、浏览量、转发量 13: 新增生活圈消息
-     *               14: 更新生活圈评论的回复数...
+     *               14: 更新生活圈评论的回复数 15: 新增用户奖励记录 16: 更新用户奖励总金额记录...
      * content 中的内容，根据具体业务自定义
      * @param json
      * @param textMessage
@@ -158,6 +164,12 @@ public class ConsumerDistribute {
                     break;
                 case "14"://14: 更新生活圈评论的回复数
                     messageAdapter = homeBlogCommentService;
+                    break;
+                case "15"://15: 新增用户奖励记录
+                    messageAdapter = rewardLogService;
+                    break;
+                case "16"://16: 更新用户奖励总金额记录
+                    messageAdapter = rewardTotalMoneyLogService;
                     break;
                 default://异常
                     log.info("消息服务平台操作失败，请求参数有误interfaceType:" + interfaceType);

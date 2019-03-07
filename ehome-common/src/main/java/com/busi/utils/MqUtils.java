@@ -47,7 +47,7 @@ public class MqUtils {
      */
     public void sendDeleteImageMQ(long userId,String delImageUrls){
 
-        //调用MQ同步 图片到图片删除记录表
+        //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", "5");//interfaceType 5删除图片
@@ -69,7 +69,7 @@ public class MqUtils {
      */
     public void sendTaskMQ(long userId, int taskType, long sortTask){
 
-        //调用MQ同步 图片到图片删除记录表
+        //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", "6");//interfaceType 5同步任务系统
@@ -171,7 +171,7 @@ public class MqUtils {
      */
     public void sendFootmarkMQ(long userId,String title,String imgUrl,String videoUrl,String audioUrl,String infoId,int footmarkType){
 
-        //调用MQ同步 图片到图片删除记录表
+        //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", "9");//interfaceType 9同步足迹系统
@@ -200,7 +200,7 @@ public class MqUtils {
      */
     public void sendUserAccountSecurityMQ(long userId,String phone,int otherPlatformType,String otherPlatformAccount,String otherPlatformKey){
 
-        //调用MQ同步 图片到图片删除记录表
+        //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", "10");//interfaceType 10同步安全中心
@@ -224,7 +224,7 @@ public class MqUtils {
      */
     public void updateFollowCounts(long userId,int followCounts){
 
-        //调用MQ同步 图片到图片删除记录表
+        //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", "11");//interfaceType 11更新粉丝数
@@ -247,7 +247,7 @@ public class MqUtils {
      */
     public void updateBlogCounts(long userId,long blogId,int type,int count){
 
-        //调用MQ同步 图片到图片删除记录表
+        //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", "12");//interfaceType 12更新生活圈评论数、点赞数、浏览量、转发量
@@ -302,13 +302,57 @@ public class MqUtils {
      */
     public void updateCommentCounts(long commentId,int count){
 
-        //调用MQ同步 图片到图片删除记录表
+        //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", "14");//interfaceType 14更新生活圈 评论回复数
         JSONObject content = new JSONObject();
         content.put("commentId",commentId);
         content.put("count",count);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
+
+    /***
+     * 新增用户奖励记录
+     * @param userId          用户ID
+     * @param rewardType      奖励类型 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
+     * @param rewardMoneyType 奖励金额类型 0表示人民币  1表示其他（预留）
+     * @param rewardMoney     奖励的具体金额
+     */
+    public void addRewardLog(long userId,int rewardType,int rewardMoneyType,double rewardMoney){
+        //调用MQ同步
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "15");//interfaceType 15新增用户奖励记录
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("rewardType",rewardType);
+        content.put("rewardMoneyType",rewardMoneyType);
+        content.put("rewardMoney",rewardMoney);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
+
+    /***
+     * 更新奖励总金额
+     * @param userId           用户ID
+     * @param rewardTotalMoney 奖励的总金额
+     */
+    public void updateTotalRewardMoney(long userId,double rewardTotalMoney){
+        //调用MQ同步
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "16");//interfaceType 16更新用户奖励总金额记录
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);
+        content.put("rewardTotalMoney",rewardTotalMoney);
         root.put("header", header);
         root.put("content", content);
         String sendMsg = root.toJSONString();
