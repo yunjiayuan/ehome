@@ -145,6 +145,9 @@ public class Constants {
     /**全国114家快递方式对照数组**/
     public static final String[] expressModeArray = {"sf,顺丰速运","yt,圆通速递","sto,申通快递","zt,中通快递","yd,韵达快递","ems,EMS","post,中国邮政","zjs,宅急送","qf,全峰快递","sut,速通物流","tt,天天快递","ht,百世快递","jd,京东快递","jj,佳吉快运","jy,佳怡物流","kj,快捷快递","kk,京广速递","lb,龙邦快运","lht,联昊通速递","qrt,全日通快递","sad,赛澳递","se,速尔快递","wx,万象物流","xb,新邦物流","yc,远成物流","ys,优速快递","af,亚风快运","city100,城市100","qy,全一快递","rfd,如风达","fedex,中国联邦快递","dhl,dhl中国","zy,增益速递","dp,德邦","ane,安能物流","rrs,日日顺物流","sn,苏宁快递","hmj,黄马甲物流","xy,心怡物流","fedexInter,联邦国际","tdhy,天地华宇","hw,汇文配送","dtd,门对门","ql,青旅物流","ezs,速达快递","zzjh,郑州建华","gcex,飞洋快递","aae,aae全球速递","aol,aol澳通速递","jde,骏达快递","ky,跨越速运","sh,盛辉物流","wt,运通速运","xd,迅达速递","yad,源安达快递","yhc,1号仓","cnp,中邮快递","hre,高铁速递","gt,国通快递","pj,品骏（唯品会）","ups,中国UPS","cb,晟邦物流","bt,奔腾物流","dd,大达物流","dt,大田物流","xf,信丰物流","bdt,八达通","ax,安迅物流","zs,准实快运","ccd,次晨达物流","cg,程光快递","ch,春辉物流","cky,出口易跨境物流","cl,City-link","coe,东方快递","ct,诚通物流","cx,传喜物流","yx,宇鑫物流","dby,迪比翼快递","ddw,大道物流","df,德方物流","efs,EFSPOST","ewe,EWE全球快递","fb,飞豹快运","fd,Fardar","fy,飞鹰物流","gd,冠达快递","ge,环球速运","gk,港快速递","hl,恒路物流","hly,好来运快递","hq,华企快运","yw,燕文物流","ydt,易达通快递","ymx,亚马逊物流","ykm,易客满","yhx,一号线国际速递","ucs,UCS合众速递","tnt,TNT","jg,景光物流","jhe,佳惠尔快递物流","ld,林道国际","ljs,立即送","max,澳洲迈速","ml,明亮物流","oto,中欧快运","pad,平安达腾飞快递","ry,日昱物流","sa,圣安物流","sj,速捷快递","sjfd,顺捷丰达速运","sjwl,穗佳物流","suf,速方国际物流"};
 
+    /** 用户奖励提现金额的最低限制 配置 开始**/
+    public static final int REWARD_TOTAL_MONEY = 50;//例如 满50元可以提现到钱包
+    /** 用户奖励提现金额的最低限制 结束**/
 
     /** redis配置 开始**/
     //redis 0库相关key配置(USER)
