@@ -201,7 +201,8 @@ public class SharingPromotionController extends BaseController implements Sharin
             }
             //更新分享者钱包余额和钱包明细
             mqUtils.sendPurseMQ(userId, 4, 0, redPacketsMoney);
-
+            //新增用户奖励记录
+            mqUtils.addRewardLog(userId, 2, 0, redPacketsMoney);
             //新增分享者红包记录
             ShareRedPacketsInfo srp = new ShareRedPacketsInfo();
             srp.setBeSharedUserId(myId);
@@ -218,7 +219,8 @@ public class SharingPromotionController extends BaseController implements Sharin
 
         //更新新人钱包余额和钱包明细
         mqUtils.sendPurseMQ(myId, 4, 0, redPacketsMoney);
-
+        //新增用户奖励记录
+        mqUtils.addRewardLog(myId, 1, 0, redPacketsMoney);
         //更新用户状态
         if (userInfo != null) {
             userInfo.setIsNewUser(1);

@@ -120,7 +120,8 @@ public class RedBagRainController extends BaseController implements RedBagRainAp
 
         //更新钱包余额和钱包明细
         mqUtils.sendPurseMQ(myId, 4, 0, spareMoney);
-
+        //新增用户奖励记录
+        mqUtils.addRewardLog(myId, 0, 0, spareMoney);
         //添加记录
         RedBagRain rain = new RedBagRain();
         rain.setUserId(myId);
