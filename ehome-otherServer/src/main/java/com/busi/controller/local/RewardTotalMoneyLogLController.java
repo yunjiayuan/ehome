@@ -22,7 +22,7 @@ public class RewardTotalMoneyLogLController extends BaseController implements Re
     RewardTotalMoneyLogService rewardTotalMoneyLogService;
 
     /***
-     * 修改奖励总金额记录 无记录时新增
+     * 修改奖励总金额记录 无记录时新增(已停用)
      * @param rewardTotalMoneyLog
      * @return
      */

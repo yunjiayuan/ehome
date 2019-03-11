@@ -345,19 +345,19 @@ public class MqUtils {
      * @param userId           用户ID
      * @param rewardTotalMoney 奖励的总金额
      */
-    public void updateTotalRewardMoney(long userId,double rewardTotalMoney){
-        //调用MQ同步
-        JSONObject root = new JSONObject();
-        JSONObject header = new JSONObject();
-        header.put("interfaceType", "16");//interfaceType 16更新用户奖励总金额记录
-        JSONObject content = new JSONObject();
-        content.put("userId",userId);
-        content.put("rewardTotalMoney",rewardTotalMoney);
-        root.put("header", header);
-        root.put("content", content);
-        String sendMsg = root.toJSONString();
-        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
-        MQProducer.sendMsg(activeMQQueue,sendMsg);
-    }
+//    public void updateTotalRewardMoney(long userId,double rewardTotalMoney){
+//        //调用MQ同步
+//        JSONObject root = new JSONObject();
+//        JSONObject header = new JSONObject();
+//        header.put("interfaceType", "16");//interfaceType 16更新用户奖励总金额记录
+//        JSONObject content = new JSONObject();
+//        content.put("userId",userId);
+//        content.put("rewardTotalMoney",rewardTotalMoney);
+//        root.put("header", header);
+//        root.put("content", content);
+//        String sendMsg = root.toJSONString();
+//        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+//        MQProducer.sendMsg(activeMQQueue,sendMsg);
+//    }
 
 }
