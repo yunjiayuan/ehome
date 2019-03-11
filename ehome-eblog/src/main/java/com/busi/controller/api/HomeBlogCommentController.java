@@ -308,7 +308,7 @@ public class HomeBlogCommentController extends BaseController implements HomeBlo
                         }
                     }
                     //更新缓存
-                    redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList2, 0);
+                    redisUtils.pushList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, commentList2, Constants.USER_TIME_OUT);
                     //获取最新缓存
                     commentList = redisUtils.getList(Constants.REDIS_KEY_EBLOG_COMMENT + blogId, (page - 1) * count, page * count);
                 }
