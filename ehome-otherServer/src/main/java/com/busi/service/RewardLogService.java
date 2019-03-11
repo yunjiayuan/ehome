@@ -33,6 +33,17 @@ public class RewardLogService {
     }
 
     /***
+     * 更新奖励记录未读状态
+     * @param userId 将要被更新的用户ID
+     * @param ids    将要被更新的记录ID组合 格式 1,2,3
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateIsNew(long userId ,String ids) {
+        return rewardLogDao.updateIsNew(userId,ids.split(","));
+    }
+
+    /***
      * 查询指定用户的奖励列表
      * @param userId  用户ID
      * @param rewardType  奖励类型 -1所以 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励

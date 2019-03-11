@@ -36,10 +36,29 @@ public class RewardLogController extends BaseController implements RewardLogApiC
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
+        //验证权限
+        if (CommonUtils.getMyId() != userId) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作用户[" + userId + "]的系统奖励信息", new JSONObject());
+        }
         PageBean<RewardLog> pageBean;
         pageBean = rewardLogService.findList(userId, rewardType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        //已读状态
+        String ids = "";
+        for (int i = 0; i < pageBean.getList().size(); i++) {
+            RewardLog rewardLog = pageBean.getList().get(i);
+            if(rewardLog!=null&&rewardLog.getIsNew()==0){
+                if(i==pageBean.getList().size()-1){
+                    ids += rewardLog.getIsNew();
+                }else{
+                    ids += rewardLog.getIsNew()+",";
+                }
+            }
+        }
+        if(!CommonUtils.checkFull(ids)){
+            rewardLogService.updateIsNew(userId,ids);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }

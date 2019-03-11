@@ -19,10 +19,27 @@ public interface RewardLogDao {
      * @param rewardLog
      * @return
      */
-    @Insert("insert into rewardLog(userId,rewardType,rewardMoneyType,rewardMoney,time) " +
-            "values (#{userId},#{rewardType},#{rewardMoneyType},#{rewardMoney},#{time})")
+    @Insert("insert into rewardLog(userId,rewardType,rewardMoneyType,isNew,rewardMoney,time) " +
+            "values (#{userId},#{rewardType},#{rewardMoneyType},#{isNew},#{rewardMoney},#{time})")
     @Options(useGeneratedKeys = true)
     int add(RewardLog rewardLog);
+
+    /***
+     * 更新奖励记录未读状态
+     * @param userId 将要被更新的用户ID
+     * @param ids    将要被更新的记录ID组合 格式 1,2,3
+     * @return
+     */
+    @Update("<script>" +
+            "update rewardLog set" +
+            " isNew=1" +
+            " where userId=#{userId}" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int updateIsNew(@Param("userId") long userId, @Param("ids") String[] ids);
 
     /***
      * 查询指定用户的奖励列表

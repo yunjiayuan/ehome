@@ -32,6 +32,10 @@ public class RewardLog {
   @DecimalMin(value = "0.00",message = "rewardMoney参数有误，奖励金额不能小于0")
   private double rewardMoney;//奖励的具体金额
 
+  @Min(value = 0, message = "isNew参数有误，数值超出指定范围")
+  @Max(value = 1, message = "isNew参数有误，数值超出指定范围")
+  private int isNew;//是否为新的 0未读新记录 1已读记录
+
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date time;//奖励时间
 

@@ -36,7 +36,8 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
         }
         RewardTotalMoneyLog rewardTotalMoneyLog = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfo(userId);
         if(rewardTotalMoneyLog==null){
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            rewardTotalMoneyLog = new RewardTotalMoneyLog();
+            rewardTotalMoneyLog.setUserId(userId);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", rewardTotalMoneyLog);
     }

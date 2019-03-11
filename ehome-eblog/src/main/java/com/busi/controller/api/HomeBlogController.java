@@ -158,17 +158,17 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             if(userInfo.getHomeBlogStatus()!=0){
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
             }
-            //奖励首次发布视频红包 3-5 红包区间3-4居多
+            //奖励首次发布视频红包 3-5 红包区间3-3.5居多
             double rewardMoney = 0;//奖励金额
             double[] moneyArray = new double[10000];//奖池 可自定义奖池大小
             Random random = new Random();
             //开始构建奖池
             for(int i=0;i<10000;i++){
-                moneyArray[i] = (random.nextInt(101) + 300)/100.0;
+                moneyArray[i] = (random.nextInt(51) + 300)/100.0;
             }
-            //奖池中添加4-5  千分之的概率
+            //奖池中添加3.5-4  千分之的概率
             for(int i=0;i<10;i++){
-                moneyArray[random.nextInt(10000)] = (random.nextInt(101) + 400)/100.0;
+                moneyArray[random.nextInt(10000)] = (random.nextInt(51) + 350)/100.0;
             }
             //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
 //            moneyArray[random.nextInt(10000)] = 88;

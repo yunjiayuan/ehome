@@ -77,16 +77,17 @@ public class HomeBlogLikeController extends BaseController implements HomeBlogLi
         if(isMember){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您已经点过赞了",new JSONObject());
         }else{
+            //如果缓存不存在点赞记录 数据库存在 则返回成功状态
             HomeBlogLike hbl = homeBlogLikeService.checkHomeBlogLike(homeBlogLike.getUserId(),homeBlogLike.getBlogId());
             if(hbl!=null){//已经点过赞
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您已经点过赞了",new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
             }
         }
         //新增点赞记录
         homeBlogLike.setTime(new Date());
         homeBlogLikeService.addHomeBlogLike(homeBlogLike);
         //更新缓存中的点赞记录
-        redisUtils.addSetAndTime(Constants.EBLOG_LIKE_LIST+homeBlogLike.getBlogId(),0,homeBlogLike.getUserId());
+        redisUtils.addSetAndTime(Constants.EBLOG_LIKE_LIST+homeBlogLike.getBlogId(),Constants.USER_TIME_OUT,homeBlogLike.getUserId());
         //更新当前生活圈的点赞数
         mqUtils.updateBlogCounts(homeBlogLike.getBlogUserId(),homeBlogLike.getBlogId(),0,1);
         //更新消息系统 后续开发
