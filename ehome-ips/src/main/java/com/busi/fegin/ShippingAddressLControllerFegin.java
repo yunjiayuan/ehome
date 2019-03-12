@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * author：SunTianJie
  * create time：2018/6/12 19:12
  */
-@FeignClient("ips")
+@FeignClient("otherServer")
 @Component
 public interface ShippingAddressLControllerFegin extends ShippingAddressLocalController {
 

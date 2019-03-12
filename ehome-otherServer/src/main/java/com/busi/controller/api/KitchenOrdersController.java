@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.KitchenOrdersService;
 import com.busi.service.KitchenService;
+import com.busi.service.ShippingAddressService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -38,14 +39,13 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
     UserInfoUtils userInfoUtils;
 
     @Autowired
-    ShippingAddressUtils addressUtils;
-
-    @Autowired
     KitchenService kitchenService;
 
     @Autowired
     KitchenOrdersService kitchenOrdersService;
 
+    @Autowired
+    ShippingAddressService shippingAddressService;
     /***
      * 新增订单
      * @param kitchenOrders
@@ -95,7 +95,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                         redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getId(), kitchenMap, Constants.USER_TIME_OUT);
                     }
                     Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
-                    ShippingAddress s = addressUtils.findAddress(kitchenOrders.getAddressId());
+                    ShippingAddress s = shippingAddressService.findUserById(kitchenOrders.getAddressId());
                     if (kh != null && s != null) {
                         long time = new Date().getTime();
                         String noTime = String.valueOf(time);

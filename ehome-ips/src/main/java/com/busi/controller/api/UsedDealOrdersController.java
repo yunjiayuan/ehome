@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.ShippingAddressService;
 import com.busi.service.UsedDealOrdersService;
 import com.busi.service.UsedDealService;
 import com.busi.utils.*;
@@ -40,13 +39,13 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
     LogisticsUtils logisticsUtils;
 
     @Autowired
+    ShippingAddressUtils addressUtils;
+
+    @Autowired
     UsedDealService usedDealService;
 
     @Autowired
     UsedDealOrdersService usedDealOrdersService;
-
-    @Autowired
-    ShippingAddressService shippingAddressService;
 
     /***
      * 新增二手订单
@@ -61,7 +60,7 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         UsedDeal usedDeal = usedDealService.findUserById(usedDealOrders.getGoodsId());
-        ShippingAddress shippingAddress = shippingAddressService.findUserById(usedDealOrders.getAddressId());
+        ShippingAddress shippingAddress = addressUtils.findAddress(usedDealOrders.getAddressId());
         if (usedDeal == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "下单失败！商品不存在！", new JSONObject());
         }
