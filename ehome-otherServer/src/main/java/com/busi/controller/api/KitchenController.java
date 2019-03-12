@@ -56,27 +56,8 @@ public class KitchenController extends BaseController implements KitchenApiContr
         if (ik != null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "创建厨房失败，该用户厨房已存在！", new JSONObject());
         }
-        //判断该用户是否实名
-        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + kitchen.getUserId());
-        if (map == null || map.size() <= 0) {
-            UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(kitchen.getUserId());
-            if (userAccountSecurity == null) {
-                return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
-            } else {
-                userAccountSecurity.setRedisStatus(1);//数据库中已有记录
-            }
-            //放到缓存中
-            map = CommonUtils.objectToMap(userAccountSecurity);
-            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + kitchen.getUserId(), map, Constants.USER_TIME_OUT);
-        }
-        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
-        if (userAccountSecurity == null) {
-            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
-        }
-        if (CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
-            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
-        }
         kitchen.setAuditType(1);
+        kitchen.setBusinessStatus(1);//厨房默认关闭
         kitchen.setAddTime(new Date());
         //菜系最多选四个
         String[] cs = kitchen.getCuisine().split(",");
@@ -148,6 +129,26 @@ public class KitchenController extends BaseController implements KitchenApiContr
      */
     @Override
     public ReturnData updKitchenStatus(@Valid @RequestBody Kitchen kitchen, BindingResult bindingResult) {
+        //判断该用户是否实名
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + kitchen.getUserId());
+        if (map == null || map.size() <= 0) {
+            UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(kitchen.getUserId());
+            if (userAccountSecurity == null) {
+                return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+            } else {
+                userAccountSecurity.setRedisStatus(1);//数据库中已有记录
+            }
+            //放到缓存中
+            map = CommonUtils.objectToMap(userAccountSecurity);
+            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + kitchen.getUserId(), map, Constants.USER_TIME_OUT);
+        }
+        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
+        if (userAccountSecurity == null) {
+            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+        }
+        if (CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
+            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+        }
         kitchenService.updateBusiness(kitchen);
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchen.getId(), 0);

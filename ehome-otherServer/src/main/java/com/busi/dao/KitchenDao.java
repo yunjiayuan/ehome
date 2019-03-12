@@ -23,9 +23,9 @@ public interface KitchenDao {
      * @return
      */
     @Insert("insert into kitchen(userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon," +
-            "address)" +
+            "address,videoUrl)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{cuisine},#{goodFood},#{kitchenName},#{startingTime},#{addTime},#{healthyCard},#{kitchenCover},#{content},#{totalSales},#{totalScore},#{lat},#{lon}" +
-            ",#{address})")
+            ",#{address},#{videoUrl})")
     @Options(useGeneratedKeys = true)
     int addKitchen(Kitchen kitchen);
 
@@ -46,6 +46,7 @@ public interface KitchenDao {
             " kitchenName=#{kitchenName}," +
             " healthyCard=#{healthyCard}," +
             " kitchenCover=#{kitchenCover}," +
+            " videoUrl=#{videoUrl}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -62,6 +63,18 @@ public interface KitchenDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateDel(Kitchen kitchen);
+
+    /***
+     * 更新厨房删除状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update kitchen set" +
+            " totalSales=#{totalSales}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateNumber(Kitchen kitchen);
 
     /***
      * 根据userId查询
@@ -104,6 +117,18 @@ public interface KitchenDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateBusiness(Kitchen kitchen);
+
+    /***
+     * 更新厨房总评分
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update kitchen set" +
+            " totalScore=#{totalScore}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateScore(Kitchen kitchen);
 
     /***
      * 条件查询厨房(模糊搜索)
@@ -205,6 +230,20 @@ public interface KitchenDao {
     List<Kitchen> findKitchenList4(@Param("ids") String[] ids);
 
     /***
+     * 批量查询指定的厨房菜品
+     * @param ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenDishes" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<KitchenDishes> findDishesList2(@Param("ids") String[] ids);
+
+    /***
      * 删除厨房收藏
      * @param ids
      * @return
@@ -245,6 +284,18 @@ public interface KitchenDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateDishes(KitchenDishes kitchenDishes);
+
+    /***
+     * 更新菜品点赞数
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update kitchenDishes set" +
+            " pointNumber=#{pointNumber}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateLike(KitchenDishes kitchenDishes);
 
     /***
      * 删除厨房菜品

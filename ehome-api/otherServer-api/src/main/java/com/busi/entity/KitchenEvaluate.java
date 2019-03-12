@@ -26,7 +26,7 @@ public class KitchenEvaluate {
 
     private long orderId;                        //	订单Id
 
-    private long kitchend;                        //厨房ID
+    private long kitchenId;                        //厨房ID
 
     private String imgUrls;                //图片
 

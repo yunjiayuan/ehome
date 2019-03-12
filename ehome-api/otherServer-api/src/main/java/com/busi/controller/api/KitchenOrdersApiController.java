@@ -87,11 +87,11 @@ public interface KitchenOrdersApiController {
 
     /***
      * 取消订单（更新订单类型）
-     * @param identity
+     * @param id
      * @return
      */
-    @GetMapping("cancelKitchenOrders/{identity}/{id}")
-    ReturnData cancelKitchenOrders(@PathVariable int identity, @PathVariable long id);
+    @GetMapping("cancelKitchenOrders/{id}")
+    ReturnData cancelKitchenOrders(@PathVariable long id);
 
     /***
      * 菜品点赞

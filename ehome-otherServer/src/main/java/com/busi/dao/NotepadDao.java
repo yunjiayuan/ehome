@@ -162,7 +162,7 @@ public interface NotepadDao {
 
     /***
      * 获取我某天的记事
-     * @param options 查询类型ID:默认0全部  1日程
+     * @param options 查询类型ID:默认0日程1记事
      * @return
      */
     @Select("<script>" +
