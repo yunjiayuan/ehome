@@ -38,6 +38,13 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
         if(userId<=0){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
+        if(rewardLog.getInfoId()>0){//更新生活圈钱包记录
+            //检测之前是否已存在
+            RewardLog rl = rewardLogService.findRewardLog(rewardLog.getUserId(),rewardLog.getRewardType(),rewardLog.getInfoId());
+            if(rl!=null){//已存在
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "生活圈奖励红包记录已存在，不再新增", new JSONObject());
+            }
+        }
         rewardLog.setTime(new Date());
         rewardLogService.add(rewardLog);
         //更新总金额

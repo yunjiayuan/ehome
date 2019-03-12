@@ -322,8 +322,9 @@ public class MqUtils {
      * @param rewardType      奖励类型 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
      * @param rewardMoneyType 奖励金额类型 0表示人民币  1表示其他（预留）
      * @param rewardMoney     奖励的具体金额
+     * @param infoId          生活圈主键ID 默认传0
      */
-    public void addRewardLog(long userId,int rewardType,int rewardMoneyType,double rewardMoney){
+    public void addRewardLog(long userId,int rewardType,int rewardMoneyType,double rewardMoney,long infoId){
         //调用MQ同步
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
@@ -333,6 +334,7 @@ public class MqUtils {
         content.put("rewardType",rewardType);
         content.put("rewardMoneyType",rewardMoneyType);
         content.put("rewardMoney",rewardMoney);
+        content.put("infoId",infoId);
         root.put("header", header);
         root.put("content", content);
         String sendMsg = root.toJSONString();

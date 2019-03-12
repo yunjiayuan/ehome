@@ -58,5 +58,23 @@ public interface RewardLogDao {
             "</script>")
     List<RewardLog> findList(@Param("userId") long userId, @Param("rewardType") int rewardType);
 
+    /***
+     * 查询记录信息
+     * @param userId      用户ID
+     * @param rewardType  奖励类型 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
+     * @param infoId      生活圈的主键ID 默认为0
+     * @return
+     */
+    @Select("<script>" +
+            "select * from rewardLog" +
+            " where 1=1" +
+            "<if test=\"infoId > 0 \">" +
+            " and infoId=#{infoId}" +
+            "</if>" +
+            " and rewardType=#{rewardType}" +
+            " and userId=#{userId}" +
+            "</script>")
+    RewardLog findRewardLog(@Param("userId") long userId, @Param("rewardType") int rewardType,@Param("infoId") int infoId);
+
 
 }

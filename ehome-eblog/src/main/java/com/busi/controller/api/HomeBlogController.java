@@ -178,7 +178,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 //            moneyArray[random.nextInt(10000)] = 66.66;
             //奖池构建完成 开始随机取值
             rewardMoney = moneyArray[random.nextInt(10000)];
-            mqUtils.addRewardLog(homeBlog.getUserId(),3,0,rewardMoney);
+            mqUtils.addRewardLog(homeBlog.getUserId(),3,0,rewardMoney,homeBlog.getId());
             //更新用户状态
             userInfo.setHomeBlogStatus(1);//改为：已发送
             userInfoUtils.updateHomeBlogStatus(userInfo);

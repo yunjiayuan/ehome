@@ -121,7 +121,7 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
                         rewardType = 4;
                     }
                     if(rewardType>0){
-                        mqUtils.addRewardLog(hb.getUserId(),rewardType,0,rewardMoney);
+                        mqUtils.addRewardLog(hb.getUserId(),rewardType,0,rewardMoney,homeBlog.getId());
                     }
                 }
             }

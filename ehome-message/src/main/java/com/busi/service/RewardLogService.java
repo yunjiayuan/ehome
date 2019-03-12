@@ -29,12 +29,14 @@ public class RewardLogService implements MessageAdapter {
         try {
             //用户ID
             long userId = Long.parseLong(body.getString("userId"));
+            long infoId = Long.parseLong(body.getString("infoId"));
             //奖励类型 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
             int rewardType = Integer.parseInt(body.getString("rewardType"));
             int rewardMoneyType = Integer.parseInt(body.getString("rewardMoneyType"));
             double rewardMoney = Double.parseDouble(body.getString("rewardMoney"));
             RewardLog rewardLog = new RewardLog();
             rewardLog.setUserId(userId);
+            rewardLog.setInfoId(infoId);
             rewardLog.setRewardType(rewardType);
             rewardLog.setRewardMoneyType(rewardMoneyType);
             rewardLog.setRewardMoney(rewardMoney);

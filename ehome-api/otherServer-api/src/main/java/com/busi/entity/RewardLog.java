@@ -36,6 +36,9 @@ public class RewardLog {
   @Max(value = 1, message = "isNew参数有误，数值超出指定范围")
   private int isNew;//是否为新的 0未读新记录 1已读记录
 
+  @Min(value = 0, message = "infoId参数有误，数值超出指定范围")
+  private long infoId;//额外字段，主要用于业务ID的存储，目前只存储生活圈的主键ID
+
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date time;//奖励时间
 

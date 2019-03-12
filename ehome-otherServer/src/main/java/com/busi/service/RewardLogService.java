@@ -58,4 +58,8 @@ public class RewardLogService {
         return PageUtils.getPageBean(p, list);
     }
 
+    public RewardLog findRewardLog(long userId, int rewardType, int infoId) {
+        return rewardLogDao.findRewardLog(userId, rewardType, infoId);
+    }
+
 }
