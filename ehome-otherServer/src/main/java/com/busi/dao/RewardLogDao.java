@@ -19,8 +19,8 @@ public interface RewardLogDao {
      * @param rewardLog
      * @return
      */
-    @Insert("insert into rewardLog(userId,rewardType,rewardMoneyType,isNew,rewardMoney,time) " +
-            "values (#{userId},#{rewardType},#{rewardMoneyType},#{isNew},#{rewardMoney},#{time})")
+    @Insert("insert into rewardLog(userId,rewardType,rewardMoneyType,isNew,rewardMoney,infoId,time) " +
+            "values (#{userId},#{rewardType},#{rewardMoneyType},#{isNew},#{rewardMoney},#{infoId},#{time})")
     @Options(useGeneratedKeys = true)
     int add(RewardLog rewardLog);
 
