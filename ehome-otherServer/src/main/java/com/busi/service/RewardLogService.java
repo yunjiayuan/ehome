@@ -62,4 +62,8 @@ public class RewardLogService {
         return rewardLogDao.findRewardLog(userId, rewardType, infoId);
     }
 
+    public List<RewardLog> findRewardLogNewList(long userId) {
+        return rewardLogDao.findRewardLogNewList(userId);
+    }
+
 }

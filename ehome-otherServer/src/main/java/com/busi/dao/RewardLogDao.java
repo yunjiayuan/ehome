@@ -76,5 +76,13 @@ public interface RewardLogDao {
             "</script>")
     RewardLog findRewardLog(@Param("userId") long userId, @Param("rewardType") int rewardType,@Param("infoId") long infoId);
 
+    @Select("<script>" +
+            "select * from rewardLog" +
+            " where 1=1" +
+            " and isNew=0" +
+            " and userId=#{userId}" +
+            "</script>")
+    List<RewardLog> findRewardLogNewList(@Param("userId") long userId);
+
 
 }
