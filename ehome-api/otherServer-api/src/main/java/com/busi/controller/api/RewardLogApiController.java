@@ -20,4 +20,12 @@ public interface RewardLogApiController {
     @GetMapping("findRewardLogList/{userId}/{rewardType}/{page}/{count}")
     ReturnData findRewardLogList(@PathVariable long userId, @PathVariable int rewardType, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 查询是否有新奖励接口
+     * @param userId  用户ID
+     * @return
+     */
+    @GetMapping("findNewRewardLog/{userId}")
+    ReturnData findNewRewardLog(@PathVariable long userId);
+
 }

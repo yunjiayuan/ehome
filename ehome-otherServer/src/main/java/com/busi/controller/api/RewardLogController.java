@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /***
  * 用户奖励记录相关接口
  * author：stj
@@ -51,9 +55,9 @@ public class RewardLogController extends BaseController implements RewardLogApiC
             RewardLog rewardLog = pageBean.getList().get(i);
             if(rewardLog!=null&&rewardLog.getIsNew()==0){
                 if(i==pageBean.getList().size()-1){
-                    ids += rewardLog.getIsNew();
+                    ids += rewardLog.getId();
                 }else{
-                    ids += rewardLog.getIsNew()+",";
+                    ids += rewardLog.getId()+",";
                 }
             }
         }
@@ -61,5 +65,26 @@ public class RewardLogController extends BaseController implements RewardLogApiC
             rewardLogService.updateIsNew(userId,ids);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 查询是否有新奖励接口
+     * @param userId  用户ID
+     * @return
+     */
+    @Override
+    public ReturnData findNewRewardLog(@PathVariable long userId) {
+        //验证权限
+        if (CommonUtils.getMyId() != userId) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作用户[" + userId + "]的奖励总金额信息", new JSONObject());
+        }
+        int isNewRewardLog = 0;//已读
+        List<RewardLog> list =  rewardLogService.findRewardLogNewList(userId);
+        if(list!=null&&list.size()>0){
+            isNewRewardLog = 1;//未读 新的
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("isNewRewardLog",isNewRewardLog);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }
