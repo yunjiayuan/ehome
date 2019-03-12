@@ -74,7 +74,7 @@ public interface RewardLogDao {
             " and rewardType=#{rewardType}" +
             " and userId=#{userId}" +
             "</script>")
-    RewardLog findRewardLog(@Param("userId") long userId, @Param("rewardType") int rewardType,@Param("infoId") int infoId);
+    RewardLog findRewardLog(@Param("userId") long userId, @Param("rewardType") int rewardType,@Param("infoId") long infoId);
 
 
 }
