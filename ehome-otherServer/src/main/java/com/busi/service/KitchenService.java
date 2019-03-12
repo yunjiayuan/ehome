@@ -76,6 +76,26 @@ public class KitchenService {
     }
 
     /***
+     * 更新厨房总评分
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateScore(Kitchen kitchen) {
+        return kitchenDao.updateScore(kitchen);
+    }
+
+    /***
+     * 更新厨房总销量
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateNumber(Kitchen kitchen) {
+        return kitchenDao.updateNumber(kitchen);
+    }
+
+    /***
      * 删除指定厨房下菜品
      * @param id
      * @param userId
@@ -174,6 +194,17 @@ public class KitchenService {
     }
 
     /***
+     * 批量查询指定的菜品
+     * @param ids
+     * @return
+     */
+    public List<KitchenDishes> findDishesList(String[] ids) {
+        List<KitchenDishes> list;
+        list = kitchenDao.findDishesList2(ids);
+        return list;
+    }
+
+    /***
      * 删除厨房收藏
      * @param ids
      * @return
@@ -236,5 +267,15 @@ public class KitchenService {
         list = kitchenDao.findDishesList(kitchenId);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 更新菜品点赞数
+     * @param dishes
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateLike(KitchenDishes dishes) {
+        return kitchenDao.updateLike(dishes);
     }
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import java.util.Date;
 
@@ -20,12 +22,11 @@ public class KitchenOrders {
     private long id;                    // 主键
 
     @Min(value = 1, message = "myId参数有误")
-    private long myId;                // 登陆者ID(买家）
+    private long myId;                // 买家ID
 
-    @Min(value = 1, message = "userId参数有误")
     private long userId;                // 卖家ID
 
-    private long kitchend;                //厨房ID
+    private long kitchenId;                //厨房ID
 
     private String no;                    //订单编号
 
@@ -87,5 +88,7 @@ public class KitchenOrders {
     private int proTypeId;                //	省简称ID
 
     private long houseNumber;        // 门牌号
+
+    private long updateCategory;        // 更新类别  默认0删除状态  1由未接单改为制作中  2由制作中改为配送中  3由配送中改为已卖出  4取消订单  5更新订单状态为已评价
 
 }
