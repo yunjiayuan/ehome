@@ -399,38 +399,15 @@ public class RegisterController extends BaseController implements RegisterApiCon
         if(userMap==null||userMap.size()<=0){
             //缓存中没有用户对象信息 查询数据库
             userInfo = userInfoService.findUserById(userId);
+        }else{
+            userInfo = (UserInfo) CommonUtils.mapToObject(userMap,UserInfo.class);
             if(userInfo==null){
-                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"将要访问串门的用户不存在",new JSONObject());
+                //缓存中数据异常 查询数据库
+                userInfo = userInfoService.findUserById(userId);
             }
-            //设置访问量信息
-            Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+userId);
-            VisitView visitView = null;
-            if(map==null||map.size()<=0){//缓存中不存在 查询数据库
-                visitView = visitViewService.findVisitView(userId);
-                if(visitView==null){
-                    visitView = new VisitView();
-                    visitView.setUserId(userId);
-                }
-                userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//设置今日访问量
-                userInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
-                //更新缓存
-                redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),Constants.USER_TIME_OUT);//7天 此对象只是用来做过期处理的判断 里面参数内容不是准确的
-                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),visitView.getTotalVisitCount(),CommonUtils.getCurrentTimeTo_12());//更新今日访问量的生命周期 到今天晚上12点失效
-                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),visitView.getTodayVisitCount(),Constants.USER_TIME_OUT);
-            }else{//缓存中存在
-                Object todayObj = redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+userId);
-                if(todayObj==null){//处理当天访问量失效的问题
-                    userInfo.setTodayVisitCount(0);//设置今日访问量
-                    //更新缓存 重置今天访问量0
-                    redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+userId,0,CommonUtils.getCurrentTimeTo_12());//更新今日访问量的生命周期 到今天晚上12点失效
-                }else{
-                    userInfo.setTodayVisitCount(Long.parseLong(redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+userId).toString()));//设置今日访问量
-                }
-                userInfo.setTotalVisitCount(Long.parseLong(redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+userId).toString()));//设置总访问量
-            }
-            userInfo.setPassword("");//过滤登录密码
-            userInfo.setIm_password("");//过滤环信密码
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",userInfo);
+        }
+        if(userInfo==null){
+            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE,"将要访问串门的用户不存在",new JSONObject());
         }
         //设置访问量信息
         Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+userId);
@@ -441,26 +418,30 @@ public class RegisterController extends BaseController implements RegisterApiCon
                 visitView = new VisitView();
                 visitView.setUserId(userId);
             }
-            userMap.put("todayVisitCount",visitView.getTodayVisitCount());//设置今日访问量
-            userMap.put("totalVisitCount",visitView.getTotalVisitCount());//设置总访问量
+            userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//设置今日访问量
+            userInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
             //更新缓存
-            redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),Constants.USER_TIME_OUT);//7天 此对象只是用来做过期处理的判断 里面参数内容不是准确的
-            redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),visitView.getTotalVisitCount(),Constants.USER_TIME_OUT);//更新今日访问量的生命周期 到今天晚上12点失效
-            redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),visitView.getTodayVisitCount(),CommonUtils.getCurrentTimeTo_12());
+            redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),CommonUtils.getCurrentTimeTo_12());//保证今日访问量的生命周期 到今天晚上12点失效
         }else{//缓存中存在
-            Object todayObj = redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+userId);
-            if(todayObj==null){//处理当天访问量失效的问题
-                userMap.put("todayVisitCount",0);//设置今日访问量
-                //更新缓存 重置今天访问量0
-                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+userId,0,CommonUtils.getCurrentTimeTo_12());//更新今日访问量的生命周期 到今天晚上12点失效
+            VisitView vv  = (VisitView) CommonUtils.mapToObject(map,VisitView.class);
+            if(vv==null){//防止异常数据情况
+                visitView = visitViewService.findVisitView(userId);
+                if(visitView==null){
+                    visitView = new VisitView();
+                    visitView.setUserId(userId);
+                }
+                userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//设置今日访问量
+                userInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
+                //更新缓存
+                redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),CommonUtils.getCurrentTimeTo_12());//保证今日访问量的生命周期 到今天晚上12点失效
             }else{
-                userMap.put("todayVisitCount",Long.parseLong(redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+userId).toString()));//设置今日访问量
+                userInfo.setTodayVisitCount(vv.getTodayVisitCount());//设置今日访问量
+                userInfo.setTotalVisitCount(vv.getTotalVisitCount());//设置总访问量
             }
-            userMap.put("totalVisitCount",Long.parseLong(redisUtils.hget(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+userId).toString()));//设置总访问量
         }
-        userMap.put("password","");//过滤登录密码
-        userMap.put("im_password","");//过滤环信密码
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",userMap);
+        userInfo.setPassword("");//过滤登录密码
+        userInfo.setIm_password("");//过滤环信密码
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",CommonUtils.objectToMap(userInfo));
     }
 
     /***
