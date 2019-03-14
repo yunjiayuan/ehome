@@ -23,9 +23,9 @@ public interface KitchenDao {
      * @return
      */
     @Insert("insert into kitchen(userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon," +
-            "address,videoUrl)" +
+            "address,videoUrl,videoCoverUrl)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{cuisine},#{goodFood},#{kitchenName},#{startingTime},#{addTime},#{healthyCard},#{kitchenCover},#{content},#{totalSales},#{totalScore},#{lat},#{lon}" +
-            ",#{address},#{videoUrl})")
+            ",#{address},#{videoUrl},#{videoCoverUrl})")
     @Options(useGeneratedKeys = true)
     int addKitchen(Kitchen kitchen);
 
@@ -47,6 +47,7 @@ public interface KitchenDao {
             " healthyCard=#{healthyCard}," +
             " kitchenCover=#{kitchenCover}," +
             " videoUrl=#{videoUrl}," +
+            " videoCoverUrl=#{videoCoverUrl}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")

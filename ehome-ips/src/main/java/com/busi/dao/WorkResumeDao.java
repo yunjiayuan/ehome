@@ -212,7 +212,7 @@ public interface WorkResumeDao {
      * @return
      */
     @Select("select * from WorkApplyRecord where companyId=#{userId} and resumeId=#{id}")
-    WorkApplyRecord findApplyRecord(@Param("userId") long userId, @Param("id") long id);
+    List<WorkApplyRecord> findApplyRecord(@Param("userId") long userId, @Param("id") long id);
 
     /***
      * 新增简历浏览记录
@@ -309,7 +309,7 @@ public interface WorkResumeDao {
 
     /***
      * 统计我的求职下各类信息数量
-     * @param type  0.我的简历 1.面试邀请 2.职位申请记录 3.谁下载了我的简历
+     * @param type  0.我的简历 1.面试邀请 2.职位申请记录 3.已下载简历
      * @return
      */
     @Select("<script>" +
@@ -324,6 +324,9 @@ public interface WorkResumeDao {
             "</if>" +
             "<if test=\"type == 3 \">" +
             "select count(id) from WorkDowRecord where resumeUserId=#{userId}" +
+            "</if>" +
+            "<if test=\"type == 4 \">" +
+            "select count(id) from WorkDowRecord where userId=#{userId}" +
             "</if>" +
             "</script>")
     int findJobWanted(@Param("userId") long userId, @Param("type") int type);
@@ -598,8 +601,8 @@ public interface WorkResumeDao {
      * @param workDowRecord
      * @return
      */
-    @Insert("insert into workDowRecord(userId,companyId,resumeUserId,resumeId,addTime,name,sex,highestEducation,workExperience,highlights,jobType2,jobProvince,corporateName) " +
-            "values (#{userId},#{companyId},#{resumeUserId},#{resumeId},#{addTime},#{name},#{sex},#{highestEducation},#{workExperience},#{highlights},#{jobType2},#{jobProvince},#{corporateName})")
+    @Insert("insert into workDowRecord(userId,companyId,resumeUserId,resumeId,addTime,name,sex,highestEducation,workExperience,highlights,jobType2,jobProvince,corporateName,head) " +
+            "values (#{userId},#{companyId},#{resumeUserId},#{resumeId},#{addTime},#{name},#{sex},#{highestEducation},#{workExperience},#{highlights},#{jobType2},#{jobProvince},#{corporateName},#{head})")
     @Options(useGeneratedKeys = true)
     int addDow(WorkDowRecord workDowRecord);
 
@@ -639,7 +642,7 @@ public interface WorkResumeDao {
 
     /***
      * 查询下载记录列表
-     * @param identity 身份区分：0求职者查 1企业查  简历ID
+     * @param identity 身份区分：0求职者查 1企业查
      * @param userId   用户ID
      * @return
      */

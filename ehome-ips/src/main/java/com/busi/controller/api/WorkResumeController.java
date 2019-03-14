@@ -231,22 +231,16 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         //判断是否是自己的简历（或以企业的身份下载过此份简历，或被投递过）并返回手机邮箱
         WorkDowRecord wd = null;
         wd = workResumeService.findDowRecord(CommonUtils.getMyId(), id);
-//        WorkApplyRecord record = workResumeService.findApplyRecord(CommonUtils.getMyId(), id);  //此处会返回多条记录 应聘者可能投递对个职位
-//        if (wd != null || is.getUserId() == CommonUtils.getMyId() || record != null) {
-//            if (userAccountSecurity != null) {
-//                if (record != null) {
-//                    employmentStatus = record.getEmploymentStatus();
-//                }
-//                is.setEmail(userAccountSecurity.getEmail());
-//                is.setContactsPhone(userAccountSecurity.getPhone());
-//            }
-//        }
-//        WorkApplyRecord record = workResumeService.findApplyRecord(CommonUtils.getMyId(), id);
-        if (wd != null || is.getUserId() == CommonUtils.getMyId() ) {
+        //此处会返回多条记录 应聘者可能投递多个职位(待后续完善)
+        List record = workResumeService.findApplyRecord(CommonUtils.getMyId(), id);
+        if (wd != null || is.getUserId() == CommonUtils.getMyId()) {
             if (userAccountSecurity != null) {
-//                if (record != null) {
-//                    employmentStatus = record.getEmploymentStatus();
-//                }
+                if (record != null && record.size() > 0) {
+                    WorkApplyRecord record2 = (WorkApplyRecord) record.get(0);
+                    if (record2 != null) {
+//                        employmentStatus = record2.getEmploymentStatus();
+                    }
+                }
                 is.setEmail(userAccountSecurity.getEmail());
                 is.setContactsPhone(userAccountSecurity.getPhone());
             }
@@ -351,32 +345,32 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         //处理工作年限
         int workExperienceStart = -1;
         int workExperienceEnd = -1;
-        if(workExperience==0){
+        if (workExperience == 0) {
             workExperienceStart = 0;
             workExperienceEnd = 0;
         }
-        if(workExperience==1){
+        if (workExperience == 1) {
             workExperienceStart = 0;
             workExperienceEnd = 1;
         }
-        if(workExperience==2){
+        if (workExperience == 2) {
             workExperienceStart = 1;
             workExperienceEnd = 3;
         }
-        if(workExperience==3){
+        if (workExperience == 3) {
             workExperienceStart = 3;
             workExperienceEnd = 5;
         }
-        if(workExperience==4){
+        if (workExperience == 4) {
             workExperienceStart = 5;
             workExperienceEnd = 10;
         }
-        if(workExperience==5){
+        if (workExperience == 5) {
             workExperienceStart = 10;
         }
         //开始查询
         PageBean<WorkRecruit> pageBean;
-        pageBean = workResumeService.findRecruitList(CommonUtils.getMyId(), jobProvince, highestEducation, positionName, jobCity, jobDistrict, jobType1, jobType2, workExperienceStart,workExperienceEnd, startSalary, endSalary, page, count);
+        pageBean = workResumeService.findRecruitList(CommonUtils.getMyId(), jobProvince, highestEducation, positionName, jobCity, jobDistrict, jobType1, jobType2, workExperienceStart, workExperienceEnd, startSalary, endSalary, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -959,6 +953,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             workDowRecord.setJobProvince(is.getJobProvince());
             workDowRecord.setJobType2(is.getJobType2());
             workDowRecord.setSex(is.getSex());
+            workDowRecord.setHead(is.getHeadImgUrl());
             workDowRecord.setWorkExperience(is.getWorkExperience());
             workDowRecord.setName(is.getName());
             workResumeService.addDow(workDowRecord);
@@ -1023,7 +1018,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
      * 查询下载记录列表
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
-     * @param identity  身份区分：0企业查 1简历用户查
+     * @param identity  身份区分：0简历用户查 1企业查
      * @return
      */
     @Override
@@ -1033,31 +1028,31 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         List list = null;
-        WorkResume resume = null;
+//        WorkResume resume = null;
         PageBean<WorkDowRecord> pageBean = null;
         pageBean = workResumeService.findDowList(identity, CommonUtils.getMyId(), page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         list = pageBean.getList();
-        if (list != null && list.size() > 0) {
-            if (identity == 1) {//企业查
-                UserInfo userCache = null;
-                for (int i = 0; i < list.size(); i++) {
-                    WorkDowRecord wdr = (WorkDowRecord) list.get(i);
-                    userCache = userInfoUtils.getUserInfo(wdr.getResumeUserId());
-                    if (userCache != null) {
-                        resume = workResumeService.findById(wdr.getResumeId());
-                        if (resume != null && !CommonUtils.checkFull(resume.getBirthDay())) {
-                            wdr.setAge(CommonUtils.getAge(resume.getBirthDay()));//年龄
-                        }
-                        wdr.setHead(userCache.getHead());
-                        wdr.setProTypeId(userCache.getProType());
-                        wdr.setHouseNumber(userCache.getHouseNumber());
-                    }
-                }
-            }
-        }
+//        if (list != null && list.size() > 0) {
+//            if (identity == 1) {//企业查
+//                UserInfo userCache = null;
+//                for (int i = 0; i < list.size(); i++) {
+//                    WorkDowRecord wdr = (WorkDowRecord) list.get(i);
+//                    userCache = userInfoUtils.getUserInfo(wdr.getResumeUserId());
+//                    if (userCache != null) {
+//                        resume = workResumeService.findById(wdr.getResumeId());
+//                        if (resume != null && !CommonUtils.checkFull(resume.getBirthDay())) {
+//                            wdr.setAge(CommonUtils.getAge(resume.getBirthDay()));//年龄
+//                        }
+//                        wdr.setHead(userCache.getHead());
+//                        wdr.setProTypeId(userCache.getProType());
+//                        wdr.setHouseNumber(userCache.getHouseNumber());
+//                    }
+//                }
+//            }
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 

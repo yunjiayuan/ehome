@@ -46,13 +46,12 @@ public class WorkDowRecord {
 
     private String corporateName;    //公司名称
 
+    private String head;        //简历头像
     //与数据库无关字段
-    private String head;        //头像	查询后从内存获取最新
-
-    private int age;        //年龄
-
-    private long houseNumber;        //门牌号	查询后从内存获取最新
-
-    private int proTypeId;                //	省简称ID
+//    private int age;        //年龄
+//
+//    private long houseNumber;        //门牌号	查询后从内存获取最新
+//
+//    private int proTypeId;                //	省简称ID
 
 }

@@ -127,7 +127,7 @@ public class WorkRecruitService {
         if (identity == 0) {
             list = workRecruitDao.findApplyList(userId);
         } else {
-            list = workRecruitDao.findApplyList2(identity, queryType, recruitId, employmentStatus);
+            list = workRecruitDao.findApplyList2(identity, userId, queryType, recruitId, employmentStatus);
         }
         return PageUtils.getPageBean(p, list);
     }
@@ -291,12 +291,12 @@ public class WorkRecruitService {
         if (!CommonUtils.checkFull(positionName)) {
             list = workRecruitDao.queryResumeList1(userId, positionName);
         } else {
-            String [] educationArray = null;
-            if(!CommonUtils.checkFull(education)){
+            String[] educationArray = null;
+            if (!CommonUtils.checkFull(education)) {
                 educationArray = education.split(",");
             }
             list = workRecruitDao.queryResumeList2(userId, jobProvince, jobCity, jobDistrict, positionType1, positionType2,
-                    workingLife, sex,educationArray , photo, updateTime, startSalary, endSalary);
+                    workingLife, sex, educationArray, photo, updateTime, startSalary, endSalary);
         }
         return PageUtils.getPageBean(p, list);
     }

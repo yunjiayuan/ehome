@@ -206,8 +206,10 @@ public class WorkResumeService {
      * @param id
      * @return
      */
-    public WorkApplyRecord findApplyRecord(long userId, long id) {
-        return workResumeDao.findApplyRecord(userId, id);
+    public List<WorkApplyRecord> findApplyRecord(long userId, long id) {
+        List<WorkApplyRecord> list = null;
+        list = workResumeDao.findApplyRecord(userId, id);
+        return list;
     }
 
     /***
@@ -271,7 +273,7 @@ public class WorkResumeService {
             list = workResumeDao.findRecruitList(userId, positionName);
         } else {
             list = workResumeDao.findRecruitList1(userId, jobProvince, jobCity, jobDistrict,
-                    jobType1, jobType2, workExperienceStart,workExperienceEnd, startSalary, endSalary, highestEducation);
+                    jobType1, jobType2, workExperienceStart, workExperienceEnd, startSalary, endSalary, highestEducation);
         }
         return PageUtils.getPageBean(p, list);
     }
@@ -538,7 +540,7 @@ public class WorkResumeService {
      * 查询下载记录列表
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
-     * @param identity 身份区分：0求职者查 1企业查  简历ID
+     * @param identity 身份区分：0求职者查 1企业查
      * @param userId   用户ID
      * @return
      */
