@@ -614,7 +614,7 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
         int cont1 = 0;
         int cont2 = 0;
         cont0 = workRecruitService.findSupervise(userId, 0);
-        cont1 = workResumeService.findJobWanted(userId, 3);
+        cont1 = workResumeService.findJobWanted(userId, 4);
         cont2 = workRecruitService.findSupervise(userId, 1);
 
         Map<String, Integer> map = new HashMap<>();

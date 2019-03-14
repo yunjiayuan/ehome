@@ -309,7 +309,7 @@ public interface WorkResumeDao {
 
     /***
      * 统计我的求职下各类信息数量
-     * @param type  0.我的简历 1.面试邀请 2.职位申请记录 3.谁下载了我的简历
+     * @param type  0.我的简历 1.面试邀请 2.职位申请记录 3.已下载简历
      * @return
      */
     @Select("<script>" +
@@ -324,6 +324,9 @@ public interface WorkResumeDao {
             "</if>" +
             "<if test=\"type == 3 \">" +
             "select count(id) from WorkDowRecord where resumeUserId=#{userId}" +
+            "</if>" +
+            "<if test=\"type == 4 \">" +
+            "select count(id) from WorkDowRecord where userId=#{userId}" +
             "</if>" +
             "</script>")
     int findJobWanted(@Param("userId") long userId, @Param("type") int type);
