@@ -953,6 +953,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             workDowRecord.setJobProvince(is.getJobProvince());
             workDowRecord.setJobType2(is.getJobType2());
             workDowRecord.setSex(is.getSex());
+            workDowRecord.setHead(is.getHeadImgUrl());
             workDowRecord.setWorkExperience(is.getWorkExperience());
             workDowRecord.setName(is.getName());
             workResumeService.addDow(workDowRecord);
@@ -1027,31 +1028,31 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         List list = null;
-        WorkResume resume = null;
+//        WorkResume resume = null;
         PageBean<WorkDowRecord> pageBean = null;
         pageBean = workResumeService.findDowList(identity, CommonUtils.getMyId(), page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         list = pageBean.getList();
-        if (list != null && list.size() > 0) {
-            if (identity == 1) {//企业查
-                UserInfo userCache = null;
-                for (int i = 0; i < list.size(); i++) {
-                    WorkDowRecord wdr = (WorkDowRecord) list.get(i);
-                    userCache = userInfoUtils.getUserInfo(wdr.getResumeUserId());
-                    if (userCache != null) {
-                        resume = workResumeService.findById(wdr.getResumeId());
-                        if (resume != null && !CommonUtils.checkFull(resume.getBirthDay())) {
-                            wdr.setAge(CommonUtils.getAge(resume.getBirthDay()));//年龄
-                        }
-                        wdr.setHead(userCache.getHead());
-                        wdr.setProTypeId(userCache.getProType());
-                        wdr.setHouseNumber(userCache.getHouseNumber());
-                    }
-                }
-            }
-        }
+//        if (list != null && list.size() > 0) {
+//            if (identity == 1) {//企业查
+//                UserInfo userCache = null;
+//                for (int i = 0; i < list.size(); i++) {
+//                    WorkDowRecord wdr = (WorkDowRecord) list.get(i);
+//                    userCache = userInfoUtils.getUserInfo(wdr.getResumeUserId());
+//                    if (userCache != null) {
+//                        resume = workResumeService.findById(wdr.getResumeId());
+//                        if (resume != null && !CommonUtils.checkFull(resume.getBirthDay())) {
+//                            wdr.setAge(CommonUtils.getAge(resume.getBirthDay()));//年龄
+//                        }
+//                        wdr.setHead(userCache.getHead());
+//                        wdr.setProTypeId(userCache.getProType());
+//                        wdr.setHouseNumber(userCache.getHouseNumber());
+//                    }
+//                }
+//            }
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
