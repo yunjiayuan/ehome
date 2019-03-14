@@ -151,6 +151,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         }
         //对首次视频类型的生活圈进行处理
         if(homeBlog.getBlogType()==0&&homeBlog.getSendType()==2){
+            //机器人不发送红包
+            if(homeBlog.getUserId()<=10000||(homeBlog.getUserId()<=53870&&homeBlog.getUserId()>=13870)){
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+            }
             UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
             if(userInfo==null){
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());

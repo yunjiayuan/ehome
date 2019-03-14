@@ -49,4 +49,11 @@ public interface RedPacketsInfoApiController {
     @GetMapping("findRedPacketsList/{userId}/{findType}/{time}/{page}/{count}")
     ReturnData findRedPacketsList(@PathVariable long userId,@PathVariable int findType,@PathVariable int time,@PathVariable int page,@PathVariable int count);
 
+    /***
+     * 根据用户ID查询红包统计信息接口
+     * @param userId
+     * @return
+     */
+    @GetMapping("findRedPacketsCensusInfo/{userId}")
+    ReturnData findRedPacketsCensusInfo(@PathVariable long userId);
 }
