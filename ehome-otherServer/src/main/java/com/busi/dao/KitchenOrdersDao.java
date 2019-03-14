@@ -86,17 +86,42 @@ public interface KitchenOrdersDao {
      * @param id
      * @return
      */
-    @Select("select * from KitchenEvaluate where id=#{id} and deleteType =0")
-    KitchenEvaluate findEvaluateId(@Param("id") long id);
+    @Update("<script>" +
+            "update KitchenEvaluate set" +
+            " state=1" +
+            " where id = #{id}" +
+            "</script>")
+    int findEvaluateId(@Param("id") long id);
 
     /***
      *  更新厨房订单状态
+     *  updateCategory 更新类别  默认0删除状态  1由未接单改为制作中  2由制作中改为配送中  3由配送中改为已卖出  4取消订单  5更新订单状态为已评价
      * @param orders
      * @return
      */
     @Update("<script>" +
             "update KitchenOrders set" +
-            " ordersType=#{ordersType}" +
+            "<if test=\"updateCategory == 0\">" +
+            " ordersState =#{ordersState}" +
+            "</if>" +
+            "<if test=\"updateCategory == 1\">" +
+            " orderTime =#{orderTime}," +
+            " ordersType =#{ordersType}" +
+            "</if>" +
+            "<if test=\"updateCategory == 2\">" +
+            " ordersType =#{ordersType}," +
+            " deliveryTime =#{deliveryTime}" +
+            "</if>" +
+            "<if test=\"updateCategory == 3\">" +
+            " ordersType =#{ordersType}," +
+            " receivingTime =#{receivingTime}" +
+            "</if>" +
+            "<if test=\"updateCategory == 4\">" +
+            " ordersType =#{ordersType}" +
+            "</if>" +
+            "<if test=\"updateCategory == 5\">" +
+            " ordersType =#{ordersType}" +
+            "</if>" +
             " where id=#{id}" +
             "</script>")
     int updateOrders(KitchenOrders orders);
@@ -148,5 +173,5 @@ public interface KitchenOrdersDao {
             "</if>" +
             " and ordersState = 0" +
             "</script>")
-    List<KitchenOrders> findIdentity(@Param("identity") int identity,  @Param("userId") long userId);
+    List<KitchenOrders> findIdentity(@Param("identity") int identity, @Param("userId") long userId);
 }

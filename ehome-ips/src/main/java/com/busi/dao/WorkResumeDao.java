@@ -212,7 +212,7 @@ public interface WorkResumeDao {
      * @return
      */
     @Select("select * from WorkApplyRecord where companyId=#{userId} and resumeId=#{id}")
-    WorkApplyRecord findApplyRecord(@Param("userId") long userId, @Param("id") long id);
+    List<WorkApplyRecord> findApplyRecord(@Param("userId") long userId, @Param("id") long id);
 
     /***
      * 新增简历浏览记录
@@ -639,7 +639,7 @@ public interface WorkResumeDao {
 
     /***
      * 查询下载记录列表
-     * @param identity 身份区分：0求职者查 1企业查  简历ID
+     * @param identity 身份区分：0求职者查 1企业查
      * @param userId   用户ID
      * @return
      */

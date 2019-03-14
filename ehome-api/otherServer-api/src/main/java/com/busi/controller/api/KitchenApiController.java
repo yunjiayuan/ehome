@@ -45,12 +45,12 @@ public interface KitchenApiController {
     ReturnData updKitchenStatus(@Valid @RequestBody Kitchen kitchen, BindingResult bindingResult);
 
     /***
-     * 查询厨房信息默认查自己,id>0时按ID查询)
-     * @param id
+     * 查询厨房信息
+     * @param userId
      * @return
      */
-    @GetMapping("findKitchen/{id}")
-    ReturnData findKitchen(@PathVariable long id);
+    @GetMapping("findKitchen/{userId}")
+    ReturnData findKitchen(@PathVariable long userId);
 
     /***
      * 条件查询厨房

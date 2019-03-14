@@ -66,8 +66,8 @@ public interface KitchenOrdersApiController {
      * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2制作中(已接单未发货),3配送(已发货未收货),4已卖出(已收货未评价),  5卖家取消订单 6付款超时 7接单超时 8发货超时 9用户取消订单 10 已评价
      * @return
      */
-    @GetMapping("findKitchenOrdersList/{userId}/{identity}/{ordersType}/page}/{count}")
-    ReturnData findKitchenOrdersList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findKitchenOrderList/{userId}/{identity}/{ordersType}/page}/{count}")
+    ReturnData findKitchenOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
     /***
      * 查看订单详情
@@ -82,8 +82,8 @@ public interface KitchenOrdersApiController {
      * @param identity 身份区分：1买家 2商家
      * @return
      */
-    @GetMapping("findKitchenOrders/{identity}")
-    ReturnData findKitchenOrders(@PathVariable int identity);
+    @GetMapping("countKitchenOrders/{identity}")
+    ReturnData countKitchenOrders(@PathVariable int identity);
 
     /***
      * 取消订单（更新订单类型）

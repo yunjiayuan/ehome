@@ -48,6 +48,8 @@ public class Kitchen {
 
     private String videoUrl;        //视频地址
 
+    private String videoCoverUrl;     //视频封面地址
+
     @Length(max = 300, message = "简介不能超过300字")
     private String content;                //简介
 

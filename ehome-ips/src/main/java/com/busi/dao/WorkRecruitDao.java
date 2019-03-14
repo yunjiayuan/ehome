@@ -143,7 +143,7 @@ public interface WorkRecruitDao {
             "</if>" +
             " order by refreshTime desc" +
             "</script>")
-    List<WorkApplyRecord> findApplyList2(@Param("identity") int identity, @Param("queryType") int queryType, @Param("recruitId") long recruitId, @Param("employmentStatus") int employmentStatus);
+    List<WorkApplyRecord> findApplyList2(@Param("identity") int identity, @Param("userId") long userId, @Param("queryType") int queryType, @Param("recruitId") long recruitId, @Param("employmentStatus") int employmentStatus);
 
     /***
      * 批量查询指定的招聘信息

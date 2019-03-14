@@ -68,7 +68,8 @@ public class KitchenOrdersService {
      * @param id
      * @return
      */
-    public KitchenEvaluate findEvaluateId(long id) {
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int findEvaluateId(long id) {
         return kitchenOrdersDao.findEvaluateId(id);
     }
 
