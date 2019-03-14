@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.PurseInfoService;
 import com.busi.service.PursePayPasswordService;
+import com.busi.service.RedPacketsCensusService;
 import com.busi.service.RedPacketsInfoService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
 
     @Autowired
     RedPacketsInfoService redPacketsInfoService;
+
+    @Autowired
+    RedPacketsCensusService redPacketsCensusService;
 
     @Autowired
     private PurseInfoService purseInfoService;
@@ -221,5 +225,24 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,pageBean);
+    }
+
+    /***
+     * 根据用户ID查询红包统计信息接口
+     * @param userId
+     * @return
+     */
+    @Override
+    public ReturnData findRedPacketsCensusInfo(@PathVariable long userId) {
+        //验证身份
+        if(CommonUtils.getMyId()!=userId){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误,您无权限进行此操作",new JSONObject());
+        }
+        RedPacketsCensus redPacketsCensus = redPacketsCensusService.findRedPacketsCensus(userId);
+        if(redPacketsCensus==null){
+            redPacketsCensus.setUserId(userId);
+            redPacketsCensus = new RedPacketsCensus();
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",CommonUtils.objectToMap(redPacketsCensus));
     }
 }

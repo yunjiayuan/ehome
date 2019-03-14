@@ -51,32 +51,33 @@ public class VisitViewController extends BaseController implements VisitViewApiC
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
         }
         //计算当前时间 到 今天晚上12点的秒数差
-        long second = CommonUtils.getCurrentTimeTo_12();
-        //检测访问量对象记录在缓存中是否存在
-        Map<String,Object> visitMap = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId());
-        if(visitMap==null||visitMap.size()<=0){
-            //查询数据库
-            VisitView v = visitViewService.findVisitView(visitView.getUserId());
-            if(v!=null){//之前已有过访问量 加载到内存
-                visitMap = CommonUtils.objectToMap(v);
-                redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),visitMap,Constants.USER_TIME_OUT);//7天 此对象只是用来做过期处理的判断 里面参数内容不是准确的
-                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),v.getTotalVisitCount(),Constants.USER_TIME_OUT);//Constants.USER_TIME_OUT
-                redisUtils.hset(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),v.getTodayVisitCount(),second);//更新今日访问量的生命周期 到今天晚上12点失效
-            }else{
-                v = new VisitView();
-                v.setUserId(visitView.getUserId());
-                visitMap = CommonUtils.objectToMap(v);
-                redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),visitMap,Constants.USER_TIME_OUT);//7天 此对象只是用来做过期处理的判断 里面参数内容不是准确的
-            }
-        }
-        //开始进行更新访问量+1
-        long totalVisitCount =0;//总访问量
-        long todayVisitCount =0;//今日访问量
-        todayVisitCount = redisUtils.hashIncr(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),1);//原子操作 递增1
-        redisUtils.expire(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,second);//更新今日访问量的生命周期 到今天晚上12点失效
-        //检测总访问量缓存中是否存在
-        totalVisitCount = redisUtils.hashIncr(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),1);//原子操作 递增1
-        redisUtils.expire(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,Constants.USER_TIME_OUT);//7天
+//        long second = CommonUtils.getCurrentTimeTo_12();
+//        //检测访问量对象记录在缓存中是否存在
+//        Map<String,Object> visitMap = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId());
+//        VisitView vv = null;
+//        if(visitMap==null||visitMap.size()<=0){
+//            //查询数据库
+//            vv = visitViewService.findVisitView(visitView.getUserId());
+//            if(vv==null){//之前已有过访问量 加载到内存
+//                vv = new VisitView();
+//                vv.setUserId(visitView.getUserId());
+//            }
+//        }else{
+//            vv = (VisitView) CommonUtils.mapToObject(visitMap,VisitView.class);
+//        }
+//        if(vv!=null){
+//            vv.setTotalVisitCount(vv.getTotalVisitCount()+1);
+//            vv.setTodayVisitCount(vv.getTotalVisitCount()+1);
+////            redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(vv),second);//今日访问量的生命周期 到今天晚上12点失效
+//        }
+//        //开始进行更新访问量+1
+//        long totalVisitCount =0;//总访问量
+//        long todayVisitCount =0;//今日访问量
+//        todayVisitCount = redisUtils.hashIncr(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,"today_"+visitView.getUserId(),1);//原子操作 递增1
+//        redisUtils.expire(Constants.REDIS_KEY_USER_VISIT_TODAY_COUNT,second);//更新今日访问量的生命周期 到今天晚上12点失效
+//        //检测总访问量缓存中是否存在
+//        totalVisitCount = redisUtils.hashIncr(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,"total_"+visitView.getUserId(),1);//原子操作 递增1
+//        redisUtils.expire(Constants.REDIS_KEY_USER_VISIT_TOTAL_COUNT,Constants.USER_TIME_OUT);//7天
         //调用MQ同步访问量数据库
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
@@ -84,8 +85,8 @@ public class VisitViewController extends BaseController implements VisitViewApiC
         JSONObject content = new JSONObject();
         content.put("myId",CommonUtils.getMyId());
         content.put("userId",visitView.getUserId() );
-        content.put("todayVisitCount",todayVisitCount);
-        content.put("totalVisitCount",totalVisitCount);
+        content.put("todayVisitCount",0);//无用字段
+        content.put("totalVisitCount",0);//无用字段
         root.put("header", header);
         root.put("content", content);
         String sendMsg = root.toJSONString();

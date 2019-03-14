@@ -173,8 +173,8 @@ public class Constants {
     public static final String REDIS_KEY_USER_WALK_LIMIT = "user_walk_limit";//用户随便走走 各地串串记录对照关系
     public static final String REDIS_KEY_USER_SET_TOP = "user_set_top";//用户置顶公告 对照关系
     public static final String REDIS_KEY_USER_GRAFFITI_LIMIT = "user_graffiti_limit";//涂鸦次数记录对照关系
-    public static final String REDIS_KEY_USER_VISIT_TODAY_COUNT = "user_visit_todayCount";//今日访问
-    public static final String REDIS_KEY_USER_VISIT_TOTAL_COUNT = "user_visit_totalCount";//总访问量
+//    public static final String REDIS_KEY_USER_VISIT_TODAY_COUNT = "user_visit_todayCount";//今日访问
+//    public static final String REDIS_KEY_USER_VISIT_TOTAL_COUNT = "user_visit_totalCount";//总访问量
     public static final String REDIS_KEY_USER_VISIT = "user_visit_";//访问量记录关系表
     public static final String REDIS_KEY_BIRD_FEEDING_TODAY = "bird_feeding_today_";//今天喂的鸟
     public static final String REDIS_KEY_BIRD_FEEDING_TOTAL_COUNT = "bird_feeding_totalcount";//今日喂鸟次数
