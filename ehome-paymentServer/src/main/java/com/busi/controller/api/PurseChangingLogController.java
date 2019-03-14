@@ -41,10 +41,10 @@ public class PurseChangingLogController extends BaseController implements PurseC
                                        @PathVariable String beginTime,@PathVariable String endTime,
                                        @PathVariable int page,@PathVariable int count) {
         //验证参数
-        if(tradeType<-1||tradeType>20){
+        if(tradeType<-1||tradeType>21){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"tradeType参数有误",new JSONObject());
         }
-        if(currencyType<-1||tradeType>2){
+        if(currencyType<-1||currencyType>2){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"currencyType参数有误",new JSONObject());
         }
         if(!CommonUtils.checkFull(beginTime)&&beginTime.length()!=8){
