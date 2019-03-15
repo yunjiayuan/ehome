@@ -18,7 +18,7 @@ public class VisitView {
 
   private long userId;//被访问用户ID
 
-  private long todayVisitCount;//今天访问量
+  private long todayVisitCount;//今天访问量  停用数据库存储 改存在redis缓存中 每日0点缓存清空
 
   private long totalVisitCount;//总访问量
 

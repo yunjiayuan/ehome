@@ -418,7 +418,12 @@ public class RegisterController extends BaseController implements RegisterApiCon
                 visitView = new VisitView();
                 visitView.setUserId(userId);
             }
-            userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//设置今日访问量
+            if(CommonUtils.getMyId()==userId){//自己看自己
+                visitView.setTodayVisitCount(0);//初始化今日访问量
+            }else{//别人看自己
+                visitView.setTodayVisitCount(1);//初始化今日访问量
+            }
+            userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//初始化今日访问量
             userInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
             //更新缓存
             redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),CommonUtils.getCurrentTimeTo_12());//保证今日访问量的生命周期 到今天晚上12点失效
@@ -430,7 +435,12 @@ public class RegisterController extends BaseController implements RegisterApiCon
                     visitView = new VisitView();
                     visitView.setUserId(userId);
                 }
-                userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//设置今日访问量
+                if(CommonUtils.getMyId()==userId){//自己看自己
+                    visitView.setTodayVisitCount(0);//初始化今日访问量
+                }else{//别人看自己
+                    visitView.setTodayVisitCount(1);//初始化今日访问量
+                }
+                userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//初始化今日访问量
                 userInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
                 //更新缓存
                 redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),CommonUtils.getCurrentTimeTo_12());//保证今日访问量的生命周期 到今天晚上12点失效

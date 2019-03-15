@@ -46,6 +46,9 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
             }
         }
         rewardLog.setTime(new Date());
+        if(rewardLog.getRewardType()==0||rewardLog.getRewardType()==1){// 0红包雨奖励 1新人注册奖励 不做新提醒
+            rewardLog.setIsNew(1);//已读
+        }
         rewardLogService.add(rewardLog);
         //更新总金额
         RewardTotalMoneyLog rewardTotalMoneyLog = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfo(userId);
