@@ -167,8 +167,8 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         workResume.setRefreshTime(new Date());
         workResumeService.updateResume(workResume);
 
-        int integrity = 0; //0待完善   1完整
-        int integrity2 = 0; //0待完善   1完整
+        int integrity = 0; //亮点  0待完善   1完整
+        int integrity2 = 0; //作品  0待完善   1完整
         if (!CommonUtils.checkFull(workResume.getHighlights())) {
             integrity = 1;
         }

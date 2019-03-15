@@ -154,6 +154,16 @@ public class WorkRecruitService {
     }
 
     /***
+     * 更新职位申请状态
+     * @param applyRecord
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateApplyRecord(WorkApplyRecord applyRecord) {
+        return workRecruitDao.updateApplyRecord(applyRecord);
+    }
+
+    /***
      * 更新面试通知
      * @param workInterview
      * @return
@@ -162,6 +172,7 @@ public class WorkRecruitService {
     public int updateInterview(WorkInterview workInterview) {
         return workRecruitDao.updateInterview(workInterview);
     }
+
 
     /***
      * 更新面试通知删除状态

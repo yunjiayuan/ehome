@@ -163,10 +163,13 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
         long days7 = 1000 * 60 * 60 * 24 * 7;
         long days90 = 1000 * 60 * 60 * 24 * 90;
         WorkRecruit is = workRecruitService.findRecruit(workApplyRecord.getRecruitId());//招聘信息[不能是自己]
-        if(is==null)return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您申请的招聘信息已过期或已被删除，再看看其他职位吧!", new JSONObject());
+        if (is == null)
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您申请的招聘信息已过期或已被删除，再看看其他职位吧!", new JSONObject());
         WorkResume is2 = workResumeService.findById(workApplyRecord.getResumeId());//投递简历
-        if(is2==null)return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您将要投递的简历不存在!", new JSONObject());
-        if (CommonUtils.getMyId() == is.getUserId()) return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "很抱歉，您不能申请自己名下企业的职位!", new JSONObject());
+        if (is2 == null)
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您将要投递的简历不存在!", new JSONObject());
+        if (CommonUtils.getMyId() == is.getUserId())
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "很抱歉，您不能申请自己名下企业的职位!", new JSONObject());
         long currentTime = new Date().getTime();//当前时间
         WorkApplyRecord record = workRecruitService.findApply(workApplyRecord.getUserId(), workApplyRecord.getResumeId(), workApplyRecord.getRecruitId());
         if (record != null) {
@@ -290,7 +293,14 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
         Date date = new Date();
         workInterview.setAddTime(date);
         workRecruitService.addInterview(workInterview);
-
+        //更新职位申请状态
+        WorkApplyRecord record = workRecruitService.findApply2(workInterview.getNotifiedUserId(), workInterview.getResumeId(), workInterview.getUserId());
+        if (record != null) {
+            record.setRefreshTime(date);
+            record.setEmploymentStatus(1);
+            record.setEnterpriseFeedback(1);
+            workRecruitService.updateApplyRecord(record);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
     }
 
