@@ -250,51 +250,6 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
     }
 
     /***
-     * 条件查询订单
-     * @param count       : 每页的显示条数
-     * @param page        : 当前查询数据的页码
-     * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2制作中(已接单未发货),3配送(已发货未收货),4已卖出(已收货未评价),  5卖家取消订单 6付款超时 7接单超时 8发货超时 9用户取消订单 10 已评价
-     * @return
-     */
-    @Override
-    public ReturnData findKitchenOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
-        //验证参数
-        if (page < 0 || count <= 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
-        }
-        //开始查询
-        PageBean<KitchenOrders> pageBean;
-        pageBean = kitchenOrdersService.findOrderList(identity, userId, ordersType, page, count);
-        if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-        }
-        List list = null;
-        list = pageBean.getList();
-        KitchenOrders t = null;
-        UserInfo userCache = null;
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                t = (KitchenOrders) list.get(i);
-                if (t != null) {
-                    if (identity == 1) {
-                        userCache = userInfoUtils.getUserInfo(t.getUserId());
-                    } else {
-                        userCache = userInfoUtils.getUserInfo(t.getMyId());
-                    }
-                    if (userCache != null) {
-                        t.setName(userCache.getName());
-                        t.setHead(userCache.getHead());
-                        t.setProTypeId(userCache.getProType());
-                        t.setHouseNumber(userCache.getHouseNumber());
-                    }
-                }
-            }
-        }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
-    }
-
-    /***
      * 查看订单详情
      * @param id  订单Id
      * @return
@@ -589,5 +544,50 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         kitchenOrdersService.findEvaluateId(id);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 条件查询订单
+     * @param identity    : 身份区分：1买家 2商家
+     * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2制作中(已接单未发货),3配送(已发货未收货),4已卖出(已收货未评价),  5卖家取消订单 6付款超时 7接单超时 8发货超时 9用户取消订单 10 已评价
+     * @param count       : 每页的显示条数
+     * @param page        : 当前查询数据的页码
+     * @return
+     */
+    @Override
+    public ReturnData findKitchenOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<KitchenOrders> pageBean;
+        pageBean = kitchenOrdersService.findOrderList(identity, userId, ordersType, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        KitchenOrders t = null;
+        UserInfo userCache = null;
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                t = (KitchenOrders) list.get(i);
+                if (t != null) {
+                    if (identity == 1) {
+                        userCache = userInfoUtils.getUserInfo(t.getUserId());
+                    } else {
+                        userCache = userInfoUtils.getUserInfo(t.getMyId());
+                    }
+                    if (userCache != null) {
+                        t.setName(userCache.getName());
+                        t.setHead(userCache.getHead());
+                        t.setProTypeId(userCache.getProType());
+                        t.setHouseNumber(userCache.getHouseNumber());
+                    }
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 }

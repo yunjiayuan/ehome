@@ -42,6 +42,10 @@ public class Notepad {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;            //发布时间
 
+    private String videoCover;        //视频封面
+
+    private String videoUrl;        //视频地址
+
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
