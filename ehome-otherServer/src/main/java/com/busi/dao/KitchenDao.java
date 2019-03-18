@@ -198,8 +198,8 @@ public interface KitchenDao {
      * @param collect
      * @return
      */
-    @Insert("insert into KitchenCollection(userId,kitchend,kitchenName,goodFood,cuisine,kitchenCover,time) " +
-            "values (#{userId},#{kitchend},#{kitchenName},#{goodFood},#{cuisine},#{kitchenCover},#{time})")
+    @Insert("insert into KitchenCollection(userId,kitchend,kitchenName,goodFood,cuisine,kitchenCover,time,beUserId) " +
+            "values (#{userId},#{kitchend},#{kitchenName},#{goodFood},#{cuisine},#{kitchenCover},#{time},#{beUserId})")
     @Options(useGeneratedKeys = true)
     int addCollect(KitchenCollection collect);
 
