@@ -60,11 +60,11 @@ public interface KitchenOrdersApiController {
 
     /***
      * 查看订单详情
-     * @param id  订单Id
+     * @param no  订单编号
      * @return
      */
-    @GetMapping("findKitchenOrders/{id}")
-    ReturnData findKitchenOrders(@PathVariable long id);
+    @GetMapping("findKitchenOrders/{no}")
+    ReturnData findKitchenOrders(@PathVariable String no);
 
     /***
      * 统计各类订单数量

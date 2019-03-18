@@ -46,7 +46,7 @@ public class KitchenTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 52 16 * * ?") //
+    @Scheduled(cron = "0 50 15 * * ?") //十五点五十分
     public void kitchenTimer() throws Exception {
         log.info("开始查询数据库中待处理的厨房超时订单...");
         while (true) {

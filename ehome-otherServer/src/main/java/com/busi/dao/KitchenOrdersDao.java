@@ -82,6 +82,20 @@ public interface KitchenOrdersDao {
     KitchenOrders findById(@Param("id") long id, @Param("userId") long userId, @Param("type") int type);
 
     /***
+     * 根据订单编号查询订单
+     * @param no  订单编号
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenOrders" +
+            " where no LIKE #{no}" +
+            " and ordersState = 0" +
+            "</script>")
+    KitchenOrders findByNo(@Param("no") String no, @Param("userId") long userId);
+
+
+    /***
      * 根据评价ID查询
      * @param id
      * @return
