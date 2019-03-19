@@ -2,11 +2,15 @@ package com.busi.controller.local;
 
 
 import com.busi.entity.ReturnData;
+import com.busi.entity.UserHeadNotes;
 import com.busi.entity.UserInfo;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.validation.Valid;
 
 /**
  * 用户信息相关接口（内部调用）
@@ -54,5 +58,13 @@ public interface UserInfoLocalController {
      */
     @PutMapping("updateBindOther")
     ReturnData updateBindOther(@RequestBody UserInfo userInfo);
+
+    /***
+     * 更换欢迎视频接口(仅用于发布生活圈视频时更新机器人欢迎视频功能 刷假数据)
+     * @param userHeadNotes
+     * @return
+     */
+    @PutMapping("updateWelcomeVideoByHomeBlog")
+    ReturnData updateWelcomeVideoByHomeBlog (@RequestBody UserHeadNotes userHeadNotes);
 
 }

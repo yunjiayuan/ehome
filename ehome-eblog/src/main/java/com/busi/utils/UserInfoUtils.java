@@ -1,11 +1,11 @@
 package com.busi.utils;
 
+import com.busi.entity.UserHeadNotes;
 import com.busi.entity.UserInfo;
 import com.busi.fegin.UserInfoLocalControllerFegin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.Map;
 
 /**
@@ -45,5 +45,14 @@ public class UserInfoUtils {
      */
     public void updateHomeBlogStatus(@RequestBody UserInfo userInfo) {
         userInfoLocalControllerFegin.updateHomeBlogStatus(userInfo);
+    }
+
+    /***
+     * 更换欢迎视频接口(仅用于发布生活圈视频时更新机器人欢迎视频功能 刷假数据)
+     * @param userHeadNotes
+     * @return
+     */
+    public void updateWelcomeVideoByHomeBlog(@RequestBody UserHeadNotes userHeadNotes) {
+        userInfoLocalControllerFegin.updateWelcomeVideoByHomeBlog(userHeadNotes);
     }
 }
