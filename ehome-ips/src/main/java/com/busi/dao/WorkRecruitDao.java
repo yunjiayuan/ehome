@@ -197,6 +197,20 @@ public interface WorkRecruitDao {
     int delInterview(WorkInterview workInterview);
 
     /***
+     * 更新职位申请状态
+     * @param applyRecord
+     * @return
+     */
+    @Update("<script>" +
+            "update WorkApplyRecord set" +
+            " refreshTime=#{refreshTime}," +
+            " employmentStatus=#{employmentStatus}," +
+            " enterpriseFeedback=#{enterpriseFeedback}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateApplyRecord(WorkApplyRecord applyRecord);
+
+    /***
      * 根据ID查询面试通知
      * @param id
      * @return

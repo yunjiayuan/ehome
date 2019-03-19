@@ -59,23 +59,12 @@ public interface KitchenOrdersApiController {
     ReturnData kitchenSell(@PathVariable long id);
 
     /***
-     * 订单管理条件查询
-     * @param count       : 每页的显示条数
-     * @param page        : 当前查询数据的页码
-     * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2制作中(已接单未发货),3配送(已发货未收货),4已卖出(已收货未评价),  5卖家取消订单 6付款超时 7接单超时 8发货超时 9用户取消订单 10 已评价
-     * @return
-     */
-    @GetMapping("findKitchenOrderList/{userId}/{identity}/{ordersType}/page}/{count}")
-    ReturnData findKitchenOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
-
-    /***
      * 查看订单详情
-     * @param id  订单Id
+     * @param no  订单编号
      * @return
      */
-    @GetMapping("findKitchenOrders/{id}")
-    ReturnData findKitchenOrders(@PathVariable long id);
+    @GetMapping("findKitchenOrders/{no}")
+    ReturnData findKitchenOrders(@PathVariable String no);
 
     /***
      * 统计各类订单数量
@@ -116,5 +105,16 @@ public interface KitchenOrdersApiController {
      */
     @DeleteMapping("delKitchenEvaluate/{id}")
     ReturnData delKitchenEvaluate(@PathVariable long id);
+
+    /***
+     * 订单管理条件查询
+     * @param count       : 每页的显示条数
+     * @param page        : 当前查询数据的页码
+     * @param identity    : 身份区分：1买家 2商家
+     * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2制作中(已接单未发货),3配送(已发货未收货),4已卖出(已收货未评价),  5卖家取消订单 6付款超时 7接单超时 8发货超时 9用户取消订单 10 已评价
+     * @return
+     */
+    @GetMapping("findKitchenOrderList/{userId}/{identity}/{ordersType}/{page}/{count}")
+    ReturnData findKitchenOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
 }

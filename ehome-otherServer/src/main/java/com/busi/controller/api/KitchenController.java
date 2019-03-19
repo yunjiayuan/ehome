@@ -328,7 +328,18 @@ public class KitchenController extends BaseController implements KitchenApiContr
         if (flag) {
             return returnData(StatusCode.CODE_COLLECTED_KITCHEN_ERROR.CODE_VALUE, "您已收藏过此厨房", new JSONObject());
         }
-        Kitchen io = kitchenService.findById(collect.getKitchend());
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + collect.getBeUserId());
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            Kitchen kitchen2 = kitchenService.findByUserId(collect.getBeUserId());
+            if (kitchen2 == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，厨房不存在！", new JSONObject());
+            }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(kitchen2);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+        }
+        Kitchen io = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
         if (io != null) {
             //添加收藏记录
             collect.setCuisine(io.getCuisine());

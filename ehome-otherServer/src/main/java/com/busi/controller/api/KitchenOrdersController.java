@@ -122,12 +122,12 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
 
                         kitchenOrdersService.addOrders(kitchenOrders);
 
-                        map.put("infoId", kitchenOrders.getId());
+                        map.put("infoId", kitchenOrders.getNo());
 
                         //放入缓存
                         // 付款超时 15分钟
                         Map<String, Object> ordersMap = CommonUtils.objectToMap(kitchenOrders);
-                        redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + kitchenOrders.getId(), ordersMap, Constants.TIME_OUT_MINUTE_15);
+                        redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + kitchenOrders.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_15);
                     }
                 }
             }
@@ -153,7 +153,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         }
         kitchenOrdersService.updateOrders(io);
         //清除缓存中的厨房订单信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -176,10 +176,10 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
             io.setUpdateCategory(1);
             kitchenOrdersService.updateOrders(io);
             //清除缓存中的厨房订单信息
-            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);
             //厨房订单放入缓存(六小时配送超时)
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), ordersMap, Constants.MSG_TIME_OUT_HOUR_1 * 6);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), ordersMap, Constants.MSG_TIME_OUT_HOUR_1 * 6);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -208,10 +208,10 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
 
             kitchenOrdersService.updateOrders(io);
             //清除缓存中的厨房订单信息
-            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);
             //厨房订单放入缓存(收货超时24小时)
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_60_24_1);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -241,71 +241,26 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
             //清除缓存中厨房的信息
             redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kh.getUserId(), 0);
             //清除缓存中的厨房订单信息
-            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);
             //厨房订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), ordersMap, 0);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
-     * 条件查询订单
-     * @param count       : 每页的显示条数
-     * @param page        : 当前查询数据的页码
-     * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2制作中(已接单未发货),3配送(已发货未收货),4已卖出(已收货未评价),  5卖家取消订单 6付款超时 7接单超时 8发货超时 9用户取消订单 10 已评价
-     * @return
-     */
-    @Override
-    public ReturnData findKitchenOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
-        //验证参数
-        if (page < 0 || count <= 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
-        }
-        //开始查询
-        PageBean<KitchenOrders> pageBean;
-        pageBean = kitchenOrdersService.findOrderList(identity, userId, ordersType, page, count);
-        if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-        }
-        List list = null;
-        list = pageBean.getList();
-        KitchenOrders t = null;
-        UserInfo userCache = null;
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                t = (KitchenOrders) list.get(i);
-                if (t != null) {
-                    if (identity == 1) {
-                        userCache = userInfoUtils.getUserInfo(t.getUserId());
-                    } else {
-                        userCache = userInfoUtils.getUserInfo(t.getMyId());
-                    }
-                    if (userCache != null) {
-                        t.setName(userCache.getName());
-                        t.setHead(userCache.getHead());
-                        t.setProTypeId(userCache.getProType());
-                        t.setHouseNumber(userCache.getHouseNumber());
-                    }
-                }
-            }
-        }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
-    }
-
-    /***
      * 查看订单详情
-     * @param id  订单Id
+     * @param no  订单编号
      * @return
      */
     @Override
-    public ReturnData findKitchenOrders(@PathVariable long id) {
+    public ReturnData findKitchenOrders(@PathVariable String no) {
         //查询缓存 缓存中不存在 查询数据库
         KitchenOrders io = null;
-        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHENORDERS + id);
+        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHENORDERS + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
-            io = kitchenOrdersService.findById(id, CommonUtils.getMyId(), 4);
+            io = kitchenOrdersService.findByNo(no, CommonUtils.getMyId());
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
             }
@@ -319,7 +274,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
             }
             //放入缓存
             ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + id, ordersMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + no, ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
     }
@@ -442,10 +397,10 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         //更新缓存、钱包、账单
         mqUtils.sendPurseMQ(ko.getMyId(), 16, 0, ko.getMoney());
         //清除缓存中的厨房订单信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + id, 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + ko.getNo(), 0);
         //放入缓存
         Map<String, Object> ordersMap = CommonUtils.objectToMap(ko);
-        redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + id, ordersMap, Constants.USER_TIME_OUT);
+        redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -570,10 +525,10 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                 io.setUpdateCategory(5);
                 kitchenOrdersService.updateOrders(io);
                 //清除缓存中的厨房订单信息
-                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), 0);
+                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);
                 //放入缓存
                 Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-                redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getId(), ordersMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -589,5 +544,50 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         kitchenOrdersService.findEvaluateId(id);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 条件查询订单
+     * @param identity    : 身份区分：1买家 2商家
+     * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2制作中(已接单未发货),3配送(已发货未收货),4已卖出(已收货未评价),  5卖家取消订单 6付款超时 7接单超时 8发货超时 9用户取消订单 10 已评价
+     * @param count       : 每页的显示条数
+     * @param page        : 当前查询数据的页码
+     * @return
+     */
+    @Override
+    public ReturnData findKitchenOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<KitchenOrders> pageBean;
+        pageBean = kitchenOrdersService.findOrderList(identity, userId, ordersType, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        KitchenOrders t = null;
+        UserInfo userCache = null;
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                t = (KitchenOrders) list.get(i);
+                if (t != null) {
+                    if (identity == 1) {
+                        userCache = userInfoUtils.getUserInfo(t.getUserId());
+                    } else {
+                        userCache = userInfoUtils.getUserInfo(t.getMyId());
+                    }
+                    if (userCache != null) {
+                        t.setName(userCache.getName());
+                        t.setHead(userCache.getHead());
+                        t.setProTypeId(userCache.getProType());
+                        t.setHouseNumber(userCache.getHouseNumber());
+                    }
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 }

@@ -22,8 +22,8 @@ public interface NotepadDao {
      * @param notepad
      * @return
      */
-    @Insert("insert into notepad(userId,addType,content,thenTime,thisDateId,imgUrls,alarmTime,remindType,time) " +
-            "values (#{userId},#{addType},#{content},#{thenTime},#{thisDateId},#{imgUrls},#{alarmTime},#{remindType},#{time})")
+    @Insert("insert into notepad(userId,addType,content,thenTime,thisDateId,imgUrls,alarmTime,remindType,time,videoCover,videoUrl) " +
+            "values (#{userId},#{addType},#{content},#{thenTime},#{thisDateId},#{imgUrls},#{alarmTime},#{remindType},#{time},#{videoCover},#{videoUrl})")
     @Options(useGeneratedKeys = true)
     int add(Notepad notepad);
 
@@ -39,6 +39,8 @@ public interface NotepadDao {
             "</if>" +
             "<if test=\"addType ==1\">" +
             " imgUrls=#{imgUrls}," +
+            " videoCover=#{videoCover}," +
+            " videoUrl=#{videoUrl}," +
             "</if>" +
             "<if test=\"addType !=1\">" +
             " alarmTime=#{alarmTime}," +
