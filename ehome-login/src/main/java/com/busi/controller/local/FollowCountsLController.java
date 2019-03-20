@@ -9,8 +9,11 @@ import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Random;
 
 /**
  * 用户信息相关接口（内部调用）
@@ -51,6 +54,31 @@ public class FollowCountsLController extends BaseController implements FollowCou
             followCountsService.update(fc);
             //放入缓存
             redisUtils.set(Constants.REDIS_KEY_FOLLOW_COUNTS+fc.getUserId(),fc.getCounts()+"",Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 批量刷新粉丝量 只刷新机器人 1-10000 13870-53870
+     * @return
+     */
+    @GetMapping("addFollowCounts")
+    public ReturnData addFollowCounts() {
+        for(int i=1;i<=10000;i++){
+            Random random = new Random();
+            int count = random.nextInt(5000)+1;
+            FollowCounts followCounts = new FollowCounts();
+            followCounts.setUserId(i);
+            followCounts.setCounts(count);
+            followCountsService.add(followCounts);
+        }
+        for(int i=13870;i<=53870;i++){
+            Random random = new Random();
+            int count = random.nextInt(5000)+1;
+            FollowCounts followCounts = new FollowCounts();
+            followCounts.setUserId(i);
+            followCounts.setCounts(count);
+            followCountsService.add(followCounts);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }

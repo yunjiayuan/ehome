@@ -3,18 +3,23 @@ package com.busi.controller.local;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.ReturnData;
+import com.busi.entity.UserHeadNotes;
 import com.busi.entity.UserInfo;
+import com.busi.service.UserHeadNotesService;
 import com.busi.service.UserInfoService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 用户信息相关接口（内部调用）
@@ -29,6 +34,9 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
 
     @Autowired
     UserInfoService userInfoService;
+
+    @Autowired
+    UserHeadNotesService userHeadNotesService;
 
     /***
      * 查询用户信息
@@ -146,6 +154,35 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
             redisUtils.hmset(Constants.REDIS_KEY_USER+userInfo.getUserId(),userMap,Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更换欢迎视频接口(仅用于发布生活圈视频时更新机器人欢迎视频功能 刷假数据)
+     * @param userHeadNotes
+     * @return
+     */
+    public ReturnData updateWelcomeVideoByHomeBlog(@RequestBody UserHeadNotes userHeadNotes) {
+        UserHeadNotes uhn = userHeadNotesService.findUserHeadNotesById(userHeadNotes.getUserId());
+        if(uhn!=null){//更新
+            uhn.setWelcomeVideoPath(userHeadNotes.getWelcomeVideoPath());
+            uhn.setWelcomeVideoCoverPath(userHeadNotes.getWelcomeVideoCoverPath());
+            userHeadNotesService.updateWelcomeVideo(uhn);
+        }else{//新增
+            int number = new Random().nextInt(3) + 1;
+            int hy = new Random().nextInt(11) + 1;
+            if(hy>=10){
+                userHeadNotes.setGardenCover("/image/roomCover/pub_hy_image_0"+hy+".jpg");
+            }else{
+                userHeadNotes.setGardenCover("/image/roomCover/pub_hy_image_00"+hy+".jpg");
+            }
+            userHeadNotes.setLivingRoomCover("/image/roomCover/pub_kt_image_00"+number+".jpg");
+            userHeadNotes.setHomeStoreCover("/image/roomCover/pub_jd_image_00"+number+".jpg");
+            userHeadNotes.setStorageRoomCover("/image/roomCover/pub_ccs_image_00"+number+".jpg");
+            userHeadNotesService.add(userHeadNotes);
+        }
+        //将缓存中数据 清除
+        redisUtils.expire(Constants.REDIS_KEY_USER_HEADNOTES+userHeadNotes.getUserId(),0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
 }

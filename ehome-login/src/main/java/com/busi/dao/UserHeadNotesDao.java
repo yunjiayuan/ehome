@@ -18,7 +18,7 @@ public interface UserHeadNotesDao {
      * @param userHeadNotes
      * @return
      */
-    @Insert("insert into userHeadNotes(userId,gardenCover,livingRoomCover,homeStoreCover,storageRoomCover) values (#{userId},#{gardenCover},#{livingRoomCover},#{homeStoreCover},#{storageRoomCover})")
+    @Insert("insert into userHeadNotes(userId,gardenCover,livingRoomCover,homeStoreCover,storageRoomCover,welcomeVideoCoverPath,welcomeVideoPath) values (#{userId},#{gardenCover},#{livingRoomCover},#{homeStoreCover},#{storageRoomCover},#{welcomeVideoCoverPath},#{welcomeVideoPath})")
     @Options(useGeneratedKeys = true)
     int add(UserHeadNotes userHeadNotes);
 

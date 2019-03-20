@@ -12,8 +12,7 @@ import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.Map;
 
@@ -92,4 +91,29 @@ public class VisitViewLController extends BaseController implements VisitViewLoc
         footprintService.add(footprint);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
+
+    /**
+     * 批量刷新访问量数据 只刷新机器人 1-10000 13870-53870
+     * @return
+     */
+//    @GetMapping("addVisits")
+//    public ReturnData addVisits() {
+//        for(int i=1;i<=10000;i++){
+//            Random random = new Random();
+//            int count = random.nextInt(20000)+1;
+//            VisitView v = new VisitView();
+//            v.setTotalVisitCount(count);
+//            v.setUserId(i);
+//            visitViewService.add(v);
+//        }
+//        for(int i=13870;i<=53870;i++){
+//            Random random = new Random();
+//            int count = random.nextInt(20000)+1;
+//            VisitView v = new VisitView();
+//            v.setTotalVisitCount(count);
+//            v.setUserId(i);
+//            visitViewService.add(v);
+//        }
+//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+//    }
 }

@@ -113,6 +113,11 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setUserId(ra.nextInt(9999)+1);
                 homeBlog.setLikeCount(ra2.nextInt(30000)+10000);
                 homeBlog.setLookCount(ra3.nextInt(30000)+30000);
+                UserHeadNotes userHeadNotes = new UserHeadNotes();
+                userHeadNotes.setWelcomeVideoPath(homeBlog.getVideoUrl());
+                userHeadNotes.setWelcomeVideoCoverPath(homeBlog.getVideoCoverUrl());
+                userHeadNotes.setUserId(homeBlog.getUserId());
+                userInfoUtils.updateWelcomeVideoByHomeBlog(userHeadNotes);
             }
         }
         homeBlogService.add(homeBlog);
