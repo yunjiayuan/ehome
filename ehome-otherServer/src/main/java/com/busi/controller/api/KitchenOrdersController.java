@@ -175,7 +175,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
             io.setOrderTime(new Date());
             io.setUpdateCategory(1);
             kitchenOrdersService.updateOrders(io);
-            //清除缓存中的厨房订单信息
+            //清除缓存中的嗯厨房订单信息
             redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);
             //厨房订单放入缓存(六小时配送超时)
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
