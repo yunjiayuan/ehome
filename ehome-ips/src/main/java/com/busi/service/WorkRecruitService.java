@@ -250,6 +250,16 @@ public class WorkRecruitService {
     }
 
     /***
+     * 更新招聘信息上下架状态
+     * @param workRecruit
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateRecruitState(WorkRecruit workRecruit) {
+        return workRecruitDao.updateRecruitState(workRecruit);
+    }
+
+    /***
      * 更新招聘信息删除状态
      * @param workRecruit
      * @return

@@ -151,6 +151,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         } else {
             io.setOrdersState(io.getUserId() == CommonUtils.getMyId() ? 2 : 1);
         }
+        io.setUpdateCategory(0);
         kitchenOrdersService.updateOrders(io);
         //清除缓存中的厨房订单信息
         redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);

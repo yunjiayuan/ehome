@@ -316,6 +316,18 @@ public interface WorkRecruitDao {
     int delRecruit(WorkRecruit workRecruit);
 
     /***
+     * 更新招聘信息上下架状态
+     * @param workRecruit
+     * @return
+     */
+    @Update("<script>" +
+            "update workRecruit set" +
+            " recruitmentStatus=#{recruitmentStatus}" +
+            " where id=#{id} and userId=#{userId} and state=0" +
+            "</script>")
+    int updateRecruitState(WorkRecruit workRecruit);
+
+    /***
      * 查询招聘列表
      * @param userId
      * @return

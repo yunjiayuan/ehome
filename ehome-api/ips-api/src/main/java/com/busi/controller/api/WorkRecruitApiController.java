@@ -142,6 +142,15 @@ public interface WorkRecruitApiController {
     ReturnData updateRecruit(@Valid @RequestBody WorkRecruit workRecruit, BindingResult bindingResult);
 
     /***
+     * 更新招聘信息上下架状态
+     * @param workRecruit
+     * @param bindingResult
+     * @return
+     */
+    @PutMapping("updateRecruitState")
+    ReturnData updateRecruitState(@Valid @RequestBody WorkRecruit workRecruit, BindingResult bindingResult);
+
+    /***
      * 删除招聘信息
      * @param id
      * @return

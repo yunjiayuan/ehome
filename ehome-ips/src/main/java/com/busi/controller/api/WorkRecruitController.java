@@ -462,6 +462,24 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
     }
 
     /***
+     * 更新招聘信息上下架状态
+     * @param workRecruit
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData updateRecruitState(@Valid @RequestBody WorkRecruit workRecruit, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        workRecruit.setRefreshTime(new Date());
+        workRecruitService.updateRecruitState(workRecruit);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 删除招聘信息
      * @param id
      * @return
