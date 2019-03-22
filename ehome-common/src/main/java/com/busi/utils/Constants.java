@@ -193,6 +193,7 @@ public class Constants {
     public static final String REDIS_KEY_FOLLOW_LIST = "follow_list_";//关注信息 当前用户关注的人的ID组合 逗号分隔
     public static final String REDIS_KEY_FOLLOW_COUNTS = "follow_counts_";//粉丝数对照 用户ID对应粉丝数
     public static final String REDIS_KEY_CHAT_SQUARE = "chat_square_";//聊天室在线用户对照 省ID对应在线用户
+    public static final String REDIS_KEY_SELFCHANNELVIP = "selfChannelVip_";//userId与自频道会员信息对象的关系对照
 
     //验证码相关配置
     public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key

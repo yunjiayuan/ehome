@@ -5,10 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CloudVideoService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.MqUtils;
-import com.busi.utils.StatusCode;
-import com.busi.utils.UserInfoUtils;
+import com.busi.service.SelfChannelVipService;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,10 +32,16 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
     MqUtils mqUtils;
 
     @Autowired
+    RedisUtils redisUtils;
+
+    @Autowired
     UserInfoUtils userInfoUtils;
 
     @Autowired
     CloudVideoService cloudVideoService;
+
+    @Autowired
+    SelfChannelVipService selfChannelVipService;
 
     /***
      * 上传视频
@@ -50,6 +54,23 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //验证是否是自频道会员
+        //查询缓存 缓存中不存在 查询数据库(缓存中存在必定是会员)
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_SELFCHANNELVIP + cloudVideo.getUserId());
+        if (map == null || map.size() <= 0) {
+            SelfChannelVip vip = selfChannelVipService.findDetails(cloudVideo.getUserId());
+            if (vip != null) {
+                if (vip.getMemberShipStatus() == 1) {
+                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
+                } else {
+                    //放入缓存
+                    map = CommonUtils.objectToMap(vip);
+                    redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + vip.getUserId(), map, Constants.USER_TIME_OUT);
+                }
+            } else {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
+            }
         }
         cloudVideo.setTime(new Date());
         cloudVideoService.addCloudVideo(cloudVideo);

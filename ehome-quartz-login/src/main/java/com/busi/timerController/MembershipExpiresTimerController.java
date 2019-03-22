@@ -1,6 +1,8 @@
 package com.busi.timerController;
 
+import com.busi.entity.SelfChannelVip;
 import com.busi.entity.UserMembership;
+import com.busi.servive.SelfChannelVipService;
 import com.busi.servive.UserMembershipService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
@@ -31,6 +33,9 @@ public class MembershipExpiresTimerController {
     @Autowired
     UserMembershipService userMembershipService;
 
+    @Autowired
+    SelfChannelVipService selfChannelVipService;
+
     @Scheduled(cron = "0 55 2 * * ?") // 每秒执行一次
     public void membershipExpiresTimer() throws Exception {
         log.info("开始处理到期会员...");
@@ -38,6 +43,23 @@ public class MembershipExpiresTimerController {
         long regularExpireTime = 0;//普通会员到期时间
         long nowTime = new Date().getTime();// 系统时间
         List<Object> usedList = new ArrayList<Object>();
+        //处理自频道会员
+        List selfList = selfChannelVipService.findMembershipList();
+        if (selfList != null && selfList.size() > 0) {
+            for (int j = 0; j < selfList.size(); j++) {
+                SelfChannelVip vip = (SelfChannelVip) selfList.get(j);
+                if (vip != null) {
+                    if (nowTime <= vip.getExpiretTime().getTime()) {
+                        vip.setMemberShipStatus(1);
+                        selfChannelVipService.update(vip);
+                        //更新缓存
+                        Map<String, Object> userMembershipMap = CommonUtils.objectToMap(vip);
+                        redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + vip.getUserId(), userMembershipMap, Constants.USER_TIME_OUT);
+                    }
+                }
+            }
+        }
+        //处理高级会员
         List list = userMembershipService.findMembershipList();
         if (list != null && list.size() > 0) {
             for (int j = 0; j < list.size(); j++) {
