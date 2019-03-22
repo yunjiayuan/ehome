@@ -6,6 +6,7 @@ import com.busi.servive.UsedDealOrdersService;
 import com.busi.servive.UsedDealService;
 import com.busi.utils.Constants;
 import com.busi.utils.MqUtils;
+import com.busi.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,6 +26,9 @@ public class UsedDealTimerController {
 
     @Autowired
     private MqUtils mqUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
 
     @Autowired
     UsedDealService usedDealService;
@@ -75,9 +79,9 @@ public class UsedDealTimerController {
                             if (sendTime <= nowTime - countTime) {
                                 order.setOrdersType(6);// 付款超时【未付款】
                                 usedDealOrdersService.cancelOrders(order);
-
                                 used = usedDealService.findUserById2(order.getGoodsId());
-
+                                //清除缓存中的二手订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + order.getOrderNumber(), 0);
                                 //更新为已上架
                                 if (used != null) {
                                     used.setSellType(1);
@@ -92,9 +96,9 @@ public class UsedDealTimerController {
                             if (paymentTime <= nowTime - countTime1) {
                                 order.setOrdersType(7);// 发货超时
                                 usedDealOrdersService.cancelOrders(order);
-
+                                //清除缓存中的二手订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + order.getOrderNumber(), 0);
                                 used = usedDealService.findUserById2(order.getGoodsId());
-
                                 if (used != null) {
                                     used.setSellType(2);
                                     usedDealService.updateStatus(used);
@@ -113,7 +117,8 @@ public class UsedDealTimerController {
                                 order.setOrdersType(3);// //更新订单为已收货
                                 order.setReceivingTime(new Date());
                                 usedDealOrdersService.updateCollect(order);
-
+                                //清除缓存中的二手订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + order.getOrderNumber(), 0);
                                 //更新商家缓存、钱包、账单
                                 mqUtils.sendPurseMQ(order.getUserId(), 14, 0, order.getMoney());
 
@@ -125,7 +130,8 @@ public class UsedDealTimerController {
                             order.setOrdersType(3);// //更新订单为已收货
                             order.setReceivingTime(new Date());
                             usedDealOrdersService.updateCollect(order);
-
+                            //清除缓存中的二手订单信息
+                            redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEALORDERS + order.getOrderNumber(), 0);
                             //更新商家缓存、钱包、账单
                             mqUtils.sendPurseMQ(order.getUserId(), 14, 0, order.getMoney());
 

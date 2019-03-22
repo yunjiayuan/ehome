@@ -2,7 +2,9 @@ package com.busi.timerController;
 
 import com.busi.entity.KitchenOrders;
 import com.busi.servive.KitchenOrdersService;
+import com.busi.utils.Constants;
 import com.busi.utils.MqUtils;
+import com.busi.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +23,9 @@ import java.util.List;
 public class KitchenTimerController {
     @Autowired
     private MqUtils mqUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
 
     @Autowired
     KitchenOrdersService kitchenOrdersService;
@@ -46,7 +51,7 @@ public class KitchenTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 50 15 * * ?") //十五点五十分
+    @Scheduled(cron = "0 55 15 * * ?") //十五点五十五分
     public void kitchenTimer() throws Exception {
         log.info("开始查询数据库中待处理的厨房超时订单...");
         while (true) {
@@ -68,6 +73,8 @@ public class KitchenTimerController {
                             if (sendTime <= nowTime - countTime15) {
                                 r.setOrdersType(6);// 付款超时【未付款】
                                 kitchenOrdersService.updateOrders(r);
+                                //清除缓存中的厨房订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getNo(), 0);
                                 log.info("更新了厨房订单[" + r.getId() + "]操作成功,状态为：付款超时！");
                                 arrList.remove(i);
                             } else {
@@ -79,7 +86,8 @@ public class KitchenTimerController {
                                 kitchenOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单
                                 mqUtils.sendPurseMQ(r.getMyId(), 16, 0, r.getMoney());
-
+                                //清除缓存中的厨房订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getNo(), 0);
                                 log.info("更新了厨房订单[" + r.getId() + "]操作成功,状态为：接单超时！");
                                 arrList.remove(i);
                             } else {
@@ -92,7 +100,8 @@ public class KitchenTimerController {
                                 kitchenOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单
                                 mqUtils.sendPurseMQ(r.getMyId(), 16, 0, r.getMoney());
-
+                                //清除缓存中的厨房订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getNo(), 0);
                                 log.info("更新了厨房订单[" + r.getId() + "]操作成功,状态为：发货超时！");
                                 arrList.remove(i);
                             } else {
@@ -106,7 +115,8 @@ public class KitchenTimerController {
                                 kitchenOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单
                                 mqUtils.sendPurseMQ(r.getMyId(), 16, 0, r.getMoney());
-
+                                //清除缓存中的厨房订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getNo(), 0);
                                 log.info("更新了厨房订单[" + r.getId() + "]操作成功,状态为：收货超时！");
                                 arrList.remove(i);
                             } else {
@@ -118,7 +128,8 @@ public class KitchenTimerController {
                             kitchenOrdersService.updateOrders(r);
                             //更新卖家缓存、钱包、账单
                             mqUtils.sendPurseMQ(r.getUserId(), 16, 0, r.getMoney());
-
+                            //清除缓存中的厨房订单信息
+                            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getNo(), 0);
                             log.info("更新了厨房订单[" + r.getId() + "]操作成功,状态为：用户确认收货！");
                             arrList.remove(i);
                         } else {
