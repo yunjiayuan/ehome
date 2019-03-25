@@ -51,7 +51,7 @@ public class KitchenTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 55 15 * * ?") //十五点五十五分
+    @Scheduled(cron = "0 40 14 * * ?") //十五点五十五分
     public void kitchenTimer() throws Exception {
         log.info("开始查询数据库中待处理的厨房超时订单...");
         while (true) {
@@ -68,7 +68,6 @@ public class KitchenTimerController {
                     r = (KitchenOrders) arrList.get(i);
                     if (r != null) {
                         long sendTime = r.getAddTime().getTime();// 下单时间
-                        long paymentTime = r.getPaymentTime().getTime();// 付款时间
 
                         if (r.getOrdersType() == 0) {
                             if (sendTime <= nowTime - countTime15) {
@@ -82,6 +81,7 @@ public class KitchenTimerController {
                                 continue;
                             }
                         } else if (r.getOrdersType() == 1) {
+                            long paymentTime = r.getPaymentTime().getTime();// 付款时间
                             if (paymentTime <= nowTime - (countTime5 + 25 * 60 * 1000)) {//30分钟时间差
                                 r.setOrdersType(7);// 接单超时【未接单】
                                 kitchenOrdersService.updateOrders(r);
