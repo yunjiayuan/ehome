@@ -68,6 +68,7 @@ public class KitchenTimerController {
                     r = (KitchenOrders) arrList.get(i);
                     if (r != null) {
                         long sendTime = r.getAddTime().getTime();// 下单时间
+                        long paymentTime = r.getPaymentTime().getTime();// 付款时间
 
                         if (r.getOrdersType() == 0) {
                             if (sendTime <= nowTime - countTime15) {
@@ -81,7 +82,7 @@ public class KitchenTimerController {
                                 continue;
                             }
                         } else if (r.getOrdersType() == 1) {
-                            if (sendTime <= nowTime - (countTime5 + 25 * 60 * 1000)) {//30分钟时间差
+                            if (paymentTime <= nowTime - (countTime5 + 25 * 60 * 1000)) {//30分钟时间差
                                 r.setOrdersType(7);// 接单超时【未接单】
                                 kitchenOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单

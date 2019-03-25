@@ -66,11 +66,10 @@ public class KitchenOrdersService {
     /***
      * 根据订单编号查询订单
      * @param no  订单编号
-     * @param userId
      * @return
      */
-    public KitchenOrders findByNo(String no, long userId) {
-        return kitchenOrdersDao.findByNo(no, userId);
+    public KitchenOrders findByNo(String no) {
+        return kitchenOrdersDao.findByNo(no);
     }
 
     /***

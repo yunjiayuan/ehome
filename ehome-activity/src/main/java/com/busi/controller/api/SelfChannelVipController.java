@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -43,16 +44,13 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_SELFCHANNELVIP + userId);
         if (map == null || map.size() <= 0) {
             SelfChannelVip vip = selfChannelVipService.findDetails(userId);
-            if (vip != null) {
-                if (vip.getMemberShipStatus() == 1) {
-                    state = 0;
-                } else {
-                    //放入缓存
-                    map = CommonUtils.objectToMap(vip);
-                    redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + vip.getUserId(), map, Constants.USER_TIME_OUT);
-                }
-            } else {
+            if (vip == null) {
                 state = 0;
+            } else {
+                //放入缓存
+                long time = vip.getExpiretTime().getTime() - new Date().getTime();
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(vip);
+                redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + userId, ordersMap, time);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", state);

@@ -84,7 +84,6 @@ public interface KitchenOrdersDao {
     /***
      * 根据订单编号查询订单
      * @param no  订单编号
-     * @param userId
      * @return
      */
     @Select("<script>" +
@@ -92,7 +91,7 @@ public interface KitchenOrdersDao {
             " where no LIKE #{no}" +
             " and ordersState = 0" +
             "</script>")
-    KitchenOrders findByNo(@Param("no") String no, @Param("userId") long userId);
+    KitchenOrders findByNo(@Param("no") String no);
 
 
     /***
@@ -109,7 +108,7 @@ public interface KitchenOrdersDao {
 
     /***
      *  更新厨房订单状态
-     *  updateCategory 更新类别  默认0删除状态  1由未接单改为制作中  2由制作中改为配送中  3由配送中改为已卖出  4取消订单  5更新订单状态为已评价
+     *  updateCategory 更新类别  默认0删除状态  1由未接单改为制作中  2由制作中改为配送中  3由配送中改为已卖出  4取消订单  5更新订单状态为已评价  6更新支付状态
      * @param orders
      * @return
      */
@@ -135,6 +134,10 @@ public interface KitchenOrdersDao {
             "</if>" +
             "<if test=\"updateCategory == 5\">" +
             " ordersType =#{ordersType}" +
+            "</if>" +
+            "<if test=\"updateCategory == 6\">" +
+            " ordersType =#{ordersType}," +
+            " paymentTime=#{paymentTime}" +
             "</if>" +
             " where id=#{id}" +
             "</script>")

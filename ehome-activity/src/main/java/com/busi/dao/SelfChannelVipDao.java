@@ -31,6 +31,6 @@ public interface SelfChannelVipDao {
      * @param userId
      * @return
      */
-    @Select("select * from SelfChannelVip where userId = #{userId} ")
+    @Select("select * from SelfChannelVip where userId = #{userId} and memberShipStatus = 0 and TO_DAYS(expiretTime)>TO_DAYS(NOW())")
     SelfChannelVip findDetails(@Param("userId") long userId);
 }

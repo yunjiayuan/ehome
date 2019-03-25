@@ -60,17 +60,13 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_SELFCHANNELVIP + cloudVideo.getUserId());
         if (map == null || map.size() <= 0) {
             SelfChannelVip vip = selfChannelVipService.findDetails(cloudVideo.getUserId());
-            if (vip != null) {
-                if (vip.getMemberShipStatus() == 1) {
-                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
-                } else {
-                    //放入缓存
-                    map = CommonUtils.objectToMap(vip);
-                    redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + vip.getUserId(), map, Constants.USER_TIME_OUT);
-                }
-            } else {
+            if (vip == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
             }
+            //放入缓存
+            long time = vip.getExpiretTime().getTime() - new Date().getTime();
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(vip);
+            redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + cloudVideo.getUserId(), ordersMap, time);
         }
         cloudVideo.setTime(new Date());
         cloudVideoService.addCloudVideo(cloudVideo);
