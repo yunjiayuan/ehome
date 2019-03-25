@@ -243,7 +243,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 payBaseService = usedDealOrdersService;
                 break;
             case 8://家门口厨房购买订单支付
-
+                payBaseService = kitchenOrdersService;
                 break;
             case 9://购买元老级会员支付
                 payBaseService = memberOrderService;

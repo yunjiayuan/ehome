@@ -23,7 +23,7 @@ public class Pay {
 //    @NotNull
     private String payPassword;//支付密码
 
-    @Length(min=16,max = 16, message = "payPassword参数格式有误")
+    @Length(min=16,max = 16, message = "paymentKey参数格式有误")
     @NotNull
     private String paymentKey;//支付私钥
 
