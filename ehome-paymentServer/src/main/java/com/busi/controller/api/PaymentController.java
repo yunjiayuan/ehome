@@ -52,6 +52,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
     @Autowired
     UsedDealOrdersService usedDealOrdersService;
 
+    @Autowired
+    KitchenOrdersService kitchenOrdersService;
+
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -250,6 +253,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 11://购买VIP高级会员支付
                 payBaseService = memberOrderService;
+                break;
+            case 12://购买自频道会员支付
+                payBaseService = kitchenOrdersService;
                 break;
             default:
                 break;
