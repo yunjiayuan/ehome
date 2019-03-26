@@ -5,8 +5,6 @@ import com.busi.controller.BaseController;
 import com.busi.entity.ReturnData;
 import com.busi.entity.SelfChannelVip;
 import com.busi.service.SelfChannelVipService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,7 @@ public class SelfChannelVipLController extends BaseController implements SelfCha
         rightNow.add(Calendar.YEAR, 1);// 日期加1年
         Date dt = rightNow.getTime();
         selfChannelVip.setExpiretTime(dt);
-        selfChannelVip.setMemberShipStatus(0);//已开通
+//        selfChannelVip.setMemberShipStatus(0);//已开通
         int count = selfChannelVipService.add(selfChannelVip);
         if (count <= 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增自频道会员信息失败", new JSONObject());
