@@ -241,7 +241,13 @@ public enum StatusCode {
 	CODE_COLLECTED_HOSPITAL_ERROR(481,"用户家医馆已存在"),
 
 	//涂鸦次数graffiti
-	CODE_GRAFFITI_FEED_FULL(491,"涂鸦次数已用尽")
+	CODE_GRAFFITI_FEED_FULL(491,"涂鸦次数已用尽"),
+
+	//涂鸦次数graffiti
+	CODE_SELF_CHANNEL_VIP_NOT_OPENING(501,"自频道会员未开通"),
+	CODE_SELF_CHANNEL_VIP_OVERDUE(502,"自频道会员已过期"),
+	CODE_SELF_CHANNEL_VIP_JOIN_ACTIVITIES(503,"您尚未参加过活动"),
+	CODE_SELF_CHANNEL_VIP_NOT_JOIN_ACTIVITIES(504,"您已参加过该活动")
 	
 	;
 	/*-----------业务状态码------------*/
