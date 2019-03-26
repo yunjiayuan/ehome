@@ -27,15 +27,15 @@ import java.util.Map;
 public class PaymentController extends BaseController implements PaymentApiController {
 
     @Autowired
-    RedisUtils redisUtils;
+    private RedisUtils redisUtils;
 
-    PayBaseService payBaseService;
-
-    @Autowired
-    ExchangeOrderService exchangeOrderService;
+    private PayBaseService payBaseService;
 
     @Autowired
-    MemberOrderService memberOrderService;
+    private ExchangeOrderService exchangeOrderService;
+
+    @Autowired
+    private MemberOrderService memberOrderService;
 
     @Autowired
     private UserBankCardInfoService userBankCardInfoService;
@@ -47,13 +47,16 @@ public class PaymentController extends BaseController implements PaymentApiContr
     private PursePayPasswordService pursePayPasswordService;
 
     @Autowired
-    RedPacketsInfoOrderService redPacketsInfoOrderService;
+    private RedPacketsInfoOrderService redPacketsInfoOrderService;
 
     @Autowired
-    UsedDealOrdersService usedDealOrdersService;
+    private UsedDealOrdersService usedDealOrdersService;
 
     @Autowired
-    KitchenOrdersService kitchenOrdersService;
+    private KitchenOrdersService kitchenOrdersService;
+
+    @Autowired
+    private SelfChannelVipLOrderService selfChannelVipOrderService;
 
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
@@ -255,7 +258,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 payBaseService = memberOrderService;
                 break;
             case 12://购买自频道会员支付
-                payBaseService = kitchenOrdersService;
+                payBaseService = selfChannelVipOrderService;
                 break;
             default:
                 break;
