@@ -37,18 +37,17 @@ public class SelfChannelVipLController extends BaseController implements SelfCha
      */
     @Override
     public ReturnData addSelfMember(@RequestBody SelfChannelVip selfChannelVip) {
+        selfChannelVip.setStartTime(new Date());
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(selfChannelVip.getStartTime());
         rightNow.add(Calendar.YEAR, 1);// 日期加1年
         Date dt = rightNow.getTime();
         selfChannelVip.setExpiretTime(dt);
+        selfChannelVip.setMemberShipStatus(0);//已开通
         int count = selfChannelVipService.add(selfChannelVip);
         if (count <= 0) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增会员信息失败", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增自频道会员信息失败", new JSONObject());
         }
-        //放入缓存
-        Map<String, Object> map = CommonUtils.objectToMap(selfChannelVip);
-        redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + selfChannelVip.getUserId(), map, Constants.TIME_OUT_MINUTE_60_24_1 * 365);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
