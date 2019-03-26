@@ -95,9 +95,9 @@ public interface CloudVideoDao {
      * @param cloudVideoActivities
      * @return
      */
-    @Insert("insert into CloudVideoActivities(userId,selectionType,province,city,district,singer,songName,duration,sex,birthday,videoUrl" +
+    @Insert("insert into CloudVideoActivities(userId,selectionType,province,city,district,singer,songName,duration,birthday,videoUrl" +
             ",videoCover,time,activityState) " +
-            "values (#{userId},#{selectionType},#{province},#{city},#{district},#{singer},#{songName},#{duration},#{sex},#{birthday},#{videoUrl}" +
+            "values (#{userId},#{selectionType},#{province},#{city},#{district},#{singer},#{songName},#{duration},#{birthday},#{videoUrl}" +
             ",#{videoCover},#{time},#{activityState})")
     @Options(useGeneratedKeys = true)
     int addSelection(CloudVideoActivities cloudVideoActivities);

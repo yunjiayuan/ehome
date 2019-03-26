@@ -166,7 +166,7 @@ public interface UsedDealDao {
      */
     @Select("<script>" +
             "select * from usedDeal" +
-            " where sellType = 1" +
+            " where sellType = 1 and deleteType = 1" +
             "<if test=\"userId > 0\">" +
             " and userId = #{userId}" +
             "</if>" +
@@ -240,7 +240,7 @@ public interface UsedDealDao {
     @Select("<script>" +
             "select id,usedSort1,usedSort2,usedSort3,basicParame1,basicParame2,basicParame3,basicParame4,userId,title,content,seeNumber,deleteType,auditType,releaseTime,refreshTime,imgUrl,problemType,otherProblem,sellingPrice,buyingPrice,pinkageType,negotiable,toPay,merchantType,expressMode,province,city,district,sellType,lat,lon," +
             " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * 1000) AS distance" +
-            " FROM usedDeal ORDER BY distance ASC" +
+            " FROM usedDeal where sellType=1 ORDER BY distance ASC" +
             "</script>")
     List<UsedDeal> findAoList(@Param("lat") double lat, @Param("lon") double lon);
 

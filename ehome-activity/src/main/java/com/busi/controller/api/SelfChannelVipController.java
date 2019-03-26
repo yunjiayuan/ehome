@@ -110,7 +110,7 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        //只能在上午八点至十点之间排挡
+        //只能在上午八点至晚上十点之间排挡
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 8); // 控制时
@@ -121,7 +121,7 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         long da = new Date().getTime();//当前时间毫秒数
         int seconds = 86400;//一天秒数
         int timeStamp = Integer.valueOf(simpleDateFormat.format(getNextDay(simpleDateFormat.format(new Date()))).substring(0, 8));//一天后的时间
-        if (da >= time && da < time + curren * 2) {//8-10
+        if (da >= time && da < time + curren * 14) {//8-22
             SelfChannelDuration selfChannelDuration = selfChannelVipService.findTimeStamp(timeStamp);
             // 查询活动信息
             CloudVideoActivities activities = cloudVideoService.findDetails(selfChannel.getUserId(), selfChannel.getSelectionType());
@@ -134,19 +134,24 @@ public class SelfChannelVipController extends BaseController implements SelfChan
             int second = Integer.parseInt(array[1]);//秒
             int duration = minute * 60 + second;
             if (selfChannelDuration != null) {
-                if (duration < selfChannelDuration.getSurplusTime()) {
-                    Calendar calendar2 = new GregorianCalendar();
-                    calendar2.setTime(new Date());
-                    calendar2.add(calendar.DATE, 1);//把日期往后增加一天.整数往后推,负数往前移动
-                    Date date = calendar2.getTime(); //日期往后推一天的时间
-                    String dateString = simpleDateFormat.format(date);
-                    int timeStamp2 = Integer.valueOf(dateString);
+                Calendar calendar2 = new GregorianCalendar();
+                calendar2.setTime(new Date());
+                calendar2.add(calendar.DATE, 1);//把日期往后增加一天.整数往后推,负数往前移动
+                Date date = calendar2.getTime(); //日期往后推一天的时间
+                String dateString = simpleDateFormat.format(date);
+                int timeStamp2 = Integer.valueOf(dateString);
+                //判断是不是今日首增
+                if (selfChannelDuration.getSurplusTime() == seconds) {//首增
+                    timeStamp2 = Integer.valueOf(simpleDateFormat.format(getNextDay(simpleDateFormat.format(new Date()))));//一天后凌晨0点的时间
                     selfChannel.setTime(timeStamp2);
+                } else {
+
+                }
+                if (duration < selfChannelDuration.getSurplusTime()) {
                     selfChannel.setCity(activities.getCity());
                     selfChannel.setDistrict(activities.getDistrict());
                     selfChannel.setDuration(activities.getDuration());
                     selfChannel.setProvince(activities.getProvince());
-                    selfChannel.setSex(activities.getSex());
                     selfChannel.setSinger(activities.getSinger());
                     selfChannel.setSongName(activities.getSongName());
                     selfChannel.setBirthday(activities.getBirthday());

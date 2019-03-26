@@ -51,9 +51,9 @@ public interface SelfChannelVipDao {
      * @param selfChannel
      * @return
      */
-    @Insert("insert into SelfChannel(userId,selectionType,province,city,district,singer,songName,duration,sex,birthday,videoUrl" +
+    @Insert("insert into SelfChannel(userId,selectionType,province,city,district,singer,songName,duration,birthday,videoUrl" +
             ",videoCover,time) " +
-            "values (#{userId},#{selectionType},#{province},#{city},#{district},#{singer},#{songName},#{duration},#{sex},#{birthday},#{videoUrl}" +
+            "values (#{userId},#{selectionType},#{province},#{city},#{district},#{singer},#{songName},#{duration},#{birthday},#{videoUrl}" +
             ",#{videoCover},#{time})")
     @Options(useGeneratedKeys = true)
     int addSelfChannel(SelfChannel selfChannel);

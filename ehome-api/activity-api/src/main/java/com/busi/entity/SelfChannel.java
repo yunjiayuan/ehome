@@ -1,5 +1,6 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,7 @@ import java.util.Date;
 
 /**
  * @program: ehome
- * @description: 自频道
+ * @description: 排挡视频
  * @author: ZHaoJiaJie
  * @create: 2019-03-22 16:38
  */
@@ -19,9 +20,10 @@ public class SelfChannel {
 
     private long userId;   //用户
 
-    private int time;  //新增时间 （20190325121212）
+    private int time;  //排挡时间 （播放时间20190325121212）
 
-    private Date addtime;  //新增时间 （20190325121212）
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date addtime;  //新增时间
 
     private int selectionType;//活动分类 0云视频  (后续添加)
 
@@ -37,7 +39,7 @@ public class SelfChannel {
 
     private String duration;//时长
 
-    private int sex;//性别 1男2女
+//    private int sex;//性别 1男2女
 
     private String birthday;//出生日期
 

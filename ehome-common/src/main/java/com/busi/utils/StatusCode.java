@@ -247,8 +247,9 @@ public enum StatusCode {
 	CODE_SELF_CHANNEL_VIP_NOT_OPENING(501,"自频道会员未开通"),
 	CODE_SELF_CHANNEL_VIP_OVERDUE(502,"自频道会员已过期"),
 	CODE_SELF_CHANNEL_VIP_JOIN_ACTIVITIES(503,"您尚未参加过活动"),
-	CODE_SELF_CHANNEL_VIP_NOT_JOIN_ACTIVITIES(504,"您已参加过该活动")
-	
+	CODE_SELF_CHANNEL_VIP_NOT_JOIN_ACTIVITIES(504,"您已参加过该活动"),
+	CODE_SELF_CHANNEL_VIP_NOT_JOIN_DURATION(505,"您已参加过该活动")
+
 	;
 	/*-----------业务状态码------------*/
 	public final int CODE_VALUE;
