@@ -15,7 +15,7 @@ public class SelfChannelDuration {
 
     private long id;
 
-    private int timeStamp;   //时间戳
+    private int timeStamp;   //时间戳  （20190325）
 
-    private long surplusTime;  //剩余时长
+    private int surplusTime;  //剩余时长
 }

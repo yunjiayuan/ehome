@@ -25,6 +25,7 @@ public class SelfChannelVip {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;  //开通时间
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date expiretTime;  //到期时间
 
     @Max(value = 1, message = "memberShipStatus参数有误，参数值超出合法范围")

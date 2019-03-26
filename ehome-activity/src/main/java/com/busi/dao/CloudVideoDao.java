@@ -23,8 +23,8 @@ public interface CloudVideoDao {
      * @param cloudVideo
      * @return
      */
-    @Insert("insert into CloudVideo(videoUrl,userId,videoCover,time) " +
-            "values (#{videoUrl},#{userId},#{videoCover},#{time})")
+    @Insert("insert into CloudVideo(videoUrl,userId,videoCover,time,duration) " +
+            "values (#{videoUrl},#{userId},#{videoCover},#{time},#{duration})")
     @Options(useGeneratedKeys = true)
     int addCloudVideo(CloudVideo cloudVideo);
 

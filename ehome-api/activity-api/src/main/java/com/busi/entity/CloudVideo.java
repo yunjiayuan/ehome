@@ -26,6 +26,8 @@ public class CloudVideo {
 
     private String videoCover;//视频封面
 
+    private String duration;//时长
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;//时间
 

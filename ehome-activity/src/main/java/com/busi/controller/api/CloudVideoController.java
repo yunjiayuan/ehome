@@ -56,17 +56,23 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证是否是自频道会员
-        //查询缓存 缓存中不存在 查询数据库(缓存中存在必定是会员)
+        //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_SELFCHANNELVIP + cloudVideo.getUserId());
         if (map == null || map.size() <= 0) {
             SelfChannelVip vip = selfChannelVipService.findDetails(cloudVideo.getUserId());
             if (vip == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
+                return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_OPENING.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
             }
             //放入缓存
-            long time = vip.getExpiretTime().getTime() - new Date().getTime();
             Map<String, Object> ordersMap = CommonUtils.objectToMap(vip);
-            redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + cloudVideo.getUserId(), ordersMap, time);
+            redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + cloudVideo.getUserId(), ordersMap, Constants.USER_TIME_OUT);
+        } else {
+            SelfChannelVip vip = (SelfChannelVip) CommonUtils.mapToObject(map, SelfChannelVip.class);
+            if (vip != null) {
+                if (vip.getExpiretTime().getTime() < new Date().getTime()) {
+                    return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_OPENING.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
+                }
+            }
         }
         cloudVideo.setTime(new Date());
         cloudVideoService.addCloudVideo(cloudVideo);
@@ -142,7 +148,7 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
         // 检测之前是否已经参加
         CloudVideoActivities activities = cloudVideoService.findDetails(cloudVideoActivities.getUserId(), cloudVideoActivities.getSelectionType());
         if (activities != null) {
-            return returnData(StatusCode.CODE_ALREADY_JOIN.CODE_VALUE, "您已经参加该活动!", new JSONObject());
+            return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_JOIN_ACTIVITIES.CODE_VALUE, "您已经参加该活动!", new JSONObject());
         }
         cloudVideoActivities.setTime(new Date());
         cloudVideoService.addSelection(cloudVideoActivities);
@@ -158,15 +164,36 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
     public ReturnData judgeJoin(@PathVariable int selectionType) {
         long id = 0;
         int isJoin = 0;// 0未参加 1已参加
+        int isVip = 1;// 0不是会员 1会员
+        //验证是否是自频道会员
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_SELFCHANNELVIP + CommonUtils.getMyId());
+        if (map == null || map.size() <= 0) {
+            SelfChannelVip vip = selfChannelVipService.findDetails(CommonUtils.getMyId());
+            if (vip == null) {
+                isVip = 0;
+            }
+            //放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(vip);
+            redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + CommonUtils.getMyId(), ordersMap, Constants.USER_TIME_OUT);
+        } else {
+            SelfChannelVip vip = (SelfChannelVip) CommonUtils.mapToObject(map, SelfChannelVip.class);
+            if (vip != null) {
+                if (vip.getExpiretTime().getTime() < new Date().getTime()) {
+                    isVip = 0;
+                }
+            }
+        }
         CloudVideoActivities activities = cloudVideoService.findDetails(CommonUtils.getMyId(), selectionType);
         if (activities != null) {
             id = activities.getId();
             isJoin = 1;
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("isJoin", isJoin);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("id", id);
+        map2.put("isJoin", isJoin);
+        map2.put("isVip", isVip);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
     }
 
     /***
