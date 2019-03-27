@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.NotepadService;
 import com.busi.utils.CommonUtils;
+import com.busi.utils.FootmarkUtils;
 import com.busi.utils.MqUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class NotepadController extends BaseController implements NotepadApiContr
 
     @Autowired
     NotepadService notepadService;
+
+    @Autowired
+    FootmarkUtils footmarkUtils;
 
     /**
      * @Description: 新增记事
@@ -121,6 +125,15 @@ public class NotepadController extends BaseController implements NotepadApiContr
                 e.printStackTrace();
             }
             notepad.setAlarmTime(time);
+        } else {
+            //更新足迹记事
+            Footmark footmark = new Footmark();
+            footmark.setImgUrl(notepad.getImgUrls());
+            footmark.setInfoId(notepad.getId() + "," + 6);
+            footmark.setTitle(notepad.getContent());
+            footmark.setVideoUrl(notepad.getVideoUrl());
+            footmark.setUserId(notepad.getUserId());
+            footmarkUtils.updateFootmark(footmark);
         }
         notepadService.update(notepad);
         if (!CommonUtils.checkFull(notepad.getDelImgUrls())) {
@@ -150,6 +163,9 @@ public class NotepadController extends BaseController implements NotepadApiContr
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         notepadService.del(id);
+
+        //删除足迹记事
+        footmarkUtils.delFootmark(id + "," + 6);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

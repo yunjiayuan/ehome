@@ -38,6 +38,30 @@ public interface FootmarkDao {
     int addAuthority(Footmarkauthority footmarkauthority);
 
     /***
+     * 更新足迹
+     * @param footmark
+     * @return
+     */
+    @Update("<script>" +
+            "update footmark set" +
+            "<if test=\"title != null and title != ''\">" +
+            " title=#{title}," +
+            "</if>" +
+            "<if test=\"imgUrl != null and imgUrl != ''\">" +
+            " imgUrl=#{imgUrl}," +
+            "</if>" +
+            "<if test=\"videoUrl != null and videoUrl != ''\">" +
+            " videoUrl=#{videoUrl}," +
+            "</if>" +
+            "<if test=\"audioUrl != null and audioUrl != ''\">" +
+            " audioUrl=#{audioUrl}," +
+            "</if>" +
+            " userId=#{userId}" +
+            " where infoId LIKE #{infoId} and userId=#{userId}" +
+            "</script>")
+    int updateFootmark(Footmark footmark);
+
+    /***
      * 更新删除状态
      * @param footmark
      * @return
@@ -67,6 +91,13 @@ public interface FootmarkDao {
      */
     @Select("select * from footmark where id=#{id} and footmarkStatus=0")
     Footmark findUserById(@Param("id") long id);
+
+    /***
+     * 根据Ids查询足迹
+     * @param ids
+     */
+    @Select("select * from footmark where infoId LIKE #{ids} and footmarkStatus=0")
+    Footmark findByIds(@Param("ids") String ids);
 
     /***
      * 根据Id查询足迹权限

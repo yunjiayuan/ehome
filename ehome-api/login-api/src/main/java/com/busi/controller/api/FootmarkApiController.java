@@ -1,6 +1,5 @@
 package com.busi.controller.api;
 
-import com.busi.entity.Footmark;
 import com.busi.entity.Footmarkauthority;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
@@ -14,14 +13,6 @@ import javax.validation.Valid;
  * create time：2018-9-29 13:01:12
  */
 public interface FootmarkApiController {
-
-    /***
-     * 新增足迹接口
-     * @param footmark
-     * @return
-     */
-//    @PostMapping("addFootmark")
-//    ReturnData addFootmark(@Valid @RequestBody Footmark footmark, BindingResult bindingResult);
 
     /***
      * 查询足迹列表
