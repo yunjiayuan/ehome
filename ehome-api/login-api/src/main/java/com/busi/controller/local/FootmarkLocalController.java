@@ -31,7 +31,7 @@ public interface FootmarkLocalController {
      * @Description: 删除
      * @return:
      */
-    @DeleteMapping("delFootmark/{ids}")
-    ReturnData delFootmark(@PathVariable(value="id") String ids);
+    @PutMapping("delFootmarkPad")
+    ReturnData delFootmarkPad(@RequestBody Footmark footmark);
 
 }

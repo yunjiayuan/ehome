@@ -65,7 +65,7 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         //放入缓存 5分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(selfChannelVipOrder);
         redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP_ORDER + CommonUtils.getMyId() + "_" + selfChannelVipOrder.getOrderNumber(), ordersMap, Constants.TIME_OUT_MINUTE_5);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", noRandom);
     }
 
     /***
@@ -122,54 +122,66 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         int seconds = 86400;//一天秒数
         int timeStamp = Integer.valueOf(simpleDateFormat.format(getNextDay(simpleDateFormat.format(new Date()))).substring(0, 8));//一天后的时间
         if (da >= time && da < time + curren * 14) {//8-22
+            //查询档期(明天的档期)
             SelfChannelDuration selfChannelDuration = selfChannelVipService.findTimeStamp(timeStamp);
             // 查询活动信息
             CloudVideoActivities activities = cloudVideoService.findDetails(selfChannel.getUserId(), selfChannel.getSelectionType());
             if (activities == null) {
                 return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_JOIN_ACTIVITIES.CODE_VALUE, "您尚未参加过活动!", new JSONObject());
             }
+            //判断当天是否已经排过档
+            SelfChannel channel = selfChannelVipService.findIs(selfChannel.getUserId(), selfChannel.getSelectionType());
+            if (channel != null) {
+                return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_JOIN_ACTIVITIES.CODE_VALUE, "您已参加过该活动!", new JSONObject());
+            }
             //计算视频秒数
-            String[] array = activities.getDuration().split(":");//拆分
-            int minute = Integer.parseInt(array[0]);//分
-            int second = Integer.parseInt(array[1]);//秒
-            int duration = minute * 60 + second;
-            if (selfChannelDuration != null) {
-                Calendar calendar2 = new GregorianCalendar();
-                calendar2.setTime(new Date());
-                calendar2.add(calendar.DATE, 1);//把日期往后增加一天.整数往后推,负数往前移动
-                Date date = calendar2.getTime(); //日期往后推一天的时间
-                String dateString = simpleDateFormat.format(date);
-                int timeStamp2 = Integer.valueOf(dateString);
-                //判断是不是今日首增
-                if (selfChannelDuration.getSurplusTime() == seconds) {//首增
-                    timeStamp2 = Integer.valueOf(simpleDateFormat.format(getNextDay(simpleDateFormat.format(new Date()))));//一天后凌晨0点的时间
-                    selfChannel.setTime(timeStamp2);
-                } else {
-
-                }
+//            String[] array = activities.getDuration().split(":");//拆分
+//            int minute = Integer.parseInt(array[0]);//分
+//            int second = Integer.parseInt(array[1]);//秒
+            int duration = activities.getDuration();//视频时长
+            if (selfChannelDuration != null) {//不是首增
                 if (duration < selfChannelDuration.getSurplusTime()) {
-                    selfChannel.setCity(activities.getCity());
-                    selfChannel.setDistrict(activities.getDistrict());
-                    selfChannel.setDuration(activities.getDuration());
-                    selfChannel.setProvince(activities.getProvince());
-                    selfChannel.setSinger(activities.getSinger());
-                    selfChannel.setSongName(activities.getSongName());
-                    selfChannel.setBirthday(activities.getBirthday());
-                    selfChannel.setVideoCover(activities.getVideoCover());
-                    selfChannel.setVideoUrl(activities.getVideoUrl());
-                    selfChannelVipService.addSelfChannel(selfChannel);
+                    selfChannel.setTime(selfChannelDuration.getNextTime());
+
+                    Calendar calendar3 = new GregorianCalendar();
+                    calendar3.setTime(selfChannel.getTime());
+                    calendar3.add(calendar.SECOND, duration);//加上视频时长
+                    Date date3 = calendar3.getTime();
+                    selfChannelDuration.setNextTime(date3);//下一个播出时间
 
                     //更新时长表
-                    selfChannelDuration.setSurplusTime(seconds - duration);//剩余秒数
+                    selfChannelDuration.setSurplusTime(selfChannelDuration.getSurplusTime() - duration);//剩余秒数
                     selfChannelVipService.updateDuration(selfChannelDuration);
+                } else {
+                    return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_JOIN_DURATION.CODE_VALUE, "档期已排满，明天再来抢吧!", new JSONObject());
                 }
             } else {
-                //新增档期信息
+                //新增档期信息 //首增
+                Date date2 = getNextDay(simpleDateFormat.format(new Date()));//一天后凌晨0点的时间
+                selfChannel.setTime(date2);//0点
+
+                Calendar calendar2 = new GregorianCalendar();
+                calendar2.setTime(date2);
+                calendar2.add(calendar.SECOND, duration);//加上当前视频时长
+                Date date = calendar2.getTime();
+
                 SelfChannelDuration selfChannelDuration1 = new SelfChannelDuration();
+                selfChannelDuration1.setNextTime(date);//下一个播出时间
                 selfChannelDuration1.setTimeStamp(timeStamp);//时间戳
                 selfChannelDuration1.setSurplusTime(seconds - duration);//剩余秒数
                 selfChannelVipService.addDuration(selfChannelDuration1);
             }
+            selfChannel.setAddtime(new Date());
+            selfChannel.setCity(activities.getCity());
+            selfChannel.setDistrict(activities.getDistrict());
+            selfChannel.setDuration(activities.getDuration());
+            selfChannel.setProvince(activities.getProvince());
+            selfChannel.setSinger(activities.getSinger());
+            selfChannel.setSongName(activities.getSongName());
+            selfChannel.setBirthday(activities.getBirthday());
+            selfChannel.setVideoCover(activities.getVideoCover());
+            selfChannel.setVideoUrl(activities.getVideoUrl());
+            selfChannelVipService.addSelfChannel(selfChannel);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -186,19 +198,12 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//        Date date2 = getNextDay(simpleDateFormat.format(new Date()));//一天后凌晨0点的时间
         PageBean<SelfChannel> pageBean = null;
-        int timeStamp = 0;
-        int timeStamp2 = 0;
-        String time = simpleDateFormat.format(new Date());
-        String time2 = simpleDateFormat.format(getNextDay(simpleDateFormat.format(new Date())));
-        try {
-            timeStamp = Integer.parseInt(time);//当前时间
-            timeStamp2 = Integer.parseInt(time2);//一天后的时间
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        pageBean = selfChannelVipService.findGearShiftList(timeStamp, timeStamp2, page, count);
+        Date date = new Date();
+
+        pageBean = selfChannelVipService.findGearShiftList(date, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

@@ -20,7 +20,8 @@ public class SelfChannel {
 
     private long userId;   //用户
 
-    private int time;  //排挡时间 （播放时间20190325121212）
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date time;  //排挡时间
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date addtime;  //新增时间
@@ -37,9 +38,7 @@ public class SelfChannel {
 
     private String songName;//歌名
 
-    private String duration;//时长
-
-//    private int sex;//性别 1男2女
+    private int duration;//时长
 
     private String birthday;//出生日期
 

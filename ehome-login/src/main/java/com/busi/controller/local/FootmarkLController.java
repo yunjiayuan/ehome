@@ -57,12 +57,9 @@ public class FootmarkLController extends BaseController implements FootmarkLocal
      * @return:
      */
     @Override
-    public ReturnData delFootmark(String ids) {
-        //查询数据库
-        Footmark footmark = footmarkService.findByIds(ids);
+    public ReturnData delFootmarkPad(@RequestBody Footmark footmark) {
+        footmarkService.delFootmarkPad(footmark);
 
-        footmark.setFootmarkStatus(1);
-        footmarkService.updateDel(footmark);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

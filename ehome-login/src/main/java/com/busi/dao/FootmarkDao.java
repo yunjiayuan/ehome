@@ -74,6 +74,18 @@ public interface FootmarkDao {
     int updateDel(Footmark footmark);
 
     /***
+     * 更新删除状态
+     * @param footmark
+     * @return
+     */
+    @Update("<script>" +
+            "update footmark set" +
+            " footmarkStatus=1" +
+            " where infoId LIKE #{infoId} and userId=#{userId} and footmarkType=6" +
+            "</script>")
+    int delFootmarkPad(Footmark footmark);
+
+    /***
      * 更新权限
      * @param footmarkauthority
      * @return
@@ -93,11 +105,11 @@ public interface FootmarkDao {
     Footmark findUserById(@Param("id") long id);
 
     /***
-     * 根据Ids查询足迹
-     * @param ids
+     * 根据Id查询足迹
+     * @param id
      */
-    @Select("select * from footmark where infoId LIKE #{ids} and footmarkStatus=0")
-    Footmark findByIds(@Param("ids") String ids);
+    @Select("select * from footmark where infoId LIKE #{id} and footmarkStatus=0 and footmarkType=6")
+    Footmark findByIds(@Param("id") long id);
 
     /***
      * 根据Id查询足迹权限
