@@ -6,6 +6,7 @@ import com.busi.entity.SelfChannelVip;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,9 +53,9 @@ public interface SelfChannelVipDao {
      * @return
      */
     @Insert("insert into SelfChannel(userId,selectionType,province,city,district,singer,songName,duration,birthday,videoUrl" +
-            ",videoCover,time) " +
+            ",videoCover,time,addtime) " +
             "values (#{userId},#{selectionType},#{province},#{city},#{district},#{singer},#{songName},#{duration},#{birthday},#{videoUrl}" +
-            ",#{videoCover},#{time})")
+            ",#{videoCover},#{time},#{addtime})")
     @Options(useGeneratedKeys = true)
     int addSelfChannel(SelfChannel selfChannel);
 
@@ -65,6 +66,7 @@ public interface SelfChannelVipDao {
      */
     @Update("<script>" +
             "update SelfChannelDuration set" +
+            " nextTime=#{nextTime}," +
             " surplusTime=#{surplusTime}" +
             " where id=#{id}" +
             "</script>")
@@ -75,24 +77,35 @@ public interface SelfChannelVipDao {
      * @param selfChannelDuration
      * @return
      */
-    @Insert("insert into SelfChannelDuration(timeStamp,surplusTime) " +
-            "values (#{timeStamp},#{surplusTime})")
+    @Insert("insert into SelfChannelDuration(timeStamp,surplusTime,nextTime) " +
+            "values (#{timeStamp},#{surplusTime},#{nextTime})")
     @Options(useGeneratedKeys = true)
     int addDuration(SelfChannelDuration selfChannelDuration);
 
     /***
      * 查询排挡视频列表
      * @param timeStamp  开始时间（当前进来时间）
-     * @param timeStamp2  结束时间（第二天凌晨0点）
      * @return
      */
     @Select("<script>" +
             "select * from SelfChannel" +
             " where 1=1" +
-            " and timeStamp > #{timeStamp}" +
-            " and timeStamp &lt; #{timeStamp2}" +
-            " order by time desc" +
+//            " and TO_DAYS(time) >= TO_DAYS(#{timeStamp})" +
+            " and unix_timestamp(time) > unix_timestamp(#{timeStamp}) "+
+            " order by addtime asc" +
             "</script>")
-    List<SelfChannel> findGearShiftList(@Param("timeStamp") int timeStamp, @Param("timeStamp2") int timeStamp2);
+    List<SelfChannel> findGearShiftList(@Param("timeStamp") Date timeStamp);
+
+    /***
+     * 判断当天是否已经排过档
+     * @param userId
+     * @return
+     */
+    @Select("select * from SelfChannel where userId=#{userId} " +
+            " and userId = #{userId} " +
+            " and selectionType = #{selectionType}" +
+            " and TO_DAYS(addtime)=TO_DAYS(NOW())"
+    )
+    SelfChannel findIs(@Param("userId") long userId, @Param("selectionType") int selectionType);
 
 }

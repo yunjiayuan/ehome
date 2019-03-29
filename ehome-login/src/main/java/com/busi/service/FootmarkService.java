@@ -80,6 +80,16 @@ public class FootmarkService {
     }
 
     /***
+     * 更新删除状态
+     * @param footmark
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delFootmarkPad(Footmark footmark) {
+        return footmarkDao.delFootmarkPad(footmark);
+    }
+
+    /***
      * 根据ID查询足迹
      * @param id
      * @return
@@ -90,11 +100,11 @@ public class FootmarkService {
 
     /***
      * 根据IDs查询足迹
-     * @param ids
+     * @param id
      * @return
      */
-    public Footmark findByIds(String ids) {
-        return footmarkDao.findByIds(ids);
+    public Footmark findByIds(long id) {
+        return footmarkDao.findByIds(id);
     }
 
     /***

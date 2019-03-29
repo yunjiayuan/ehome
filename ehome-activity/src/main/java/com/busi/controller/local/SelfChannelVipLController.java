@@ -9,10 +9,10 @@ import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * @program: ehome
@@ -20,6 +20,7 @@ import java.util.Map;
  * @author: ZHaoJiaJie
  * @create: 2019-03-22 13:53
  */
+@RestController
 public class SelfChannelVipLController extends BaseController implements SelfChannelVipLocalController {
 
     @Autowired

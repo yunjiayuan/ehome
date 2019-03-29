@@ -129,7 +129,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
             //更新足迹记事
             Footmark footmark = new Footmark();
             footmark.setImgUrl(notepad.getImgUrls());
-            footmark.setInfoId(notepad.getId() + "," + 6);
+            footmark.setInfoId(notepad.getId() + "");
             footmark.setTitle(notepad.getContent());
             footmark.setVideoUrl(notepad.getVideoUrl());
             footmark.setUserId(notepad.getUserId());
@@ -162,17 +162,19 @@ public class NotepadController extends BaseController implements NotepadApiContr
         if (notepad == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        notepadService.del(id);
-
         //删除足迹记事
-        footmarkUtils.delFootmark(id + "," + 6);
+        Footmark footmark = new Footmark();
+        footmark.setInfoId(notepad.getId() + "");
+        footmark.setUserId(notepad.getUserId());
+        footmark.setFootmarkStatus(1);
+        footmarkUtils.delFootmarkPad(footmark);
 
+        notepadService.del(id);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /**
+    /***
      * 按月查询带标记的日期
-     *
      * @param startTime
      * @return
      */

@@ -1,8 +1,6 @@
 package com.busi.utils;
 
-import com.alibaba.fastjson.JSONObject;
 import com.busi.entity.Footmark;
-import com.busi.entity.ReturnData;
 import com.busi.fegin.FootmarkLControllerFegin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,11 +35,11 @@ public class FootmarkUtils {
      * @Description: 删除
      * @return:
      */
-    public ReturnData delFootmark(String ids) {
-        //查询数据库
-        footmarkLControllerFegin.delFootmark(ids);
+    public Footmark delFootmarkPad(@RequestBody Footmark footmark) {
 
-        return null;
+        footmarkLControllerFegin.delFootmarkPad(footmark);
+
+        return footmark;
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -87,17 +88,25 @@ public class SelfChannelVipService {
     /***
      * 查询排挡视频列表
      * @param timeStamp  页码 第几页 起始值1
-     * @param timeStamp2  页码 第几页 起始值1
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<SelfChannel> findGearShiftList(int timeStamp, int timeStamp2, int page, int count) {
+    public PageBean<SelfChannel> findGearShiftList(Date timeStamp, int page, int count) {
 
         List<SelfChannel> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = selfChannelVipDao.findGearShiftList(timeStamp, timeStamp2);
+        list = selfChannelVipDao.findGearShiftList(timeStamp);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 判断当天是否已经排过档
+     * @param userId
+     * @return
+     */
+    public SelfChannel findIs(long userId, int selectionType) {
+        return selfChannelVipDao.findIs(userId, selectionType);
     }
 }

@@ -34,7 +34,7 @@ public class CloudVideoActivities {
 
     private String songName;//歌名
 
-    private String duration;//时长
+    private int duration;//时长
 
 //    private int sex;//性别 1男2女
 
