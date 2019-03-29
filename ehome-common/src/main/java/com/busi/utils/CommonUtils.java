@@ -694,7 +694,7 @@ public class CommonUtils {
 				continue;
 			}
 			//判断是否在预选账号中
-			Object o = redisUtils.hget("pickNumberMap",proId+"");
+			Object o = redisUtils.hget("pickNumberMap",proId+"_"+houseNumber);
 			if(o!=null){
 				continue;//已存在
 			}

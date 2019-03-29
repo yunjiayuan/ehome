@@ -53,9 +53,10 @@ public class Constants {
     public static final String AAAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1\\1).*$";
     public static final String AAAAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1).*$";
     public static final String LOVE = "^[0-9]*(521|520|1314|9421|921|1711)";
-    public static final String PHONE = "0?(13|14|15|17|18|19)[0-9]{9}";
+    public static final String PHONE = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$";
     public static final String BRITHDAY = "^(19|20)\\\\d{2}(1[0-2]|0?[1-9])(0?[1-9]|[1-2][0-9]|3[0-1])$";
     public static final String[] PRETTY_NUMBER_ARRAY ={ABAB,AABB,ABCABC,ABABAB,AABBCC,AAABBB,AAA,AAAA,AAAAA,AAAAAA,AAAAAAA,AAAAAAAA,AAAAAAAAA,AAAAAAAAAA,AAAAAAAAAAA,ABC,ABCD,ABCDE,ABCDEF,ABCDEFG,ABCDEFGH,ABCDEFGHI,LOVE,PHONE,BRITHDAY};
+    public static final int[] PRETTY_NUMBER_PRICE_ARRAY ={10,10,50,50,50,50,10,30,50,200,500,800,1000,1500,1800,10,50,200,500,800,1200,1600,50,100,30};
     /**门牌号靓号规则 结束**/
 
     /** 请求接口白名单 开始**/

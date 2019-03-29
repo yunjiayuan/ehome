@@ -20,7 +20,7 @@ public class GoodNumber {
 
     private int theme;//主题 0普通靓号 1顶级靓号 2爱情靓号 3生日靓号 4手机靓号
 
-    private int label;//数字类型规律:0表示7A，1表示6A，2表示5A，3表示4A，4表示3A，5表示7顺，6表示6顺，7表示5顺，8表示4顺，9表示3顺，10表示AAABBB，11表示AABBCC，12表示ABABAB，13表示ABCABC，14表示AABB，15表示ABAB
+    private int label;//数字类型规律:0表示11A，1表示10A，2表示9A，3表示8A，4表示7A，5表示6A，6表示5A，7表示4A，8表示3A，9表示9顺，10表示8顺，11表示7顺，12表示6顺，13表示5顺，14表示4顺，15表示3顺，16表示AAABBB，17表示AABBCC，18表示ABABAB，19表示ABCABC，20表示AABB，21表示ABAB
 
     private int numberDigit;//数字位数(7表示7位)
 
