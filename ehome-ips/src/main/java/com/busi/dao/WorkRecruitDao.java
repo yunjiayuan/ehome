@@ -351,7 +351,7 @@ public interface WorkRecruitDao {
             " where 1=1" +
             " and userId != #{userId} and state=0" +
             "<if test=\"positionName != null and positionName != '' \">" +
-            " and positionName LIKE #{positionName}" +
+            " and positionName = #{positionName}" +
             "</if>" +
             "</script>")
     List<WorkResume> queryResumeList1(@Param("userId") long userId, @Param("positionName") String positionName);

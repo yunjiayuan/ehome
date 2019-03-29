@@ -62,7 +62,7 @@ public class OnlineMusicController extends BaseController implements OnlineMusic
     /***
      * 查询歌曲列表
      * @param name  歌名或歌手
-     * @param songType 歌曲类型：0.热歌榜 1.流行 2.纯音乐 3.摇滚 4.神曲 5.DJ 6.电音趴 7.说唱 8.国风 9.欧美（PS：仅在name为空时有效）
+     * @param songType 歌曲类型：0.热歌榜 1.流行 2.纯音乐 3.摇滚 4.神曲 5.DJ 6.电音趴 7.说唱 8.国风 9.欧美 10.经典90 11.经典80 12.经典70 13.经典60 14.经典50（PS：仅在name为空时有效）
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return

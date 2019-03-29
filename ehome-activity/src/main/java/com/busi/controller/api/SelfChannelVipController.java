@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -110,7 +107,29 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //验证是否是自频道会员
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_SELFCHANNELVIP + selfChannel.getUserId());
+        if (map == null || map.size() <= 0) {
+            SelfChannelVip vip1 = selfChannelVipService.findDetails(selfChannel.getUserId());
+            if (vip1 == null) {
+                return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_OPENING.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
+            }
+            //放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(vip1);
+            redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + selfChannel.getUserId(), ordersMap, Constants.USER_TIME_OUT);
+        } else {
+            SelfChannelVip vip1 = (SelfChannelVip) CommonUtils.mapToObject(map, SelfChannelVip.class);
+            if (vip1 != null) {
+                if (vip1.getExpiretTime().getTime() < new Date().getTime()) {
+                    //清除缓存中的信息
+                    redisUtils.expire(Constants.REDIS_KEY_SELFCHANNELVIP + vip1.getUserId(), 0);
+                    return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_OPENING.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
+                }
+            }
+        }
         //只能在上午八点至晚上十点之间排挡
+        Map<String, Object> map2 = new HashMap<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 8); // 控制时
@@ -145,9 +164,9 @@ public class SelfChannelVipController extends BaseController implements SelfChan
 
                     Calendar calendar3 = new GregorianCalendar();
                     calendar3.setTime(selfChannel.getTime());
-                    calendar3.add(calendar.SECOND, duration);//加上视频时长
+                    calendar3.add(calendar.SECOND, duration);//加上当前视频时长
                     Date date3 = calendar3.getTime();
-                    selfChannelDuration.setNextTime(date3);//下一个播出时间
+                    selfChannelDuration.setNextTime(date3);//下一个视频播出时间
 
                     //更新时长表
                     selfChannelDuration.setSurplusTime(selfChannelDuration.getSurplusTime() - duration);//剩余秒数
@@ -182,8 +201,11 @@ public class SelfChannelVipController extends BaseController implements SelfChan
             selfChannel.setVideoCover(activities.getVideoCover());
             selfChannel.setVideoUrl(activities.getVideoUrl());
             selfChannelVipService.addSelfChannel(selfChannel);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            map2.put("time", dateFormat.format(selfChannel.getTime()));//返回播出时间
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
     }
 
     /***
@@ -198,12 +220,12 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-//        Date date2 = getNextDay(simpleDateFormat.format(new Date()));//一天后凌晨0点的时间
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date date2 = getNextDay(simpleDateFormat.format(new Date()));//一天后凌晨0点的时间(只能播当期的)
         PageBean<SelfChannel> pageBean = null;
         Date date = new Date();
 
-        pageBean = selfChannelVipService.findGearShiftList(date, page, count);
+        pageBean = selfChannelVipService.findGearShiftList(date, date2, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

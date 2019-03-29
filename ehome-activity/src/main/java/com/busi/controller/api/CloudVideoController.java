@@ -70,6 +70,8 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
             SelfChannelVip vip = (SelfChannelVip) CommonUtils.mapToObject(map, SelfChannelVip.class);
             if (vip != null) {
                 if (vip.getExpiretTime().getTime() < new Date().getTime()) {
+                    //清除缓存中的信息
+                    redisUtils.expire(Constants.REDIS_KEY_SELFCHANNELVIP + cloudVideo.getUserId(), 0);
                     return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_NOT_OPENING.CODE_VALUE, "抱歉您还不是自频道会员", new JSONObject());
                 }
             }
@@ -181,6 +183,8 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
             if (vip != null) {
                 if (vip.getExpiretTime().getTime() < new Date().getTime()) {
                     isVip = 0;
+                    //清除缓存中的信息
+                    redisUtils.expire(Constants.REDIS_KEY_SELFCHANNELVIP + vip.getUserId(), 0);
                 }
             }
         }
@@ -230,13 +234,13 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
             return returnData(StatusCode.CODE_NOT_AUTHORITY_VOTE.CODE_VALUE, "投票失败，不能给自己投票!", new JSONObject());
         }
         //判断当前用户是否给该用户投过票 以每天凌晨0点为准 每天每人只能给同一个人投一次票
-//        CloudVideoVote vote = cloudVideoService.findTicket(CommonUtils.getMyId(), cloudVideoVote.getUserId(), cloudVideoVote.getSelectionType());
-//        if (vote != null) {
-//            return returnData(StatusCode.CODE_ALREADY_VOTE.CODE_VALUE, "今天已经对该用户进行过投票", new JSONObject());
-//        }
+        CloudVideoVote vote = cloudVideoService.findTicket(CommonUtils.getMyId(), cloudVideoVote.getUserId(), cloudVideoVote.getSelectionType());
+        if (vote != null) {
+            return returnData(StatusCode.CODE_ALREADY_VOTE.CODE_VALUE, "今天已经对该用户进行过投票", new JSONObject());
+        }
         CloudVideoActivities activities = cloudVideoService.findDetails(cloudVideoVote.getUserId(), cloudVideoVote.getSelectionType());
         if (activities == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该用户还未参加该活动!", new JSONObject());
+            return returnData(StatusCode.CODE_SELF_CHANNEL_VIP_JOIN_ACTIVITIES.CODE_VALUE, "该用户还未参加该活动!", new JSONObject());
         }
         cloudVideoVote.setTime(new Date());
         cloudVideoService.addVote(cloudVideoVote);

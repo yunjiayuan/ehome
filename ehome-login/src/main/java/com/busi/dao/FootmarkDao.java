@@ -57,7 +57,7 @@ public interface FootmarkDao {
             " audioUrl=#{audioUrl}," +
             "</if>" +
             " userId=#{userId}" +
-            " where infoId LIKE #{infoId} and userId=#{userId}" +
+            " where infoId = #{infoId} and userId=#{userId}" +
             "</script>")
     int updateFootmark(Footmark footmark);
 
@@ -81,7 +81,7 @@ public interface FootmarkDao {
     @Update("<script>" +
             "update footmark set" +
             " footmarkStatus=1" +
-            " where infoId LIKE #{infoId} and userId=#{userId} and footmarkType=6" +
+            " where infoId = #{infoId} and userId=#{userId} and footmarkType=6" +
             "</script>")
     int delFootmarkPad(Footmark footmark);
 
@@ -108,7 +108,7 @@ public interface FootmarkDao {
      * 根据Id查询足迹
      * @param id
      */
-    @Select("select * from footmark where infoId LIKE #{id} and footmarkStatus=0 and footmarkType=6")
+    @Select("select * from footmark where infoId = #{id} and footmarkStatus=0 and footmarkType=6")
     Footmark findByIds(@Param("id") long id);
 
     /***
