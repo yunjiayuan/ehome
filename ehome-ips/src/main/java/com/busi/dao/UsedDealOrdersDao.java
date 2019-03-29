@@ -84,7 +84,7 @@ public interface UsedDealOrdersDao {
      * 根据订单编号查询订单
      * @param id
      */
-    @Select("select * from UsedDealOrders where orderNumber LIKE #{id} and ordersState=0")
+    @Select("select * from UsedDealOrders where orderNumber = #{id} and ordersState=0")
     UsedDealOrders findDetailsOrId(@Param("id") String id);
 
     /***

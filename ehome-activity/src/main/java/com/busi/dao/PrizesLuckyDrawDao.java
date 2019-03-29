@@ -72,7 +72,7 @@ public interface PrizesLuckyDrawDao {
     /***
      * 查询指定纪念奖奖品
      */
-    @Select("select * from PrizesMemorial where issue=#{issue} and name LIKE  #{name}")
+    @Select("select * from PrizesMemorial where issue=#{issue} and name =  #{name}")
     PrizesMemorial findMemorial(@Param("issue") int issue, @Param("name") String name);
 
     /***
@@ -123,7 +123,7 @@ public interface PrizesLuckyDrawDao {
     /***
      * 查询指定开奖时间奖品
      */
-    @Select("select * from PrizesEvent where endTime LIKE  #{openTime}")
+    @Select("select * from PrizesEvent where endTime =  #{openTime}")
     List<PrizesEvent> findOpenTime(@Param("openTime") String openTime);
 
     /***

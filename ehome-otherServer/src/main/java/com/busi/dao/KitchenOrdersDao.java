@@ -88,7 +88,7 @@ public interface KitchenOrdersDao {
      */
     @Select("<script>" +
             "select * from KitchenOrders" +
-            " where no LIKE #{no}" +
+            " where no = #{no}" +
             " and ordersState = 0" +
             "</script>")
     KitchenOrders findByNo(@Param("no") String no);

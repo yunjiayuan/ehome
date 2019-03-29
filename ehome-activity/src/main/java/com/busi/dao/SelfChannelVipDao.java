@@ -85,16 +85,18 @@ public interface SelfChannelVipDao {
     /***
      * 查询排挡视频列表
      * @param timeStamp  开始时间（当前进来时间）
+     * @param timeStamp2  第二天凌晨时间
      * @return
      */
     @Select("<script>" +
             "select * from SelfChannel" +
             " where 1=1" +
 //            " and TO_DAYS(time) >= TO_DAYS(#{timeStamp})" +
-            " and unix_timestamp(time) > unix_timestamp(#{timeStamp}) "+
+            " and unix_timestamp(time) > unix_timestamp(#{timeStamp}) " +
+            " and unix_timestamp(#{timeStamp}) > unix_timestamp(time) " +
             " order by addtime asc" +
             "</script>")
-    List<SelfChannel> findGearShiftList(@Param("timeStamp") Date timeStamp);
+    List<SelfChannel> findGearShiftList(@Param("timeStamp") Date timeStamp, @Param("timeStamp2") Date timeStamp2);
 
     /***
      * 判断当天是否已经排过档
