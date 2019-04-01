@@ -5,6 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.ReturnData;
 import com.busi.entity.UserHeadNotes;
 import com.busi.entity.UserInfo;
+import com.busi.mq.MqProducer;
 import com.busi.service.UserHeadNotesService;
 import com.busi.service.UserInfoService;
 import com.busi.utils.CommonUtils;
@@ -12,12 +13,11 @@ import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -31,6 +31,9 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    MqProducer mqProducer;
 
     @Autowired
     UserInfoService userInfoService;
@@ -183,6 +186,43 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
         //将缓存中数据 清除
         redisUtils.expire(Constants.REDIS_KEY_USER_HEADNOTES+userHeadNotes.getUserId(),0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 新增靓号接口(本地调用)
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData addGoodNumberToUser(@RequestBody UserInfo userInfo) {
+        //开始注册
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setName(userInfo.getName());
+        newUserInfo.setPassword(userInfo.getPassword());
+        newUserInfo.setIm_password(CommonUtils.strToMD5(userInfo.getPassword(),32));//环信密码为两遍MD5
+        newUserInfo.setSex(userInfo.getSex());
+        newUserInfo.setBirthday(userInfo.getBirthday());
+        newUserInfo.setCountry(userInfo.getCountry());
+        newUserInfo.setProvince(userInfo.getProvince());
+        newUserInfo.setCity(userInfo.getCity());
+        newUserInfo.setDistrict(userInfo.getDistrict());
+        newUserInfo.setTime(new Date());
+        newUserInfo.setAccessRights(1);
+        newUserInfo.setIsGoodNumber(1);
+        newUserInfo.setProType(userInfo.getProType());
+        newUserInfo.setHouseNumber(userInfo.getHouseNumber());
+        //生成默认头像
+        Random random = new Random();
+        newUserInfo.setHead("image/head/defaultHead/defaultHead_"+random.nextInt(20)+"_225x225.jpg");
+        //写入数据库
+        userInfoService.add(newUserInfo);
+        //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端 环信账号改成用户ID
+        Map<String,String> im_map = new HashMap<>();
+        im_map.put("proType",newUserInfo.getProType()+"");
+        im_map.put("houseNumber",newUserInfo.getHouseNumber()+"");
+        im_map.put("myId",newUserInfo.getUserId()+"");
+        im_map.put("password",newUserInfo.getIm_password());//环信密码
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",im_map);
     }
 
 }

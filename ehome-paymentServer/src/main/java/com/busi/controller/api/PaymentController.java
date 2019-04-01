@@ -58,6 +58,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
     @Autowired
     private SelfChannelVipLOrderService selfChannelVipOrderService;
 
+    @Autowired
+    private GoodNumberOrderService goodNumberOrderService;
+
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -259,6 +262,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 12://购买自频道会员支付
                 payBaseService = selfChannelVipOrderService;
+                break;
+            case 13://购买靓号支付
+                payBaseService = goodNumberOrderService;
                 break;
             default:
                 break;

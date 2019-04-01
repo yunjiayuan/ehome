@@ -28,8 +28,8 @@ public class Pay {
     private String paymentKey;//支付私钥
 
     @Min(value= 1 ,message= "serviceType参数有误，超出指定范围")
-    @Max(value= 12 ,message= "serviceType参数有误，超出指定范围")
-    private int serviceType;//业务类型 1:求助悬赏支付,2:求助购买支付,3:发个人红包,4:拆个人红包,5:钱包现金兑换家币,6:购买创始元老级会员支付,7:公告栏二手购买订单支付,8:家门口厨房购买订单支付,9:购买元老级会员支付,10:购买普通会员支付,11:购买VIP高级会员支付,12:购买自频道会员支付
+    @Max(value= 13 ,message= "serviceType参数有误，超出指定范围")
+    private int serviceType;//业务类型 1:求助悬赏支付,2:求助购买支付,3:发个人红包,4:拆个人红包,5:钱包现金兑换家币,6:购买创始元老级会员支付,7:公告栏二手购买订单支付,8:家门口厨房购买订单支付,9:购买元老级会员支付,10:购买普通会员支付,11:购买VIP高级会员支付,12:购买自频道会员支付,13购买靓号
 
     @Length(min=16,max = 16, message = "orderNumber参数格式有误")
     @NotNull

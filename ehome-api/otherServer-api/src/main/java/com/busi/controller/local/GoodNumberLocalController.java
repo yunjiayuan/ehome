@@ -18,7 +18,7 @@ public interface GoodNumberLocalController {
      * @return
      */
     @GetMapping("addGoodNumber/{beginNumber}/{endNumber}")
-    ReturnData addGoodNumber(@PathVariable long beginNumber,@PathVariable long endNumber);
+    ReturnData addGoodNumber(@PathVariable(value = "beginNumber") long beginNumber,@PathVariable(value = "endNumber") long endNumber);
 
 
     /***
@@ -28,6 +28,5 @@ public interface GoodNumberLocalController {
      */
     @PutMapping("updateGoodNumber")
     ReturnData updateGoodNumber(@RequestBody GoodNumber goodNumber);
-
 
 }

@@ -95,9 +95,14 @@ public class GoodNumberController extends BaseController implements GoodNumberAp
         if (CommonUtils.getMyId() != goodNumberOrder.getUserId()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限使用用户[" + goodNumberOrder.getUserId() + "]的购买靓号", new JSONObject());
         }
+        //检测当前将要购买的账号状态
+        Object object = redisUtils.getKey(Constants.REDIS_KEY_GOODNUMBER_ORDER_STATUS + goodNumberOrder.getProId() + "_" + goodNumberOrder.getHouse_number());
+        if(object!=null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "很抱歉，该账号已经被其他人购买!", new JSONObject());
+        }
         GoodNumber goodNumber = goodNumberService.findGoodNumberInfo(goodNumberOrder.getProId(),goodNumberOrder.getHouse_number());
         if(goodNumber==null){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "很抱歉，该账号已经卖出!", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "很抱歉，该账号已被其他人购买或已停售!", new JSONObject());
         }
         Date time = new Date();
         String random = CommonUtils.getRandom(6, 1);
@@ -106,6 +111,7 @@ public class GoodNumberController extends BaseController implements GoodNumberAp
         goodNumberOrder.setTime(time);
         goodNumberOrder.setMoney(goodNumber.getGoodNumberPrice());
         //放入缓存 5分钟
+        redisUtils.set(Constants.REDIS_KEY_GOODNUMBER_ORDER_STATUS + goodNumberOrder.getProId() + "_" + goodNumberOrder.getHouse_number(),"订单["+goodNumberOrder.getOrderNumber()+"]占用中（时长5分钟）", Constants.TIME_OUT_MINUTE_5);
         redisUtils.hmset(Constants.REDIS_KEY_GOODNUMBER_ORDER + CommonUtils.getMyId() + "_" + goodNumberOrder.getOrderNumber(), CommonUtils.objectToMap(goodNumberOrder), Constants.TIME_OUT_MINUTE_5);
         Map<String, Object> map = new HashMap<>();
         map.put("orderNumber",noRandom);

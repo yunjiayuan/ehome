@@ -67,4 +67,12 @@ public interface UserInfoLocalController {
     @PutMapping("updateWelcomeVideoByHomeBlog")
     ReturnData updateWelcomeVideoByHomeBlog (@RequestBody UserHeadNotes userHeadNotes);
 
+    /***
+     * 新增靓号接口(本地调用)
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("addGoodNumberToUser")
+    ReturnData addGoodNumberToUser(@RequestBody UserInfo userInfo);
+
 }
