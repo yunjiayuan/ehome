@@ -68,7 +68,7 @@ public interface GoodNumberDao {
      * 条件查询预售靓号列表
      * @param proId       省简称ID 默认-1不限
      * @param theme       主题ID 默认-1不限
-     * @param label       数字规则ID 默认-1不限
+     * @param label       数字规则ID 默认null不限
      * @param numberDigit 靓号位数ID 默认-1不限 (例如7表示7位)
      * @param orderType   省简称ID 默认-1不限
      * @return
@@ -82,8 +82,8 @@ public interface GoodNumberDao {
             "<if test=\"theme != -1\">" +
             " and theme=#{theme}" +
             "</if>" +
-            "<if test=\"label != null and label != ''\">" +
-            " and label like CONCAT('%',#{label},'%')" +
+            "<if test=\"label != null and label != '' and label != 'null'\">" +
+            " and label like CONCAT('%#',#{label},'#%')" +
             "</if>" +
             "<if test=\"numberDigit != -1\">" +
             " and numberDigit=#{numberDigit}" +

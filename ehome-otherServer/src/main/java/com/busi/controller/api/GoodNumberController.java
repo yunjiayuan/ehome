@@ -50,7 +50,7 @@ public class GoodNumberController extends BaseController implements GoodNumberAp
      * 条件查询预售靓号列表
      * @param proId       省简称ID 默认-1不限
      * @param theme       主题ID 默认-1不限
-     * @param label       数字规则ID 默认-1不限
+     * @param label       数字规则ID 默认null不限
      * @param numberDigit 靓号位数ID 默认-1不限 (例如7表示7位)
      * @param orderType   排序规则 默认 0不限 1按价格倒序 2按价格升序
      * @param page

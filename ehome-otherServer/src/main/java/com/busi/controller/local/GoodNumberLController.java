@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -108,7 +106,11 @@ public class GoodNumberLController extends BaseController implements GoodNumberL
                         }
                         if(abc.size()>0){
                             int b = Integer.parseInt(abc.pollFirst().toString());
-                            labels +="#"+b+"#";
+                            if(labels.length()>0){
+                                labels +=",#"+b+"#";
+                            }else{
+                                labels +="#"+b+"#";
+                            }
                             goodNumberPrice += Constants.PRETTY_NUMBER_PRICE_ARRAY[b];
 //                            count++;
                         }
