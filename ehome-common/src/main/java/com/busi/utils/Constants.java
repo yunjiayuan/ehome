@@ -196,6 +196,7 @@ public class Constants {
     public static final String REDIS_KEY_CHAT_SQUARE = "chat_square_";//聊天室在线用户对照 省ID对应在线用户
     public static final String REDIS_KEY_SELFCHANNELVIP = "selfChannelVip_";//userId与自频道会员信息对象的关系对照
     public static final String REDIS_KEY_SELFCHANNELVIP_ORDER = "selfChannelVipOrder_";//userId与自频道会员订单对象关系对照
+    public static final String REDIS_KEY_GOODNUMBER_ORDER = "goodNumber_order_";//userId与靓号订单对象关系对照
 
     //验证码相关配置
     public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key

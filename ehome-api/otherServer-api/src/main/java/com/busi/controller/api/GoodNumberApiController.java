@@ -1,8 +1,9 @@
 package com.busi.controller.api;
 
+import com.busi.entity.GoodNumberOrder;
 import com.busi.entity.ReturnData;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 预售靓号相关业务接口
@@ -44,4 +45,12 @@ public interface GoodNumberApiController {
     @GetMapping("findGoodNumberList/{proId}/{theme}/{label}/{numberDigit}/{orderType}/{page}/{count}")
     ReturnData findGoodNumberList(@PathVariable int proId,@PathVariable int theme,@PathVariable String label,@PathVariable int numberDigit,@PathVariable int orderType, @PathVariable int page, @PathVariable int count);
 
+
+    /***
+     *靓号下单接口
+     * @param goodNumberOrder
+     * @return
+     */
+    @PostMapping("addGoodNumberOrder")
+    ReturnData addGoodNumberOrder(@RequestBody GoodNumberOrder goodNumberOrder, BindingResult bindingResult);
 }

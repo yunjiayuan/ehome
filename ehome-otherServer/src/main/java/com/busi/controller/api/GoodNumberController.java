@@ -1,14 +1,25 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.GoodNumber;
+import com.busi.entity.GoodNumberOrder;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.service.GoodNumberService;
+import com.busi.utils.CommonUtils;
+import com.busi.utils.Constants;
+import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 预售靓号相关业务接口
@@ -20,6 +31,9 @@ public class GoodNumberController extends BaseController implements GoodNumberAp
 
     @Autowired
     GoodNumberService goodNumberService;
+
+    @Autowired
+    RedisUtils redisUtils;
 
 //    /***
 //     * 精确查找预售账号（根据省简称ID+门牌号查询）
@@ -64,5 +78,37 @@ public class GoodNumberController extends BaseController implements GoodNumberAp
         PageBean<GoodNumber> pageBean;
         pageBean =goodNumberService.findList(proId, theme, label, numberDigit, orderType, page, count);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+    }
+
+    /***
+     *靓号下单接口
+     * @param goodNumberOrder
+     * @return
+     */
+    @Override
+    public ReturnData addGoodNumberOrder(@RequestBody GoodNumberOrder goodNumberOrder, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //验证修改人权限
+        if (CommonUtils.getMyId() != goodNumberOrder.getUserId()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限使用用户[" + goodNumberOrder.getUserId() + "]的购买靓号", new JSONObject());
+        }
+        GoodNumber goodNumber = goodNumberService.findGoodNumberInfo(goodNumberOrder.getProId(),goodNumberOrder.getHouse_number());
+        if(goodNumber==null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "很抱歉，该账号已经卖出!", new JSONObject());
+        }
+        Date time = new Date();
+        String random = CommonUtils.getRandom(6, 1);
+        String noRandom = CommonUtils.strToMD5(time.getTime()+""+ CommonUtils.getMyId() + random, 16);
+        goodNumberOrder.setOrderNumber(noRandom);
+        goodNumberOrder.setTime(time);
+        goodNumberOrder.setMoney(goodNumber.getGoodNumberPrice());
+        //放入缓存 5分钟
+        redisUtils.hmset(Constants.REDIS_KEY_GOODNUMBER_ORDER + CommonUtils.getMyId() + "_" + goodNumberOrder.getOrderNumber(), CommonUtils.objectToMap(goodNumberOrder), Constants.TIME_OUT_MINUTE_5);
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNumber",noRandom);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }
