@@ -82,8 +82,8 @@ public interface GoodNumberDao {
             "<if test=\"theme != -1\">" +
             " and theme=#{theme}" +
             "</if>" +
-            "<if test=\"label != -1\">" +
-            " and label=#{label}" +
+            "<if test=\"label != null and label != ''\">" +
+            " and label like CONCAT('%',#{label},'%')" +
             "</if>" +
             "<if test=\"numberDigit != -1\">" +
             " and numberDigit=#{numberDigit}" +
@@ -96,5 +96,5 @@ public interface GoodNumberDao {
             " order by goodNumberPrice asc" +
             "</if>" +
             "</script>")
-    List<GoodNumber> findList(@Param("proId") int proId, @Param("theme") int theme, @Param("label") int label, @Param("numberDigit") int numberDigit, @Param("orderType") int orderType);
+    List<GoodNumber> findList(@Param("proId") int proId, @Param("theme") int theme, @Param("label") String label, @Param("numberDigit") int numberDigit, @Param("orderType") int orderType);
 }

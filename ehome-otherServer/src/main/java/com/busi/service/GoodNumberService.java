@@ -80,7 +80,7 @@ public class GoodNumberService {
      * @param count
      * @return
      */
-    public PageBean<GoodNumber> findList(int proId,int theme, int label, int numberDigit,int orderType,int page,int count) {
+    public PageBean<GoodNumber> findList(int proId,int theme, String label, int numberDigit,int orderType,int page,int count) {
 
         List<GoodNumber> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页

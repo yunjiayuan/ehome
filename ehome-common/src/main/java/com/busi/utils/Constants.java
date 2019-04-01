@@ -30,33 +30,33 @@ public class Constants {
     /**省市区参数 结束**/
 
     /**门牌号靓号规则 开始**/
-    public static final String ABAB ="(\\d\\d)\\1+$";
-    public static final String AABB = "^(?:(\\d)\\1)+$";
+    public static final String ABAB ="(\\d)((?!\\1)\\d)\\1\\2$";
+    public static final String AABB = "(\\d)\\1((?!\\1)\\d)\\2$";
     public static final String ABCABC = "^(\\d\\d\\d)\\1+$";
-    public static final String ABABAB = "(\\d\\d)\\1+$";
-    public static final String AABBCC = "^(?:(\\d)\\1)+$";
+    public static final String ABABAB = "^(\\d)((?!\\1)\\d)\\1\\2\\1\\2";
+    public static final String AABBCC = "(\\d)\\1((?!\\1)\\d)\\2((?!\\1)\\d)\\3";
     public static final String AAABBB = "^(?:(\\d)\\1\\1)+$";
-    public static final String ABC = "(.*?(123)|(234)|(345)|(567)|(678)|(789).*)";
-    public static final String ABCD = "(.*?(1234)|(2345)|(3456)|(5678)|(6789).*)";
-    public static final String ABCDE = "(.*?(12345)|(23456)|(34567)|(56789).*)";
-    public static final String ABCDEF = "(.*?(123456)|(234567)|(345678).*)";
-    public static final String ABCDEFG = "(.*?(1234567)|(2345678)|(3456789).*)";
-    public static final String ABCDEFGH = "(.*?(12345678)|(23456789).*)";
-    public static final String ABCDEFGHI = "(.*?(123456789).*)";
-    public static final String AAA = "^(?:(\\d)\\1\\1).*$";
-    public static final String AAAA = "^(?:(\\d)\\1\\1\\1).*$";
-    public static final String AAAAA = "^(?:(\\d)\\1\\1\\1\\1).*$";
-    public static final String AAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1).*$";
-    public static final String AAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1).*$";
-    public static final String AAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1).*$";
-    public static final String AAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1).*$";
-    public static final String AAAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1\\1).*$";
-    public static final String AAAAAAAAAAA = "^(?:(\\d)\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1).*$";
+    public static final String ABC = "(?:(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){2}|(?:9(?=8)|8(?=7)|7(?=6)|6(?=5)|5(?=4)|4(?=3)|3(?=2)|2(?=1)|1(?=0)){2})\\d";
+    public static final String ABCD = "(?:(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){3}|(?:9(?=8)|8(?=7)|7(?=6)|6(?=5)|5(?=4)|4(?=3)|3(?=2)|2(?=1)|1(?=0)){3})\\d";
+    public static final String ABCDE = "(?:(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){4}|(?:9(?=8)|8(?=7)|7(?=6)|6(?=5)|5(?=4)|4(?=3)|3(?=2)|2(?=1)|1(?=0)){4})\\d";
+    public static final String ABCDEF = "(?:(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){5}|(?:9(?=8)|8(?=7)|7(?=6)|6(?=5)|5(?=4)|4(?=3)|3(?=2)|2(?=1)|1(?=0)){5})\\d";
+    public static final String ABCDEFG = "(?:(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){6}|(?:9(?=8)|8(?=7)|7(?=6)|6(?=5)|5(?=4)|4(?=3)|3(?=2)|2(?=1)|1(?=0)){6})\\d";
+    public static final String ABCDEFGH = "(?:(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){7}|(?:9(?=8)|8(?=7)|7(?=6)|6(?=5)|5(?=4)|4(?=3)|3(?=2)|2(?=1)|1(?=0)){7})\\d";
+    public static final String ABCDEFGHI = "(?:(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){8}|(?:9(?=8)|8(?=7)|7(?=6)|6(?=5)|5(?=4)|4(?=3)|3(?=2)|2(?=1)|1(?=0)){8})\\d";
+    public static final String AAA = "(.)\\1{2}";
+    public static final String AAAA = "(.)\\1{3}";
+    public static final String AAAAA = "(.)\\1{4}";
+    public static final String AAAAAA = "(.)\\1{5}";
+    public static final String AAAAAAA = "(.)\\1{6}";
+    public static final String AAAAAAAA = "(.)\\1{7}";
+    public static final String AAAAAAAAA = "(.)\\1{8}";
+    public static final String AAAAAAAAAA = "(.)\\1{9}";
+    public static final String AAAAAAAAAAA = "(.)\\1{10}";
     public static final String LOVE = "^[0-9]*(521|520|1314|9421|921|1711)";
     public static final String PHONE = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$";
-    public static final String BRITHDAY = "^(19|20)\\\\d{2}(1[0-2]|0?[1-9])(0?[1-9]|[1-2][0-9]|3[0-1])$";
-    public static final String[] PRETTY_NUMBER_ARRAY ={ABAB,AABB,ABCABC,ABABAB,AABBCC,AAABBB,AAA,AAAA,AAAAA,AAAAAA,AAAAAAA,AAAAAAAA,AAAAAAAAA,AAAAAAAAAA,AAAAAAAAAAA,ABC,ABCD,ABCDE,ABCDEF,ABCDEFG,ABCDEFGH,ABCDEFGHI,LOVE,PHONE,BRITHDAY};
-    public static final int[] PRETTY_NUMBER_PRICE_ARRAY ={10,10,50,50,50,50,10,30,50,200,500,800,1000,1500,1800,10,50,200,500,800,1200,1600,50,100,30};
+    public static final String BRITHDAY = "^(19|20)\\d{2}(1[0-2]|0?[1-9])(0?[1-9]|[1-2][0-9]|3[0-1])$";
+    public static final String[] PRETTY_NUMBER_ARRAY ={AAAAAAAAAAA,AAAAAAAAAA,AAAAAAAAA,AAAAAAAA,AAAAAAA,AAAAAA,AAAAA,AAAA,AAA,ABCDEFGHI,ABCDEFGH,ABCDEFG,ABCDEF,ABCDE,ABCD,ABC,AAABBB,AABBCC,ABABAB,ABCABC,AABB,ABAB,LOVE,PHONE,BRITHDAY};
+    public static final int[] PRETTY_NUMBER_PRICE_ARRAY ={0,0,0,0,1800,1600,1200,1000,50,0,0,1800,1600,1200,1000,50,1200,1200,1200,1200,50,50,100,0,30};//单位元  七位数靓号价格数组 0表示占位无意义 其他位数需要新增定价数组
     /**门牌号靓号规则 结束**/
 
     /** 请求接口白名单 开始**/

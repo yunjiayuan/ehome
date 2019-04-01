@@ -58,7 +58,7 @@ public class GoodNumberController extends BaseController implements GoodNumberAp
      * @return
      */
     @Override
-    public ReturnData findGoodNumberList(@PathVariable int proId,@PathVariable int theme,@PathVariable int label,
+    public ReturnData findGoodNumberList(@PathVariable int proId,@PathVariable int theme,@PathVariable String label,
                                          @PathVariable int numberDigit,@PathVariable int orderType,
                                          @PathVariable int page,@PathVariable int count) {
         PageBean<GoodNumber> pageBean;

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.TreeSet;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -37,10 +39,10 @@ public class GoodNumberLController extends BaseController implements GoodNumberL
      * @return
      */
     @Override
-    public ReturnData findGoodNumberListByNumber(@PathVariable long beginNumber,@PathVariable long endNumber) {
+    public ReturnData addGoodNumber(@PathVariable long beginNumber,@PathVariable long endNumber) {
         for (int i = 0; i <34 ; i++) {//每个省简称下都要生成一部分
             for(long j=beginNumber;j<=endNumber;j++){
-                int count = 0;
+//                int count = 0;
                 if(CommonUtils.isPretty(j)){//符合靓号规则 插入靓号预售表
                     //判断靓号是否已被占用
                     Object o = redisUtils.hget("pickNumberMap",i+"_"+j);
@@ -51,27 +53,75 @@ public class GoodNumberLController extends BaseController implements GoodNumberL
                     goodNumber.setProId(i);
                     goodNumber.setHouse_number(j);
                     goodNumber.setTheme(0);//主题 0普通靓号 1顶级靓号 2爱情靓号 3生日靓号 4手机靓号
-                    if(Pattern.compile(Constants.LOVE).matcher(String.valueOf(j)).find()){
-                        goodNumber.setTheme(2);//2爱情靓号
-                        count++;
-                    }
                     if(Pattern.compile(Constants.BRITHDAY).matcher(String.valueOf(j)).find()){
                         goodNumber.setTheme(3);//3生日靓号
-                        count++;
                     }
                     if(Pattern.compile(Constants.PHONE).matcher(String.valueOf(j)).find()){
                         goodNumber.setTheme(4);//4手机靓号
-                        count++;
                     }
-                    if(count>=3){//同时满足 爱情靓号 生日靓号 手机靓号规则 则为顶级靓号
-                        goodNumber.setTheme(1);//1顶级靓号
+                    if(Pattern.compile(Constants.LOVE).matcher(String.valueOf(j)).find()){
+                        goodNumber.setTheme(2);//2爱情靓号
                     }
                     String numberDigit = j+"";
                     goodNumber.setNumberDigit(numberDigit.length());
                     //检测该账号符合几个规则
-                    goodNumber.setLabel();
+                    String labels ="";//最终符合的数字规则组合
+                    double goodNumberPrice =0;//最终靓号的出售价格
+                    TreeSet aaa = new TreeSet();//重复集合
+                    TreeSet abc = new TreeSet();//连号集合
+                    for(int k=0;k<Constants.PRETTY_NUMBER_ARRAY.length;k++) {
+                        if(Pattern.compile(Constants.PRETTY_NUMBER_ARRAY[k]).matcher(String.valueOf(j)).find()){
+                            //连号只保留最长的规则0-8 重复的号也只保留最长的规则9-15
+                            if(k<=15){
+                                if(k<=8){//重复集合
+                                    aaa.add(k);
+                                }else{//连号集合
+                                    abc.add(k);
+                                }
+                            }else{
+                                labels += "#"+k+"#,";
+                                goodNumberPrice += Constants.PRETTY_NUMBER_PRICE_ARRAY[k];
+//                                count++;
+                            }
+                        }
+                    }
+                    if(labels.length()>0){//去掉最后一个","
+                        labels = labels.substring(0,labels.length()-1);
+                        if(aaa.size()>0){
+                            int a = Integer.parseInt(aaa.pollFirst().toString());
+                            labels +=",#"+a+"#";
+                            goodNumberPrice += Constants.PRETTY_NUMBER_PRICE_ARRAY[a];
+//                            count++;
+                        }
+                        if(abc.size()>0){
+                            int b = Integer.parseInt(abc.pollFirst().toString());
+                            labels +=",#"+b+"#";
+                            goodNumberPrice += Constants.PRETTY_NUMBER_PRICE_ARRAY[b];
+//                            count++;
+                        }
+                    }else{
+                        if(aaa.size()>0){
+                            int a = Integer.parseInt(aaa.pollFirst().toString());
+                            labels +="#"+a+"#";
+                            goodNumberPrice += Constants.PRETTY_NUMBER_PRICE_ARRAY[a];
+//                            count++;
+                        }
+                        if(abc.size()>0){
+                            int b = Integer.parseInt(abc.pollFirst().toString());
+                            labels +="#"+b+"#";
+                            goodNumberPrice += Constants.PRETTY_NUMBER_PRICE_ARRAY[b];
+//                            count++;
+                        }
+                    }
+//                    if(count>=3){//同时满足多个规则为顶级账号
+//                        goodNumber.setTheme(1);//1顶级靓号
+//                    }
+                    if(goodNumberPrice>1000){//价格大于1000 为顶级靓号
+                        goodNumber.setTheme(1);//1顶级靓号
+                    }
+                    goodNumber.setLabel(labels);
                     //设定账号价格 为符合所有规则的总和
-                    goodNumber.setGoodNumberPrice();
+                    goodNumber.setGoodNumberPrice(goodNumberPrice);
                     goodNumber.setStatus(0);
                     goodNumberService.add(goodNumber);
                 }

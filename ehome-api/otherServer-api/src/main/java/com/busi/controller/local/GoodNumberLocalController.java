@@ -18,7 +18,7 @@ public interface GoodNumberLocalController {
      * @return
      */
     @GetMapping("addGoodNumber/{beginNumber}/{endNumber}")
-    ReturnData findGoodNumberListByNumber(@PathVariable long beginNumber,@PathVariable long endNumber);
+    ReturnData addGoodNumber(@PathVariable long beginNumber,@PathVariable long endNumber);
 
 
     /***
