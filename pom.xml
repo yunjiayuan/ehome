@@ -25,6 +25,7 @@
         <module>ehome-quartz-otherServer</module>
         <module>ehome-quartz-login</module>
         <module>ehome-quartz-paymentServer</module>
+        <module>ehome-quartz-activity</module>
     </modules>
 
     <packaging>pom</packaging>
