@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -135,6 +133,27 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
             if (pageBean == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
             }
+            List list = null;
+            List list2 = null;
+            list = pageBean.getList();
+            if (list != null && list.size() > 0) {//返回当前活动播出时间
+                list2 = selfChannelVipService.findGearShiftList2(userId);//当前用户次日排挡所有视频
+                if (list2 != null && list2.size() > 0) {
+                    for (int j = 0; j < list2.size(); j++) {
+                        SelfChannel channel = (SelfChannel) list2.get(j);
+                        if (channel != null) {
+                            for (int i = 0; i < list.size(); i++) {
+                                CloudVideoActivities activities = (CloudVideoActivities) list.get(i);
+                                if (activities != null) {
+                                    if (activities.getSelectionType() == channel.getSelectionType()) {
+                                        activities.setPlayTime(channel.getTime());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
     }
@@ -174,10 +193,11 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
             SelfChannelVip vip = selfChannelVipService.findDetails(CommonUtils.getMyId());
             if (vip == null) {
                 isVip = 0;
+            } else {
+                //放入缓存
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(vip);
+                redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + CommonUtils.getMyId(), ordersMap, Constants.USER_TIME_OUT);
             }
-            //放入缓存
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(vip);
-            redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + CommonUtils.getMyId(), ordersMap, Constants.USER_TIME_OUT);
         } else {
             SelfChannelVip vip = (SelfChannelVip) CommonUtils.mapToObject(map, SelfChannelVip.class);
             if (vip != null) {
@@ -291,5 +311,23 @@ public class CloudVideoController extends BaseController implements CloudVideoAp
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    //当前时间到第二天凌晨的时间
+    public Date getNextDay(String dateTime) {
+        SimpleDateFormat simpleDateFormat = new
+                SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar calendar = Calendar.getInstance();
+        try {
+            Date date = simpleDateFormat.parse(dateTime);
+            calendar.setTime(date);
+            calendar.add(Calendar.DATE, 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+        return calendar.getTime();
     }
 }

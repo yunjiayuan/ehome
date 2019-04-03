@@ -93,13 +93,25 @@ public class SelfChannelVipService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<SelfChannel> findGearShiftList(Date timeStamp,Date timeStamp2, int page, int count) {
+    public PageBean<SelfChannel> findGearShiftList(Date timeStamp, Date timeStamp2, int page, int count) {
 
         List<SelfChannel> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = selfChannelVipDao.findGearShiftList(timeStamp,timeStamp2);
+        list = selfChannelVipDao.findGearShiftList(timeStamp, timeStamp2);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询排挡视频列表
+     * @return
+     */
+    public List<SelfChannel> findGearShiftList2(long userId) {
+
+        List<SelfChannel> list;
+        list = selfChannelVipDao.findGearShiftList2(userId);
+
+        return list;
     }
 
     /***
