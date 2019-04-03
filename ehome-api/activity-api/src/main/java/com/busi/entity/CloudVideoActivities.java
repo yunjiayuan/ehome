@@ -36,8 +36,6 @@ public class CloudVideoActivities {
 
     private int duration;//时长
 
-//    private int sex;//性别 1男2女
-
     private String birthday;//出生日期
 
     private long votesCounts;//票数
@@ -52,6 +50,9 @@ public class CloudVideoActivities {
     private String videoCover;//活动封面
 
     //与数据库无关字段
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date playTime;//播放时间
+
 //    private String name; //用户名
 //
 //    private String head; //头像
