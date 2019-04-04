@@ -1,6 +1,7 @@
 package com.busi.servive;
 
 import com.busi.dao.WheelPlantingDao;
+import com.busi.entity.CloudVideoActivities;
 import com.busi.entity.SelfChannel;
 import com.busi.entity.SelfChannelDuration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +46,9 @@ public class WheelPlantingService {
      * 查询排挡视频列表
      * @return
      */
-    public List<SelfChannel> findGearShiftList() {
+    public List<CloudVideoActivities> findGearShiftList() {
 
-        List<SelfChannel> list;
+        List<CloudVideoActivities> list;
         list = wheelPlantingDao.findGearShiftList();
         return list;
     }

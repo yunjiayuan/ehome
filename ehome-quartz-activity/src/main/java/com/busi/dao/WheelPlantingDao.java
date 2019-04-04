@@ -1,6 +1,7 @@
 package com.busi.dao;
 
 
+import com.busi.entity.CloudVideoActivities;
 import com.busi.entity.SelfChannel;
 import com.busi.entity.SelfChannelDuration;
 import org.apache.ibatis.annotations.*;
@@ -36,13 +37,13 @@ public interface WheelPlantingDao {
     int addDuration(SelfChannelDuration selfChannelDuration);
 
     /***
-     * 查询排挡视频列表
+     * 查询活动视频列表
      * @return
      */
     @Select("<script>" +
-            "select * from SelfChannel where userId>=10000" +
+            "select * from CloudVideoActivities where 10000 >= userId" +
             "</script>")
-    List<SelfChannel> findGearShiftList();
+    List<CloudVideoActivities> findGearShiftList();
 
     /***
      * 新增排挡信息

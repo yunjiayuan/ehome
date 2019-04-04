@@ -91,8 +91,8 @@ public interface SelfChannelVipDao {
     @Select("<script>" +
             "select * from SelfChannel" +
             " where 1=1" +
-//            " and unix_timestamp(time) > unix_timestamp(#{timeStamp}) " +  //调试阶段暂先返回所有
-//            " and unix_timestamp(#{timeStamp}) > unix_timestamp(time) " +
+            " and unix_timestamp(time) >= unix_timestamp(#{timeStamp}) " +
+            " and unix_timestamp(#{timeStamp2}) >= unix_timestamp(time) " +
             " order by addtime asc" +
             "</script>")
     List<SelfChannel> findGearShiftList(@Param("timeStamp") Date timeStamp, @Param("timeStamp2") Date timeStamp2);

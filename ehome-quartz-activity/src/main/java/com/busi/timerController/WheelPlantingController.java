@@ -1,5 +1,6 @@
 package com.busi.timerController;
 
+import com.busi.entity.CloudVideoActivities;
 import com.busi.entity.SelfChannel;
 import com.busi.entity.SelfChannelDuration;
 import com.busi.servive.WheelPlantingService;
@@ -55,20 +56,17 @@ public class WheelPlantingController {
     public void wheelPlantingTimer() throws Exception {
         log.info("开始补充次日轮播视频...");
         int num = 0;
+        Date nextTime = null;
         List channelList = null;
         int surplusTime = 0;  //剩余时长
         int seconds = 86400;//一天秒数
-        SelfChannel channel = null;
+        CloudVideoActivities activities = null;
+        SelfChannel selfChannel = new SelfChannel();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         int timeStamp = Integer.valueOf(simpleDateFormat.format(getNextDay(simpleDateFormat.format(new Date()))).substring(0, 8));//一天后的时间
         //查询档期(明天的档期)
         SelfChannelDuration selfChannelDuration = wheelPlantingService.findTimeStamp(timeStamp);
-        if (selfChannelDuration != null) {//有排挡信息
-            if (selfChannelDuration.getSurplusTime() < seconds) {
-                surplusTime = selfChannelDuration.getSurplusTime();//剩余时长
-            }
-        } else {//无排挡信息
-            surplusTime = seconds;//一天秒数
+        if (selfChannelDuration == null) {//无排挡信息
             //新增档期信息 //首增
             Date date = getNextDay(simpleDateFormat.format(new Date()));//一天后凌晨0点的时间
 
@@ -78,39 +76,51 @@ public class WheelPlantingController {
             selfChannelDuration1.setSurplusTime(seconds);//剩余秒数
             wheelPlantingService.addDuration(selfChannelDuration1);
         }
-        if (surplusTime > 60) {//判断是否还有时长
-            channelList = wheelPlantingService.findGearShiftList();//查询现有的排挡信息
-            if (channelList != null && channelList.size() > 0) {
-                for (int i = 0; i < channelList.size(); i++) {
-                    channel = (SelfChannel) channelList.get(i);
-                    if (channel != null) {
-                        if (surplusTime >= channel.getDuration()) {
-                            if (i == channelList.size() - 1) {
-                                i = 0;
-                            }
-                            channel.setId(0);
-                            channel.setAddtime(new Date());
-                            channel.setTime(selfChannelDuration.getNextTime());
-
-                            Calendar calendar3 = new GregorianCalendar();
-                            calendar3.setTime(channel.getTime());
-                            calendar3.add(calendar3.SECOND, channel.getDuration());//加上当前视频时长
-                            Date date3 = calendar3.getTime();
-                            selfChannelDuration.setNextTime(date3);//下一个视频播出时间
-                            selfChannelDuration.setSurplusTime(selfChannelDuration.getSurplusTime() - channel.getDuration());//剩余秒数
-                            surplusTime = selfChannelDuration.getSurplusTime();//剩余时长
-                            //新增排挡
-                            wheelPlantingService.addSelfChannel(channel);
-                            //更新时长表
-                            wheelPlantingService.updateDuration(selfChannelDuration);
-                            num++;
-                        } else {
-                            break;
+        channelList = wheelPlantingService.findGearShiftList();//查询现有的排挡信息
+        SelfChannelDuration duration = wheelPlantingService.findTimeStamp(timeStamp);
+        nextTime = duration.getNextTime();  //下一个排挡时间
+        surplusTime = duration.getSurplusTime();//剩余时长
+        if (channelList != null && channelList.size() > 0) {
+            for (int i = 0; i < channelList.size(); i++) {
+                activities = (CloudVideoActivities) channelList.get(i);
+                if (activities != null) {
+                    if (surplusTime >= activities.getDuration()) {
+                        if (i == channelList.size() - 1) {
+                            i = 0;
                         }
+                        selfChannel.setId(0);
+                        selfChannel.setAddtime(new Date());
+                        selfChannel.setCity(activities.getCity());
+                        selfChannel.setUserId(activities.getUserId());
+                        selfChannel.setDistrict(activities.getDistrict());
+                        selfChannel.setDuration(activities.getDuration());
+                        selfChannel.setProvince(activities.getProvince());
+                        selfChannel.setSinger(activities.getSinger());
+                        selfChannel.setSongName(activities.getSongName());
+                        selfChannel.setBirthday(activities.getBirthday());
+                        selfChannel.setVideoCover(activities.getVideoCover());
+                        selfChannel.setVideoUrl(activities.getVideoUrl());
+                        selfChannel.setTime(nextTime);
+
+                        Calendar calendar3 = new GregorianCalendar();
+                        calendar3.setTime(selfChannel.getTime());
+                        calendar3.add(calendar3.SECOND, selfChannel.getDuration());//加上当前视频时长
+                        Date date3 = calendar3.getTime();
+                        duration.setNextTime(date3);//下一个视频播出时间
+                        duration.setSurplusTime(surplusTime - selfChannel.getDuration());//剩余秒数
+                        nextTime = duration.getNextTime(); //下一个排挡时间
+                        surplusTime = duration.getSurplusTime();//剩余时长
+                        //新增排挡
+                        wheelPlantingService.addSelfChannel(selfChannel);
+                        //更新时长表
+                        wheelPlantingService.updateDuration(duration);
+                        num++;
+                    } else {
+                        break;
                     }
                 }
-                log.info("新增轮播视频[" + num + "]条");
             }
+            log.info("新增轮播视频[" + num + "]条");
         }
     }
 
