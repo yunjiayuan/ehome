@@ -72,4 +72,13 @@ public class WheelPlantingService {
     public int updateDuration(SelfChannelDuration selfChannelDuration) {
         return wheelPlantingDao.updateDuration(selfChannelDuration);
     }
+
+    /***
+     * 清除过期轮播视频
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int del() {
+        return wheelPlantingDao.del();
+    }
 }

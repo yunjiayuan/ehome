@@ -76,7 +76,12 @@ public class WheelPlantingController {
             selfChannelDuration1.setSurplusTime(seconds);//剩余秒数
             wheelPlantingService.addDuration(selfChannelDuration1);
         }
-        channelList = wheelPlantingService.findGearShiftList();//查询现有的排挡信息
+        //清除过期视频
+        int delNum = wheelPlantingService.del();
+        log.info("删除过期视频[" + delNum + "]条");
+
+        //查询现有的活动视频
+        channelList = wheelPlantingService.findGearShiftList();
         SelfChannelDuration duration = wheelPlantingService.findTimeStamp(timeStamp);
         nextTime = duration.getNextTime();  //下一个排挡时间
         surplusTime = duration.getSurplusTime();//剩余时长
@@ -126,8 +131,7 @@ public class WheelPlantingController {
 
     //当前时间到第二天凌晨的时间
     public Date getNextDay(String dateTime) {
-        SimpleDateFormat simpleDateFormat = new
-                SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         Calendar calendar = Calendar.getInstance();
         try {
             Date date = simpleDateFormat.parse(dateTime);

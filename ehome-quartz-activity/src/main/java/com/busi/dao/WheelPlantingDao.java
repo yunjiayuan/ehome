@@ -69,4 +69,14 @@ public interface WheelPlantingDao {
             " where id=#{id}" +
             "</script>")
     int updateDuration(SelfChannelDuration selfChannelDuration);
+
+    /***
+     * 清除过期轮播视频
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from SelfChannel" +
+            " where date_sub(CURDATE(), interval 1 day) >= addtime" + //获取当前时间格式为yyyy-MM-dd
+            "</script>")
+    int del();
 }
