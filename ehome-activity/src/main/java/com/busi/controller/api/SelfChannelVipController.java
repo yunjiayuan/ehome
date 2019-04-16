@@ -164,7 +164,7 @@ public class SelfChannelVipController extends BaseController implements SelfChan
 
                     Calendar calendar3 = new GregorianCalendar();
                     calendar3.setTime(selfChannel.getTime());
-                    calendar3.add(calendar.SECOND, duration);//加上当前视频时长
+                    calendar3.add(calendar3.SECOND, duration);//加上当前视频时长
                     Date date3 = calendar3.getTime();
                     selfChannelDuration.setNextTime(date3);//下一个视频播出时间
 

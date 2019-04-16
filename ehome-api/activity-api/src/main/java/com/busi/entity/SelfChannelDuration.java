@@ -23,5 +23,5 @@ public class SelfChannelDuration {
     private int surplusTime;  //剩余时长(初始一天秒数86400)
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
-    private Date nextTime;  //下一个排挡时间 （播放时间20190325121212）
+    private Date nextTime;  //下一个排挡时间
 }

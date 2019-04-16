@@ -166,7 +166,7 @@ public interface KitchenDao {
     /***
      * 条件查询厨房（条件搜索）
      * @param userId 用户ID
-     * @param sortType  排序类型：默认【0综合排序】   0综合排序  1距离最近  2销量最高  3评分最高
+     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高  4视频
      * @return
      */
     @Select("<script>" +
@@ -181,6 +181,10 @@ public interface KitchenDao {
             "</if>" +
             "<if test=\"sortType == 3\">" +
             " order by totalScore desc" +
+            "</if>" +
+            "<if test=\"sortType == 4\">" +
+            " and videoUrl is not null" +
+            " order by totalScore,totalSales desc" +
             "</if>" +
             "</script>")
     List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("sortType") int sortType);
