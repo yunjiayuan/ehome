@@ -27,6 +27,7 @@
         <module>ehome-quartz-paymentServer</module>
         <module>ehome-quartz-activity</module>
         <module>ehome-homeShop-shopCenter</module>
+        <module>ehome-homeShop-goodsCenter</module>
     </modules>
 
     <packaging>pom</packaging>

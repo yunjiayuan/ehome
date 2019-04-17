@@ -8,27 +8,14 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>ehome-api</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>demo-api</module>
-        <module>login-api</module>
-        <module>ips-api</module>
-        <module>eblog-api</module>
-        <module>activity-api</module>
-        <module>otherServer-api</module>
-        <module>paymentServer-api</module>
-        <module>homeShop-shopCenter-api</module>
-        <module>homeShop-goodsCenter-api</module>
-    </modules>
+    <packaging>jar</packaging>
+    <artifactId>ehome-homeShop-goodsCenter</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.ehome</groupId>
-            <artifactId>ehome-common</artifactId>
+            <artifactId>homeShop-goodsCenter-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
 
 </project>
