@@ -110,7 +110,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 Random ra =new Random();
                 Random ra2 =new Random();
                 Random ra3 =new Random();
-                homeBlog.setUserId(ra.nextInt(9999)+1);
+
+//                homeBlog.setUserId(ra.nextInt(9999)+1);//随机10000以内
+                homeBlog.setUserId(ra.nextInt(40000)+13870);//随机13870-53870
                 homeBlog.setLikeCount(ra2.nextInt(30000)+10000);
                 homeBlog.setLookCount(ra3.nextInt(30000)+30000);
                 UserHeadNotes userHeadNotes = new UserHeadNotes();
