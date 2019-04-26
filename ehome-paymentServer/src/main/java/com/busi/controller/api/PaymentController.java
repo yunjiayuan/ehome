@@ -61,6 +61,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
     @Autowired
     private GoodNumberOrderService goodNumberOrderService;
 
+    @Autowired
+    private HourlyWorkerOrdersService hourlyWorkerOrdersService;
+
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -265,6 +268,8 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 13://购买靓号支付
                 payBaseService = goodNumberOrderService;
+            case 14://购买小时工支付
+                payBaseService = hourlyWorkerOrdersService;
                 break;
             default:
                 break;
