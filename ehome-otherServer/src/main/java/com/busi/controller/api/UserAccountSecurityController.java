@@ -502,6 +502,7 @@ public class UserAccountSecurityController extends BaseController implements Use
             if (uas == null) {
                 //之前该用户未设置过安全中心数据
                 UserAccountSecurity userAccountSecurity = new UserAccountSecurity();
+                userAccountSecurity.setUserId(realNameInfo.getUserId());
                 userAccountSecurity.setRealName(realNameInfo.getRealName());
                 userAccountSecurity.setIdCard(realNameInfo.getCardNo());
                 userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
@@ -513,6 +514,7 @@ public class UserAccountSecurityController extends BaseController implements Use
         } else {
             if (Integer.parseInt(map.get("redisStatus").toString()) == 0) {//redisStatus==0 说明数据中无此记录
                 UserAccountSecurity userAccountSecurity = new UserAccountSecurity();
+                userAccountSecurity.setUserId(realNameInfo.getUserId());
                 userAccountSecurity.setRealName(realNameInfo.getRealName());
                 userAccountSecurity.setIdCard(realNameInfo.getCardNo());
                 userAccountSecurityService.addUserAccountSecurity(userAccountSecurity);
