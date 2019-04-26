@@ -23,9 +23,9 @@ public interface HourlyWorkerOrdersDao {
      * @return
      */
     @Insert("insert into HourlyWorkerOrders(userId,ordersState,ordersType,addTime,money,myId,addressId,receivingTime,address_Name,address_Phone,address_province,address_city,address_district,address_postalcode,address,remarks," +
-            "serviceTime,orderTime,no,shopId,workerTypeIds,coverMap)" +
+            "serviceTime,orderTime,no,shopId,workerTypeIds,coverMap,name)" +
             "values (#{userId},#{ordersState},#{ordersType},#{addTime},#{money},#{myId},#{addressId},#{receivingTime},#{address_Name},#{address_Phone},#{address_province},#{address_city},#{address_district},#{address_postalcode},#{address},#{remarks}" +
-            ",#{serviceTime},#{orderTime},#{no},#{shopId},#{workerTypeIds},#{coverMap})")
+            ",#{serviceTime},#{orderTime},#{no},#{shopId},#{workerTypeIds},#{coverMap},#{name})")
     @Options(useGeneratedKeys = true)
     int addOrders(HourlyWorkerOrders orders);
 
@@ -112,7 +112,7 @@ public interface HourlyWorkerOrdersDao {
     /***
      * 订单管理条件查询
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  订单类型:   0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价  7未接单(已付款未接单)  8付款超时
+     * @param ordersType  : 订单类型:  订单类型:   0已下单未付款  1未接单(已付款未接单)  ,2已接单未完成,  3已完成(已完成未评价)  4已评价 5用户取消订单 、 商家取消订单 、 接单超时 、 付款超时
      * @return
      */
     @Select("<script>" +
@@ -124,13 +124,22 @@ public interface HourlyWorkerOrdersDao {
             "<if test=\"identity == 2 \">" +
             " and userId = #{userId}" +
             "</if>" +
-            "<if test=\"ordersType >= 0 and ordersType &lt; 3\">" +
-            " and ordersType = #{ordersType}" +
+            "<if test=\"ordersType == 0 \">" +
+            " and ordersType = 0" +
             "</if>" +
-            "<if test=\"ordersType == 6\">" +
+            "<if test=\"ordersType == 1 \">" +
+            " and ordersType = 8" +
+            "</if>" +
+            "<if test=\"ordersType == 2 \">" +
+            " and ordersType = 1" +
+            "</if>" +
+            "<if test=\"ordersType == 3 \">" +
+            " and ordersType = 2" +
+            "</if>" +
+            "<if test=\"ordersType == 4 \">" +
             " and ordersType = 6" +
             "</if>" +
-            "<if test=\"ordersType == 3\">" +
+            "<if test=\"ordersType == 5\">" +
             " and ordersType in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +

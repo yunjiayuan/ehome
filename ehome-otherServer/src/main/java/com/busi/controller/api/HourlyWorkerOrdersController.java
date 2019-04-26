@@ -174,9 +174,9 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
             hourlyWorkerOrdersService.updateOrders(io);
             //清除缓存中的小时工订单信息
             redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), 0);
-            //厨房订单放入缓存(暂定30分钟接单超时)
+            //小时工订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_15 * 2);
+            redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -229,16 +229,16 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
             }
-            UserInfo userInfo = null;
-            userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
-            if (userInfo != null) {
-                if (io.getUserId() == CommonUtils.getMyId()) {//卖家查看返回买家缓存信息  买家查看返回卖家实名信息
-                    io.setName(userInfo.getName());
-                    io.setCoverMap(userInfo.getHead());
-                }
-                io.setProTypeId(userInfo.getProType());
-                io.setHouseNumber(userInfo.getHouseNumber());
-            }
+//            UserInfo userInfo = null;
+//            userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
+//            if (userInfo != null) {
+//                if (io.getUserId() == CommonUtils.getMyId()) {//卖家查看返回买家缓存信息  买家查看返回卖家实名信息
+//                    io.setName(userInfo.getName());
+//                    io.setCoverMap(userInfo.getHead());
+//                }
+//                io.setProTypeId(userInfo.getProType());
+//                io.setHouseNumber(userInfo.getHouseNumber());
+//            }
             //放入缓存
             ordersMap = CommonUtils.objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
@@ -262,6 +262,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         int orderCont6 = 0;
         int orderCont7 = 0;
         int orderCont8 = 0;
+        int orderCont9 = 0;
 
         HourlyWorkerOrders kh = null;
         List list = null;
@@ -298,11 +299,11 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
                     orderCont0++;
                     break;
                 case 7://付款超时订单
-                    orderCont7++;
+                    orderCont8++;
                     orderCont0++;
                     break;
-                case 8://接单超时订单
-                    orderCont8++;
+                case 8://未接单(已付款未接单)
+                    orderCont9++;
                     orderCont0++;
                     break;
                 default:
@@ -319,6 +320,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         map.put("orderCont6", orderCont6);
         map.put("orderCont7", orderCont7);
         map.put("orderCont8", orderCont8);
+        map.put("orderCont9", orderCont9);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -444,7 +446,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
      * @param count       : 每页的显示条数
      * @param page        : 当前查询数据的页码
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价  7未接单(已付款未接单)  8付款超时
+     * @param ordersType  : 查询类型:  0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3未接单(已付款未接单)  4已评价 5用户取消订单 、 商家取消订单 、 接单超时 、 付款超时
      * @return
      */
     @Override
