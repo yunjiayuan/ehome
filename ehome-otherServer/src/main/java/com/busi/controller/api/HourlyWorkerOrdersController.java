@@ -261,13 +261,14 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         int orderCont5 = 0;
         int orderCont6 = 0;
         int orderCont7 = 0;
+        int orderCont8 = 0;
 
         HourlyWorkerOrders kh = null;
         List list = null;
         list = hourlyWorkerOrdersService.findIdentity(identity, CommonUtils.getMyId());//全部
         for (int i = 0; i < list.size(); i++) {
             kh = (HourlyWorkerOrders) list.get(i);
-            switch (kh.getOrdersType()) {//订单类型:  0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3付款超时 4接单超时  5商家取消订单 6用户取消订单  7已评价
+            switch (kh.getOrdersType()) {//订单类型:  0已下单未付款  8未接单(已付款未接单)  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价 7付款超时
                 case 0://已下单未付款
                     orderCont1++;
                     orderCont0++;//全部
@@ -296,6 +297,14 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
                     orderCont7++;
                     orderCont0++;
                     break;
+                case 7://付款超时订单
+                    orderCont7++;
+                    orderCont0++;
+                    break;
+                case 8://接单超时订单
+                    orderCont8++;
+                    orderCont0++;
+                    break;
                 default:
                     break;
             }
@@ -309,6 +318,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         map.put("orderCont5", orderCont5);
         map.put("orderCont6", orderCont6);
         map.put("orderCont7", orderCont7);
+        map.put("orderCont8", orderCont8);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -339,7 +349,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         hourlyWorkerOrdersService.updateOrders(ko);//更新订单
         if (ko.getOrdersType() == 4 || ko.getOrdersType() == 5) {
             //更新缓存、钱包、账单
-            mqUtils.sendPurseMQ(ko.getMyId(), 16, 0, ko.getMoney());
+            mqUtils.sendPurseMQ(ko.getMyId(), 24, 0, ko.getMoney());
             //清除缓存中的小时工订单信息
             redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + ko.getMyId() + "_" + ko.getNo(), 0);
             //放入缓存
@@ -434,7 +444,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
      * @param count       : 每页的显示条数
      * @param page        : 当前查询数据的页码
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价
+     * @param ordersType  : 订单类型:  0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价  7未接单(已付款未接单)  8付款超时
      * @return
      */
     @Override

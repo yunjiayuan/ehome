@@ -29,7 +29,7 @@ public class HourlyWorkerOrdersLController extends BaseController implements Hou
      * @create: 2019-4-26 11:46:24
      */
     @Override
-    public ReturnData updatePayState(@RequestBody HourlyWorkerOrders hourlyWorkerOrders) {
+    public ReturnData updatePayStates(@RequestBody HourlyWorkerOrders hourlyWorkerOrders) {
 
         hourlyWorkerOrders.setUpdateCategory(5);
         hourlyWorkerOrdersService.updateOrders(hourlyWorkerOrders);

@@ -62,7 +62,7 @@ public interface HourlyWorkerOrdersDao {
             " and ordersType >2 and ordersState!=3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0  and ordersType=0 and userId=#{userId} and addTime > date_sub(now(), interval 30 minute)" +//接单时间在30分钟内
+            " and ordersState=0  and ordersType=8 and userId=#{userId} and addTime > date_sub(now(), interval 30 minute)" +//接单时间在30分钟内
             "</if>" +
             "<if test=\"type == 2\">" +
             " and ordersState=0 and ordersType=1 and myId=#{userId}" +
@@ -112,7 +112,7 @@ public interface HourlyWorkerOrdersDao {
     /***
      * 订单管理条件查询
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  订单类型:   0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价
+     * @param ordersType  : 订单类型:  订单类型:   0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价  7未接单(已付款未接单)  8付款超时
      * @return
      */
     @Select("<script>" +
@@ -130,7 +130,7 @@ public interface HourlyWorkerOrdersDao {
             "<if test=\"ordersType == 6\">" +
             " and ordersType = 6" +
             "</if>" +
-            "<if test=\"ordersType == 5\">" +
+            "<if test=\"ordersType == 3\">" +
             " and ordersType in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +

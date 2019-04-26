@@ -64,7 +64,7 @@ public class HourlyWorkerOrdersService extends BaseController implements PayBase
         //开始扣款支付
         mqUtils.sendPurseMQ(pay.getUserId(),23,0,money*-1);//人民币转出
         //回调业务
-        hourlyWorkerOrdersLControllerFegin.updatePayState(hourlyWorkerOrders);
+        hourlyWorkerOrdersLControllerFegin.updatePayStates(hourlyWorkerOrders);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

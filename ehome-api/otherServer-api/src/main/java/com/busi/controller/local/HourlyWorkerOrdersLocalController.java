@@ -15,9 +15,9 @@ public interface HourlyWorkerOrdersLocalController {
 
     /**
      * @Description: 更新订单支付状态
-     * @Param: kitchenOrders
+     * @Param: hourlyWorkerOrders
      * @return:
      */
-    @PutMapping("updatePayState")
-    ReturnData updatePayState(@RequestBody HourlyWorkerOrders hourlyWorkerOrders);
+    @PutMapping("updatePayStates")
+    ReturnData updatePayStates(@RequestBody HourlyWorkerOrders hourlyWorkerOrders);
 }
