@@ -34,6 +34,9 @@ public class HourlyWorkerOrders {
     private Date addTime;            // 添加时间
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date paymentTime;            // 付款时间
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date orderTime;            // 接单时间
 
     private String serviceTime;                // 到达时间【显示用】
