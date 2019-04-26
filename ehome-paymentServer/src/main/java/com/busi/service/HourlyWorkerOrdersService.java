@@ -57,7 +57,7 @@ public class HourlyWorkerOrdersService extends BaseController implements PayBase
         }
         //更改状态 防止重复支付
         redisUtils.hset(Constants.REDIS_KEY_KITCHENORDERS+pay.getUserId()+"_"+pay.getOrderNumber(),"ordersType",1);
-        hourlyWorkerOrders.setOrdersType(1);
+        hourlyWorkerOrders.setOrdersType(8);//已支付
         hourlyWorkerOrders.setPaymentTime(new Date());
         redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), 0);
         redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), CommonUtils.objectToMap(hourlyWorkerOrders), Constants.USER_TIME_OUT);
