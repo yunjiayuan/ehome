@@ -18,10 +18,8 @@ public class HourlyWorkerOrders {
 
     private long id;                    // 主键
 
-    @Min(value = 1, message = "myId参数有误")
     private long myId;                // 客户ID(下单者）
 
-    @Min(value = 1, message = "userId参数有误")
     private long userId;                // 小时工ID
 
     private long shopId;            //店铺ID
@@ -65,14 +63,16 @@ public class HourlyWorkerOrders {
 
     private String address;                        // 详细地址
 
-    private String coverMap;            //小时工头像【店铺封面小图】
+    private String coverMap;            //小时工头像
 
-    private String name;                //用户名	查询后从内存获取最新  与数据库无关字段
+    private String name;                //小时工姓名
 
-    private String head;                    //头像	查询后从内存获取最新  与数据库无关字段
+    //与数据库无关字段
 
     private int proTypeId;                //	省简称ID  与数据库无关字段
 
     private long houseNumber;        // 门牌号  与数据库无关字段
+
+    private long updateCategory;        // 更新类别  默认0删除状态  1由未接单改为已接单  2由服务中改为已完成  3取消订单  4更新订单状态为已评价
 
 }
