@@ -64,7 +64,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
         }
         Kitchen ik = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
         if (ik != null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败，厨房不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增厨房失败，厨房已存在！", new JSONObject());
         }
         kitchen.setAuditType(1);
         kitchen.setBusinessStatus(1);//厨房默认关闭

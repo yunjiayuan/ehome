@@ -18,7 +18,6 @@ public class HourlyWorkerEvaluate {
 
     private long id;                            //主建ID
 
-    @Min(value = 1, message = "userId参数有误")
     private long userId;                        //用户ID
 
     private String content;                        //内容

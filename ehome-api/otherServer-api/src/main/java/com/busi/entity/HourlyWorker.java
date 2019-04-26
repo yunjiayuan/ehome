@@ -36,7 +36,11 @@ public class HourlyWorker {
 
     private String healthyImgUrl;            //健康证
 
-    private String coverCover;        //封面
+    private String coverCover;        //头像
+
+    private String videoUrl;        //视频地址
+
+    private String videoCoverUrl;     //视频封面地址
 
     private String content;                //简介
 
@@ -50,18 +54,19 @@ public class HourlyWorker {
 
     private String address;            // 详细地址
 
-    private String name;                //用户名
-
     private String workerType;        //工作类型【格式(逗号分隔)：打扫卫生,擦桌子】
 
-    //与数据库无关字段
-    private int age;         //年龄
+    private String name;                //姓名
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date birthday;         //生日
 
     private int sex;        // 性别:1男,2女
 
-    private int distance;        //距离
+    //与数据库无关字段
+    private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
-    private String head;        //头像
+    private int distance;        //距离
 
     private int proTypeId;    //	省简称ID
 

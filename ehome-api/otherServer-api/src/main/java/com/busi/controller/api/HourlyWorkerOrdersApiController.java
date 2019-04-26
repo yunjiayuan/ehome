@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.busi.entity.HourlyWorkerEvaluate;
 import com.busi.entity.HourlyWorkerOrders;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
@@ -49,6 +50,38 @@ public interface HourlyWorkerOrdersApiController {
     ReturnData hourlyComplete(@PathVariable long id);
 
     /***
+     * 查看订单详情
+     * @param no  订单编号
+     * @return
+     */
+    @GetMapping("findHourlyOrders/{no}")
+    ReturnData findHourlyOrders(@PathVariable String no);
+
+    /***
+     * 统计各类订单数量
+     * @param identity 身份区分：1买家 2商家
+     * @return
+     */
+    @GetMapping("findHourlyNum/{identity}")
+    ReturnData findHourlyNum(@PathVariable int identity);
+
+    /***
+     * 取消订单（更新订单类型）
+     * @param id
+     * @return
+     */
+    @GetMapping("updHourlyOrdersType/{id}")
+    ReturnData updHourlyOrdersType(@PathVariable long id);
+
+    /***
+     * 新增评价点赞
+     * @param hourlyWorkerEvaluate
+     * @return
+     */
+    @PostMapping("addHourlyEvaluate")
+    ReturnData addHourlyEvaluate(@Valid @RequestBody HourlyWorkerEvaluate hourlyWorkerEvaluate, BindingResult bindingResult);
+
+    /***
      * 订单管理条件查询
      * @param count       : 每页的显示条数
      * @param page        : 当前查询数据的页码
@@ -56,30 +89,7 @@ public interface HourlyWorkerOrdersApiController {
      * @param ordersType  : 订单类型:  0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价
      * @return
      */
-    @GetMapping("findHourlyOrdersList/{userId}/{identity}/{ordersType}/page}/{count}")
-    ReturnData findHourlyOrdersList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findHourlyOrderList/{userId}/{identity}/{ordersType}/{page}/{count}")
+    ReturnData findHourlyOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
-    /***
-     * 查看订单详情
-     * @param id  订单Id
-     * @return
-     */
-    @GetMapping("findHourlyOrders/{id}")
-    ReturnData findHourlyOrders(@PathVariable long id);
-
-    /***
-     * 统计各类订单数量
-     * @param identity 身份区分：1买家 2商家
-     * @return
-     */
-    @GetMapping("findHourlyOrders/{identity}")
-    ReturnData findHourlyOrders(@PathVariable int identity);
-
-    /***
-     * 取消订单（更新订单类型）
-     * @param hourlyWorkerOrders
-     * @return
-     */
-    @PutMapping("updHourlyOrdersType")
-    ReturnData updHourlyOrdersType(@Valid @RequestBody HourlyWorkerOrders hourlyWorkerOrders, BindingResult bindingResult);
 }

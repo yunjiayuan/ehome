@@ -395,13 +395,15 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         }
         ko.setUpdateCategory(4);
         kitchenOrdersService.updateOrders(ko);//更新订单
-        //更新缓存、钱包、账单
-        mqUtils.sendPurseMQ(ko.getMyId(), 16, 0, ko.getMoney());
-        //清除缓存中的厨房订单信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + ko.getMyId() + "_" + ko.getNo(), 0);
-        //放入缓存
-        Map<String, Object> ordersMap = CommonUtils.objectToMap(ko);
-        redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + ko.getMyId() + "_" + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
+        if (ko.getOrdersType() == 9 || ko.getOrdersType() == 5) {
+            //更新缓存、钱包、账单
+            mqUtils.sendPurseMQ(ko.getMyId(), 16, 0, ko.getMoney());
+            //清除缓存中的厨房订单信息
+            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + ko.getMyId() + "_" + ko.getNo(), 0);
+            //放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(ko);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + ko.getMyId() + "_" + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

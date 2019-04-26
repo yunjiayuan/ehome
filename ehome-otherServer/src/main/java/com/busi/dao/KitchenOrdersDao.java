@@ -1,7 +1,6 @@
 package com.busi.dao;
 
 
-import com.busi.entity.KitchenDishes;
 import com.busi.entity.KitchenEvaluate;
 import com.busi.entity.KitchenFabulous;
 import com.busi.entity.KitchenOrders;
@@ -164,7 +163,7 @@ public interface KitchenOrdersDao {
             "<if test=\"ordersType == 10\">" +
             " and ordersType = 10" +
             "</if>" +
-            "<if test=\"ordersType >=5\">" +
+            "<if test=\"ordersType ==5\">" +
             " and ordersType in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
