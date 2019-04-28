@@ -112,17 +112,17 @@ public interface HourlyWorkerOrdersDao {
     /***
      * 订单管理条件查询
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  订单类型:   0已下单未付款  1未接单(已付款未接单)  ,2已接单未完成,  3已完成(已完成未评价)  4已评价 5用户取消订单 、 商家取消订单 、 接单超时 、 付款超时
+     * @param ordersType  : 查询类型:   0已下单未付款  1已付款未接单  ,2已接单未完成,  3已完成未评价 4已评价 5用户取消订单 、 商家取消订单 、 接单超时 、 付款超时
      * @return
      */
     @Select("<script>" +
             "select * from HourlyWorkerOrders" +
-            " where ordersState=0" +
+            " where ordersState!=3" +
             "<if test=\"identity == 1 \">" +
-            " and myId = #{userId}" +
+            " and myId = #{userId} and ordersState!=1" +
             "</if>" +
             "<if test=\"identity == 2 \">" +
-            " and userId = #{userId}" +
+            " and userId = #{userId} and ordersState!=2" +
             "</if>" +
             "<if test=\"ordersType == 0 \">" +
             " and ordersType = 0" +
@@ -175,7 +175,7 @@ public interface HourlyWorkerOrdersDao {
     @Select("<script>" +
             "select * from HourlyWorkerOrders" +
             " where no = #{no}" +
-            " and ordersState = 0" +
+            " and ordersState != 3" +
             "</script>")
     HourlyWorkerOrders findByNo(@Param("no") String no);
 }

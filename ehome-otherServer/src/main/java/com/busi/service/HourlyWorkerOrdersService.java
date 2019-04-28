@@ -81,7 +81,7 @@ public class HourlyWorkerOrdersService {
      * @param count       : 每页的显示条数
      * @param page        : 当前查询数据的页码
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 查询类型:  0已下单未付款  1未接单(已付款未接单)  ,2已接单未完成,  3已完成(已完成未评价)  4已评价 5用户取消订单 、 商家取消订单 、 接单超时 、 付款超时
+     * @param ordersType  : 查询类型:   0已下单未付款  1已付款未接单  ,2已接单未完成,  3已完成未评价 4已评价 5用户取消订单 、 商家取消订单 、 接单超时 、 付款超时
      * @return
      */
     public PageBean<HourlyWorkerOrders> findOrderList(int identity, long userId, int ordersType, int page, int count) {

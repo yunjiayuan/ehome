@@ -23,7 +23,9 @@ public class HourlyWorkerType {
 
     private long workerId;            // 店铺ID
 
-    private String charge;        // 收费标准
+    private double charge;        // 收费标准
+
+    private String remarks;        //备注
 
     private String workerType;    // 工作类型
 

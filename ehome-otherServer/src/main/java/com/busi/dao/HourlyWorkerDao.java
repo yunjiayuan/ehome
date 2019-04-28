@@ -272,8 +272,8 @@ public interface HourlyWorkerDao {
      * @param hourlyWorkerType
      * @return
      */
-    @Insert("insert into HourlyWorkerType(userId,workerId,charge,workerType,addTime) " +
-            "values (#{userId},#{workerId},#{charge},#{workerType},#{addTime})")
+    @Insert("insert into HourlyWorkerType(userId,workerId,charge,workerType,addTime,remarks) " +
+            "values (#{userId},#{workerId},#{charge},#{workerType},#{addTime},#{remarks})")
     @Options(useGeneratedKeys = true)
     int addDishes(HourlyWorkerType hourlyWorkerType);
 
@@ -285,6 +285,7 @@ public interface HourlyWorkerDao {
     @Update("<script>" +
             "update HourlyWorkerType set" +
             " charge=#{charge}," +
+            " remarks=#{remarks}," +
             " workerType=#{workerType}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +

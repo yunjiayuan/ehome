@@ -43,7 +43,7 @@ public class HourlyWorkerOrders {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date receivingTime;            // 完成时间
 
-    private String workerTypeIds;        //ID&工作类型【格式：12,打扫卫生;2,擦桌子;】
+    private String workerTypeIds;        //工种ID,名称,价格【格式：12,打扫卫生,100;2,擦桌子,200;】
 
     private String remarks;        //备注
 
