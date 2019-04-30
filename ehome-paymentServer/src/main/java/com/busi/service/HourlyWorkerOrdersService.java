@@ -56,11 +56,11 @@ public class HourlyWorkerOrdersService extends BaseController implements PayBase
             return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行支付订单操作",new JSONObject());
         }
         //更改状态 防止重复支付
-        redisUtils.hset(Constants.REDIS_KEY_KITCHENORDERS+pay.getUserId()+"_"+pay.getOrderNumber(),"ordersType",1);
+        redisUtils.hset(Constants.REDIS_KEY_HOURLYORDERS+pay.getUserId()+"_"+pay.getOrderNumber(),"ordersType",8);
         hourlyWorkerOrders.setOrdersType(8);//已支付
         hourlyWorkerOrders.setPaymentTime(new Date());
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), 0);
-        redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), CommonUtils.objectToMap(hourlyWorkerOrders), Constants.USER_TIME_OUT);
+        redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), 0);
+        redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), CommonUtils.objectToMap(hourlyWorkerOrders), Constants.USER_TIME_OUT);
         //开始扣款支付
         mqUtils.sendPurseMQ(pay.getUserId(),23,0,money*-1);//人民币转出
         //回调业务
