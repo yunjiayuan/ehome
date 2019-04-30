@@ -60,6 +60,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         }
         Date date = new Date();
         List iup = null;
+        double money = 0.0;
         String typeIds = "";
         HourlyWorkerType laf = null;
         HourlyWorkerType dis = null;
@@ -73,11 +74,10 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
                     dis = (HourlyWorkerType) iup.get(i);
                     for (int j = 0; j < sd.length; j++) {
                         if (dis.getId() == Long.parseLong(sd[j])) {//确认是当前工种ID
-                            //更新工种服务次数
-                            dis.setSales(dis.getSales() + 1);
-                            hourlyWorkerService.updateType(dis);
-                            String dishame = dis.getWorkerType();//工作类型
-                            typeIds += dis.getId() + "," + dishame + (i == iup.size() - 1 ? "" : ";");//ID&工作类型【格式：12,打扫卫生;2,擦桌子;】
+                            double cost = dis.getCharge();//单价
+                            String dishame = dis.getWorkerType();//工种名称
+                            typeIds += dis.getId() + "," + dishame + "," + cost + (i == iup.size() - 1 ? "" : ";");//工种ID,名称,价格【格式：12,打扫卫生,100;2,擦桌子,200;】
+                            money += cost;//总价格
                         }
                     }
                 }
@@ -105,7 +105,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
                     hourlyWorkerOrders.setShopId(kh.getId());
                     hourlyWorkerOrders.setWorkerTypeIds(typeIds);
                     hourlyWorkerOrders.setAddressId(s.getId());
-                    hourlyWorkerOrders.setMoney(0.00);//总价
+                    hourlyWorkerOrders.setMoney(money);//总价
                     hourlyWorkerOrders.setUserId(kh.getUserId());
                     hourlyWorkerOrders.setAddress(s.getAddress());
                     hourlyWorkerOrders.setAddress_city(s.getCity());
@@ -174,9 +174,9 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
             hourlyWorkerOrdersService.updateOrders(io);
             //清除缓存中的小时工订单信息
             redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), 0);
-            //厨房订单放入缓存(暂定30分钟接单超时)
+            //小时工订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_15 * 2);
+            redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -203,13 +203,31 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
             HourlyWorker kh = hourlyWorkerService.findByUserId(io.getUserId());
             kh.setTotalSales(kh.getTotalSales() + 1);
             hourlyWorkerService.updateNumber(kh);//更新小时工总服务次数
+
+            //更新小时工工种服务次数
+            String sd = "";
+            String[] workerTypeIds = io.getWorkerTypeIds().split(";");
+            for (int i = 0; i < workerTypeIds.length; i++) {
+                String[] types = workerTypeIds[i].split(",");
+                sd += types[0] + ",";
+            }
+            List iup = hourlyWorkerService.findDishesList(sd.split(","));
+            if (iup != null && iup.size() > 0) {
+                for (int i = 0; i < iup.size(); i++) {
+                    HourlyWorkerType workerType = (HourlyWorkerType) iup.get(i);
+                    if (workerType != null) {
+                        workerType.setSales(workerType.getSales() + 1);
+                        hourlyWorkerService.updateType(workerType);
+                    }
+                }
+            }
             //清除缓存中小时工的信息
             redisUtils.expire(Constants.REDIS_KEY_HOURLYWORKER + kh.getUserId(), 0);
             //清除缓存中的小时工订单信息
-            redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + io.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), 0);
             //小时工订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getNo(), ordersMap, 0);
+            redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -229,19 +247,21 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
             }
-            UserInfo userInfo = null;
-            userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
-            if (userInfo != null) {
-                if (io.getUserId() == CommonUtils.getMyId()) {//卖家查看返回买家缓存信息  买家查看返回卖家实名信息
-                    io.setName(userInfo.getName());
-                    io.setCoverMap(userInfo.getHead());
-                }
-                io.setProTypeId(userInfo.getProType());
-                io.setHouseNumber(userInfo.getHouseNumber());
-            }
             //放入缓存
             ordersMap = CommonUtils.objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + io.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
+        }
+        HourlyWorkerOrders hw = (HourlyWorkerOrders) CommonUtils.mapToObject(ordersMap, HourlyWorkerOrders.class);
+        if (hw != null) {
+            if (hw.getMyId() == CommonUtils.getMyId()) {//查询者为买家
+                if (hw.getOrdersState() == 1) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                }
+            } else {//卖家
+                if (hw.getOrdersState() == 2) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                }
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
     }
@@ -262,6 +282,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         int orderCont6 = 0;
         int orderCont7 = 0;
         int orderCont8 = 0;
+        int orderCont9 = 0;
 
         HourlyWorkerOrders kh = null;
         List list = null;
@@ -298,11 +319,11 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
                     orderCont0++;
                     break;
                 case 7://付款超时订单
-                    orderCont7++;
+                    orderCont8++;
                     orderCont0++;
                     break;
-                case 8://接单超时订单
-                    orderCont8++;
+                case 8://未接单(已付款未接单)
+                    orderCont9++;
                     orderCont0++;
                     break;
                 default:
@@ -319,6 +340,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         map.put("orderCont6", orderCont6);
         map.put("orderCont7", orderCont7);
         map.put("orderCont8", orderCont8);
+        map.put("orderCont9", orderCont9);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -444,7 +466,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
      * @param count       : 每页的显示条数
      * @param page        : 当前查询数据的页码
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  0已下单未付款  1已接单未完成  ,2已完成(已完成未评价),  3接单超时  4商家取消订单 5用户取消订单  6已评价  7未接单(已付款未接单)  8付款超时
+     * @param ordersType  : 查询类型:   0已下单未付款  1已付款未接单  ,2已接单未完成,  3已完成未评价 4已评价 5用户取消订单 、 商家取消订单 、 接单超时 、 付款超时
      * @return
      */
     @Override
@@ -467,14 +489,16 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
             for (int i = 0; i < list.size(); i++) {
                 t = (HourlyWorkerOrders) list.get(i);
                 if (t != null) {
-                    if (userCache != null) {
-                        if (identity == 1) {
-                            userCache = userInfoUtils.getUserInfo(t.getUserId());
-                        } else {
-                            userCache = userInfoUtils.getUserInfo(t.getMyId());
+                    if (identity == 1) {
+                        userCache = userInfoUtils.getUserInfo(t.getUserId());
+                    } else {
+                        userCache = userInfoUtils.getUserInfo(t.getMyId());
+                        if (userCache != null) {
                             t.setName(userCache.getName());
                             t.setCoverMap(userCache.getHead());
                         }
+                    }
+                    if (userCache != null) {
                         t.setProTypeId(userCache.getProType());
                         t.setHouseNumber(userCache.getHouseNumber());
                     }

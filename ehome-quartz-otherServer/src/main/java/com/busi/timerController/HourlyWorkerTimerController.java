@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class HourlyWorkerTimer {
+public class HourlyWorkerTimerController {
 
     @Autowired
     private MqUtils mqUtils;
@@ -53,8 +53,8 @@ public class HourlyWorkerTimer {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 31 15 * * ?") //十五点五十五分
-    public void HourlyWorkerTimer() throws Exception {
+    @Scheduled(cron = "0 50 16 * * ?") //十五点五十五分
+    public void hourlyWorkerTimer() throws Exception {
         log.info("开始查询数据库中待处理的小时工超时订单...");
         while (true) {
             List arrList = null;
