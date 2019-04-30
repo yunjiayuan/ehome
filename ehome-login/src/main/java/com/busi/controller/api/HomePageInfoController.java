@@ -235,7 +235,36 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         homePageInfo.setSex(Integer.parseInt(userMap.get("sex").toString()));//性别
         homePageInfo.setIsNewUser(Integer.parseInt(userMap.get("isNewUser").toString()));//是否为新用户  0新用户 1已领新人红包(老用户)
         homePageInfo.setWelcomeInfoStatus(Integer.parseInt(userMap.get("welcomeInfoStatus").toString()));//系统欢迎消息状态 0表示未发送  1表示已发送
-        homePageInfo.setFlag(0);//临时参数 1禁止查看会员中心 方便IOS平台审核
+        int flag = 0;
+        Object obj = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG);
+        if(obj!=null){
+            flag = Integer.parseInt(obj.toString());
+        }
+        homePageInfo.setFlag(flag);//临时参数 1禁止查看会员中心 方便IOS平台审核
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",homePageInfo);
+    }
+
+    /***
+     * 更新管理员权限中的相关操作
+     * @param type   设置类型 type=0 修改“屏蔽主界面部分功能按钮”状态 type=1预留
+     * @param status 状态值 0默认关闭  1开启
+     * @return
+     */
+    @Override
+    public ReturnData adminiSetUp(@PathVariable int type,@PathVariable int status) {
+        if(CommonUtils.getMyId()!=10076){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限操作管理员设置",new JSONObject());
+        }
+        if(type!=0||status<0||status>1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误",new JSONObject());
+        }
+        switch (type) {
+            case 0://求助悬赏支付
+                redisUtils.set(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG,status+"",0);//永不失效
+                break;
+            default:
+                break;
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

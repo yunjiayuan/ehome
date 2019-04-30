@@ -19,7 +19,6 @@ public class Constants {
     public static final String MSG_REGISTER_MQ ="msg_register_mq";//注册队列名称
     public static final int USER_TIME_OUT =60*60*24*7;//对象在缓存中的生命周期 7天有效期
     public static final int TIME_OUT_MINUTE_60_24_30 =60*60*24*30;//30天有效期
-
     /**超时时间常量配置 结束**/
 
     /** 省市区参数 开始**/
@@ -156,6 +155,7 @@ public class Constants {
     /** redis配置 开始**/
     //redis 0库相关key配置(USER)
     public static final String REDIS_KEY_VERSION = "version_";//版本号key
+    public static final String REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG = "admini_homePageInfo_flag";//屏蔽主界面部分功能按钮 0关闭 1开启
     public static final String REDIS_KEY_USER = "user_";//用户实体key
     public static final String REDIS_KEY_PHONENUMBER = "phoneNumber";//手机号与用户ID对应关系
     public static final String REDIS_KEY_OTHERNUMBER = "otherNumber";//第三方平台账号与用户ID对应关系

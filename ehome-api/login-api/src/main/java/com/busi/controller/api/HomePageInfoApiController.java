@@ -18,4 +18,13 @@ public interface HomePageInfoApiController {
      */
     @GetMapping("findHomePageInfo/{userId}")
     ReturnData findHomePageInfo(@PathVariable long userId);
+
+    /***
+     * 更新管理员权限中的相关操作
+     * @param type   设置类型 type=0 修改“屏蔽主界面部分功能按钮”状态 type=1预留
+     * @param status 状态值 0默认关闭  1开启
+     * @return
+     */
+    @GetMapping("adminiSetUp/{type}/{status}")
+    ReturnData adminiSetUp(@PathVariable int type,@PathVariable int status);
 }
