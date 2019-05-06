@@ -121,9 +121,9 @@ public class FamilyCircleController extends BaseController implements FamilyCirc
         //验证参数
         List list = null;
         PageBean<FamilyGreeting> pageBean = null;
-        if (page < 0 || count <= 0) {
+        if (page < 0 || count <= 0) {// 查询今天全部的
             list = familyCircleService.findGreetingList(userId);
-        } else {
+        } else {//分页查询
             pageBean = familyCircleService.findGreetingList2(userId, page, count);
             list = pageBean.getList();
         }
@@ -135,7 +135,7 @@ public class FamilyCircleController extends BaseController implements FamilyCirc
                 FamilyGreeting ik = (FamilyGreeting) list.get(i);
 
                 UserInfo sendInfoCache = null;
-                sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
+                sendInfoCache = userInfoUtils.getUserInfo(ik.getVisitUserId());
                 if (sendInfoCache != null) {
                     ik.setName(sendInfoCache.getName());
                     ik.setHead(sendInfoCache.getHead());
