@@ -3,9 +3,8 @@ package com.busi.controller.api;
 import com.busi.entity.PositionInfo;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 
 /**
@@ -29,4 +28,12 @@ public interface PositionApiController {
      */
     @DeleteMapping("delPosition")
     ReturnData delPosition();
+
+    /***
+     * 获取指定用户ID的位置信息
+     * @param userId 被查询者的用户ID
+     * @return
+     */
+    @GetMapping("findPositionInfo/{userId}")
+    ReturnData findPositionInfo(@PathVariable long userId);
 }

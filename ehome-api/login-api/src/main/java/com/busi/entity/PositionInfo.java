@@ -1,12 +1,14 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
+import java.util.Date;
 
 /**
- * 此处编写本类功能说明
+ * 用户坐标位置信息实体
  * author：SunTianJie
  * create time：2018/7/12 16:28
  */
@@ -25,6 +27,7 @@ public class PositionInfo {
     @Digits(integer=3, fraction=6,message = "纬度格式不正确")
     private double lat;//纬度 小数点后6位
 
-    private String time;//更新时间
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date time;//更新时间
 
 }
