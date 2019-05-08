@@ -127,7 +127,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
                 loveAndFriendsService.add(loveAndFriends);
 
                 //新增home
-                if (loveAndFriends.getFraction() > 70) {
+                if (loveAndFriends.getFraction() >= 70) {
                     IPS_Home ipsHome = new IPS_Home();
                     ipsHome.setInfoId(loveAndFriends.getId());
                     ipsHome.setTitle(loveAndFriends.getTitle());

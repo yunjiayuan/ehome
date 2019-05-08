@@ -18,7 +18,7 @@ public class FamilyGreeting {
 
     private long id;			//主键
 
-    private long userId;		//当前用户ID
+    private long userId;		//用户ID
 
     private long visitUserId;		//来访用户ID
 

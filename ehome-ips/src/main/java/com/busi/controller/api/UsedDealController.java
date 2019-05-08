@@ -133,7 +133,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         usedDealService.add(usedDeal);
         //新增home
-        if (usedDeal.getFraction() > 70) {
+        if (usedDeal.getFraction() >= 70) {
             IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(usedDeal.getId());
             ipsHome.setTitle(usedDeal.getTitle());

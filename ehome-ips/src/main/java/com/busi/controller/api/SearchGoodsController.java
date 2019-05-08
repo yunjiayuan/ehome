@@ -122,7 +122,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         searchGoodsService.add(searchGoods);
 
         //新增home
-        if (searchGoods.getFraction() > 70) {
+        if (searchGoods.getFraction() >= 70) {
             IPS_Home ipsHome = new IPS_Home();
             ipsHome.setInfoId(searchGoods.getId());
             ipsHome.setTitle(searchGoods.getTitle());

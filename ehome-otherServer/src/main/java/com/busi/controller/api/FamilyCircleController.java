@@ -129,25 +129,22 @@ public class FamilyCircleController extends BaseController implements FamilyCirc
         //验证参数
         List list = null;
         PageBean<FamilyGreeting> pageBean = null;
-        if (page < 0 || count <= 0) {// 查询今天全部的
+        if (count <= 0) {// 查询今天全部的
             list = familyCircleService.findGreetingList(userId);
         } else {//分页查询
             pageBean = familyCircleService.findGreetingList2(userId, page, count);
             list = pageBean.getList();
         }
-        if (pageBean == null) {
+        if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                FamilyGreeting ik = (FamilyGreeting) list.get(i);
-
-                UserInfo sendInfoCache = null;
-                sendInfoCache = userInfoUtils.getUserInfo(ik.getVisitUserId());
-                if (sendInfoCache != null) {
-                    ik.setName(sendInfoCache.getName());
-                    ik.setHead(sendInfoCache.getHead());
-                }
+        for (int i = 0; i < list.size(); i++) {
+            FamilyGreeting ik = (FamilyGreeting) list.get(i);
+            UserInfo sendInfoCache = null;
+            sendInfoCache = userInfoUtils.getUserInfo(ik.getVisitUserId());
+            if (sendInfoCache != null) {
+                ik.setName(sendInfoCache.getName());
+                ik.setHead(sendInfoCache.getHead());
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
