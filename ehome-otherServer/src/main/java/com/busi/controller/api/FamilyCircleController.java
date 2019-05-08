@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.FamilyCircleService;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
 import com.busi.utils.UserInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.smartcardio.CommandAPDU;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
@@ -104,8 +106,14 @@ public class FamilyCircleController extends BaseController implements FamilyCirc
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        familyGreeting.setTime(new Date());
-        familyCircleService.addGreeting(familyGreeting);
+        FamilyGreeting greeting = familyCircleService.findUser(familyGreeting.getVisitUserId(), familyGreeting.getUserId());
+        if (greeting != null) {
+            return returnData(StatusCode.CODE_TADAY_GREET_ERROR.CODE_VALUE, "今日已对其问候过", new JSONObject());
+        }
+        if (familyGreeting.getVisitUserId() == CommonUtils.getMyId()) {
+            familyGreeting.setTime(new Date());
+            familyCircleService.addGreeting(familyGreeting);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -121,9 +129,9 @@ public class FamilyCircleController extends BaseController implements FamilyCirc
         //验证参数
         List list = null;
         PageBean<FamilyGreeting> pageBean = null;
-        if (page < 0 || count <= 0) {
+        if (page < 0 || count <= 0) {// 查询今天全部的
             list = familyCircleService.findGreetingList(userId);
-        } else {
+        } else {//分页查询
             pageBean = familyCircleService.findGreetingList2(userId, page, count);
             list = pageBean.getList();
         }
@@ -135,7 +143,7 @@ public class FamilyCircleController extends BaseController implements FamilyCirc
                 FamilyGreeting ik = (FamilyGreeting) list.get(i);
 
                 UserInfo sendInfoCache = null;
-                sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
+                sendInfoCache = userInfoUtils.getUserInfo(ik.getVisitUserId());
                 if (sendInfoCache != null) {
                     ik.setName(sendInfoCache.getName());
                     ik.setHead(sendInfoCache.getHead());

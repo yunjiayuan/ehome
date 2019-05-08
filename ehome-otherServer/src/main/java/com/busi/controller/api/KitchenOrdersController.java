@@ -242,10 +242,10 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
             //清除缓存中厨房的信息
             redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kh.getUserId(), 0);
             //清除缓存中的厨房订单信息
-            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + CommonUtils.getMyId() + "_" + io.getNo(), 0);
             //厨房订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getNo(), ordersMap, 0);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + CommonUtils.getMyId() + "_" + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

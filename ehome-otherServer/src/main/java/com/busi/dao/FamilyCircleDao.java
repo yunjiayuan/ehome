@@ -121,6 +121,20 @@ public interface FamilyCircleDao {
     List<FamilyGreeting> findGreetingList(@Param("userId") long userId);
 
     /***
+     * 根据用户ID查询今日是否问候过
+     * @param userId 用户
+     * @return
+     */
+    @Select("<script>" +
+            "select * from FamilyGreeting" +
+            " where 1=1" +
+            " and userId=#{userId}" +
+            " and visitUserId=#{myId}" +
+            " and TO_DAYS(time)=TO_DAYS(NOW())" +
+            "</script>")
+    FamilyGreeting findUser(@Param("myId") long myId,@Param("userId") long userId);
+
+    /***
      * 分页查询今日记事
      * @param userId 用户
      * @return

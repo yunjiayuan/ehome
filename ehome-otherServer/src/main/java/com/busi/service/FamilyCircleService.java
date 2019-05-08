@@ -120,6 +120,15 @@ public class FamilyCircleService {
     }
 
     /***
+     * 根据用户ID查询今日是否问候过
+     * @param myId
+     * @return
+     */
+    public FamilyGreeting findUser(long myId, long userId) {
+        return familyCircleDao.findUser(myId, userId);
+    }
+
+    /***
      * 分页查询今日记事
      * @param userId 用户
      * @param page     页码
