@@ -243,12 +243,15 @@ public enum StatusCode {
 	//涂鸦次数graffiti
 	CODE_GRAFFITI_FEED_FULL(491,"涂鸦次数已用尽"),
 
-	//涂鸦次数graffiti
+	//自频道
 	CODE_SELF_CHANNEL_VIP_NOT_OPENING(501,"自频道会员未开通"),
 	CODE_SELF_CHANNEL_VIP_OVERDUE(502,"自频道会员已过期"),
 	CODE_SELF_CHANNEL_VIP_JOIN_ACTIVITIES(503,"您尚未参加过活动"),
 	CODE_SELF_CHANNEL_VIP_NOT_JOIN_ACTIVITIES(504,"您已参加过该活动"),
-	CODE_SELF_CHANNEL_VIP_NOT_JOIN_DURATION(505,"档期已排满，明天再来抢吧!")
+	CODE_SELF_CHANNEL_VIP_NOT_JOIN_DURATION(505,"档期已排满，明天再来抢吧!"),
+
+	//家店
+	CODE_PERSONALDATA_NOT_AC(601,"个人信息未认证")
 
 	;
 	/*-----------业务状态码------------*/
