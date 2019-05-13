@@ -234,6 +234,7 @@ public class Constants {
     public static final String REDIS_KEY_KITCHENORDERS = "kitchenOrders_";//userId与厨房订单对象关系对照
     public static final String REDIS_KEY_HOURLYWORKER = "hourlyWorker_";//小时工关系对照
     public static final String REDIS_KEY_HOURLYORDERS = "hourlyOrders_";//userId与小时工订单对象关系对照
+    public static final String REDIS_KEY_HOMESHOP = "homeShop_";//userId与家店对象关系对照
 
 
     //redis 2库相关key配置(otherServer)
