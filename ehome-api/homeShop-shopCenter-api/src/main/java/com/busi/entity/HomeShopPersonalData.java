@@ -67,8 +67,8 @@ public class HomeShopPersonalData {
     private int acState;       // 认证状态:0未认证,1审核中,2未通过,3已认证
 
     // 与数据库无关字段
-    private String code;//短信验证码 或邮箱验证码 与数据库无关字段
+//    private String code;        //短信验证码
 
-    private String delImgUrls;//将要删除的图片地址组合 “,”分隔
+    private String delImgUrls;  //将要删除的图片地址组合 “,”分隔
 
 }

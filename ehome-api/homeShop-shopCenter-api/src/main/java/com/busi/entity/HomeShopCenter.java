@@ -24,7 +24,7 @@ public class HomeShopCenter {
 
     private long userId;                //用户
 
-    @Length(max = 10, message = "店铺名称最多可输入10个字")
+    @Length(max = 15, message = "店铺名称最多可输入15个字")
     private String shopName;                //店铺名称
 
     private String shopHead;            //头像

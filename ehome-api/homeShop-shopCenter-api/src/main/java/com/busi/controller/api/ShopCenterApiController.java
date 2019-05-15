@@ -80,6 +80,14 @@ public interface ShopCenterApiController {
     ReturnData findPersonalData(@PathVariable long userId);
 
     /***
+     * 验证手机验证码
+     * @param userId
+     * @return
+     */
+    @GetMapping("verificationCode/{userId}/{phone}/{code}")
+    ReturnData verificationCode(@PathVariable long userId, @PathVariable String phone, @PathVariable String code);
+
+    /***
      * 查询个人信息认证状态
      * @param userId
      * @return
