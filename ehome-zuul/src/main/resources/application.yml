@@ -82,7 +82,7 @@ zuul:
   retryable: true #开启重试机制
   routes:
     api-a:
-      path: /demo-api/** #反向代理 对外访问路径
+      path: /demo-api/** #反向代理 对外访问路径 a、b、c、d、e、f、g、h、i、j、k、l、m、n、o、p、q、r、s、t、u、v、w、x、y、z
       service-id: demo #配置服务名称 实现负载均衡
     api-b:
       path: /login-api/** #登录注册和用户相关服务 反向代理 对外访问路径
@@ -102,6 +102,12 @@ zuul:
     api-g:
           path: /paymentServer-api/** #支付服务 反向代理 对外访问路径
           service-id: paymentServer #配置服务名称 实现负载均衡
+    api-h:
+              path: /homeShop-shopCenter-api/** #家店店铺信息服务 反向代理 对外访问路径
+              service-id: homeShop-shopCenter #配置服务名称 实现负载均衡
+    api-i:
+              path: /homeShop-goodsCenter-api/** #家店商品信息服务 反向代理 对外访问路径
+              service-id: homeShop-goodsCenter #配置服务名称 实现负载均衡
 
 hystrix: #设置超时 三个时间最好保持一致
   threadpool:

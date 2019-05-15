@@ -27,7 +27,8 @@ public class SendMessageController extends BaseController implements SendMessage
      * 发送手机短信
      * @param phone     将要发送短信的手机号
      * @param phoneType 短信类型 0注册验证码  1找回支付密码验证码 2安全中心绑定手机验证码 3安全中心解绑手机验证码
-     *                            4手机短信找回登录密码验证码  5手机短信修改密码验证码 6短信邀请新用户注册 7...
+     *                            4手机短信找回登录密码验证码  5手机短信修改密码验证码 6短信邀请新用户注册 7开通家电个人信息验证
+     *                            8...
      * 规则：每个账号每天最多发送短信100次 每小时最多30次
      *       每个设备每天最多发送短信200次 每小时最多60次
      * @return
@@ -38,7 +39,7 @@ public class SendMessageController extends BaseController implements SendMessage
         if(CommonUtils.checkFull(phone)||!CommonUtils.checkPhone(phone)){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"phone参数有误",new JSONObject());
         }
-        if(phoneType<1||phoneType>6){
+        if(phoneType<1||phoneType>7){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"phoneType参数有误，超出合法范围",new JSONObject());
         }
         //同一账号每小时限制
@@ -86,6 +87,9 @@ public class SendMessageController extends BaseController implements SendMessage
                 break;
             case 6://短信邀请新用户注册
                 redisUtils.set(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY_INVITATION_CODE+CommonUtils.getMyId()+"_"+phone,code,Constants.USER_TIME_OUT);//验证码7天内有效
+                break;
+            case 7://开通家电个人信息验证
+                redisUtils.set(Constants.REDIS_KEY_USER_HOMESHOP_USERINFO_CODE+CommonUtils.getMyId()+"_"+phone,code,Constants.MSG_TIME_OUT_MINUTE_10);//验证码10分钟内有效
                 break;
 
             default:

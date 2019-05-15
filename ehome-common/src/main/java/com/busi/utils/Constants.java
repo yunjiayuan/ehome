@@ -211,6 +211,7 @@ public class Constants {
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_FINDPASSWORD_CODE = "user_account_security_findPassword_code_";//手机短信找回登录密码验证码 短信验证码对应的key
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_CHANGEPASSWORD_CODE = "user_account_security_changePassword_code_";//手机短信修改密码验证码 短信验证码对应的key
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY_INVITATION_CODE = "user_account_security_invitation_code_";//短信邀请新用户注册 短信验证码对应的key
+    public static final String REDIS_KEY_USER_HOMESHOP_USERINFO_CODE = "homeshop_userinfo_code_";//开通家电个人信息验证 短信验证码对应的key
     public static final String REDIS_KEY_USER_CHANGE_PASSWORD_KEY = "user_account_change_password_key_";//修改密码临时key
 
     //短信次数验证key
