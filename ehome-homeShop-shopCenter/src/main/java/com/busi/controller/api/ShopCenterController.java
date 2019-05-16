@@ -172,6 +172,9 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        if (homeShopPersonalData.getIdCardType() != 0) {
+            homeShopPersonalData.setIdCardExpireTime(null);
+        }
         homeShopPersonalData.setAddTime(new Date());
         homeShopPersonalData.setUserId(CommonUtils.getMyId());
         shopCenterService.addPersonalData(homeShopPersonalData);
@@ -190,6 +193,9 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        if (homeShopPersonalData.getIdCardType() != 0) {
+            homeShopPersonalData.setIdCardExpireTime(null);
         }
         shopCenterService.updPersonalData(homeShopPersonalData);
         if (!CommonUtils.checkFull(homeShopPersonalData.getDelImgUrls())) {
@@ -210,9 +216,9 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
     public ReturnData findPersonalData(@PathVariable long userId) {
         HomeShopPersonalData dishes = shopCenterService.findPersonalData(userId);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", dishes);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("data", dishes);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", dishes);
     }
 
     /***
@@ -244,12 +250,13 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
      */
     @Override
     public ReturnData findPersonalState(@PathVariable long userId) {
+        Map<String, Object> map = new HashMap<>();
         HomeShopPersonalData dishes = shopCenterService.findPersonalData(userId);
         if (dishes == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "个人信息不存在！", new JSONObject());
+            map.put("acState", 0);// 认证状态:0未认证,1审核中,2未通过,3已认证
+        } else {
+            map.put("acState", dishes.getAcState());// 认证状态:0未认证,1审核中,2未通过,3已认证
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("acState", dishes.getAcState());// 认证状态:0未认证,1审核中,2未通过,3已认证
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }
