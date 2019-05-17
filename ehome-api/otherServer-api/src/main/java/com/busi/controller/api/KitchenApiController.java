@@ -59,11 +59,12 @@ public interface KitchenApiController {
      * @param kitchenName    厨房名称
      * @param page     页码
      * @param count    条数
+     * @param watchVideos 筛选视频：0否 1是
      * @param sortType 排序类型：默认【0综合排序】   0综合排序  1距离最近  2服务次数最高  3评分最高
      * @return
      */
-    @GetMapping("findKitchenList/{sortType}/{kitchenName}/{lat}/{lon}/{page}/{count}")
-    ReturnData findKitchenList(@PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findKitchenList/{watchVideos}/{sortType}/{kitchenName}/{lat}/{lon}/{page}/{count}")
+    ReturnData findKitchenList(@PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 检测实名状态

@@ -115,7 +115,8 @@ public class HourlyWorkerService {
         if (!CommonUtils.checkFull(name)) {
             list = hourlyWorkerDao.findHourlyList(userId, name);
         } else if (sortType == 1) {
-            list = hourlyWorkerDao.findHourlyList2(userId, raidus, lat, lon);
+//            list = hourlyWorkerDao.findHourlyList2(userId, raidus, lat, lon);
+            list = hourlyWorkerDao.findHourlyList3(userId, 5);//查询全部
         } else {
             list = hourlyWorkerDao.findHourlyList3(userId, sortType);
         }

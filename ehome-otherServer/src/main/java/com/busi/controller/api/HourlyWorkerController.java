@@ -278,6 +278,25 @@ public class HourlyWorkerController extends BaseController implements HourlyWork
                     ik.setHouseNumber(sendInfoCache.getHouseNumber());
                 }
             }
+            Collections.sort(list, new Comparator<HourlyWorker>() {
+                /*
+                 * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+                 * 返回负数表示：o1 小于o2，
+                 * 返回0 表示：o1和p2相等，
+                 * 返回正数表示：o1大于o2
+                 */
+                @Override
+                public int compare(HourlyWorker o1, HourlyWorker o2) {
+                    // 按照距离进行正序排列
+                    if (o1.getDistance() > o2.getDistance()) {
+                        return 1;
+                    }
+                    if (o1.getDistance() == o2.getDistance()) {
+                        return 0;
+                    }
+                    return -1;
+                }
+            });
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }

@@ -225,25 +225,27 @@ public class KitchenController extends BaseController implements KitchenApiContr
      * @param kitchenName    厨房名称
      * @param page     页码
      * @param count    条数
-     * @param sortType 排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高  4视频
+     * @param watchVideos 筛选视频：0否 1是
+     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高
      * @return
      */
     @Override
-    public ReturnData findKitchenList(@PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findKitchenList(@PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
-        int raidus = 10000;    //半径/ M
+//        int raidus = 10000;    //半径/ M
         PageBean<Kitchen> pageBean = null;
-        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), sortType, lat, lon, raidus, kitchenName, page, count);
+//        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), watchVideos, sortType, lat, lon, raidus, kitchenName, page, count);
+        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), watchVideos, sortType, kitchenName, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         List list = null;
         list = pageBean.getList();
-        if (list != null) {
+        if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 Kitchen ik = (Kitchen) list.get(i);
 
@@ -267,6 +269,25 @@ public class KitchenController extends BaseController implements KitchenApiContr
                     ik.setHouseNumber(sendInfoCache.getHouseNumber());
                 }
             }
+            Collections.sort(list, new Comparator<Kitchen>() {
+                /*
+                 * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+                 * 返回负数表示：o1 小于o2，
+                 * 返回0 表示：o1和p2相等，
+                 * 返回正数表示：o1大于o2
+                 */
+                @Override
+                public int compare(Kitchen o1, Kitchen o2) {
+                    // 按照距离进行正序排列
+                    if (o1.getDistance() > o2.getDistance()) {
+                        return 1;
+                    }
+                    if (o1.getDistance() == o2.getDistance()) {
+                        return 0;
+                    }
+                    return -1;
+                }
+            });
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
