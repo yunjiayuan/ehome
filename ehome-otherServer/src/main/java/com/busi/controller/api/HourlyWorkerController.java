@@ -242,11 +242,12 @@ public class HourlyWorkerController extends BaseController implements HourlyWork
      * @param name     用户名
      * @param page     页码
      * @param count    条数
-     * @param sortType 排序类型：默认【0综合排序】   0综合排序  1距离最近  2服务次数最高  3评分最高 4视频
+     * @param watchVideos 筛选视频：0否 1是
+     * @param sortType 排序类型：默认【0综合排序】   0综合排序  1距离最近  2服务次数最高  3评分最高
      * @return
      */
     @Override
-    public ReturnData findHourlyList(@PathVariable int sortType, @PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findHourlyList(@PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -254,7 +255,7 @@ public class HourlyWorkerController extends BaseController implements HourlyWork
         //开始查询
         int raidus = 10000;    //半径/ M
         PageBean<HourlyWorker> pageBean = null;
-        pageBean = hourlyWorkerService.findHourlyList(CommonUtils.getMyId(), sortType, lat, lon, raidus, name, page, count);
+        pageBean = hourlyWorkerService.findHourlyList(CommonUtils.getMyId(), watchVideos, sortType, lat, lon, raidus, name, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

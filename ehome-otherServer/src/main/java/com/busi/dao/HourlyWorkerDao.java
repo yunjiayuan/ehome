@@ -148,8 +148,11 @@ public interface HourlyWorkerDao {
             "<if test=\"name != null and name != '' \">" +
             " and name LIKE CONCAT('%',#{name},'%')" +
             "</if>" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl is not null" +
+            "</if>" +
             "</script>")
-    List<HourlyWorker> findHourlyList(@Param("userId") long userId, @Param("name") String name);
+    List<HourlyWorker> findHourlyList(@Param("userId") long userId,@Param("watchVideos") int watchVideos,  @Param("name") String name);
 
     /***
      * 条件查询小时工（距离最近）
@@ -165,18 +168,21 @@ public interface HourlyWorkerDao {
             " FROM HourlyWorker where userId != #{userId} and businessStatus=0 and deleteType = 0 and auditType=1" +
             " ORDER BY distance ASC" +
             "</script>")
-    List<HourlyWorker> findHourlyList2(@Param("userId") long userId, @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
+    List<HourlyWorker> findHourlyList2(@Param("userId") long userId,@Param("watchVideos") int watchVideos,  @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 条件查询小时工（条件搜索）
      * @param userId 用户ID
-     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高  4视频
+     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高
      * @return
      */
     @Select("<script>" +
             "select * from HourlyWorker" +
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl is not null" +
+            "</if>" +
             "<if test=\"sortType == 0\">" +
             " order by totalScore,totalSales desc" +
             "</if>" +
@@ -186,12 +192,8 @@ public interface HourlyWorkerDao {
             "<if test=\"sortType == 3\">" +
             " order by totalScore desc" +
             "</if>" +
-            "<if test=\"sortType == 4\">" +
-            " and videoUrl is not null" +
-            " order by totalScore,totalSales desc" +
-            "</if>" +
             "</script>")
-    List<HourlyWorker> findHourlyList3(@Param("userId") long userId, @Param("sortType") int sortType);
+    List<HourlyWorker> findHourlyList3(@Param("userId") long userId,@Param("watchVideos") int watchVideos,  @Param("sortType") int sortType);
 
     /***
      * 验证用户是否收藏过
