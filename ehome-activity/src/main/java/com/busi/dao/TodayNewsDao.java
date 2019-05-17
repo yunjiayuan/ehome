@@ -27,6 +27,35 @@ public interface TodayNewsDao {
     int add(TodayNews todayNews);
 
     /***
+     * 更新
+     * @param todayNews
+     * @return
+     */
+    @Update("<script>" +
+            "update TodayNews set" +
+            "<if test=\"title != null and title != ''\">" +
+            " title=#{title}," +
+            "</if>" +
+            "<if test=\"content != null and content != ''\">" +
+            " content=#{content}," +
+            "</if>" +
+            "<if test=\"imgUrls != null and imgUrls != ''\">" +
+            " imgUrls=#{imgUrls}," +
+            "</if>" +
+            "<if test=\"videoUrl != null and videoUrl != ''\">" +
+            " videoUrl=#{videoUrl}," +
+            "</if>" +
+            "<if test=\"coverUrl != null and coverUrl != ''\">" +
+            " coverUrl=#{coverUrl}," +
+            "</if>" +
+            " newsType=#{newsType}," +
+            " newsFormat=#{newsFormat}," +
+            " refreshTime=#{refreshTime}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int editNews(TodayNews todayNews);
+
+    /***
      * 查询
      */
     @Select("select * from TodayNews where id=#{infoId} AND newsState=0")

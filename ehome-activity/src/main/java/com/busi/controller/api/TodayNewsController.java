@@ -69,6 +69,22 @@ public class TodayNewsController extends BaseController implements TodayNewsApiC
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
+    /**
+     * @Description: 更新
+     * @Param: todayNews
+     * @return:
+     */
+    @Override
+    public ReturnData editNews(@Valid @RequestBody TodayNews todayNews, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        todayNews.setRefreshTime(new Date());
+        todayNewsService.editNews(todayNews);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
     /***
      * 查询新闻列表
      * @param newsType 发布新闻类型0今日人物  1今日企业  2今日新闻

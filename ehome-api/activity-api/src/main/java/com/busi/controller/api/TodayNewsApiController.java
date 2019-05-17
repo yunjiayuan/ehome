@@ -3,10 +3,7 @@ package com.busi.controller.api;
 import com.busi.entity.ReturnData;
 import com.busi.entity.TodayNews;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -25,6 +22,15 @@ public interface TodayNewsApiController {
      */
     @PostMapping("addNews")
     ReturnData addNews(@Valid @RequestBody TodayNews todayNews, BindingResult bindingResult);
+
+    /**
+     * @Description: 更新
+     * @Param: todayNews
+     * @return:
+     */
+    @PutMapping("editNews")
+    ReturnData editNews(@Valid @RequestBody TodayNews todayNews, BindingResult bindingResult);
+
 
     /***
      * 查询新闻列表
