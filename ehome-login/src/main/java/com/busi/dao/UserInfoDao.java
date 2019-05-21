@@ -100,8 +100,12 @@ public interface UserInfoDao {
             "<if test=\"district != -1 \">" +
             " and district = #{district}" +
             "</if>" +
+            "<if test=\"studyrank > 0 \">" +
             " and studyrank = #{studyrank}" +
+            "</if>" +
+            "<if test=\"maritalstatus > 0 \">" +
             " and maritalstatus = #{maritalstatus}" +
+            "</if>" +
             " and accountStatus = 0" +
             " order by time desc" +
             "</script>")
