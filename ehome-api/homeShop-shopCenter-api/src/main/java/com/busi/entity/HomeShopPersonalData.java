@@ -32,7 +32,11 @@ public class HomeShopPersonalData {
     @IdCardConstraint(message = "身份证格式有误")
     private String idCard;//身份证号码
 
-    private String idCardExpireTime;    //身份证到期时间
+    @Max(value = 1, message = "idCardType参数有误，超出指定范围")
+    @Min(value= 0 ,message= "idCardType参数有误，超出指定范围")
+    private int idCardType;//身份证类型 0有期限  1永不过期
+
+    private String idCardExpireTime;    //身份证到期时间  idCardType=0时有效
 
     private int province;                //省份  默认为0
 
@@ -67,8 +71,8 @@ public class HomeShopPersonalData {
     private int acState;       // 认证状态:0未认证,1审核中,2未通过,3已认证
 
     // 与数据库无关字段
-    private String code;//短信验证码 或邮箱验证码 与数据库无关字段
+//    private String code;        //短信验证码
 
-    private String delImgUrls;//将要删除的图片地址组合 “,”分隔
+    private String delImgUrls;  //将要删除的图片地址组合 “,”分隔
 
 }

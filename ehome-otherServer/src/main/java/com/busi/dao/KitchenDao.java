@@ -134,6 +134,7 @@ public interface KitchenDao {
     /***
      * 条件查询厨房(模糊搜索)
      * @param userId 用户ID
+     * @param watchVideos 筛选视频：0否 1是
      * @param kitchenName  厨房名字
      * @return
      */
@@ -144,35 +145,55 @@ public interface KitchenDao {
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
             " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl is not null" +
+            "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("kitchenName") String kitchenName);
+    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName);
 
     /***
      * 条件查询厨房（距离最近）
      * @param userId 用户ID
-     * @param lat 纬度
-     * @param lon 经度
-     * @param raidus 半径
+//     * @param lat 纬度
+//     * @param lon 经度
+//     * @param raidus 半径
+     * @param watchVideos 筛选视频：0否 1是
      * @return
      */
+//    @Select("<script>" +      //查询指定半径以内信息
+//            "select id,userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,videoUrl,videoCoverUrl,content,totalSales,totalScore,lat,lon,address," +
+//            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * #{raidus}) AS distance" +
+//            " FROM Kitchen where userId != #{userId} and businessStatus=0 and deleteType = 0 and auditType=1" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl is not null" +
+//            "</if>" +
+//            " ORDER BY distance ASC" +
+//            "</script>")
+//    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
     @Select("<script>" +
-            "select id,userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon,address," +
-            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * #{raidus}) AS distance" +
-            " FROM Kitchen where userId != #{userId} and businessStatus=0 and deleteType = 0 and auditType=1" +
-            " ORDER BY distance ASC" +
+            "select * from Kitchen" +
+            " where userId != #{userId}" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl is not null" +
+            "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
+    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos);
 
     /***
      * 条件查询厨房（条件搜索）
      * @param userId 用户ID
-     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高  4视频
+     * @param watchVideos 筛选视频：0否 1是
+     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高
      * @return
      */
     @Select("<script>" +
             "select * from Kitchen" +
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl is not null" +
+            "</if>" +
             "<if test=\"sortType == 0\">" +
             " order by totalScore,totalSales desc" +
             "</if>" +
@@ -182,12 +203,8 @@ public interface KitchenDao {
             "<if test=\"sortType == 3\">" +
             " order by totalScore desc" +
             "</if>" +
-            "<if test=\"sortType == 4\">" +
-            " and videoUrl is not null" +
-            " order by totalScore,totalSales desc" +
-            "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("sortType") int sortType);
+    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
 
     /***
      * 验证用户是否收藏过

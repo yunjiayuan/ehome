@@ -59,11 +59,12 @@ public interface HourlyWorkerApiController {
      * @param name     用户名
      * @param page     页码
      * @param count    条数
+     * @param watchVideos 筛选视频：0否 1是
      * @param sortType 排序类型：默认【0综合排序】   0综合排序  1距离最近  2服务次数最高  3评分最高
      * @return
      */
-    @GetMapping("findHourlyList/{sortType}/{name}/{lat}/{lon}/{page}/{count}")
-    ReturnData findHourlyList(@PathVariable int sortType, @PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findHourlyList/{watchVideos}/{sortType}/{name}/{lat}/{lon}/{page}/{count}")
+    ReturnData findHourlyList(@PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 更新实名信息

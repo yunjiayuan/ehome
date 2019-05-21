@@ -35,6 +35,16 @@ public class TodayNewsService {
     }
 
     /***
+     * 更新
+     * @param todayNews
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int editNews(TodayNews todayNews) {
+        return todayNewsDao.editNews(todayNews);
+    }
+
+    /***
      * 查询详情
      */
     public TodayNews findInfo(long infoId) {

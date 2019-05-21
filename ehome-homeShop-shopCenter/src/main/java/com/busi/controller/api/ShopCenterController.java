@@ -155,8 +155,9 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         Map<String, Object> map2 = new HashMap<>();
         if (ik == null) {
             map2.put("shopState", -1);//家店不存在
+        } else {
+            map2.put("shopState", ik.getShopState());  //-1家店不存在  0未开店  1已开店
         }
-        map2.put("shopState", ik.getShopState());  //-1家店不存在  0未开店  1已开店
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
     }
 
@@ -170,6 +171,9 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        if (homeShopPersonalData.getIdCardType() != 0) {
+            homeShopPersonalData.setIdCardExpireTime(null);
         }
         homeShopPersonalData.setAddTime(new Date());
         homeShopPersonalData.setUserId(CommonUtils.getMyId());
@@ -190,6 +194,9 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        if (homeShopPersonalData.getIdCardType() != 0) {
+            homeShopPersonalData.setIdCardExpireTime(null);
+        }
         shopCenterService.updPersonalData(homeShopPersonalData);
         if (!CommonUtils.checkFull(homeShopPersonalData.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
@@ -209,9 +216,31 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
     public ReturnData findPersonalData(@PathVariable long userId) {
         HomeShopPersonalData dishes = shopCenterService.findPersonalData(userId);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", dishes);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("data", dishes);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", dishes);
+    }
+
+    /***
+     * 验证手机验证码
+     * @param userId  用户Id
+     * @param phone   手机号
+     * @param code    验证码
+     * @return
+     */
+    @Override
+    public ReturnData verificationCode(@PathVariable long userId, @PathVariable String phone, @PathVariable String code) {
+        //验证验证码是否正确
+        Object serverCode = redisUtils.getKey(Constants.REDIS_KEY_USER_HOMESHOP_USERINFO_CODE + userId + "_" + phone);
+        if (serverCode == null) {
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE, "该验证码已过期,请重新获取", new JSONObject());
+        }
+        if (!serverCode.toString().equals(code)) {//不相等
+            return returnData(StatusCode.CODE_ACCOUNTSECURITY_CHECK_ERROR.CODE_VALUE, "您输入的验证码有误,请重新输入", new JSONObject());
+        }
+        //清除短信验证码
+        redisUtils.expire(Constants.REDIS_KEY_USER_HOMESHOP_USERINFO_CODE + userId + "_" + phone, 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
@@ -221,12 +250,13 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
      */
     @Override
     public ReturnData findPersonalState(@PathVariable long userId) {
+        Map<String, Object> map = new HashMap<>();
         HomeShopPersonalData dishes = shopCenterService.findPersonalData(userId);
         if (dishes == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "个人信息不存在！", new JSONObject());
+            map.put("acState", 0);// 认证状态:0未认证,1审核中,2未通过,3已认证
+        } else {
+            map.put("acState", dishes.getAcState());// 认证状态:0未认证,1审核中,2未通过,3已认证
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("acState", dishes.getAcState());// 认证状态:0未认证,1审核中,2未通过,3已认证
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

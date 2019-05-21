@@ -70,9 +70,9 @@ public interface ShopCenterDao {
      * @return
      */
     @Insert("insert into HomeShopPersonalData(userId,realName,idCard,idCardExpireTime,phone,holdIDCardUrl,halfBodyUrl,addTime,province,city,district,address,positiveIDCardUrl,backIDCardUrl,localNewsUrl," +
-            "acState)" +
+            "acState,idCardType)" +
             "values (#{userId},#{realName},#{idCard},#{idCardExpireTime},#{phone},#{holdIDCardUrl},#{halfBodyUrl},#{addTime},#{province},#{city},#{district},#{address},#{positiveIDCardUrl},#{backIDCardUrl},#{localNewsUrl}" +
-            ",#{acState})")
+            ",#{acState},#{idCardType})")
     @Options(useGeneratedKeys = true)
     int addPersonalData(HomeShopPersonalData homeShopPersonalData);
 
@@ -85,7 +85,10 @@ public interface ShopCenterDao {
             "update HomeShopPersonalData set" +
             " realName=#{realName}," +
             " idCard=#{idCard}," +
+            " idCardType=#{idCardType}," +
+            "<if test=\"idCardType !=1\">" +
             " idCardExpireTime=#{idCardExpireTime}," +
+            "</if>" +
             " phone=#{phone}," +
             " holdIDCardUrl=#{holdIDCardUrl}," +
             " halfBodyUrl=#{halfBodyUrl}," +
