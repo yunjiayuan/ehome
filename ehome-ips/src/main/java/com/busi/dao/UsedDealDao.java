@@ -201,10 +201,10 @@ public interface UsedDealDao {
             " order by refreshTime desc" +
             "</if>" +
             "<if test=\"sort == 2\">" +
-            " order by sellingPrice desc" +
+            " order by sellingPrice asc" +
             "</if>" +
             "<if test=\"sort == 3\">" +
-            " order by sellingPrice asc" +
+            " order by sellingPrice desc" +
             "</if>" +
             "</script>")
     List<UsedDeal> findList(@Param("sort") int sort, @Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("usedSort1") int usedSort1, @Param("usedSort2") int usedSort2, @Param("usedSort3") int usedSort3);
@@ -231,17 +231,33 @@ public interface UsedDealDao {
     List<UsedDeal> findHomeList(@Param("userId") long userId);
 
     /***
-     * 分页查询
-     * @param lat  纬度
-     * @param lon  经度
+     * 分页查询距离最近的用户二手
+     * @param ids  用户ID组合
      * @return
      */
+//    @Select("<script>" +
+//            "select id,usedSort1,usedSort2,usedSort3,basicParame1,basicParame2,basicParame3,basicParame4,userId,title,content,seeNumber,deleteType,auditType,releaseTime,refreshTime,imgUrl,problemType,otherProblem,sellingPrice,buyingPrice,pinkageType,negotiable,toPay,merchantType,expressMode,province,city,district,sellType,lat,lon," +
+//            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * 1000) AS distance" +
+//            " FROM usedDeal where sellType=1 and deleteType=1 ORDER BY distance ASC" +
+//            "</script>")
+//    List<UsedDeal> findAoList(@Param("lat") double lat, @Param("lon") double lon);
     @Select("<script>" +
-            "select id,usedSort1,usedSort2,usedSort3,basicParame1,basicParame2,basicParame3,basicParame4,userId,title,content,seeNumber,deleteType,auditType,releaseTime,refreshTime,imgUrl,problemType,otherProblem,sellingPrice,buyingPrice,pinkageType,negotiable,toPay,merchantType,expressMode,province,city,district,sellType,lat,lon," +
-            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * 1000) AS distance" +
-            " FROM usedDeal where sellType=1 and deleteType=1 ORDER BY distance ASC" +
+            "select * from UsedDeal" +
+            " where 1=1" +
+            "<if test=\"type == 1\">" +
+            " and userId in" +
+            "</if>" +
+            "<if test=\"type == 2\">" +
+            " and id in" +
+            "</if>" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and sellType=1" +
+            " and deleteType=1" +
+            " order by frontPlaceType desc" +
             "</script>")
-    List<UsedDeal> findAoList(@Param("lat") double lat, @Param("lon") double lon);
+    List<UsedDeal> findAoList(@Param("type") int type, @Param("ids") String[] ids);
 
 
     /***

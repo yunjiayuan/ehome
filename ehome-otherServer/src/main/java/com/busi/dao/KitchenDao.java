@@ -195,7 +195,7 @@ public interface KitchenDao {
             " and videoUrl is not null" +
             "</if>" +
             "<if test=\"sortType == 0\">" +
-            " order by totalScore,totalSales desc" +
+            " order by totalSales desc,totalScore desc" +
             "</if>" +
             "<if test=\"sortType == 2\">" +
             " order by totalSales desc" +

@@ -85,6 +85,16 @@ public class TodayNewsController extends BaseController implements TodayNewsApiC
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
+    /**
+     * @Description: 删除
+     * @return:
+     */
+    @Override
+    public ReturnData delNews(@PathVariable long id) {
+        todayNewsService.del(id);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
     /***
      * 查询新闻列表
      * @param newsType 发布新闻类型0今日人物  1今日企业  2今日新闻

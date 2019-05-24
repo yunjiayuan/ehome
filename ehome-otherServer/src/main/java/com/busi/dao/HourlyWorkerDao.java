@@ -152,7 +152,7 @@ public interface HourlyWorkerDao {
             " and videoUrl is not null" +
             "</if>" +
             "</script>")
-    List<HourlyWorker> findHourlyList(@Param("userId") long userId,@Param("watchVideos") int watchVideos,  @Param("name") String name);
+    List<HourlyWorker> findHourlyList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("name") String name);
 
     /***
      * 条件查询小时工（距离最近）
@@ -168,7 +168,7 @@ public interface HourlyWorkerDao {
             " FROM HourlyWorker where userId != #{userId} and businessStatus=0 and deleteType = 0 and auditType=1" +
             " ORDER BY distance ASC" +
             "</script>")
-    List<HourlyWorker> findHourlyList2(@Param("userId") long userId,@Param("watchVideos") int watchVideos,  @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
+    List<HourlyWorker> findHourlyList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 条件查询小时工（条件搜索）
@@ -184,7 +184,7 @@ public interface HourlyWorkerDao {
             " and videoUrl is not null" +
             "</if>" +
             "<if test=\"sortType == 0\">" +
-            " order by totalScore,totalSales desc" +
+            " order by totalSales desc,totalScore desc" +
             "</if>" +
             "<if test=\"sortType == 2\">" +
             " order by totalSales desc" +
@@ -193,7 +193,7 @@ public interface HourlyWorkerDao {
             " order by totalScore desc" +
             "</if>" +
             "</script>")
-    List<HourlyWorker> findHourlyList3(@Param("userId") long userId,@Param("watchVideos") int watchVideos,  @Param("sortType") int sortType);
+    List<HourlyWorker> findHourlyList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
 
     /***
      * 验证用户是否收藏过

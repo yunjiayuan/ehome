@@ -45,6 +45,16 @@ public class TodayNewsService {
     }
 
     /***
+     * 删除
+     * @param id
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int del(long id) {
+        return todayNewsDao.del(id);
+    }
+
+    /***
      * 查询详情
      */
     public TodayNews findInfo(long infoId) {
