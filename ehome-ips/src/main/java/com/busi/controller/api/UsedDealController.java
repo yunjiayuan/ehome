@@ -492,7 +492,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
                         ids += "," + home.getInfoId();
                     }
                 }
-                PageBean<UsedDeal> newPageBean = usedDealService.findAoList(2, ids.split(","), 1, 100);
+                PageBean<UsedDeal> newPageBean = usedDealService.findAoList(2, ids.split(","), page, count);
                 List<UsedDeal> newList = newPageBean.getList();
                 if (newList != null && newList.size() > 0) {
                     // 按照刷新时间进行降序排列

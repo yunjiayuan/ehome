@@ -149,7 +149,7 @@ public interface HourlyWorkerDao {
             " and name LIKE CONCAT('%',#{name},'%')" +
             "</if>" +
             "<if test=\"watchVideos == 1\">" +
-            " and videoUrl is not null" +
+            " and videoUrl != ''" +
             "</if>" +
             "</script>")
     List<HourlyWorker> findHourlyList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("name") String name);
@@ -159,16 +159,25 @@ public interface HourlyWorkerDao {
      * @param userId 用户ID
      * @param lat 纬度
      * @param lon 经度
-     * @param raidus 半径
+    //     * @param raidus 半径
      * @return
      */
     @Select("<script>" +
-            "select id,userId,businessStatus,deleteType,auditType,arriveTime,healthyImgUrl,coverCover,videoUrl,addTime,videoCoverUrl,content,totalSales,totalScore,lat,lon,address,workerType,name,birthday,sex," +
-            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * #{raidus}) AS distance" +
-            " FROM HourlyWorker where userId != #{userId} and businessStatus=0 and deleteType = 0 and auditType=1" +
-            " ORDER BY distance ASC" +
+//            "select id,userId,businessStatus,deleteType,auditType,arriveTime,healthyImgUrl,coverCover,videoUrl,addTime,videoCoverUrl,content,totalSales,totalScore,lat,lon,address,workerType,name,birthday,sex," +
+//            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * #{raidus}) AS distance" +
+//            " FROM HourlyWorker where userId != #{userId} and businessStatus=0 and deleteType = 0 and auditType=1" +
+//            " ORDER BY distance ASC" +
+            "select * from HourlyWorker where" +
+            " userId != #{userId}" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl != ''" +
+            "</if>" +
+            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+            " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
+            " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</script>")
-    List<HourlyWorker> findHourlyList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
+    List<HourlyWorker> findHourlyList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 条件查询小时工（条件搜索）
@@ -181,7 +190,8 @@ public interface HourlyWorkerDao {
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
             "<if test=\"watchVideos == 1\">" +
-            " and videoUrl is not null" +
+//            " and videoUrl is not null" +
+            " and videoUrl != ''" +
             "</if>" +
             "<if test=\"sortType == 0\">" +
             " order by totalSales desc,totalScore desc" +

@@ -4,6 +4,7 @@ package com.busi.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Min;
 import java.util.Date;
@@ -23,8 +24,10 @@ public class TodayNews {
     @Min(value = 1, message = "userId参数有误")
     private long userId;                      //用户ID
 
+    @Length(max = 100, message = "标题最多可输入100个字")
     private String title;                     //标题
 
+    @Length(max = 10000, message = "内容最多可输入10000个字")
     private String content;                   //内容
 
     private String imgUrls;                   //图片

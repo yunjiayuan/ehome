@@ -146,7 +146,7 @@ public interface KitchenDao {
             " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +
             "<if test=\"watchVideos == 1\">" +
-            " and videoUrl is not null" +
+            " and videoUrl != ''" +
             "</if>" +
             "</script>")
     List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName);
@@ -154,9 +154,9 @@ public interface KitchenDao {
     /***
      * 条件查询厨房（距离最近）
      * @param userId 用户ID
-//     * @param lat 纬度
-//     * @param lon 经度
-//     * @param raidus 半径
+    //     * @param lat 纬度
+    //     * @param lon 经度
+    //     * @param raidus 半径
      * @param watchVideos 筛选视频：0否 1是
      * @return
      */
@@ -171,14 +171,18 @@ public interface KitchenDao {
 //            "</script>")
 //    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
     @Select("<script>" +
-            "select * from Kitchen" +
-            " where userId != #{userId}" +
+            "select * from Kitchen where" +
+            " userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
             "<if test=\"watchVideos == 1\">" +
-            " and videoUrl is not null" +
+//            " and videoUrl is not null" +
+            " and videoUrl != ''" +
             "</if>" +
+            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+            " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
+            " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</script>")
-    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos);
+    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 条件查询厨房（条件搜索）
@@ -192,7 +196,7 @@ public interface KitchenDao {
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
             "<if test=\"watchVideos == 1\">" +
-            " and videoUrl is not null" +
+            " and videoUrl != ''" +
             "</if>" +
             "<if test=\"sortType == 0\">" +
             " order by totalSales desc,totalScore desc" +

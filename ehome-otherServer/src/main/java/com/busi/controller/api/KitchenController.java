@@ -238,8 +238,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
         //开始查询
 //        int raidus = 10000;    //半径/ M
         PageBean<Kitchen> pageBean = null;
-//        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), watchVideos, sortType, lat, lon, raidus, kitchenName, page, count);
-        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), watchVideos, sortType, kitchenName, page, count);
+        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), watchVideos, sortType, kitchenName, lat, lon, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

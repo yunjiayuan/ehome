@@ -253,9 +253,9 @@ public class HourlyWorkerController extends BaseController implements HourlyWork
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
-        int raidus = 10000;    //半径/ M
+//        int raidus = 10000;    //半径/ M
         PageBean<HourlyWorker> pageBean = null;
-        pageBean = hourlyWorkerService.findHourlyList(CommonUtils.getMyId(), watchVideos, sortType, lat, lon, raidus, name, page, count);
+        pageBean = hourlyWorkerService.findHourlyList(CommonUtils.getMyId(), watchVideos, sortType, lat, lon, name, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
