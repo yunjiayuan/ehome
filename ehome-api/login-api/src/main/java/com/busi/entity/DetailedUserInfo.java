@@ -90,7 +90,7 @@ public class DetailedUserInfo {
     @Min(value= 0 ,message= "其他--血型类型参数值有误，超出有效范围")
     private int bloodType;//其他--血型类型 0 未选择,1 A型,2 B型,3 AB型,4 O型
 
-    @Max(value = 4, message = "其他资料--宗教信仰参数值有误，超出有效范围")
+    @Max(value = 5, message = "其他资料--宗教信仰参数值有误，超出有效范围")
     @Min(value= 0 ,message= "其他资料--宗教信仰参数值有误，超出有效范围")
     private int religion;//其他--宗教信仰 0 未选择,1基督教,2佛教,3道教,4伊斯兰教
 
