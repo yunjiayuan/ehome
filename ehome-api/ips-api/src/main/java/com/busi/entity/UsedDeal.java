@@ -87,6 +87,10 @@ public class UsedDeal {
 
     private double lon;                    //经度
 
+    private int frontPlaceType;			//是否置顶：1未置顶，2已置顶
+
+    private int fraction;//公告分数
+
     // 与数据库无关字段
     private String name;                //用户名
 
@@ -98,11 +102,6 @@ public class UsedDeal {
 
     private int sellingNumber;            //在卖宝贝数量
 
-    private int fraction;//公告分数
-
-    private int frontPlaceType;			//是否置顶：1未置顶，2已置顶
-
-    //与数据库无关
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
 }

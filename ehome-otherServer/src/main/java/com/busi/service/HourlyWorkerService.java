@@ -101,14 +101,14 @@ public class HourlyWorkerService {
      * @param userId 用户ID
      * @param lat 纬度
      * @param lon 经度
-     * @param raidus 半径
+    //     * @param raidus 半径
      * @param name  小时工名字
      * @param page 页码
      * @param count  条数
      * @param sortType  排序类型：默认【0综合排序】   0综合排序  1距离最近  2服务次数最高  3评分最高
      * @return
      */
-    public PageBean<HourlyWorker> findHourlyList(long userId, int watchVideos, int sortType, double lat, double lon, int raidus, String name, int page, int count) {
+    public PageBean<HourlyWorker> findHourlyList(long userId, int watchVideos, int sortType, double lat, double lon, String name, int page, int count) {
 
         List<HourlyWorker> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
@@ -116,7 +116,7 @@ public class HourlyWorkerService {
             list = hourlyWorkerDao.findHourlyList(userId, watchVideos, name);
         } else if (sortType == 1) {
 //            list = hourlyWorkerDao.findHourlyList2(userId, raidus, lat, lon);
-            list = hourlyWorkerDao.findHourlyList3(userId, watchVideos, 5);//查询全部
+            list = hourlyWorkerDao.findHourlyList2(userId, watchVideos, lat, lon);
         } else {
             list = hourlyWorkerDao.findHourlyList3(userId, watchVideos, sortType);
         }

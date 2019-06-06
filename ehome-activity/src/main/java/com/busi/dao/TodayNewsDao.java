@@ -56,6 +56,18 @@ public interface TodayNewsDao {
     int editNews(TodayNews todayNews);
 
     /***
+     * 删除
+     * @param id
+     * @return
+     */
+    @Update("<script>" +
+            "update TodayNews set" +
+            " newsState=1" +
+            " where id = #{id}" +
+            "</script>")
+    int del(@Param("id") long id);
+
+    /***
      * 查询
      */
     @Select("select * from TodayNews where id=#{infoId} AND newsState=0")

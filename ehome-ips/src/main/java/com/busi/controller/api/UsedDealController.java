@@ -8,12 +8,17 @@ import com.busi.service.CollectService;
 import com.busi.service.UsedDealService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResult;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -440,16 +445,94 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         //开始查询
         PageBean<UsedDeal> pageBean = null;
-        if (sort == 4) {
-            pageBean = usedDealService.findAoList(lat, lon, page, count);
+        Map<String, Distance> distanceMap = new HashMap<>();
+        if (sort == 4) {//查附近
+            GeoResults<RedisGeoCommands.GeoLocation<String>> geoResults = redisUtils.getPosition(Constants.REDIS_KEY_USER_POSITION_LIST, lon, lat, Constants.RADIUS, 0, Constants.LIMIT);
+            Iterator iter = geoResults.getContent().iterator();
+            String nearUserIds = "";
+            while (iter.hasNext()) {
+                GeoResult<RedisGeoCommands.GeoLocation<String>> geoResult = (GeoResult<RedisGeoCommands.GeoLocation<String>>) iter.next();
+                if (geoResult != null) {
+                    RedisGeoCommands.GeoLocation<String> GeoLocation = geoResult.getContent();
+                    Distance distance = geoResult.getDistance();
+                    if (GeoLocation == null || distance == null) {
+                        continue;
+                    }
+                    String userIdString = GeoLocation.getName();
+                    if (CommonUtils.checkFull(userIdString) || userIdString.equals(CommonUtils.getMyId() + "")) {
+                        continue;
+                    }
+                    nearUserIds += userIdString + ",";
+                    distanceMap.put(userIdString, distance);
+                }
+            }
+            pageBean = usedDealService.findAoList(1, nearUserIds.split(","), page, count);
         } else {
             pageBean = usedDealService.findList(sort, userId, province, city, district, minPrice, maxPrice, usedSort1, usedSort2, usedSort3, page, count);
         }
         if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            pageBean = new PageBean<UsedDeal>();
+            pageBean.setList(new ArrayList<>());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
         }
-        List<UsedDeal> list = new ArrayList<>();
-        list = pageBean.getList();
+        List<UsedDeal> list = pageBean.getList();
+        if (list.size() < count && sort == 4) {//附近人数较少时补充推荐数据
+            String ids = "";
+            List homeList = null;
+            homeList = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 100);
+            if (homeList != null || homeList.size() > 0) {
+                for (int i = 0; i < homeList.size(); i++) {
+                    IPS_Home home = (IPS_Home) homeList.get(i);
+                    if (home == null) {
+                        continue;
+                    }
+                    if (i == 0) {
+                        ids = home.getInfoId() + "";
+                    } else {
+                        ids += "," + home.getInfoId();
+                    }
+                }
+                PageBean<UsedDeal> newPageBean = usedDealService.findAoList(2, ids.split(","), page, count);
+                List<UsedDeal> newList = newPageBean.getList();
+                if (newList != null && newList.size() > 0) {
+                    // 按照刷新时间进行降序排列
+                    Collections.sort(newList, new Comparator<UsedDeal>() {
+                        @Override
+                        public int compare(UsedDeal o1, UsedDeal o2) {
+                            if (o1.getRefreshTime().getTime() > o2.getRefreshTime().getTime()) {
+                                return -1;
+                            }
+                            if (o1.getRefreshTime().getTime() == o2.getRefreshTime().getTime()) {
+                                return 0;
+                            }
+                            return 1;
+                        }
+                    });
+                    for (int i = 0; i < newList.size(); i++) {
+                        UsedDeal deal = newList.get(i);
+                        if (deal == null) {
+                            continue;
+                        }
+                        list.add(deal);
+                    }
+                }
+            }
+        }
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                UserInfo userInfo = null;
+                UsedDeal t = list.get(i);
+                if (t != null) {
+                    userInfo = userInfoUtils.getUserInfo(t.getUserId());
+                    if (userInfo != null) {
+                        t.setName(userInfo.getName());
+                        t.setHead(userInfo.getHead());
+                        t.setProTypeId(userInfo.getProType());
+                        t.setHouseNumber(userInfo.getHouseNumber());
+                    }
+                }
+            }
+        }
         Collections.sort(list, new Comparator<UsedDeal>() {
             @Override
             public int compare(UsedDeal o1, UsedDeal o2) {
@@ -463,28 +546,11 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
                 return 1;
             }
         });
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                UserInfo userInfo = null;
-                UsedDeal t = null;
-                t = list.get(i);
-                if (t != null) {
-                    userInfo = userInfoUtils.getUserInfo(t.getUserId());
-                    if (userInfo != null) {
-                        t.setName(userInfo.getName());
-                        t.setHead(userInfo.getHead());
-                        t.setProTypeId(userInfo.getProType());
-                        t.setHouseNumber(userInfo.getHouseNumber());
-                    }
-                }
-            }
-        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 
-    /**
+    /***
      * 根据买卖状态查询二手公告列表
-     *
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @param userId

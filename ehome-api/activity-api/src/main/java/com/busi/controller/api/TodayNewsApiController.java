@@ -31,6 +31,12 @@ public interface TodayNewsApiController {
     @PutMapping("editNews")
     ReturnData editNews(@Valid @RequestBody TodayNews todayNews, BindingResult bindingResult);
 
+    /**
+     * @Description: 删除
+     * @return:
+     */
+    @DeleteMapping("delNews/{id}")
+    ReturnData delNews(@PathVariable long id);
 
     /***
      * 查询新闻列表

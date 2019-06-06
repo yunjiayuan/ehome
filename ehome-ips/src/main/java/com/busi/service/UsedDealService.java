@@ -141,21 +141,27 @@ public class UsedDealService {
 
     /***
      * 分页查询
-     * @param lat  纬度
-     * @param lon  经度
+     * @param ids  用户ID组合
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<UsedDeal> findAoList(double lat, double lon, int page, int count) {
+    public PageBean<UsedDeal> findAoList(int type, String[] ids, int page, int count) {
 
         List<UsedDeal> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = usedDealDao.findAoList(lat, lon);
-
+        list = usedDealDao.findAoList(type, ids);
         return PageUtils.getPageBean(p, list);
     }
 
+    /***
+     * 根据买卖状态查询二手公告列表
+     * @param page     页码 第几页 起始值1
+     * @param count    每页条数
+     * @param userId
+     * @param sellType 商品买卖状态 : 1已上架，2已下架，3已卖出
+     * @return
+     */
     public PageBean<UsedDeal> findList(long userId, int sellType, int page, int count) {
 
         List<UsedDeal> list;
