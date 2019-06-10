@@ -1,11 +1,16 @@
 package com.busi.service;
 
 import com.busi.dao.ShopCenterDao;
-import com.busi.entity.HomeShopCenter;
-import com.busi.entity.HomeShopPersonalData;
+import com.busi.entity.*;
+import com.busi.utils.CommonUtils;
+import com.busi.utils.PageUtils;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 店铺信息相关Service
@@ -47,6 +52,11 @@ public class ShopCenterService {
     public int updateBusiness(HomeShopCenter homeShopCenter) {
         return shopCenterDao.updateBusiness(homeShopCenter);
     }
+    //调整商品分类（临时调用）
+//    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+//    public int updateBusiness(GoodsCategory category) {
+//        return shopCenterDao.updateBusiness(category);
+//    }
 
     /***
      * 新增个人信息
@@ -77,6 +87,11 @@ public class ShopCenterService {
         return shopCenterDao.findByUserId(userId);
     }
 
+    //调整商品分类（临时调用）
+    public List<GoodsCategory> findByUserId1() {
+        return shopCenterDao.findByUserId1();
+    }
+
     /***
      * 根据用户ID查询个人信息
      * @param userId
@@ -84,5 +99,51 @@ public class ShopCenterService {
      */
     public HomeShopPersonalData findPersonalData(long userId) {
         return shopCenterDao.findPersonalData(userId);
+    }
+
+    /***
+     * 查询商品分类
+     * @param levelOne 商品1级分类  默认为0, -1为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类  默认为0, -1为不限
+     * @param levelThree 商品3级分类  默认为0, -1为不限
+     * @param levelFour 商品4级分类  默认为0, -1为不限
+     * @param levelFive 商品5级分类  默认为0, -1为不限
+     * @param letter 商品分类首字母
+     * @param page  页码 第几页
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<GoodsCategory> findList(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive, String letter, int page, int count) {
+
+        List<GoodsCategory> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (CommonUtils.checkFull(letter)) {
+            letter = null;
+        }
+        list = shopCenterDao.findList(levelOne, levelTwo, levelThree, levelFour, levelFive, letter);
+
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询商品品牌
+     * @param sortId 商品分类ID
+     * @return
+     */
+    public List<GoodsBrandCategoryValue> findCategoryValue(long sortId) {
+        return shopCenterDao.findCategoryValue(sortId);
+    }
+
+    /***
+     * 查询商品品牌
+     * @param ids 商品品牌ID
+     * @param letter 商品品牌首字母
+     * @return
+     */
+    public List<GoodsBrands> findBrands(String[] ids, String letter) {
+        if (CommonUtils.checkFull(letter)) {
+            letter = null;
+        }
+        return shopCenterDao.findBrands(ids, letter);
     }
 }

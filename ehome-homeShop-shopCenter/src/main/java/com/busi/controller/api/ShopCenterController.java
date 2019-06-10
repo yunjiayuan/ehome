@@ -1,10 +1,9 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.HomeShopCenter;
-import com.busi.entity.HomeShopPersonalData;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import com.busi.service.ShopCenterService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 店铺信息相关接口 如：创建店铺 修改店铺信息 更改店铺状态等
@@ -132,6 +129,89 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+        //调整商品分类（临时调用）
+//        String[] arrayId = null;
+//        List<GoodsCategory> list = null;
+//        list = shopCenterService.findByUserId1();
+//        for (int i = 0; i < list.size(); i++) {
+//            GoodsCategory category = list.get(i);
+//            if (category != null) {
+//                arrayId = category.getArrayId().split("_");
+//                int one = Integer.valueOf(arrayId[1]);
+//                if (one >= 57 && one <= 65) {
+//                    category.setLevelOne(1);//手机、数码
+//                }
+//                if (one >= 3 && one <= 7) {
+//                    category.setLevelOne(2);//家用电器
+//                }
+//                if (one >= 66 && one <= 71) {
+//                    category.setLevelOne(3);//家居家装
+//                }
+//                if (one >= 8 && one <= 14) {
+//                    category.setLevelOne(4);//电脑、办公
+//                }
+//                if (one >= 72 && one <= 77) {
+//                    category.setLevelOne(5);//厨具
+//                }
+//                if (one >= 15 && one <= 20) {
+//                    category.setLevelOne(6);//个护化妆
+//                }
+//                if (one >= 78 && one <= 81) {
+//                    category.setLevelOne(7);//服饰内衣
+//                }
+//                if (one == 21) {
+//                    category.setLevelOne(8);//钟表
+//                }
+//                if (one >= 82 && one <= 83) {
+//                    category.setLevelOne(9);//鞋靴
+//                }
+//                if (one >= 22 && one <= 31) {
+//                    category.setLevelOne(10);//母婴
+//                }
+//                if (one >= 84 && one <= 89) {
+//                    category.setLevelOne(11);//礼品箱包
+//                }
+//                if (one >= 32 && one <= 38) {
+//                    category.setLevelOne(12);//食品饮料、保健食品
+//                }
+//                if (one >= 90 && one <= 100) {
+//                    category.setLevelOne(13);//珠宝
+//                }
+//                if (one >= 39 && one <= 44) {
+//                    category.setLevelOne(14);//汽车用品
+//                }
+//                if (one >= 101 && one <= 109) {
+//                    category.setLevelOne(15);//运动健康
+//                }
+//                if (one >= 45 && one <= 56) {
+//                    category.setLevelOne(16);//玩具乐器
+//                }
+//                if (one >= 110 && one <= 116) {
+//                    category.setLevelOne(17);//彩票、旅行、充值、票务
+//                }
+        //其他one >= 0 && one <= 2  图书、音像、电子书刊
+//                category.setLevelTwo(one);
+//                if (arrayId.length == 3) {
+//                    category.setLevelThree(Integer.valueOf(arrayId[2]));
+//                    category.setLevelFour(-1);
+//                    category.setLevelFive(-1);
+//                } else if (arrayId.length == 4) {
+//                    category.setLevelThree(Integer.valueOf(arrayId[2]));
+//                    category.setLevelFour(Integer.valueOf(arrayId[3]));
+//                    category.setLevelFive(-1);
+//                } else if (arrayId.length == 5) {
+//                    category.setLevelThree(Integer.valueOf(arrayId[2]));
+//                    category.setLevelFour(Integer.valueOf(arrayId[3]));
+//                    category.setLevelFive(Integer.valueOf(arrayId[4]));
+//                } else {
+//                    category.setLevelThree(-1);
+//                    category.setLevelFour(-1);
+//                    category.setLevelFive(-1);
+//                }
+//                shopCenterService.updateBusiness(category);
+//            }
+//        }
+//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
@@ -258,5 +338,65 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
             map.put("acState", dishes.getAcState());// 认证状态:0未认证,1审核中,2未通过,3已认证
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 查询商品分类
+     * @param levelOne 商品1级分类  默认为0, -1为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类  默认为0, -1为不限
+     * @param levelThree 商品3级分类  默认为0, -1为不限
+     * @param levelFour 商品4级分类  默认为0, -1为不限
+     * @param levelFive 商品5级分类  默认为0, -1为不限
+     * @param letter 商品分类首字母
+     * @param page  页码 第几页
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findGoodsCategory(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable String letter, @PathVariable int page, @PathVariable int count) {
+        if (page < 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "page参数有误", new JSONObject());
+        }
+        if (count < 1) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "count参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<GoodsCategory> pageBean = null;
+        pageBean = shopCenterService.findList(levelOne, levelTwo, levelThree, levelFour, levelFive, letter, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+    }
+
+    /***
+     * 查询商品品牌
+     * @param sortId 商品分类ID
+     * @param letter 商品品牌首字母
+     * @return
+     */
+    @Override
+    public ReturnData findGoodsBrand(@PathVariable long sortId, @PathVariable String letter) {
+        //开始查询
+        List list = null;
+        List list1 = null;
+        String ids = "";
+        list = shopCenterService.findCategoryValue(sortId);
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                GoodsBrandCategoryValue categoryValue = (GoodsBrandCategoryValue) list.get(i);
+                if (categoryValue != null) {
+                    if (i == list.size() - 1) {
+                        ids += categoryValue.getBrandId();//品牌ID
+                    } else {
+                        ids += categoryValue.getBrandId() + ",";
+                    }
+                }
+            }
+        }
+        if (!CommonUtils.checkFull(ids)) {
+            list1 = shopCenterService.findBrands(ids.split(","), letter);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list1);
     }
 }

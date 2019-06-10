@@ -94,4 +94,29 @@ public interface ShopCenterApiController {
      */
     @GetMapping("findPersonalState/{userId}")
     ReturnData findPersonalState(@PathVariable long userId);
+
+    /***
+     * 查询商品分类
+     * @param levelOne 商品1级分类:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类
+     * @param levelThree 商品3级分类
+     * @param levelFour 商品4级分类
+     * @param levelFive 商品5级分类
+     * @param letter 商品分类首字母
+     * @param page
+     * @param count
+     * @return
+     */
+    @GetMapping("findGoodsCategory/{levelOne}/{levelTwo}/{levelThree}/{levelFour}/{levelFive}/{letter}/{page}/{count}")
+    ReturnData findGoodsCategory(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable String letter, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询商品品牌
+     * @param sortId 商品分类ID
+     * @param letter 商品品牌首字母
+     * @return
+     */
+    @GetMapping("findGoodsBrand/{sortId}/{letter}")
+    ReturnData findGoodsBrand(@PathVariable long sortId, @PathVariable String letter);
+
 }

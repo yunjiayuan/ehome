@@ -1,9 +1,10 @@
 package com.busi.dao;
 
-import com.busi.entity.HomeShopCenter;
-import com.busi.entity.HomeShopPersonalData;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 店铺信息相关DAO
@@ -63,6 +64,18 @@ public interface ShopCenterDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateBusiness(HomeShopCenter homeShopCenter);
+    //调整商品分类（临时调用）
+//    @Update("<script>" +
+//            "update GoodsCategory set" +
+//            " levelOne=#{levelOne}," +
+//            " levelTwo=#{levelTwo}," +
+//            " levelThree=#{levelThree}," +
+//            " levelFour=#{levelFour}," +
+//            " levelFive=#{levelFive}" +
+//            " where id=#{id}" +
+//            "</script>")
+//    int updateBusiness(GoodsCategory category);
+
 
     /***
      * 新增个人信息
@@ -111,6 +124,10 @@ public interface ShopCenterDao {
     @Select("select * from HomeShopCenter where userId=#{userId} and deleteType=0")
     HomeShopCenter findByUserId(@Param("userId") long userId);
 
+    //调整商品分类（临时调用）
+    @Select("select * from GoodsCategory")
+    List<GoodsCategory> findByUserId1();
+
     /***
      * 根据用户ID查询个人信息
      * @param userId
@@ -118,4 +135,66 @@ public interface ShopCenterDao {
      */
     @Select("select * from HomeShopPersonalData where userId=#{userId}")
     HomeShopPersonalData findPersonalData(@Param("userId") long userId);
+
+    /***
+     * 查询商品分类
+     * @param levelOne 商品1级分类  默认为0, -1为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类  默认为0, -1为不限
+     * @param levelThree 商品3级分类  默认为0, -1为不限
+     * @param levelFour 商品4级分类  默认为0, -1为不限
+     * @param levelFive 商品5级分类  默认为0, -1为不限
+     * @param letter 商品分类首字母
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsCategory" +
+            " where 1=1" +
+            "<if test=\"levelOne >= 0\">" +
+            " and levelOne = #{levelOne}" +
+            "</if>" +
+            "<if test=\"levelTwo >= 0\">" +
+            " and levelTwo = #{levelTwo}" +
+            "</if>" +
+            "<if test=\"levelThree >= 0\">" +
+            " and levelThree = #{levelThree}" +
+            "</if>" +
+            "<if test=\"levelFour >= 0\">" +
+            " and levelFour = #{levelFour}" +
+            "</if>" +
+            "<if test=\"levelFive >= 0\">" +
+            " and levelFive = #{levelFive}" +
+            "</if>" +
+            "<if test=\"letter != null and letter != ''\">" +
+            " and letter=#{letter}" +
+            "</if>" +
+            "</script>")
+    List<GoodsCategory> findList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive, @Param("letter") String letter);
+
+    /***
+     * 查询商品品牌
+     * @param sortId 商品分类ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsBrandCategoryValue where categoryId=#{sortId}" +
+            "</script>")
+    List<GoodsBrandCategoryValue> findCategoryValue(@Param("sortId") long sortId);
+
+    /***
+     * 查询商品品牌
+     * @param ids 商品分类ID
+     * @param letter 商品品牌首字母
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsBrands " +
+            "where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "<if test=\"letter != null and letter != ''\">" +
+            " and letter=#{letter}" +
+            "</if>" +
+            "</script>")
+    List<GoodsBrands> findBrands(@Param("ids") String[] ids, @Param("letter") String letter);
 }
