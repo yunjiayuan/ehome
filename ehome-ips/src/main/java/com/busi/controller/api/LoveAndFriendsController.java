@@ -305,7 +305,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
             ipsHome.setUserId(loveAndFriends.getUserId());
             ipsHome.setContent(loveAndFriends.getContent());
             ipsHome.setMediumImgUrl(loveAndFriends.getImgUrl());
-            ipsHome.setRefreshTime(loveAndFriends.getRefreshTime());
+            ipsHome.setRefreshTime(new Date());
             ipsHome.setReleaseTime(loveAndFriends.getReleaseTime());
             ipsHome.setFraction(fraction);
             ipsHome.setAuditType(2);

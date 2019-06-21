@@ -294,9 +294,9 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             ipsHome.setTitle(searchGoods.getTitle());
             ipsHome.setUserId(searchGoods.getUserId());
             ipsHome.setContent(searchGoods.getContent());
-            ipsHome.setReleaseTime(searchGoods.getAddTime());
+            ipsHome.setReleaseTime(posts.getAddTime());
             ipsHome.setMediumImgUrl(searchGoods.getImgUrl());
-            ipsHome.setRefreshTime(searchGoods.getRefreshTime());
+            ipsHome.setRefreshTime(new Date());
             ipsHome.setAuditType(2);
             ipsHome.setDeleteType(1);
             ipsHome.setAfficheType(searchGoods.getSearchType() + 2);

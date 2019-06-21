@@ -255,6 +255,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         if (homeShopPersonalData.getIdCardType() != 0) {
             homeShopPersonalData.setIdCardExpireTime(null);
         }
+        homeShopPersonalData.setAcState(1);  // 认证状态:0未认证,1审核中,2未通过,3已认证
         homeShopPersonalData.setAddTime(new Date());
         homeShopPersonalData.setUserId(CommonUtils.getMyId());
         shopCenterService.addPersonalData(homeShopPersonalData);

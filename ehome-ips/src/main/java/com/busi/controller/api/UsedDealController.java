@@ -309,9 +309,9 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             ipsHome.setTitle(usedDeal.getTitle());
             ipsHome.setUserId(usedDeal.getUserId());
             ipsHome.setContent(usedDeal.getContent());
-            ipsHome.setReleaseTime(usedDeal.getReleaseTime());
+            ipsHome.setReleaseTime(posts.getReleaseTime());
             ipsHome.setMediumImgUrl(usedDeal.getImgUrl());
-            ipsHome.setRefreshTime(usedDeal.getRefreshTime());
+            ipsHome.setRefreshTime(new Date());
             ipsHome.setAuditType(2);
             ipsHome.setDeleteType(1);
             ipsHome.setAfficheType(2);

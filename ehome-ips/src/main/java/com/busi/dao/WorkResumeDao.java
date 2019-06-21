@@ -361,7 +361,7 @@ public interface WorkResumeDao {
      * @param userId
      * @return
      */
-    @Select("select * from workResume where userId=#{userId} and defaultResume=1")
+    @Select("select * from workResume where userId=#{userId} and defaultResume=1 and state=0")
     WorkResume findDefault(@Param("userId") long userId);
 
     /***
