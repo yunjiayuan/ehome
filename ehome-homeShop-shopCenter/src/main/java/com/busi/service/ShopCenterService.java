@@ -103,11 +103,11 @@ public class ShopCenterService {
 
     /***
      * 查询商品分类
-     * @param levelOne 商品1级分类  默认为0, -1为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
-     * @param levelTwo 商品2级分类  默认为0, -1为不限
-     * @param levelThree 商品3级分类  默认为0, -1为不限
-     * @param levelFour 商品4级分类  默认为0, -1为不限
-     * @param levelFive 商品5级分类  默认为0, -1为不限
+     * @param levelOne 商品1级分类  默认为0, -2为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
      * @param letter 商品分类首字母
      * @param page  页码 第几页
      * @param count 每页条数
@@ -117,12 +117,18 @@ public class ShopCenterService {
 
         List<GoodsCategory> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        if (CommonUtils.checkFull(letter)) {
-            letter = null;
+        if (!CommonUtils.checkFull(letter)) {
+            list = shopCenterDao.findList2(letter);
+        } else {
+            list = shopCenterDao.findList(levelOne, levelTwo, levelThree, levelFour, levelFive);
         }
-        list = shopCenterDao.findList(levelOne, levelTwo, levelThree, levelFour, levelFive, letter);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    public GoodsCategory findList2(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive) {
+
+        return shopCenterDao.findList3(levelOne, levelTwo, levelThree, levelFour, levelFive);
     }
 
     /***

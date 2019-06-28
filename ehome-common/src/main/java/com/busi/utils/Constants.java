@@ -198,6 +198,8 @@ public class Constants {
     public static final String REDIS_KEY_SELFCHANNELVIP_ORDER = "selfChannelVipOrder_";//userId与自频道会员订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER = "goodNumber_order_";//userId与靓号订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER_STATUS = "goodNumber_order_status_";//"省简称ID+门票号(格式0_1001518)"与靓号订单对象关系对照
+    public static final String REDIS_KEY_GOODCATEGORY_LIST = "goodCategory_List";//商品分类
+    public static final String REDIS_KEY_GOODSBRANDS_LIST = "goodsBrands_List";//商品品牌
 
     //验证码相关配置
     public static final String REDIS_KEY_REG_TOKEN = "regToken_";//注册临时验证码key
@@ -233,6 +235,7 @@ public class Constants {
     public static final String REDIS_KEY_IPS_WORKDOWNLOAD = "ips_workDownload_";//企业与被下载简历对象的关系对照
     public static final String REDIS_KEY_KITCHEN = "kitchen_";//厨房关系对照
     public static final String REDIS_KEY_KITCHENORDERS = "kitchenOrders_";//userId与厨房订单对象关系对照
+    public static final String REDIS_KEY_KITCHENBOOKEDORDERS = "kitchenBookedOrders_";//userId与厨房订座订单对象关系对照
     public static final String REDIS_KEY_HOURLYWORKER = "hourlyWorker_";//小时工关系对照
     public static final String REDIS_KEY_HOURLYORDERS = "hourlyOrders_";//userId与小时工订单对象关系对照
     public static final String REDIS_KEY_HOMESHOP = "homeShop_";//userId与家店对象关系对照

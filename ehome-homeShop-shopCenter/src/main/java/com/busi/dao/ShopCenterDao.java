@@ -138,37 +138,74 @@ public interface ShopCenterDao {
 
     /***
      * 查询商品分类
-     * @param levelOne 商品1级分类  默认为0, -1为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
-     * @param levelTwo 商品2级分类  默认为0, -1为不限
-     * @param levelThree 商品3级分类  默认为0, -1为不限
-     * @param levelFour 商品4级分类  默认为0, -1为不限
-     * @param levelFive 商品5级分类  默认为0, -1为不限
+     * @param levelOne 商品1级分类  默认为0, -2为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsCategory" +
+            " where 1=1" +
+            "<if test=\"levelOne == -2 \">" +
+            " and levelTwo = -1" +
+            "</if>" +
+            "<if test=\"levelOne >= 0 \">" +
+            " and levelOne = #{levelOne}" +
+            "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelThree = -1" +
+            "</if>" +
+            "<if test=\"levelTwo >= 0 \">" +
+            " and levelTwo = #{levelTwo}" +
+            "</if>" +
+            "<if test=\"levelThree != -2 \">" +
+            " and levelThree = #{levelThree}" +
+            "</if>" +
+            "<if test=\"levelFour != -2 \">" +
+            " and levelFour = #{levelFour}" +
+            "</if>" +
+            "<if test=\"levelFive != -2 \">" +
+            " and levelFive = #{levelFive}" +
+            "</if>" +
+            "</script>")
+    List<GoodsCategory> findList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
+
+    @Select("<script>" +
+            "select * from GoodsCategory" +
+            " where 1=1" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo = #{levelTwo}" +
+            " and levelThree = #{levelThree}" +
+            " and levelFour = #{levelFour}" +
+            " and levelFive = #{levelFive}" +
+            "</script>")
+    GoodsCategory findList3(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
+
+
+    /***
+     * 模糊查询商品分类
      * @param letter 商品分类首字母
      * @return
      */
     @Select("<script>" +
             "select * from GoodsCategory" +
             " where 1=1" +
-            "<if test=\"levelOne >= 0\">" +
-            " and levelOne = #{levelOne}" +
-            "</if>" +
-            "<if test=\"levelTwo >= 0\">" +
-            " and levelTwo = #{levelTwo}" +
-            "</if>" +
-            "<if test=\"levelThree >= 0\">" +
-            " and levelThree = #{levelThree}" +
-            "</if>" +
-            "<if test=\"levelFour >= 0\">" +
-            " and levelFour = #{levelFour}" +
-            "</if>" +
-            "<if test=\"levelFive >= 0\">" +
-            " and levelFive = #{levelFive}" +
-            "</if>" +
-            "<if test=\"letter != null and letter != ''\">" +
-            " and letter=#{letter}" +
-            "</if>" +
+            " and (name LIKE CONCAT('%',#{letter},'%')" +
+            " or letter = #{letter})" +
+            " and levelThree > -1" +
+            " and levelFour = -1" +
+            " or (name LIKE CONCAT('%',#{letter},'%')" +
+            " or letter = #{letter})" +
+            " and levelFour > -1" +
+            " and levelFive = -1" +
+            " or (name LIKE CONCAT('%',#{letter},'%')" +
+            " or letter = #{letter})" +
+            " and levelFive > -1" +
             "</script>")
-    List<GoodsCategory> findList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive, @Param("letter") String letter);
+    List<GoodsCategory> findList2(@Param("letter") String letter);
+
 
     /***
      * 查询商品品牌
@@ -194,6 +231,8 @@ public interface ShopCenterDao {
             "</foreach>" +
             "<if test=\"letter != null and letter != ''\">" +
             " and letter=#{letter}" +
+            " and name LIKE CONCAT('%',#{letter},'%')" +
+            " and realname LIKE CONCAT('%',#{letter},'%')" +
             "</if>" +
             "</script>")
     List<GoodsBrands> findBrands(@Param("ids") String[] ids, @Param("letter") String letter);

@@ -343,12 +343,12 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
 
     /***
      * 查询商品分类
-     * @param levelOne 商品1级分类  默认为0, -1为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
-     * @param levelTwo 商品2级分类  默认为0, -1为不限
-     * @param levelThree 商品3级分类  默认为0, -1为不限
-     * @param levelFour 商品4级分类  默认为0, -1为不限
-     * @param levelFive 商品5级分类  默认为0, -1为不限
-     * @param letter 商品分类首字母
+     * @param levelOne 商品1级分类  默认为0, -2为不限 :0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
+     * @param letter 模糊搜索（首字母或中文）
      * @param page  页码 第几页
      * @param count 每页条数
      * @return
@@ -361,11 +361,64 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         if (count < 1) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "count参数有误", new JSONObject());
         }
-        //开始查询
+        List<GoodsCategory> list = null;
+        List<GoodsBrandCategoryValue> brandList = null;
         PageBean<GoodsCategory> pageBean = null;
+        List<GoodsCategory> list1 = new ArrayList();
         pageBean = shopCenterService.findList(levelOne, levelTwo, levelThree, levelFour, levelFive, letter, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+        }
+        list = pageBean.getList();
+        if (list != null && list.size() > 0) {
+            //判断该类目下是否存在品牌
+            for (int i = 0; i < list.size(); i++) {
+                GoodsCategory goodsCategory1 = list.get(i);
+                if (goodsCategory1 != null) {
+                    if (goodsCategory1.getId() >= 2581 && goodsCategory1.getId() <= 3552) {
+                        goodsCategory1.setBrand(1);
+                    }
+                }
+            }
+            //模糊查询时返回组合ID跟名称
+            String name = null;
+            if (!CommonUtils.checkFull(letter)) {
+                for (int i = 0; i < list.size(); i++) {
+                    GoodsCategory category = list.get(i);
+                    if (category != null) {
+                        GoodsCategory cate = null;
+                        GoodsCategory goodsCategory = new GoodsCategory();
+                        goodsCategory.setId(category.getId());//分类ID
+                        goodsCategory.setBrand(category.getBrand());//是否包含品牌  0没有 1有
+                        goodsCategory.setIds(category.getLevelOne() + "," + category.getLevelTwo() + "," + category.getLevelThree() + "," + category.getLevelFour() + "," + category.getLevelFive());
+                        cate = shopCenterService.findList2(category.getLevelOne(), -1, -1, -1, -1);
+                        name = cate.getName();
+                        cate = shopCenterService.findList2(category.getLevelOne(), category.getLevelTwo(), -1, -1, -1);
+                        name += ">>" + cate.getName();
+                        if (category.getLevelThree() > -1) {
+                            cate = shopCenterService.findList2(category.getLevelOne(), category.getLevelTwo(), category.getLevelThree(), -1, -1);
+                            if (cate != null) {
+                                name += ">>" + cate.getName();
+                            }
+                        }
+                        if (category.getLevelFour() > -1) {
+                            cate = shopCenterService.findList2(category.getLevelOne(), category.getLevelTwo(), category.getLevelThree(), category.getLevelFour(), -1);
+                            if (cate != null) {
+                                name += ">>" + cate.getName();
+                            }
+                        }
+                        if (category.getLevelFive() > -1) {
+                            cate = shopCenterService.findList2(category.getLevelOne(), category.getLevelTwo(), category.getLevelThree(), category.getLevelFour(), category.getLevelFive());
+                            if (cate != null) {
+                                name += ">>" + cate.getName();
+                            }
+                        }
+                        goodsCategory.setName(name);
+                        list1.add(goodsCategory);
+                    }
+                }
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list1);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
@@ -397,7 +450,10 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         }
         if (!CommonUtils.checkFull(ids)) {
             list1 = shopCenterService.findBrands(ids.split(","), letter);
+            if (list1 != null && list1.size() > 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list1);
+            }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list1);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
     }
 }
