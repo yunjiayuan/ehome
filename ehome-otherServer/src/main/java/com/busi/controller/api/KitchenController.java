@@ -226,11 +226,12 @@ public class KitchenController extends BaseController implements KitchenApiContr
      * @param page     页码
      * @param count    条数
      * @param watchVideos 筛选视频：0否 1是
+     * @param watchBooked 筛选订座：0否 1是
      * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高
      * @return
      */
     @Override
-    public ReturnData findKitchenList(@PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findKitchenList(@PathVariable int watchVideos, @PathVariable int watchBooked, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -238,7 +239,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
         //开始查询
 //        int raidus = 10000;    //半径/ M
         PageBean<Kitchen> pageBean = null;
-        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), watchVideos, sortType, kitchenName, lat, lon, page, count);
+        pageBean = kitchenService.findKitchenList(CommonUtils.getMyId(), watchVideos, sortType, kitchenName, lat, lon, watchBooked, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

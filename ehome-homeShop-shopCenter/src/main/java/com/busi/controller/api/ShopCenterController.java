@@ -236,6 +236,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         if (ik == null) {
             map2.put("shopState", -1);//家店不存在
         } else {
+            map2.put("infoId", ik.getId());
             map2.put("shopState", ik.getShopState());  //-1家店不存在  0未开店  1已开店
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
@@ -254,6 +255,11 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         }
         if (homeShopPersonalData.getIdCardType() != 0) {
             homeShopPersonalData.setIdCardExpireTime(null);
+        }
+        //判断是否已经新增过
+        HomeShopPersonalData dishes = shopCenterService.findPersonalData(CommonUtils.getMyId());
+        if (dishes != null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         homeShopPersonalData.setAcState(1);  // 认证状态:0未认证,1审核中,2未通过,3已认证
         homeShopPersonalData.setAddTime(new Date());

@@ -120,6 +120,18 @@ public interface KitchenDao {
     int updateBusiness(Kitchen kitchen);
 
     /***
+     * 更新厨房订座状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update kitchen set" +
+            " bookedState=1" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateBookedState(Kitchen kitchen);
+
+    /***
      * 更新厨房总评分
      * @param kitchen
      * @return
@@ -135,6 +147,7 @@ public interface KitchenDao {
      * 条件查询厨房(模糊搜索)
      * @param userId 用户ID
      * @param watchVideos 筛选视频：0否 1是
+     * @param watchBooked 筛选订座：0否 1是
      * @param kitchenName  厨房名字
      * @return
      */
@@ -142,6 +155,9 @@ public interface KitchenDao {
             "select * from kitchen" +
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
+            "<if test=\"watchBooked == 1\">" +
+            " and bookedState = 1" +
+            "</if>" +
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
             " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +
@@ -149,7 +165,7 @@ public interface KitchenDao {
             " and videoUrl != ''" +
             "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName);
+    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName, @Param("watchBooked") int watchBooked);
 
     /***
      * 条件查询厨房（距离最近）
@@ -174,6 +190,9 @@ public interface KitchenDao {
             "select * from Kitchen where" +
             " userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchBooked == 1\">" +
+            " and bookedState = 1" +
+            "</if>" +
             "<if test=\"watchVideos == 1\">" +
 //            " and videoUrl is not null" +
             " and videoUrl != ''" +
@@ -182,7 +201,7 @@ public interface KitchenDao {
             " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
             " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</script>")
-    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon);
+    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon, @Param("watchBooked") int watchBooked);
 
     /***
      * 条件查询厨房（条件搜索）
@@ -195,6 +214,9 @@ public interface KitchenDao {
             "select * from Kitchen" +
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchBooked == 1\">" +
+            " and bookedState = 1" +
+            "</if>" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -208,7 +230,7 @@ public interface KitchenDao {
             " order by totalScore desc" +
             "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
+    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType, @Param("watchBooked") int watchBooked);
 
     /***
      * 验证用户是否收藏过

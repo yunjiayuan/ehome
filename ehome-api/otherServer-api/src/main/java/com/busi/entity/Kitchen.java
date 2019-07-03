@@ -64,6 +64,8 @@ public class Kitchen {
     @Length(max = 46, message = "详细地址不能超过46字")
     private String address;            // 详细地址
 
+    private int bookedState;            // 可订座状态  0否  1是
+
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
