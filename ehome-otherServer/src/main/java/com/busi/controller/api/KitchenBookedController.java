@@ -52,9 +52,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         //更新厨房订座状态
-        kitchenService.updateBookedState(io);
+//        kitchenService.updateBookedState(io);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + io.getUserId(), 0);
+//        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + io.getUserId(), 0);
         //新增厨房订座信息
         kitchenBooked.setKitchenId(io.getId());
         kitchenBookedService.add(kitchenBooked);
