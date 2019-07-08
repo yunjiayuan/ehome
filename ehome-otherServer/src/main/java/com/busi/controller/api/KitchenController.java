@@ -53,13 +53,13 @@ public class KitchenController extends BaseController implements KitchenApiContr
         }
         //判断是否已有厨房
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId());
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + kitchen.getBookedState());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            Kitchen kitchen2 = kitchenService.findByUserId(kitchen.getUserId());
+            Kitchen kitchen2 = kitchenService.findByUserId(kitchen.getUserId(), kitchen.getBookedState());
             if (kitchen2 != null) {
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen2);
-                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen2.getUserId() + "_" + kitchen2.getBookedState(), kitchenMap, Constants.USER_TIME_OUT);
             }
         }
         Kitchen ik = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
@@ -110,7 +110,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
             mqUtils.sendDeleteImageMQ(kitchen.getUserId(), kitchen.getDelImgUrls());
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + kitchen.getBookedState(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -120,15 +120,15 @@ public class KitchenController extends BaseController implements KitchenApiContr
      */
     @Override
     public ReturnData delKitchen(@PathVariable long userId, @PathVariable long id) {
-        Kitchen io = kitchenService.findByUserId(userId);
+        Kitchen io = kitchenService.findById(id);
         if (io != null) {
             io.setDeleteType(1);
             kitchenService.updateDel(io);
             //同时删除该厨房下的菜品
             kitchenService.deleteFood(userId, id);
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_KITCHEN + userId + "_" + io.getBookedState(), 0);
         }
-        //清除缓存
-        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -161,7 +161,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
         }
         kitchenService.updateBusiness(kitchen);
         //清除缓存
-        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + kitchen.getBookedState(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -171,11 +171,11 @@ public class KitchenController extends BaseController implements KitchenApiContr
      * @return
      */
     @Override
-    public ReturnData findKitchen(@PathVariable long userId) {
+    public ReturnData findKitchen(@PathVariable long userId, @PathVariable int bookedState) {
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + userId);
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + userId + "_" + bookedState);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            Kitchen kitchen = kitchenService.findByUserId(userId);
+            Kitchen kitchen = kitchenService.findByUserId(userId, bookedState);
             if (kitchen == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
@@ -213,7 +213,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
             }
             //放入缓存
             kitchenMap = CommonUtils.objectToMap(kitchen);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + userId, kitchenMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + userId + "_" + kitchen.getBookedState(), kitchenMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
@@ -354,7 +354,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + collect.getBeUserId());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            Kitchen kitchen2 = kitchenService.findByUserId(collect.getBeUserId());
+            Kitchen kitchen2 = kitchenService.findByUserId(collect.getBeUserId(), 0);
             if (kitchen2 == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，厨房不存在！", new JSONObject());
             }

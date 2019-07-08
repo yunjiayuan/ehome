@@ -49,8 +49,8 @@ public interface KitchenApiController {
      * @param userId
      * @return
      */
-    @GetMapping("findKitchen/{userId}")
-    ReturnData findKitchen(@PathVariable long userId);
+    @GetMapping("findKitchen/{userId}/{bookedState}")
+    ReturnData findKitchen(@PathVariable long userId, @PathVariable int bookedState);
 
     /***
      * 条件查询厨房

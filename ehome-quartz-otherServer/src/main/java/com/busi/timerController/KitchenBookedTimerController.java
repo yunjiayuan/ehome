@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class KitchenBookedTimer {
+public class KitchenBookedTimerController {
 
     @Autowired
     private MqUtils mqUtils;
@@ -34,7 +34,7 @@ public class KitchenBookedTimer {
 
     @Scheduled(cron = "0 40 10 * * ?") //十五点五十五分
     public void kitchenTimer() throws Exception {
-        log.info("开始查询数据库中待处理的厨房超时订单...");
+        log.info("开始查询数据库中待处理的厨房订座超时订单...");
         while (true) {
             List arrList = null;
             KitchenBookedOrders r = null;

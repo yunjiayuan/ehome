@@ -82,8 +82,8 @@ public interface KitchenDao {
      * @param userId
      * @return
      */
-    @Select("select * from kitchen where userId=#{userId}")
-    Kitchen findByUserId(@Param("userId") long userId);
+    @Select("select * from kitchen where userId=#{userId} and bookedState=#{bookedState}")
+    Kitchen findByUserId(@Param("userId") long userId, @Param("bookedState") int bookedState);
 
     /***
      * 根据Id查询

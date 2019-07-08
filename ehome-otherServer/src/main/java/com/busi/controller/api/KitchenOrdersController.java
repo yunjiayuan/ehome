@@ -85,15 +85,15 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                         }
                     }
                     //查询缓存 缓存中不存在 查询数据库
-                    Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + laf.getUserId());
+                    Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + laf.getUserId() + "_" + 0);
                     if (kitchenMap == null || kitchenMap.size() <= 0) {
-                        Kitchen kitchen = kitchenService.findByUserId(laf.getUserId());
+                        Kitchen kitchen = kitchenService.findByUserId(laf.getUserId(),0);
                         if (kitchen == null) {
                             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
                         }
                         //放入缓存
                         kitchenMap = CommonUtils.objectToMap(kitchen);
-                        redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+                        redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 0, kitchenMap, Constants.USER_TIME_OUT);
                     }
                     Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
                     ShippingAddress s = shippingAddressService.findUserById(kitchenOrders.getAddressId());
@@ -240,7 +240,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
             kh.setTotalSales(kh.getTotalSales() + 1);
             kitchenService.updateNumber(kh);//更新厨房总销量
             //清除缓存中厨房的信息
-            redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kh.getUserId(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kh.getUserId() + "_" + 0, 0);
             //清除缓存中的厨房订单信息
             redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + CommonUtils.getMyId() + "_" + io.getNo(), 0);
             //厨房订单放入缓存
@@ -470,7 +470,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         KitchenOrders io = kitchenOrdersService.findById(ev.getOrderId(), CommonUtils.getMyId(), 5);
         if (io != null && io.getOrdersType() == 4) {
             //查询缓存 缓存中不存在 查询数据库
-            Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + io.getUserId());
+            Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + io.getUserId() + "_" + 0);
             if (kitchenMap == null || kitchenMap.size() <= 0) {
                 Kitchen kitchen = kitchenService.findById(io.getKitchenId());
                 if (kitchen == null) {
@@ -478,7 +478,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                 }
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen);
-                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 0, kitchenMap, Constants.USER_TIME_OUT);
             }
             Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
             if (kh != null) {

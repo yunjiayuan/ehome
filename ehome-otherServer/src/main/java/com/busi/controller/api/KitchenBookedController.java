@@ -47,7 +47,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        Kitchen io = kitchenService.findByUserId(kitchenBooked.getUserId());
+        Kitchen io = kitchenService.findByUserId(kitchenBooked.getUserId(), 1);
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }

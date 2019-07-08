@@ -52,8 +52,8 @@ public class KitchenService {
      * @param userId
      * @return
      */
-    public Kitchen findByUserId(long userId) {
-        return kitchenDao.findByUserId(userId);
+    public Kitchen findByUserId(long userId, int bookedState) {
+        return kitchenDao.findByUserId(userId, bookedState);
     }
 
     /***
