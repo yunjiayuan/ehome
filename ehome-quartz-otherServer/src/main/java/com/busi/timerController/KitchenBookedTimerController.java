@@ -32,7 +32,7 @@ public class KitchenBookedTimerController {
     @Autowired
     KitchenBookedOrdersService kitchenBookedOrdersService;
 
-    @Scheduled(cron = "0 40 10 * * ?") //十五点五十五分
+    @Scheduled(cron = "0 12 10 * * ?") //十五点五十五分
     public void kitchenTimer() throws Exception {
         log.info("开始查询数据库中待处理的厨房订座超时订单...");
         while (true) {

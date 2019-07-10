@@ -69,7 +69,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData findKitchenBooked(@PathVariable long userId) {
         KitchenBooked kitchen = kitchenBookedService.findByUserId(userId);
-
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchen);
     }
 
