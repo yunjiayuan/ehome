@@ -89,6 +89,6 @@ public class KitchenBookedOrders {
 
     private long houseNumber;        // 门牌号
 
-    private long updateCategory;        // 更新类别  默认0删除状态  1由未接单改为已接单  2已接单改为已完成  3取消订单
+    private long updateCategory;        // 更新类别  默认0删除状态  1由未接单改为已接单  2已接单改为已完成  3取消订单  4更新支付状态
 
 }

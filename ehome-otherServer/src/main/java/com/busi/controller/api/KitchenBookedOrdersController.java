@@ -112,7 +112,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
             kitchenBookedOrders.setAddTime(date);
             kitchenBookedOrders.setKitchenId(kh.getId());
             kitchenBookedOrders.setMoney(money);//总价
-            kitchenBookedOrders.setUserId(laf.getUserId());
+//            kitchenBookedOrders.setUserId(kh.getUserId());
             kitchenBookedOrders.setKitchenName(kh.getKitchenName());
             kitchenBookedOrders.setSmallMap(kh.getKitchenCover());
 
@@ -291,7 +291,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         if (ko.getOrdersType() == 6 || ko.getOrdersType() == 7) {
             //更新缓存、钱包、账单
             if (ko.getMoney() > 0) {
-                mqUtils.sendPurseMQ(ko.getMyId(), 16, 0, ko.getMoney());
+                mqUtils.sendPurseMQ(ko.getMyId(), 26, 0, ko.getMoney());
             }
             //清除缓存中的厨房订座订单信息
             redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + ko.getMyId() + "_" + ko.getNo(), 0);

@@ -64,7 +64,7 @@ public class KitchenBookedTimerController {
                                 r.setOrdersType(4);// 接单超时【未接单】
                                 kitchenBookedOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单
-                                mqUtils.sendPurseMQ(r.getMyId(), 16, 0, r.getMoney());
+                                mqUtils.sendPurseMQ(r.getMyId(), 26, 0, r.getMoney());
                                 //清除缓存中的厨房订单信息
                                 redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getMyId() + "_" + r.getNo(), 0);
                                 log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：接单超时！");
