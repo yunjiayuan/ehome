@@ -18,6 +18,6 @@ public interface KitchenBookedOrdersLocalController {
      * @Param: kitchenBookedOrders
      * @return:
      */
-    @PutMapping("updatePayState")
+    @PutMapping("updateKitchenBookedOrdersPayState")
     ReturnData updatePayState(@RequestBody KitchenBookedOrders kitchenBookedOrders);
 }
