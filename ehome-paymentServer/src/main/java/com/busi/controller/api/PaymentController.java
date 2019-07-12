@@ -56,6 +56,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
     private KitchenOrdersService kitchenOrdersService;
 
     @Autowired
+    private KitchenBookedOrdersService kitchenBookedOrdersService;
+
+    @Autowired
     private SelfChannelVipLOrderService selfChannelVipOrderService;
 
     @Autowired
@@ -270,6 +273,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 payBaseService = goodNumberOrderService;
             case 14://购买小时工支付
                 payBaseService = hourlyWorkerOrdersService;
+                break;
+            case 15://购买订座点菜支付
+                payBaseService = kitchenBookedOrdersService;
                 break;
             default:
                 break;

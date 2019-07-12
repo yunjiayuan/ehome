@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
+import java.util.Arrays;
+
 /**
  * 加载数据库相关信息到缓存redis中
  * 加载 门牌号记录、账号预选记录
