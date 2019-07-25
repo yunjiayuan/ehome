@@ -37,6 +37,8 @@ public class KitchenCollection {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;        //收藏时间
 
+    private int bookedState;            //   0厨房  1订座
+
     private String address;            // 详细地址   与数据库无关字段
 
     private int distance;            //距离  	与数据库无关字段

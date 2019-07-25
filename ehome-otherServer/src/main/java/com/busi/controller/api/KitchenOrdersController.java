@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.KitchenBookedOrdersService;
 import com.busi.service.KitchenOrdersService;
 import com.busi.service.KitchenService;
 import com.busi.service.ShippingAddressService;
@@ -43,6 +44,9 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
 
     @Autowired
     KitchenOrdersService kitchenOrdersService;
+
+    @Autowired
+    KitchenBookedOrdersService kitchenBookedOrdersService;
 
     @Autowired
     ShippingAddressService shippingAddressService;
@@ -87,7 +91,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                     //查询缓存 缓存中不存在 查询数据库
                     Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + laf.getUserId() + "_" + 0);
                     if (kitchenMap == null || kitchenMap.size() <= 0) {
-                        Kitchen kitchen = kitchenService.findByUserId(laf.getUserId(),0);
+                        Kitchen kitchen = kitchenService.findByUserId(laf.getUserId(), 0);
                         if (kitchen == null) {
                             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
                         }
@@ -230,7 +234,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         //由配送中改为已卖出
-        if (io.getMyId() == CommonUtils.getMyId()) {
+        if (io.getUserId() == CommonUtils.getMyId()) {
             io.setOrdersType(4);        //已收货
             io.setReceivingTime(new Date());
             io.setUpdateCategory(3);
@@ -467,71 +471,144 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         }
         KitchenDishes dis = null;
         List list = null;
-        KitchenOrders io = kitchenOrdersService.findById(ev.getOrderId(), CommonUtils.getMyId(), 5);
-        if (io != null && io.getOrdersType() == 4) {
-            //查询缓存 缓存中不存在 查询数据库
-            Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + io.getUserId() + "_" + 0);
-            if (kitchenMap == null || kitchenMap.size() <= 0) {
-                Kitchen kitchen = kitchenService.findById(io.getKitchenId());
-                if (kitchen == null) {
-                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
+        if (ev.getBookedState() == 0) {// 是否订座  0厨房  1订座
+            KitchenOrders io = kitchenOrdersService.findById(ev.getOrderId(), CommonUtils.getMyId(), 5);
+            if (io != null && io.getOrdersType() == 4) {
+                //查询缓存 缓存中不存在 查询数据库
+                Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + io.getUserId() + "_" + 0);
+                if (kitchenMap == null || kitchenMap.size() <= 0) {
+                    Kitchen kitchen = kitchenService.findById(io.getKitchenId());
+                    if (kitchen == null) {
+                        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
+                    }
+                    //放入缓存
+                    kitchenMap = CommonUtils.objectToMap(kitchen);
+                    redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 0, kitchenMap, Constants.USER_TIME_OUT);
                 }
-                //放入缓存
-                kitchenMap = CommonUtils.objectToMap(kitchen);
-                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 0, kitchenMap, Constants.USER_TIME_OUT);
-            }
-            Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
-            if (kh != null) {
-                if (!CommonUtils.checkFull(ev.getDishesIds())) {
-                    String[] sd = ev.getDishesIds().split(",");//菜品ID
-                    list = kitchenService.findDishesList(sd);
-                    if (list != null && list.size() > 0) {
-                        String dishameCost = io.getDishameCost();
-                        if (dishameCost != null) {
-                            String[] dishame = dishameCost.split(";");
-                            if (list.size() == sd.length) {
-                                for (int i = 0; i < list.size(); i++) {
-                                    dis = (KitchenDishes) list.get(i);
-                                    for (int j = 0; j < dishame.length; j++) {
-                                        String[] dishes = dishame[j].split(",");
-                                        long dishesId = Long.parseLong(dishes[0]);
-                                        if (dishesId == dis.getId()) {
-                                            KitchenFabulous like = new KitchenFabulous();
-                                            like.setMyId(CommonUtils.getMyId());
-                                            like.setUserId(dis.getUserId());
-                                            like.setDishesId(dis.getId());
-                                            like.setTime(new Date());
-                                            like.setStatus(0);    //0正常
-                                            kitchenOrdersService.addLike(like);
+                Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
+                if (kh != null) {
+                    if (!CommonUtils.checkFull(ev.getDishesIds())) {
+                        String[] sd = ev.getDishesIds().split(",");//菜品ID
+                        list = kitchenService.findDishesList(sd);
+                        if (list != null && list.size() > 0) {
+                            String dishameCost = io.getDishameCost();
+                            if (dishameCost != null) {
+                                String[] dishame = dishameCost.split(";");
+                                if (list.size() == sd.length) {
+                                    for (int i = 0; i < list.size(); i++) {
+                                        dis = (KitchenDishes) list.get(i);
+                                        for (int j = 0; j < dishame.length; j++) {
+                                            String[] dishes = dishame[j].split(",");
+                                            long dishesId = Long.parseLong(dishes[0]);
+                                            if (dishesId == dis.getId()) {
+                                                KitchenFabulous like = new KitchenFabulous();
+                                                like.setMyId(CommonUtils.getMyId());
+                                                like.setUserId(dis.getUserId());
+                                                like.setDishesId(dis.getId());
+                                                like.setTime(new Date());
+                                                like.setStatus(0);    //0正常
+                                                like.setBookedState(0);
+                                                kitchenOrdersService.addLike(like);
 
-                                            //更新菜品点赞数
-                                            dis.setPointNumber(dis.getPointNumber() + 1);
-                                            kitchenService.updateLike(dis);
+                                                //更新菜品点赞数
+                                                dis.setPointNumber(dis.getPointNumber() + 1);
+                                                kitchenService.updateLike(dis);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    ev.setKitchenId(io.getKitchenId());
+                    ev.setOrderId(io.getId());
+                    ev.setUserId(CommonUtils.getMyId());
+                    ev.setKitchenCover(kh.getKitchenCover());
+                    ev.setTime(new Date());
+
+                    kitchenOrdersService.addEvaluate(ev);
+
+                    kh.setTotalScore(ev.getScore() + kh.getTotalScore());
+                    kitchenService.updateScore(kh);//更新厨房总评分
+
+                    io.setOrdersType(10);//更新订单状态为已评价
+                    io.setUpdateCategory(5);
+                    kitchenOrdersService.updateOrders(io);
+                    //清除缓存中的厨房订单信息
+                    redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getMyId() + "_" + io.getNo(), 0);
+                    //放入缓存
+                    Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+                    redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
                 }
-                ev.setKitchenId(io.getKitchenId());
-                ev.setOrderId(io.getId());
-                ev.setKitchenCover(kh.getKitchenCover());
-                ev.setTime(new Date());
+            }
+        } else {
+            KitchenBookedOrders io = kitchenBookedOrdersService.findById(ev.getOrderId(), CommonUtils.getMyId(), 4);
+            if (io != null && io.getOrdersType() == 3) {
+                //查询缓存 缓存中不存在 查询数据库
+                Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + io.getUserId() + "_" + 1);
+                if (kitchenMap == null || kitchenMap.size() <= 0) {
+                    Kitchen kitchen = kitchenService.findById(io.getKitchenId());
+                    if (kitchen == null) {
+                        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
+                    }
+                    //放入缓存
+                    kitchenMap = CommonUtils.objectToMap(kitchen);
+                    redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 1, kitchenMap, Constants.USER_TIME_OUT);
+                }
+                Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
+                if (kh != null) {
+                    if (!CommonUtils.checkFull(ev.getDishesIds())) {
+                        String[] sd = ev.getDishesIds().split(",");//菜品ID
+                        list = kitchenService.findDishesList(sd);
+                        if (list != null && list.size() > 0) {
+                            String dishameCost = io.getDishameCost();
+                            if (dishameCost != null) {
+                                String[] dishame = dishameCost.split(";");
+                                if (list.size() == sd.length) {
+                                    for (int i = 0; i < list.size(); i++) {
+                                        dis = (KitchenDishes) list.get(i);
+                                        for (int j = 0; j < dishame.length; j++) {
+                                            String[] dishes = dishame[j].split(",");
+                                            long dishesId = Long.parseLong(dishes[0]);
+                                            if (dishesId == dis.getId()) {
+                                                KitchenFabulous like = new KitchenFabulous();
+                                                like.setMyId(CommonUtils.getMyId());
+                                                like.setUserId(dis.getUserId());
+                                                like.setDishesId(dis.getId());
+                                                like.setTime(new Date());
+                                                like.setStatus(0);    //0正常
+                                                like.setBookedState(1);
+                                                kitchenOrdersService.addLike(like);
 
-                kitchenOrdersService.addEvaluate(ev);
+                                                //更新菜品点赞数
+                                                dis.setPointNumber(dis.getPointNumber() + 1);
+                                                kitchenService.updateLike(dis);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    ev.setKitchenId(io.getKitchenId());
+                    ev.setOrderId(io.getId());
+                    ev.setKitchenCover(kh.getKitchenCover());
+                    ev.setTime(new Date());
 
-                kh.setTotalScore(ev.getScore() + kh.getTotalScore());
-                kitchenService.updateScore(kh);//更新厨房总评分
+                    kitchenOrdersService.addEvaluate(ev);
 
-                io.setOrdersType(10);//更新订单状态为已评价
-                io.setUpdateCategory(5);
-                kitchenOrdersService.updateOrders(io);
-                //清除缓存中的厨房订单信息
-                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + io.getMyId() + "_" + io.getNo(), 0);
-                //放入缓存
-                Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-                redisUtils.hmset(Constants.REDIS_KEY_KITCHENORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+                    kh.setTotalScore(ev.getScore() + kh.getTotalScore());
+                    kitchenService.updateScore(kh);//更新厨房总评分
+
+                    io.setOrdersType(8);//更新订单状态为已评价
+                    io.setUpdateCategory(3);
+                    kitchenBookedOrdersService.updateOrders(io);
+                    //清除缓存中的厨房订单信息
+                    redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + io.getMyId() + "_" + io.getNo(), 0);
+                    //放入缓存
+                    Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+                    redisUtils.hmset(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

@@ -237,16 +237,24 @@ public interface KitchenDao {
      * @param userId
      * @return
      */
-    @Select("select * from KitchenCollection where userId=#{userId} and kitchend=#{id}")
-    KitchenCollection findWhether(@Param("userId") long userId, @Param("id") long id);
+    @Select("select * from KitchenCollection where userId=#{userId} and beUserId=#{beUserId} and bookedState=#{bookedState}")
+    KitchenCollection findWhether(@Param("userId") long userId, @Param("beUserId") long beUserId, @Param("bookedState") int bookedState);
+
+    /***
+     * 验证用户是否收藏过
+     * @param kitchenId
+     * @return
+     */
+    @Select("select * from KitchenCollection where kitchend=#{kitchenId} and userId=#{userId}")
+    KitchenCollection findWhether2(@Param("userId") long userId, @Param("kitchenId") long kitchenId);
 
     /***
      * 新增收藏
      * @param collect
      * @return
      */
-    @Insert("insert into KitchenCollection(userId,kitchend,kitchenName,goodFood,cuisine,kitchenCover,time,beUserId) " +
-            "values (#{userId},#{kitchend},#{kitchenName},#{goodFood},#{cuisine},#{kitchenCover},#{time},#{beUserId})")
+    @Insert("insert into KitchenCollection(userId,kitchend,kitchenName,goodFood,cuisine,kitchenCover,time,beUserId,bookedState) " +
+            "values (#{userId},#{kitchend},#{kitchenName},#{goodFood},#{cuisine},#{kitchenCover},#{time},#{beUserId},#{bookedState})")
     @Options(useGeneratedKeys = true)
     int addCollect(KitchenCollection collect);
 
@@ -259,9 +267,10 @@ public interface KitchenDao {
             "select * from KitchenCollection" +
             " where 1=1" +
             " and userId=#{userId}" +
+            " and bookedState=#{bookedState}" +
             " order by time desc" +
             "</script>")
-    List<KitchenCollection> findCollectionList(@Param("userId") long userId);
+    List<KitchenCollection> findCollectionList(@Param("userId") long userId, @Param("bookedState") int bookedState);
 
     /***
      * 批量查询指定的厨房

@@ -56,7 +56,7 @@ public class KitchenOrdersService {
     /***
      * 根据用户ID查询订单
      * @param id
-     * @param type  查询场景 0删除 1由未接单改为制作中 2由制作中改为配送中 3由配送中改为已卖出  4查看订单详情  5取消订单  6评价
+     * @param type  查询场景 0删除 1由未接单改为制作中 2由制作中改为配送中 3由配送中改为已卖出  4查看订单详情、取消订单  5评价
      * @return
      */
     public KitchenOrders findById(long id, long userId, int type) {

@@ -86,14 +86,15 @@ public interface KitchenApiController {
     /***
      * 分页查询用户收藏列表
      * @param userId   用户ID
+     * @param bookedState   0厨房  1订座
      * @param lat      纬度
      * @param lon      经度
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findKitchenCollectList/{userId}/{lat}/{lon}/{page}/{count}")
-    ReturnData findKitchenCollectList(@PathVariable long userId, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findKitchenCollectList/{userId}/{bookedState}/{lat}/{lon}/{page}/{count}")
+    ReturnData findKitchenCollectList(@PathVariable long userId,@PathVariable int bookedState, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /**
      * @Description: 删除收藏

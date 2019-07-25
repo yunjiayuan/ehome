@@ -172,9 +172,23 @@ public class KitchenService {
      * @param userId
      * @return
      */
-    public boolean findWhether(long userId, long id) {
+    public boolean findWhether(long userId, long beUserId, int bookedState) {
         KitchenCollection kitchen = null;
-        kitchen = kitchenDao.findWhether(userId, id);
+        kitchen = kitchenDao.findWhether(userId, beUserId, bookedState);
+        if (kitchen == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /***
+     * 验证用户是否收藏过
+     * @param kitchenId
+     * @return
+     */
+    public boolean findWhether2(long userId, long kitchenId) {
+        KitchenCollection kitchen = null;
+        kitchen = kitchenDao.findWhether2(userId, kitchenId);
         if (kitchen == null) {
             return false;
         }
@@ -198,11 +212,11 @@ public class KitchenService {
      * @param userId  用户ID
      * @return
      */
-    public PageBean<KitchenCollection> findCollectionList(long userId, int page, int count) {
+    public PageBean<KitchenCollection> findCollectionList(long userId, int bookedState, int page, int count) {
 
         List<KitchenCollection> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = kitchenDao.findCollectionList(userId);
+        list = kitchenDao.findCollectionList(userId, bookedState);
 
         return PageUtils.getPageBean(p, list);
     }

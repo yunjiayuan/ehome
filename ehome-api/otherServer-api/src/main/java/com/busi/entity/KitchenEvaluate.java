@@ -19,7 +19,6 @@ public class KitchenEvaluate {
 
     private long id;                            //主建ID
 
-    @Min(value = 1, message = "userId参数有误")
     private long userId;                        //用户ID
 
     private String content;                        //内容
@@ -40,6 +39,8 @@ public class KitchenEvaluate {
     private int score;                        // 评分：1一星 2二星 3三星 4 四星 5 五星
 
     private int anonymousType;  //是否匿名发布 0表示正常发布不匿名  1表示匿名发布  别人能看到评论  无法查看名字和门牌号
+
+    private int bookedState;            //   0厨房  1订座
 
     //与数据库无关字段
     private String dishesIds;		//菜品IDS   逗号间隔

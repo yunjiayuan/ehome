@@ -37,7 +37,7 @@ public class KitchenBookedOrdersService {
     /***
      * 根据用户ID查询订单
      * @param id
-     * @param type  查询场景 0删除 1由未接单改为已接单 2由已接单改为已完成 3取消订单
+     * @param type  查询场景 0删除 1由未接单改为已接单 2由已接单改为已完成 3取消订单 4评价
      * @return
      */
     public KitchenBookedOrders findById(long id, long userId, int type) {
@@ -55,7 +55,7 @@ public class KitchenBookedOrdersService {
 
     /***
      *  更新厨房订座订单状态
-     *  updateCategory 更新类别  默认0删除状态  1由未接单改为已接单  2由已接单改为已完成  3取消订单  4更新支付状态
+     *  updateCategory 更新类别  默认0删除状态  1由未接单改为已接单  2由已接单改为已完成  3取消订单、评价状态  4更新支付状态
      * @param kitchenBookedOrders
      * @return
      */

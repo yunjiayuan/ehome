@@ -29,6 +29,9 @@ public class KitchenFabulous {
     private Date time;			//点赞时间
 
     private int status;				//0正常 1删除
+
     private long dishesId;		//菜品ID
+
+    private int bookedState;            // 可否订座  0否  1是
 
 }

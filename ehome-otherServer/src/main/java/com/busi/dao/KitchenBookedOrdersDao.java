@@ -50,6 +50,9 @@ public interface KitchenBookedOrdersDao {
             "<if test=\"type == 3\">" +
             " and ordersState = 0" +
             "</if>" +
+            "<if test=\"type == 4\">" +
+            " and ordersState = 0 and ordersType =3 and myId=#{userId}" +
+            "</if>" +
             "</script>")
     KitchenBookedOrders findById(@Param("id") long id, @Param("userId") long userId, @Param("type") int type);
 
@@ -67,7 +70,7 @@ public interface KitchenBookedOrdersDao {
 
     /***
      *  更新厨房订座订单状态
-     *  updateCategory 更新类别  默认0删除状态  1由未接单改为已接单  2由已接单改为已完成  3取消订单  4更新支付状态
+     *  updateCategory 更新类别  默认0删除状态  1由未接单改为已接单  2由已接单改为已完成  3取消订单、评价状态  4更新支付状态
      * @param orders
      * @return
      */

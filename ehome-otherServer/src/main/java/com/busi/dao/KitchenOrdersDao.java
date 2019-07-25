@@ -35,8 +35,8 @@ public interface KitchenOrdersDao {
      * @param fabulous
      * @return
      */
-    @Insert("insert into KitchenFabulous(userId,time,myId,status,dishesId) " +
-            "values (#{userId},#{time},#{myId},#{status},#{dishesId})")
+    @Insert("insert into KitchenFabulous(userId,time,myId,status,dishesId,bookedState) " +
+            "values (#{userId},#{time},#{myId},#{status},#{dishesId},#{bookedState})")
     @Options(useGeneratedKeys = true)
     int addLike(KitchenFabulous fabulous);
 
@@ -45,8 +45,8 @@ public interface KitchenOrdersDao {
      * @param evaluate
      * @return
      */
-    @Insert("insert into KitchenEvaluate(userId,content,orderId,kitchenId,imgUrls,kitchenCover,time,state,score,anonymousType) " +
-            "values (#{userId},#{content},#{orderId},#{kitchenId},#{imgUrls},#{kitchenCover},#{time},#{state},#{score},#{anonymousType})")
+    @Insert("insert into KitchenEvaluate(userId,content,orderId,kitchenId,imgUrls,kitchenCover,time,state,score,anonymousType,bookedState) " +
+            "values (#{userId},#{content},#{orderId},#{kitchenId},#{imgUrls},#{kitchenCover},#{time},#{state},#{score},#{anonymousType},#{bookedState})")
     @Options(useGeneratedKeys = true)
     int addEvaluate(KitchenEvaluate evaluate);
 
@@ -69,7 +69,7 @@ public interface KitchenOrdersDao {
             " and ordersState=0 and ordersType=2 and userId=#{userId}" +
             "</if>" +
             "<if test=\"type == 3\">" +
-            " and ordersState=0 and ordersType=3 and myId=#{userId}" +
+            " and ordersState=0 and ordersType=3 and userId=#{userId}" +
             "</if>" +
             "<if test=\"type == 4\">" +
             " and ordersState = 0" +

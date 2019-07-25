@@ -32,13 +32,14 @@ public class KitchenBookedTimerController {
     @Autowired
     KitchenBookedOrdersService kitchenBookedOrdersService;
 
-    @Scheduled(cron = "0 12 10 * * ?") //十五点五十五分
+    @Scheduled(cron = "0 52 16 * * ?") //十五点五十五分
     public void kitchenTimer() throws Exception {
         log.info("开始查询数据库中待处理的厨房订座超时订单...");
         while (true) {
             List arrList = null;
             KitchenBookedOrders r = null;
             int countTime15 = 15 * 60 * 1000;// 15分钟
+            int countTime24 = 24 * 60 * 60 * 1000;// 24小时
             long nowTime = new Date().getTime();// 系统时间
             arrList = kitchenBookedOrdersService.findOrderList();
             if (arrList != null && arrList.size() > 0) {
@@ -68,6 +69,21 @@ public class KitchenBookedTimerController {
                                 //清除缓存中的厨房订单信息
                                 redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getMyId() + "_" + r.getNo(), 0);
                                 log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：接单超时！");
+                                arrList.remove(i);
+                            } else {
+                                continue;
+                            }
+                        } else if (r.getOrdersType() == 2) {
+                            long deliverTime = r.getOrderTime().getTime();// 接单时间
+                            if (deliverTime <= nowTime - countTime24) {
+                                r.setOrdersType(3);// 确认完成超时 更新为已完成
+                                r.setCompleteTime(new Date());//完成时间
+                                kitchenBookedOrdersService.updateOrders(r);
+                                //更新买家缓存、钱包、账单
+                                mqUtils.sendPurseMQ(r.getMyId(), 26, 0, r.getMoney());
+                                //清除缓存中的厨房订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getMyId() + "_" + r.getNo(), 0);
+                                log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：确认完成超时！");
                                 arrList.remove(i);
                             } else {
                                 continue;

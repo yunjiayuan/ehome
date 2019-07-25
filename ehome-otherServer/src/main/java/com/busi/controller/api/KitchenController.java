@@ -347,20 +347,20 @@ public class KitchenController extends BaseController implements KitchenApiContr
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证是否收藏过
-        boolean flag = kitchenService.findWhether(collect.getUserId(), collect.getKitchend());
+        boolean flag = kitchenService.findWhether(collect.getUserId(), collect.getBeUserId(), collect.getBookedState());
         if (flag) {
             return returnData(StatusCode.CODE_COLLECTED_KITCHEN_ERROR.CODE_VALUE, "您已收藏过此厨房", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + collect.getBeUserId());
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + collect.getBeUserId() + "_" + collect.getBookedState());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            Kitchen kitchen2 = kitchenService.findByUserId(collect.getBeUserId(), 0);
+            Kitchen kitchen2 = kitchenService.findByUserId(collect.getBeUserId(), collect.getBookedState());
             if (kitchen2 == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，厨房不存在！", new JSONObject());
             }
             //放入缓存
             kitchenMap = CommonUtils.objectToMap(kitchen2);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen2.getUserId() + "_" + collect.getBookedState(), kitchenMap, Constants.USER_TIME_OUT);
         }
         Kitchen io = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
         if (io != null) {
@@ -381,6 +381,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
     /***
      * 分页查询用户收藏列表
      * @param userId   用户ID
+     * @param bookedState   0厨房  1订座
      * @param lat      纬度
      * @param lon      经度
      * @param page     页码
@@ -388,14 +389,14 @@ public class KitchenController extends BaseController implements KitchenApiContr
      * @return
      */
     @Override
-    public ReturnData findKitchenCollectList(@PathVariable long userId, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findKitchenCollectList(@PathVariable long userId, @PathVariable int bookedState, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<KitchenCollection> pageBean;
-        pageBean = kitchenService.findCollectionList(userId, page, count);
+        pageBean = kitchenService.findCollectionList(userId, bookedState, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -534,9 +535,9 @@ public class KitchenController extends BaseController implements KitchenApiContr
         }
         List list = null;
         list = pageBean.getList();
-        if (list != null) {
+        if (list != null && list.size() > 0) {
             //验证是否收藏过
-            boolean flag = kitchenService.findWhether(CommonUtils.getMyId(), kitchenId);
+            boolean flag = kitchenService.findWhether2(CommonUtils.getMyId(), kitchenId);
             if (flag) {
                 collection = 1;//1已收藏
             }
