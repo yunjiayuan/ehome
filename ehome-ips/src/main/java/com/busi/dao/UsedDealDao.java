@@ -190,7 +190,7 @@ public interface UsedDealDao {
             "</if>" +
             "<if test=\"maxPrice > 0\">" +
             " <![CDATA[ " +
-            " and sellingPrice <= #{minPrice} and sellingPrice <= #{maxPrice}" +
+            " and sellingPrice >= #{minPrice} and sellingPrice <= #{maxPrice}" +
             "  ]]> " +
             "</if>" +
             "<if test=\"maxPrice &lt;= 0\">" +
@@ -208,6 +208,57 @@ public interface UsedDealDao {
             "</if>" +
             "</script>")
     List<UsedDeal> findList(@Param("sort") int sort, @Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("usedSort1") int usedSort1, @Param("usedSort2") int usedSort2, @Param("usedSort3") int usedSort3);
+
+    /***
+     * 分页查询
+     * @param sort  排序条件:0默认排序，1最新发布，2价格最低，3价格最高，4离我最近
+     * @param userId  用户ID
+     * @param usedSort1  一级分类:起始值为0,默认-1为不限 :二手手机 、数码、汽车...
+     * @param usedSort2  二级分类:起始值为0,默认-1为不限 : 苹果,三星,联想....
+     * @param usedSort3  三级分类:起始值为0,默认-1为不限 :iPhone6s.iPhone5s....
+     * @param province  省
+     * @param city  市
+     * @param district  区
+     * @return
+     */
+    @Select("<script>" +
+            "select * from usedDeal" +
+            " where sellType = 1 and deleteType = 1" +
+            "<if test=\"userId > 0\">" +
+            " and userId = #{userId}" +
+            "</if>" +
+            "<if test=\"district >= 0\">" +
+            " and district = #{district}" +
+            "</if>" +
+            "<if test=\"city >= 0\">" +
+            " and city = #{city}" +
+            "</if>" +
+            "<if test=\"province >= 0\">" +
+            " and province = #{province}" +
+            "</if>" +
+            "<if test=\"usedSort3 >= 0\">" +
+            " and usedSort3 = #{usedSort3}" +
+            "</if>" +
+            "<if test=\"usedSort2 >= 0\">" +
+            " and usedSort2 = #{usedSort2}" +
+            "</if>" +
+            "<if test=\"usedSort1 >= 0\">" +
+            " and usedSort1 = #{usedSort1}" +
+            "</if>" +
+            " and negotiable = 1 and sellingPrice = 0" +
+            " and auditType = 2" +
+            "<if test=\"sort &lt;= 1\">" +
+            " order by refreshTime desc" +
+            "</if>" +
+            "<if test=\"sort == 2\">" +
+            " order by sellingPrice asc" +
+            "</if>" +
+            "<if test=\"sort == 3\">" +
+            " order by sellingPrice desc" +
+            "</if>" +
+            "</script>")
+    List<UsedDeal> findList2(@Param("sort") int sort, @Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("usedSort1") int usedSort1, @Param("usedSort2") int usedSort2, @Param("usedSort3") int usedSort3);
+
 
     @Select("<script>" +
             "select * from usedDeal" +
@@ -244,12 +295,71 @@ public interface UsedDealDao {
     @Select("<script>" +
             "select * from UsedDeal" +
             " where 1=1" +
-            "<if test=\"type == 1\">" +
             " and userId in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "<if test=\"usedSort3 >= 0\">" +
+            " and usedSort3 = #{usedSort3}" +
             "</if>" +
-            "<if test=\"type == 2\">" +
+            "<if test=\"usedSort2 >= 0\">" +
+            " and usedSort2 = #{usedSort2}" +
+            "</if>" +
+            "<if test=\"usedSort1 >= 0\">" +
+            " and usedSort1 = #{usedSort1}" +
+            "</if>" +
+            "<if test=\"maxPrice > 0\">" +
+            " <![CDATA[ " +
+            " and sellingPrice <= #{minPrice} and sellingPrice <= #{maxPrice}" +
+            "  ]]> " +
+            "</if>" +
+            "<if test=\"maxPrice &lt;= 0\">" +
+            " and sellingPrice >= #{minPrice}" +
+            "</if>" +
+            " and sellType=1" +
+            " and deleteType=1" +
+            " order by frontPlaceType desc" +
+            "</script>")
+    List<UsedDeal> findAoList(@Param("ids") String[] ids, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("usedSort1") int usedSort1, @Param("usedSort2") int usedSort2, @Param("usedSort3") int usedSort3);
+
+    /***
+     * 分页查询距离最近的用户二手
+     * @param ids  用户ID组合
+     * @return
+     */
+    @Select("<script>" +
+            "select * from UsedDeal" +
+            " where 1=1" +
+            " and userId in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "<if test=\"usedSort3 >= 0\">" +
+            " and usedSort3 = #{usedSort3}" +
+            "</if>" +
+            "<if test=\"usedSort2 >= 0\">" +
+            " and usedSort2 = #{usedSort2}" +
+            "</if>" +
+            "<if test=\"usedSort1 >= 0\">" +
+            " and usedSort1 = #{usedSort1}" +
+            "</if>" +
+            " and negotiable = 1 and sellingPrice = 0" +
+            " and sellType=1" +
+            " and deleteType=1" +
+            " order by frontPlaceType desc" +
+            "</script>")
+    List<UsedDeal> findAoList3(@Param("ids") String[] ids, @Param("usedSort1") int usedSort1, @Param("usedSort2") int usedSort2, @Param("usedSort3") int usedSort3);
+
+
+    /***
+     * 分页查询距离最近的用户二手
+     * @param ids  用户ID组合
+     * @return
+     */
+    @Select("<script>" +
+            "select * from UsedDeal" +
+            " where 1=1" +
             " and id in" +
-            "</if>" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
@@ -257,7 +367,7 @@ public interface UsedDealDao {
             " and deleteType=1" +
             " order by frontPlaceType desc" +
             "</script>")
-    List<UsedDeal> findAoList(@Param("type") int type, @Param("ids") String[] ids);
+    List<UsedDeal> findAoList2(@Param("type") int type, @Param("ids") String[] ids);
 
 
     /***

@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.Kitchen;
 import com.busi.entity.KitchenCollection;
 import com.busi.entity.KitchenDishes;
+import com.busi.entity.KitchenDishesSort;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -82,8 +83,8 @@ public interface KitchenDao {
      * @param userId
      * @return
      */
-    @Select("select * from kitchen where userId=#{userId} and bookedState=#{bookedState}")
-    Kitchen findByUserId(@Param("userId") long userId, @Param("bookedState") int bookedState);
+    @Select("select * from kitchen where userId=#{userId}")
+    Kitchen findByUserId(@Param("userId") long userId);
 
     /***
      * 根据Id查询
@@ -147,7 +148,6 @@ public interface KitchenDao {
      * 条件查询厨房(模糊搜索)
      * @param userId 用户ID
      * @param watchVideos 筛选视频：0否 1是
-     * @param watchBooked 筛选订座：0否 1是
      * @param kitchenName  厨房名字
      * @return
      */
@@ -155,9 +155,6 @@ public interface KitchenDao {
             "select * from kitchen" +
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
-            "<if test=\"watchBooked == 1\">" +
-            " and bookedState = 1" +
-            "</if>" +
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
             " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +
@@ -165,7 +162,7 @@ public interface KitchenDao {
             " and videoUrl != ''" +
             "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName, @Param("watchBooked") int watchBooked);
+    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName);
 
     /***
      * 条件查询厨房（距离最近）
@@ -190,9 +187,6 @@ public interface KitchenDao {
             "select * from Kitchen where" +
             " userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
-            "<if test=\"watchBooked == 1\">" +
-            " and bookedState = 1" +
-            "</if>" +
             "<if test=\"watchVideos == 1\">" +
 //            " and videoUrl is not null" +
             " and videoUrl != ''" +
@@ -201,7 +195,7 @@ public interface KitchenDao {
             " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
             " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</script>")
-    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon, @Param("watchBooked") int watchBooked);
+    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 条件查询厨房（条件搜索）
@@ -214,9 +208,6 @@ public interface KitchenDao {
             "select * from Kitchen" +
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
-            "<if test=\"watchBooked == 1\">" +
-            " and bookedState = 1" +
-            "</if>" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -230,23 +221,23 @@ public interface KitchenDao {
             " order by totalScore desc" +
             "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType, @Param("watchBooked") int watchBooked);
+    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
 
     /***
      * 验证用户是否收藏过
      * @param userId
      * @return
      */
-    @Select("select * from KitchenCollection where userId=#{userId} and beUserId=#{beUserId} and bookedState=#{bookedState}")
-    KitchenCollection findWhether(@Param("userId") long userId, @Param("beUserId") long beUserId, @Param("bookedState") int bookedState);
+    @Select("select * from KitchenCollection where userId=#{userId} and kitchend=#{kitchend} and bookedState=#{bookedState}")
+    KitchenCollection findWhether(@Param("userId") long userId, @Param("kitchend") long kitchend, @Param("bookedState") int bookedState);
 
     /***
      * 验证用户是否收藏过
      * @param kitchenId
      * @return
      */
-    @Select("select * from KitchenCollection where kitchend=#{kitchenId} and userId=#{userId}")
-    KitchenCollection findWhether2(@Param("userId") long userId, @Param("kitchenId") long kitchenId);
+    @Select("select * from KitchenCollection where kitchend=#{kitchenId} and userId=#{userId} and bookedState=#{bookedState}")
+    KitchenCollection findWhether2(@Param("bookedState") int bookedState,@Param("userId") long userId, @Param("kitchenId") long kitchenId);
 
     /***
      * 新增收藏
@@ -320,8 +311,8 @@ public interface KitchenDao {
      * @param dishes
      * @return
      */
-    @Insert("insert into kitchenDishes(userId,kitchenId,dishame,cuisine,cost,ingredients,addTime,imgUrl) " +
-            "values (#{userId},#{kitchenId},#{dishame},#{cuisine},#{cost},#{ingredients},#{addTime},#{imgUrl})")
+    @Insert("insert into kitchenDishes(userId,kitchenId,dishame,cuisine,cost,ingredients,addTime,imgUrl,sortId,bookedState) " +
+            "values (#{userId},#{kitchenId},#{dishame},#{cuisine},#{cost},#{ingredients},#{addTime},#{imgUrl},#{sortId},#{bookedState})")
     @Options(useGeneratedKeys = true)
     int addDishes(KitchenDishes dishes);
 
@@ -387,8 +378,58 @@ public interface KitchenDao {
             "select * from KitchenDishes" +
             " where deleteType = 0" +
             " and kitchenId=#{kitchenId}" +
+            " and bookedState=#{bookedState}" +
             " order by addTime desc" +
             "</script>")
-    List<KitchenDishes> findDishesList(@Param("kitchenId") long kitchenId);
+    List<KitchenDishes> findDishesList(@Param("bookedState") int bookedState, @Param("kitchenId") long kitchenId);
+
+    /***
+     * 新增菜品分类
+     * @param dishes
+     * @return
+     */
+    @Insert("insert into KitchenDishesSort(userId,kitchenId,name,bookedState) " +
+            "values (#{userId},#{kitchenId},#{name},#{bookedState})")
+    @Options(useGeneratedKeys = true)
+    int addSort(KitchenDishesSort dishes);
+
+    /***
+     * 更新菜品分类
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenDishesSort set" +
+            " name=#{name}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateDishesSort(KitchenDishesSort kitchenDishes);
+
+    /***
+     * 删除厨房菜品分类
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from KitchenDishesSort" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and userId=#{userId}" +
+            "</script>")
+    int delFoodSort(@Param("ids") String[] ids, @Param("userId") long userId);
+
+    /***
+     * 查询厨房菜品分类列表
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenDishesSort" +
+            " where kitchenId=#{kitchenId}" +
+            " and bookedState=#{bookedState}" +
+            "</script>")
+    List<KitchenDishesSort> findDishesSortList(@Param("bookedState") int bookedState, @Param("kitchenId") long kitchenId);
 }
 

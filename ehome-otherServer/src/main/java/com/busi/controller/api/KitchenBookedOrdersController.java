@@ -69,7 +69,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         //查询厨房 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + kitchenBookedOrders.getUserId() + "_" + 1);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            Kitchen kitchen = kitchenService.findByUserId(kitchenBookedOrders.getUserId(), 1);
+            KitchenReserve kitchen = kitchenBookedService.findReserve(kitchenBookedOrders.getUserId());
             if (kitchen == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
             }
@@ -77,7 +77,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
             kitchenMap = CommonUtils.objectToMap(kitchen);
             redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 1, kitchenMap, Constants.USER_TIME_OUT);
         }
-        Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
+        KitchenReserve kh = (KitchenReserve) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
         if (!CommonUtils.checkFull(kitchenBookedOrders.getGoodsIds()) && !CommonUtils.checkFull(kitchenBookedOrders.getFoodNumber())) {
             String[] sd = kitchenBookedOrders.getGoodsIds().split(",");//菜品ID
             String[] fn = kitchenBookedOrders.getFoodNumber().split(",");//菜品数量
@@ -219,9 +219,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
                 kitchenBookedService.updatePosition(booked);
             }
             //更新厨房总销量
-            Kitchen kh = kitchenService.findById(io.getKitchenId());
+            KitchenReserve kh = kitchenBookedService.findById(io.getKitchenId());
             kh.setTotalSales(kh.getTotalSales() + 1);
-            kitchenService.updateNumber(kh);
+            kitchenBookedService.updateNumber(kh);
             //清除缓存中厨房的信息
             redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kh.getUserId() + "_" + 1, 0);
             //清除缓存中的厨房订单信息

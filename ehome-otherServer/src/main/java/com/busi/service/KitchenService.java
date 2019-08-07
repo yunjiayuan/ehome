@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.KitchenDao;
-import com.busi.entity.Kitchen;
-import com.busi.entity.KitchenCollection;
-import com.busi.entity.KitchenDishes;
-import com.busi.entity.PageBean;
+import com.busi.entity.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -52,8 +49,8 @@ public class KitchenService {
      * @param userId
      * @return
      */
-    public Kitchen findByUserId(long userId, int bookedState) {
-        return kitchenDao.findByUserId(userId, bookedState);
+    public Kitchen findByUserId(long userId) {
+        return kitchenDao.findByUserId(userId);
     }
 
     /***
@@ -136,7 +133,6 @@ public class KitchenService {
      * @param page 页码
      * @param count  条数
      * @param watchVideos 筛选视频：0否 1是
-     * @param watchBooked 筛选订座：0否 1是
      * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高  4视频
      * @return
      */
@@ -153,16 +149,16 @@ public class KitchenService {
 //        }
 //        return PageUtils.getPageBean(p, list);
 //    }
-    public PageBean<Kitchen> findKitchenList(long userId, int watchVideos, int sortType, String kitchenName, double lat, double lon, int watchBooked, int page, int count) {
+    public PageBean<Kitchen> findKitchenList(long userId, int watchVideos, int sortType, String kitchenName, double lat, double lon, int page, int count) {
 
         List<Kitchen> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (!CommonUtils.checkFull(kitchenName)) {
-            list = kitchenDao.findKitchenList(userId, watchVideos, kitchenName, watchBooked);
+            list = kitchenDao.findKitchenList(userId, watchVideos, kitchenName);
         } else if (sortType == 1) {
-            list = kitchenDao.findKitchenList2(userId, watchVideos, lat, lon, watchBooked);
+            list = kitchenDao.findKitchenList2(userId, watchVideos, lat, lon);
         } else {
-            list = kitchenDao.findKitchenList3(userId, watchVideos, sortType, watchBooked);
+            list = kitchenDao.findKitchenList3(userId, watchVideos, sortType);
         }
         return PageUtils.getPageBean(p, list);
     }
@@ -172,9 +168,9 @@ public class KitchenService {
      * @param userId
      * @return
      */
-    public boolean findWhether(long userId, long beUserId, int bookedState) {
+    public boolean findWhether(long userId, long kitchend, int bookedState) {
         KitchenCollection kitchen = null;
-        kitchen = kitchenDao.findWhether(userId, beUserId, bookedState);
+        kitchen = kitchenDao.findWhether(userId, kitchend, bookedState);
         if (kitchen == null) {
             return false;
         }
@@ -186,9 +182,9 @@ public class KitchenService {
      * @param kitchenId
      * @return
      */
-    public boolean findWhether2(long userId, long kitchenId) {
+    public boolean findWhether2(int bookedState, long userId, long kitchenId) {
         KitchenCollection kitchen = null;
-        kitchen = kitchenDao.findWhether2(userId, kitchenId);
+        kitchen = kitchenDao.findWhether2(bookedState,userId, kitchenId);
         if (kitchen == null) {
             return false;
         }
@@ -299,11 +295,11 @@ public class KitchenService {
      * @param kitchenId  厨房ID
      * @return
      */
-    public PageBean<KitchenDishes> findDishesList(long kitchenId, int page, int count) {
+    public PageBean<KitchenDishes> findDishesList(int bookedState, long kitchenId, int page, int count) {
 
         List<KitchenDishes> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = kitchenDao.findDishesList(kitchenId);
+        list = kitchenDao.findDishesList(bookedState, kitchenId);
 
         return PageUtils.getPageBean(p, list);
     }
@@ -316,5 +312,64 @@ public class KitchenService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateLike(KitchenDishes dishes) {
         return kitchenDao.updateLike(dishes);
+    }
+
+    /***
+     * 新增分类
+     * @param kitchenDishesSort
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addSort(KitchenDishesSort kitchenDishesSort) {
+        return kitchenDao.addSort(kitchenDishesSort);
+    }
+
+    /***
+     * 更新分类
+     * @param kitchenDishesSort
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateDishesSort(KitchenDishesSort kitchenDishesSort) {
+        return kitchenDao.updateDishesSort(kitchenDishesSort);
+    }
+
+    /***
+     * 删除厨房菜品分类
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delFoodSort(String[] ids, long userId) {
+        return kitchenDao.delFoodSort(ids, userId);
+    }
+
+    /***
+     * 查询厨房菜品分类列表
+     * @param page     页码 第几页 起始值1
+     * @param count    每页条数
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    public PageBean<KitchenDishesSort> findDishesSortList(int bookedState, long kitchenId, int page, int count) {
+
+        List<KitchenDishesSort> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenDao.findDishesSortList(bookedState, kitchenId);
+
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询厨房菜品分类列表
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    public List<KitchenDishesSort> findDishesSortList2(int bookedState, long kitchenId) {
+
+        List<KitchenDishesSort> list;
+        list = kitchenDao.findDishesSortList(bookedState, kitchenId);
+
+        return list;
     }
 }

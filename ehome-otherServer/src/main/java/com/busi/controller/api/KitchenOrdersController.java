@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.KitchenBookedOrdersService;
-import com.busi.service.KitchenOrdersService;
-import com.busi.service.KitchenService;
-import com.busi.service.ShippingAddressService;
+import com.busi.service.*;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -51,6 +48,9 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
     @Autowired
     ShippingAddressService shippingAddressService;
 
+    @Autowired
+    KitchenBookedService kitchenBookedService;
+
     /***
      * 新增订单
      * @param kitchenOrders
@@ -91,7 +91,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                     //查询缓存 缓存中不存在 查询数据库
                     Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + laf.getUserId() + "_" + 0);
                     if (kitchenMap == null || kitchenMap.size() <= 0) {
-                        Kitchen kitchen = kitchenService.findByUserId(laf.getUserId(), 0);
+                        Kitchen kitchen = kitchenService.findByUserId(laf.getUserId());
                         if (kitchen == null) {
                             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
                         }
@@ -547,7 +547,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                 //查询缓存 缓存中不存在 查询数据库
                 Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + io.getUserId() + "_" + 1);
                 if (kitchenMap == null || kitchenMap.size() <= 0) {
-                    Kitchen kitchen = kitchenService.findById(io.getKitchenId());
+                    KitchenReserve kitchen = kitchenBookedService.findReserve(io.getUserId());
                     if (kitchen == null) {
                         return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,厨房不存在", new JSONObject());
                     }
@@ -555,7 +555,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                     kitchenMap = CommonUtils.objectToMap(kitchen);
                     redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 1, kitchenMap, Constants.USER_TIME_OUT);
                 }
-                Kitchen kh = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
+                KitchenReserve kh = (KitchenReserve) CommonUtils.mapToObject(kitchenMap, KitchenReserve.class);
                 if (kh != null) {
                     if (!CommonUtils.checkFull(ev.getDishesIds())) {
                         String[] sd = ev.getDishesIds().split(",");//菜品ID
@@ -598,7 +598,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                     kitchenOrdersService.addEvaluate(ev);
 
                     kh.setTotalScore(ev.getScore() + kh.getTotalScore());
-                    kitchenService.updateScore(kh);//更新厨房总评分
+                    kitchenBookedService.updateScore(kh);//更新厨房总评分
 
                     io.setOrdersType(8);//更新订单状态为已评价
                     io.setUpdateCategory(3);

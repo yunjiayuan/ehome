@@ -49,8 +49,8 @@ public interface KitchenApiController {
      * @param userId
      * @return
      */
-    @GetMapping("findKitchen/{userId}/{bookedState}")
-    ReturnData findKitchen(@PathVariable long userId, @PathVariable int bookedState);
+    @GetMapping("findKitchen/{userId}")
+    ReturnData findKitchen(@PathVariable long userId);
 
     /***
      * 条件查询厨房
@@ -60,12 +60,11 @@ public interface KitchenApiController {
      * @param page     页码
      * @param count    条数
      * @param watchVideos 筛选视频：0否 1是
-     * @param watchBooked 筛选订座：0否 1是
      * @param sortType 排序类型：默认【0综合排序】   0综合排序  1距离最近  2服务次数最高  3评分最高
      * @return
      */
-    @GetMapping("findKitchenList/{watchVideos}/{watchBooked}/{sortType}/{kitchenName}/{lat}/{lon}/{page}/{count}")
-    ReturnData findKitchenList(@PathVariable int watchVideos, @PathVariable int watchBooked, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findKitchenList/{watchVideos}/{sortType}/{kitchenName}/{lat}/{lon}/{page}/{count}")
+    ReturnData findKitchenList(@PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 检测实名状态
@@ -94,7 +93,7 @@ public interface KitchenApiController {
      * @return
      */
     @GetMapping("findKitchenCollectList/{userId}/{bookedState}/{lat}/{lon}/{page}/{count}")
-    ReturnData findKitchenCollectList(@PathVariable long userId,@PathVariable int bookedState, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    ReturnData findKitchenCollectList(@PathVariable long userId, @PathVariable int bookedState, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /**
      * @Description: 删除收藏
@@ -136,12 +135,48 @@ public interface KitchenApiController {
 
     /***
      * 分页查询菜品列表
-     * @param kitchenId   用户ID
+     * @param kitchenId   厨房ID
+     * @param bookedState    0厨房  1订座
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findDishesList/{kitchenId}/{page}/{count}")
-    ReturnData findDishesList(@PathVariable long kitchenId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findDishesList/{bookedState}/{kitchenId}/{page}/{count}")
+    ReturnData findDishesList(@PathVariable int bookedState, @PathVariable long kitchenId, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 新增分类
+     * @param kitchenDishesSort
+     * @return
+     */
+    @PostMapping("addFoodSort")
+    ReturnData addFoodSort(@Valid @RequestBody KitchenDishesSort kitchenDishesSort, BindingResult bindingResult);
+
+    /***
+     * 更新分类
+     * @param kitchenDishesSort
+     * @return
+     */
+    @PutMapping("updateFoodSort")
+    ReturnData updateFoodSort(@Valid @RequestBody KitchenDishesSort kitchenDishesSort, BindingResult bindingResult);
+
+    /**
+     * @Description: 删除分类
+     * @return:
+     */
+    @DeleteMapping("delFoodSort/{ids}")
+    ReturnData delFoodSort(@PathVariable String ids);
+
+
+    /***
+     * 查询分类列表
+     * @param kitchenId   厨房ID
+     * @param bookedState    0厨房  1订座
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findDishesSortList/{bookedState}/{kitchenId}/{page}/{count}")
+    ReturnData findDishesSortList(@PathVariable int bookedState, @PathVariable long kitchenId, @PathVariable int page, @PathVariable int count);
 
 }

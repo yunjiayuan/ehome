@@ -61,12 +61,13 @@ public interface UsedDealApiController {
      * @param province  省
      * @param city  市
      * @param district  区
+     * @param give  0默认全部  1只看赠送
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findJunkList/{sort}/{userId}/{province}/{city}/{district}/{minPrice}/{maxPrice}/{usedSort1}/{usedSort2}/{usedSort3}/{lat}/{lon}/{page}/{count}")
-    ReturnData findJunkList(@PathVariable int sort, @PathVariable long userId, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int usedSort1, @PathVariable int usedSort2, @PathVariable int usedSort3, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findJunkList/{sort}/{userId}/{province}/{city}/{district}/{minPrice}/{maxPrice}/{usedSort1}/{usedSort2}/{usedSort3}/{lat}/{lon}/{give}/{page}/{count}")
+    ReturnData findJunkList(@PathVariable int sort, @PathVariable long userId, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int usedSort1, @PathVariable int usedSort2, @PathVariable int usedSort3, @PathVariable double lat, @PathVariable double lon, @PathVariable int give, @PathVariable int page, @PathVariable int count);
 
     /**
      * 根据买卖状态查询二手公告列表

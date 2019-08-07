@@ -56,7 +56,7 @@ public class KitchenBookedOrders {
 
     private String eatDate;        //就餐日期
 
-    private String eatTime;        //就餐时间
+    private Date eatTime;        //就餐时间
 
     @Max(value = 1, message = "position参数有误，超出指定范围")
     @Min(value= 0 ,message= "position参数有误，超出指定范围")

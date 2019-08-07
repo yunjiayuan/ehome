@@ -126,31 +126,49 @@ public class UsedDealService {
      * @param province  省
      * @param city  市
      * @param district  区
+     * @param give  0默认全部  1只看赠送
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<UsedDeal> findList(int sort, long userId, int province, int city, int district, int minPrice, int maxPrice, int usedSort1, int usedSort2, int usedSort3, int page, int count) {
+    public PageBean<UsedDeal> findList(int sort, long userId, int province, int city, int district, int minPrice, int maxPrice, int usedSort1, int usedSort2, int usedSort3, int give, int page, int count) {
 
         List<UsedDeal> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = usedDealDao.findList(sort, userId, province, city, district, minPrice, maxPrice, usedSort1, usedSort2, usedSort3);
-
+        if (give <= 0) {
+            list = usedDealDao.findList(sort, userId, province, city, district, minPrice, maxPrice, usedSort1, usedSort2, usedSort3);
+        } else {
+            list = usedDealDao.findList2(sort, userId, province, city, district, usedSort1, usedSort2, usedSort3);
+        }
         return PageUtils.getPageBean(p, list);
     }
 
     /***
      * 分页查询
      * @param ids  用户ID组合
+     * @param minPrice  最小价格
+     * @param maxPrice  最大价格
+     * @param usedSort1  一级分类:起始值为0,默认-1为不限 :二手手机 、数码、汽车...
+     * @param usedSort2  二级分类:起始值为0,默认-1为不限 : 苹果,三星,联想....
+     * @param usedSort3  三级分类:起始值为0,默认-1为不限 :iPhone6s.iPhone5s....
+     * @param give  0默认全部  1只看赠送
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<UsedDeal> findAoList(int type, String[] ids, int page, int count) {
+    public PageBean<UsedDeal> findAoList(int type, String[] ids, int minPrice, int maxPrice, int usedSort1, int usedSort2, int usedSort3, int give, int page, int count) {
 
         List<UsedDeal> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = usedDealDao.findAoList(type, ids);
+        if (type == 1) {
+            if (give <= 0) {
+                list = usedDealDao.findAoList(ids, minPrice, maxPrice, usedSort1, usedSort2, usedSort3);
+            } else {
+                list = usedDealDao.findAoList3(ids, usedSort1, usedSort2, usedSort3);
+            }
+        } else {
+            list = usedDealDao.findAoList2(type, ids);
+        }
         return PageUtils.getPageBean(p, list);
     }
 

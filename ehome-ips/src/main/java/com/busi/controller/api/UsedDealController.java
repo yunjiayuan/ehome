@@ -66,7 +66,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
             }
-            usedDeal.setContent(filteringTitle);
+            usedDeal.setTitle(filteringTitle);
             usedDeal.setContent(filteringContent);
         }
         //验证地区
@@ -230,7 +230,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             if (CommonUtils.checkFull(filteringTitle) || CommonUtils.checkFull(filteringContent)) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "内容不能为空并且不能包含非法字符！", new JSONArray());
             }
-            usedDeal.setContent(filteringTitle);
+            usedDeal.setTitle(filteringTitle);
             usedDeal.setContent(filteringContent);
         }
         //验证修改人权限
@@ -433,12 +433,13 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
      * @param usedSort3  三级分类:起始值为0,默认-1为不限 :iPhone6s.iPhone5s....
      * @param lat  纬度
      * @param lon  经度
+     * @param give  0默认全部  1只看赠送
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
     @Override
-    public ReturnData findJunkList(@PathVariable int sort, @PathVariable long userId, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int usedSort1, @PathVariable int usedSort2, @PathVariable int usedSort3, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findJunkList(@PathVariable int sort, @PathVariable long userId, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int usedSort1, @PathVariable int usedSort2, @PathVariable int usedSort3, @PathVariable double lat, @PathVariable double lon, @PathVariable int give, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -466,9 +467,9 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
                     distanceMap.put(userIdString, distance);
                 }
             }
-            pageBean = usedDealService.findAoList(1, nearUserIds.split(","), page, count);
+            pageBean = usedDealService.findAoList(1, nearUserIds.split(","), minPrice, maxPrice, usedSort1, usedSort2, usedSort3, give, page, count);
         } else {
-            pageBean = usedDealService.findList(sort, userId, province, city, district, minPrice, maxPrice, usedSort1, usedSort2, usedSort3, page, count);
+            pageBean = usedDealService.findList(sort, userId, province, city, district, minPrice, maxPrice, usedSort1, usedSort2, usedSort3, give, page, count);
         }
         if (pageBean == null) {
             pageBean = new PageBean<UsedDeal>();
@@ -476,7 +477,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
         }
         List<UsedDeal> list = pageBean.getList();
-        if (list.size() < count && sort == 4) {//附近人数较少时补充推荐数据
+        if (list.size() < count && sort == 4 && give <= 0) {//附近人数较少时补充推荐数据
             String ids = "";
             List homeList = null;
             homeList = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 100);
@@ -492,7 +493,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
                         ids += "," + home.getInfoId();
                     }
                 }
-                PageBean<UsedDeal> newPageBean = usedDealService.findAoList(2, ids.split(","), page, count);
+                PageBean<UsedDeal> newPageBean = usedDealService.findAoList(2, ids.split(","), 0, 0, 0, 0, 0, 0, page, count);
                 List<UsedDeal> newList = newPageBean.getList();
                 if (newList != null && newList.size() > 0) {
                     // 按照刷新时间进行降序排列
