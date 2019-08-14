@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.KitchenBookedDao;
-import com.busi.entity.KitchenBooked;
-import com.busi.entity.KitchenPrivateRoom;
-import com.busi.entity.KitchenReserve;
-import com.busi.entity.PageBean;
+import com.busi.entity.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -109,6 +106,15 @@ public class KitchenBookedService {
     }
 
     /***
+     * 根据ID包间or大厅
+     * @param id
+     * @return
+     */
+    public KitchenPrivateRoom findPrivateRoom(long id) {
+        return kitchenBookedDao.findPrivateRoom(id);
+    }
+
+    /***
      * 根据用户ID查询预定
      * @param userId
      * @return
@@ -176,13 +182,19 @@ public class KitchenBookedService {
      * @param page 页码
      * @param count  条数
      * @param watchVideos 筛选视频：0否 1是
-     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高  4视频
+     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高
      * @return
      */
     public PageBean<KitchenReserve> findKitchenList(long userId, String cuisine, int watchVideos, int sortType, String kitchenName, double lat, double lon, int page, int count) {
 
         List<KitchenReserve> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (CommonUtils.checkFull(cuisine)) {
+            cuisine = null;
+        }
+        if (CommonUtils.checkFull(kitchenName)) {
+            kitchenName = null;
+        }
         if (!CommonUtils.checkFull(kitchenName) || !CommonUtils.checkFull(cuisine)) {
             list = kitchenBookedDao.findKitchenList(userId, watchVideos, kitchenName, cuisine);
         } else if (sortType == 1) {
@@ -211,5 +223,57 @@ public class KitchenBookedService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateScore(KitchenReserve kitchen) {
         return kitchenBookedDao.updateScore(kitchen);
+    }
+
+    /***
+     * 新增菜品
+     * @param kitchenDishes
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addDishes(KitchenReserveDishes kitchenDishes) {
+        return kitchenBookedDao.addDishes(kitchenDishes);
+    }
+
+    /***
+     * 更新菜品
+     * @param kitchenDishes
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateDishes(KitchenReserveDishes kitchenDishes) {
+        return kitchenBookedDao.updateDishes(kitchenDishes);
+    }
+
+    /***
+     * 删除厨房菜品
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delDishes(String[] ids, long userId) {
+        return kitchenBookedDao.delDishes(ids, userId);
+    }
+
+    /***
+     * 根据ID查询菜品
+     * @param id
+     * @return
+     */
+    public KitchenReserveDishes disheSdetails(long id) {
+        return kitchenBookedDao.disheSdetails(id);
+    }
+
+    /***
+     * 查询厨房菜品列表
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    public List<KitchenReserveDishes> findDishesList2(long kitchenId) {
+
+        List<KitchenReserveDishes> list;
+        list = kitchenBookedDao.findDishesList(kitchenId);
+
+        return list;
     }
 }

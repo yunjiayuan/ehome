@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.KitchenBooked;
 import com.busi.entity.KitchenPrivateRoom;
 import com.busi.entity.KitchenReserve;
+import com.busi.entity.KitchenReserveDishes;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -172,6 +173,14 @@ public interface KitchenBookedDao {
     int updateNumber(KitchenReserve kitchen);
 
     /***
+     * 根据Id查询包间or大厅
+     * @param id
+     * @return
+     */
+    @Select("select * from KitchenPrivateRoom where id=#{id}")
+    KitchenPrivateRoom findPrivateRoom(@Param("id") long id);
+
+    /***
      * 根据userId查询预定
      * @param userId
      * @return
@@ -293,5 +302,69 @@ public interface KitchenBookedDao {
             " and bookedType = #{bookedType}" +
             "</script>")
     List<KitchenPrivateRoom> findRoomList(@Param("userId") long userId, @Param("bookedType") int bookedType);
+
+    /***
+     * 新增菜品
+     * @param dishes
+     * @return
+     */
+    @Insert("insert into KitchenReserveDishes(userId,kitchenId,dishame,cuisine,cost,ingredients,addTime,imgUrl,sortId) " +
+            "values (#{userId},#{kitchenId},#{dishame},#{cuisine},#{cost},#{ingredients},#{addTime},#{imgUrl},#{sortId})")
+    @Options(useGeneratedKeys = true)
+    int addDishes(KitchenReserveDishes dishes);
+
+    /***
+     * 更新菜品
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenReserveDishes set" +
+            " cost=#{cost}," +
+            " cuisine=#{cuisine}," +
+            " dishame=#{dishame}," +
+            " ingredients=#{ingredients}," +
+            " imgUrl=#{imgUrl}," +
+            " userId=#{userId}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateDishes(KitchenReserveDishes kitchenDishes);
+
+    /***
+     * 删除厨房菜品
+     * @param ids
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenReserveDishes set" +
+            " deleteType=1" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and userId=#{userId}" +
+            "</script>")
+    int delDishes(@Param("ids") String[] ids, @Param("userId") long userId);
+
+    /***
+     * 根据ID查询菜品
+     * @param id
+     * @return
+     */
+    @Select("select * from KitchenReserveDishes where id=#{id} and deleteType =0")
+    KitchenReserveDishes disheSdetails(@Param("id") long id);
+
+    /***
+     * 查询厨房菜品列表
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenReserveDishes" +
+            " where deleteType = 0" +
+            " and kitchenId=#{kitchenId}" +
+            " order by addTime desc" +
+            "</script>")
+    List<KitchenReserveDishes> findDishesList(@Param("kitchenId") long kitchenId);
 
 }

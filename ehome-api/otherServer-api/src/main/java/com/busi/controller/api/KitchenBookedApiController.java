@@ -1,9 +1,6 @@
 package com.busi.controller.api;
 
-import com.busi.entity.KitchenBooked;
-import com.busi.entity.KitchenPrivateRoom;
-import com.busi.entity.KitchenReserve;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,7 +66,7 @@ public interface KitchenBookedApiController {
      * @return
      */
     @GetMapping("findReserveList/{cuisine}/{watchVideos}/{sortType}/{kitchenName}/{lat}/{lon}/{page}/{count}")
-    ReturnData findReserveList(@PathVariable String cuisine,@PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    ReturnData findReserveList(@PathVariable String cuisine, @PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
 
     /***
@@ -129,4 +126,46 @@ public interface KitchenBookedApiController {
      */
     @DeleteMapping("delPrivateRoom/{ids}")
     ReturnData delPrivateRoom(@PathVariable String ids);
+
+    /***
+     * 新增菜品
+     * @param kitchenDishes
+     * @return
+     */
+    @PostMapping("addDishes")
+    ReturnData addDishes(@Valid @RequestBody KitchenReserveDishes kitchenDishes, BindingResult bindingResult);
+
+    /***
+     * 更新菜品
+     * @param kitchenDishes
+     * @return
+     */
+    @PutMapping("updateDishes")
+    ReturnData updateDishes(@Valid @RequestBody KitchenReserveDishes kitchenDishes, BindingResult bindingResult);
+
+    /**
+     * @Description: 删除菜品
+     * @return:
+     */
+    @DeleteMapping("delDishes/{ids}")
+    ReturnData delDishes(@PathVariable String ids);
+
+    /***
+     * 查询菜品信息
+     * @param id
+     * @return
+     */
+    @GetMapping("detailsDishes/{id}")
+    ReturnData detailsDishes(@PathVariable long id);
+
+    /***
+     * 分页查询菜品列表
+     * @param kitchenId   厨房ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findReserveDishesList/{kitchenId}/{page}/{count}")
+    ReturnData findReserveDishesList(@PathVariable long kitchenId, @PathVariable int page, @PathVariable int count);
+
 }

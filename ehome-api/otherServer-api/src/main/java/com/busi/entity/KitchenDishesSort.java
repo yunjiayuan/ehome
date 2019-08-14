@@ -2,6 +2,7 @@ package com.busi.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Min;
 
@@ -22,6 +23,7 @@ public class KitchenDishesSort {
 
     private long kitchenId;             // 厨房ID
 
+    @Length(max = 8, message = "分类名称不能超过8字")
     private String name;                // 分类名
 
     private int bookedState;            //   0厨房  1订座

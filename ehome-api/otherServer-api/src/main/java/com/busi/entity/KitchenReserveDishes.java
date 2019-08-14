@@ -9,13 +9,13 @@ import java.util.Date;
 
 /**
  * @program: ehome
- * @description: 厨房菜品实体
+ * @description: 厨房订座菜品
  * @author: ZHaoJiaJie
- * @create: 2019-03-01 10:20
+ * @create: 2019-08-12 14:11
  */
 @Setter
 @Getter
-public class KitchenDishes {
+public class KitchenReserveDishes {
 
     private long id;                    // 主键
 
@@ -45,9 +45,6 @@ public class KitchenDishes {
 
     private long sortId;            // 分类ID
 
-    private int bookedState;            //   0厨房  1订座
-
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
-
 }

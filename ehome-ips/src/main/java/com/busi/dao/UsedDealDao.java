@@ -194,7 +194,7 @@ public interface UsedDealDao {
             "  ]]> " +
             "</if>" +
             "<if test=\"maxPrice &lt;= 0\">" +
-            " and sellingPrice >= #{minPrice}" +
+            " and sellingPrice &lt;= #{minPrice}" +
             "</if>" +
             " and auditType = 2" +
             "<if test=\"sort &lt;= 1\">" +
@@ -310,11 +310,11 @@ public interface UsedDealDao {
             "</if>" +
             "<if test=\"maxPrice > 0\">" +
             " <![CDATA[ " +
-            " and sellingPrice <= #{minPrice} and sellingPrice <= #{maxPrice}" +
+            " and sellingPrice >= #{minPrice} and sellingPrice <= #{maxPrice}" +
             "  ]]> " +
             "</if>" +
             "<if test=\"maxPrice &lt;= 0\">" +
-            " and sellingPrice >= #{minPrice}" +
+            " and sellingPrice &lt;= #{minPrice}" +
             "</if>" +
             " and sellType=1" +
             " and deleteType=1" +

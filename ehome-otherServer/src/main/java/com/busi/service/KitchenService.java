@@ -184,7 +184,7 @@ public class KitchenService {
      */
     public boolean findWhether2(int bookedState, long userId, long kitchenId) {
         KitchenCollection kitchen = null;
-        kitchen = kitchenDao.findWhether2(bookedState,userId, kitchenId);
+        kitchen = kitchenDao.findWhether2(bookedState, userId, kitchenId);
         if (kitchen == null) {
             return false;
         }
@@ -304,6 +304,14 @@ public class KitchenService {
         return PageUtils.getPageBean(p, list);
     }
 
+    public List<KitchenDishes> findDishesList2(int bookedState, long kitchenId) {
+
+        List<KitchenDishes> list;
+        list = kitchenDao.findDishesList(bookedState, kitchenId);
+
+        return list;
+    }
+
     /***
      * 更新菜品点赞数
      * @param dishes
@@ -342,6 +350,25 @@ public class KitchenService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int delFoodSort(String[] ids, long userId) {
         return kitchenDao.delFoodSort(ids, userId);
+    }
+
+    /***
+     * 根据ID查询菜品分类
+     * @param id
+     * @return
+     */
+    public KitchenDishesSort findDishesSort(long id) {
+        return kitchenDao.findDishesSort(id);
+    }
+
+    /***
+     * 统计该用户分类数量
+     * @param bookedState
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int findNum(int bookedState, long kitchenId) {
+        return kitchenDao.findNum(bookedState, kitchenId);
     }
 
     /***

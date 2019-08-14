@@ -42,7 +42,7 @@ public class KitchenReserve {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;            // 添加时间
 
-    private String healthyCard;        //健康证
+    private String healthyCard;        //营业执照（原健康证）
 
     private String kitchenCover;        //封面
 

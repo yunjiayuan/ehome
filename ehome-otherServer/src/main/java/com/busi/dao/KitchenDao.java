@@ -237,7 +237,7 @@ public interface KitchenDao {
      * @return
      */
     @Select("select * from KitchenCollection where kitchend=#{kitchenId} and userId=#{userId} and bookedState=#{bookedState}")
-    KitchenCollection findWhether2(@Param("bookedState") int bookedState,@Param("userId") long userId, @Param("kitchenId") long kitchenId);
+    KitchenCollection findWhether2(@Param("bookedState") int bookedState, @Param("userId") long userId, @Param("kitchenId") long kitchenId);
 
     /***
      * 新增收藏
@@ -328,6 +328,7 @@ public interface KitchenDao {
             " dishame=#{dishame}," +
             " ingredients=#{ingredients}," +
             " imgUrl=#{imgUrl}," +
+            " sortId=#{sortId}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -419,6 +420,27 @@ public interface KitchenDao {
             " and userId=#{userId}" +
             "</script>")
     int delFoodSort(@Param("ids") String[] ids, @Param("userId") long userId);
+
+    /***
+     * 根据ID查询菜品
+     * @param id
+     * @return
+     */
+    @Select("select * from KitchenDishesSort where id=#{id}")
+    KitchenDishesSort findDishesSort(@Param("id") long id);
+
+    /***
+     * 统计该用户分类数量
+     * @param bookedState
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from KitchenDishesSort" +
+            " where 1=1 " +
+            " and kitchenId = #{kitchenId}" +
+            " and bookedState = #{bookedState}" +
+            "</script>")
+    int findNum(@Param("bookedState") int bookedState, @Param("kitchenId") long kitchenId);
 
     /***
      * 查询厨房菜品分类列表
