@@ -88,16 +88,16 @@ public class IMUserUtils {
             JSONObject jo2 = new JSONObject();
             JSONObject jo3 = new JSONObject();
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPut post = new HttpPut(sendUrlPath);
+            HttpPost post = new HttpPost(sendUrlPath);
             jo.put("target_type", "users");
-            String[] userArray = {sendUser.getUserId()+""};
+            Object[] userArray = {receiveUsers.getUserId()};//接收用户数组
             jo.put("target", userArray);
 
             jo3.put("type","txt");
             jo3.put("msg",message);
             jo.put("msg", jo3);
 
-            jo.put("from", receiveUsers.getUserId());
+            jo.put("from", sendUser.getUserId()+"");//发送消息用户
 
             jo2.put("user_id",sendUser.getUserId());
             jo2.put("user_name_from",sendUser.getName());

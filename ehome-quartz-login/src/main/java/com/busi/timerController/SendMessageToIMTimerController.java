@@ -71,52 +71,6 @@ public class SendMessageToIMTimerController {
             "创始元老级会员知道什么意思吗，未来真能赚到钱？跪求答案。",
             "生活圈的概念应该比朋友圈的概念好，你觉得呢？都不理我呀。"};
 
-//    @Scheduled(cron = "0/1 * * * * ?") // 每分钟执行一次
-    public void expireRedBagTimer() throws Exception {
-        try {
-            log.info("开始向环信用户随机发送消息...");
-            List list = userInfoService.findCondition();
-            List<Object> sendList = new ArrayList<Object>();
-            Map<String, UserInfo> map = new HashMap<String, UserInfo>();
-            Random random = new Random();
-            if (list != null) {//给500个用户发信息
-                if (list.size() > count) {//从当做随机500个用户
-                    for (int i = 0; i < list.size(); i++) {
-                        int c = random.nextInt(list.size());
-                        UserInfo userInfo = (UserInfo) list.get(c);
-                        if (userInfo != null) {
-                            if (map.size() < count) {
-                                map.put(userInfo.getUserId() + "", userInfo);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                    for (String key : map.keySet()) {
-                        sendList.add(map.get(key));
-                    }
-                } else {//全部发送信息
-                    sendList = list;
-                }
-                for (int i = 0; i < sendList.size(); i++) {
-                    int messageId = random.nextInt(message.length);//从预设消息中随机选取
-                    long sendUserId = random.nextInt(40000) + 13870;//从机器人用户中随机选取
-                    UserInfo userInfo = (UserInfo) sendList.get(i);
-                    IMTokenCacheBean imTokenCacheBean = IMUserUtils.getToken();;
-                    Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + 9999);
-                    Map<String, Object> userMap2 = redisUtils.hmget(Constants.REDIS_KEY_USER + 10076);
-                    UserInfo sendUser = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
-                    UserInfo receiveUsers = (UserInfo) CommonUtils.mapToObject(userMap2, UserInfo.class);
-                    IMUserUtils.sendMessageToIMUser(message[messageId], sendUser, receiveUsers, imTokenCacheBean.getAccess_token(), 0);
-                    Thread.sleep(1000);//等待1秒 避免环信并发压力太大 收不到消息
-                }
-            }
-            log.info("向环信用户随机发送消息操作完成,本次共向[" + sendList.size() + "]个用户发送消息");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Cron表达式的格式：秒 分 时 日 月 周 年(可选)。
      * <p>
@@ -138,4 +92,53 @@ public class SendMessageToIMTimerController {
      *
      * @throws Exception
      */
+    @Scheduled(cron = "0 0 0/2 * * ?") // 每2小时执行一次
+    public void sendMessageToIMTimer() throws Exception {
+        try {
+            log.info("开始向环信用户随机发送消息...");
+            List list = userInfoService.findCondition();
+            List<Object> sendList = new ArrayList();
+            Map<String, UserInfo> map = new HashMap();
+            Random random = new Random();
+            if (list != null) {//给200个用户发信息
+                if (list.size() > count) {//从当做随机200个用户
+                    for (int i = 0; i < list.size(); i++) {
+                        int c = random.nextInt(list.size());
+                        UserInfo userInfo = (UserInfo) list.get(c);
+                        if (userInfo != null) {
+                            if (map.size() < count) {
+                                map.put(userInfo.getUserId() + "", userInfo);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    for (String key : map.keySet()) {
+                        sendList.add(map.get(key));
+                    }
+                } else {//全部发送信息
+                    sendList = list;
+                }
+                for (int i = 0; i < sendList.size(); i++) {
+                    int messageId = random.nextInt(message.length);//从预设消息中随机选取
+                    long sendUserId = random.nextInt(40000) + 13870;//从机器人用户中随机选取
+                    UserInfo receiveUsers = (UserInfo) sendList.get(i);
+                    IMTokenCacheBean imTokenCacheBean = IMUserUtils.getToken();
+                    Map<String, Object> sendUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + sendUserId);
+//                    Map<String, Object> receiveUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+                    UserInfo sendUser = (UserInfo) CommonUtils.mapToObject(sendUserMap, UserInfo.class);
+                    if(sendUser==null){
+                        sendUser = userInfoService.findUserInfo(sendUserId);
+                    }
+//                    UserInfo receiveUsers = (UserInfo) CommonUtils.mapToObject(receiveUserMap, UserInfo.class);
+                    IMUserUtils.sendMessageToIMUser(message[messageId], sendUser, receiveUsers, imTokenCacheBean.getAccess_token(), 0);
+                    Thread.sleep(1000);//等待1秒 避免环信并发压力太大 收不到消息
+                }
+            }
+            log.info("向环信用户随机发送消息操作完成,本次共向[" + sendList.size() + "]个用户发送消息");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

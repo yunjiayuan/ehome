@@ -33,4 +33,8 @@ public class UserInfoService {
         list = userInfoDao.findCondition();
         return list;
     }
+
+    public UserInfo findUserInfo(long userId){
+        return userInfoDao.findUserInfo( userId);
+    }
 }
