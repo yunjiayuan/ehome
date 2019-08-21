@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.KitchenBookedOrdersService;
 import com.busi.service.KitchenBookedService;
 import com.busi.service.KitchenService;
 import com.busi.service.UserAccountSecurityService;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -43,6 +46,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    KitchenBookedOrdersService kitchenBookedOrdersService;
 
     /***
      * 新增可预订厨房
@@ -374,6 +380,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
 
     /***
      * 查看包间or大厅列表
+     * @param eatTime  就餐时间
      * @param userId  商家ID
      * @param bookedType  包间0  散桌1
      * @param page     页码
@@ -381,7 +388,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData findPrivateRoom(@PathVariable long userId, @PathVariable int bookedType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findPrivateRoom(@PathVariable String eatTime, @PathVariable long userId, @PathVariable int bookedType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -392,7 +399,60 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        List list = pageBean.getList();
+        if (list == null && list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = sdf.parse(eatTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //查询订单中已订餐桌（用来判断是否可预订，PS:有可能不同时段不同人预定）
+        List ordersList = null;
+        ordersList = kitchenBookedOrdersService.findOrdersList(userId, date, bookedType);
+        if (ordersList == null && ordersList.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        }
+        for (int i = 0; i < list.size(); i++) {
+            KitchenPrivateRoom privateRoom = (KitchenPrivateRoom) list.get(i);
+            if (privateRoom == null) {
+                continue;
+            }
+            for (int j = 0; j < ordersList.size(); j++) {
+                KitchenBookedOrders kh = (KitchenBookedOrders) ordersList.get(j);
+                if (kh == null) {
+                    continue;
+                }
+                if (kh.getPositionId() == privateRoom.getId()) {
+                    privateRoom.setReserveState(1);//已预定
+                    continue;
+                }
+            }
+        }
+        //按是否预定正序排序
+        Collections.sort(list, new Comparator<KitchenPrivateRoom>() {
+            /*
+             * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+             * 返回负数表示：o1 小于o2，
+             * 返回0 表示：o1和p2相等，
+             * 返回正数表示：o1大于o2
+             */
+            @Override
+            public int compare(KitchenPrivateRoom o1, KitchenPrivateRoom o2) {
+                // 按照预定与否进行正序排列
+                if (o1.getReserveState() > o2.getReserveState()) {
+                    return 1;
+                }
+                if (o1.getReserveState() == o2.getReserveState()) {
+                    return 0;
+                }
+                return -1;
+            }
+        });
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
     /***

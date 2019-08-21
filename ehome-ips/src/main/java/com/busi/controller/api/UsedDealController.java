@@ -169,9 +169,17 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         mqUtils.sendFootmarkMQ(usedDeal.getUserId(), usedDeal.getTitle(), usedDeal.getImgUrl(), null, null, usedDeal.getId() + "," + 2, 1);
 
         Map<String, Object> map = new HashMap<>();
+        Map<String, Object> otherPostsMap = new HashMap<>();
         map.put("infoId", usedDeal.getId());
-        //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + usedDeal.getId(), 0);
+
+        //返回用户在卖宝贝数量
+        int num4 = 0;
+        num4 = usedDealService.findNum(usedDeal.getUserId(), 1);//已上架
+        usedDeal.setSellingNumber(num4);
+        //放入缓存(更新以前发布的宝贝详情在卖宝贝数量)
+        otherPostsMap = CommonUtils.objectToMap(usedDeal);
+        redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEAL + usedDeal.getId(), otherPostsMap, Constants.USER_TIME_OUT);
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -205,6 +213,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         posts.setDeleteType(2);
         usedDealService.updateDel(posts);
+
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_IPS_USEDDEAL + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

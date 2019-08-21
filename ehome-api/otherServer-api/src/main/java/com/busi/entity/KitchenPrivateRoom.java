@@ -1,7 +1,10 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 /**
  * @program: ehome
@@ -29,4 +32,9 @@ public class KitchenPrivateRoom {
 
     private int bookedType;             // 包间0  散桌1
 
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+//    private Date eatTime;        //就餐时间（已预订时有效，暂定3小时）
+
+    //与数据库无关字段
+    private int reserveState;             // 状态  0空闲  1已预订
 }

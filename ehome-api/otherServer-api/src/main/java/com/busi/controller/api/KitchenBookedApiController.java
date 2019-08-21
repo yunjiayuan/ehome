@@ -5,6 +5,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 
 /**
  * @program: ehome
@@ -103,14 +104,25 @@ public interface KitchenBookedApiController {
 
     /***
      * 查看包间or大厅列表
+     * @param eatTime  就餐时间
      * @param userId  商家ID
      * @param bookedType  包间0  散桌1
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findPrivateRoom/{userId}/{bookedType}/{page}/{count}")
-    ReturnData findPrivateRoom(@PathVariable long userId, @PathVariable int bookedType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findPrivateRoom/{eatTime}/{userId}/{bookedType}/{page}/{count}")
+    ReturnData findPrivateRoom(@PathVariable String eatTime, @PathVariable long userId, @PathVariable int bookedType, @PathVariable int page, @PathVariable int count);
+
+//    /***
+//     * 查看包间or大厅是否可预订
+//     * @param eatTime  就餐时间
+//     * @param id  包间or大厅ID
+//     * @return
+//     */
+//    @GetMapping("findTable/{eatTime}/{id}")
+//    ReturnData findTable(@PathVariable Date eatTime, @PathVariable long id);
+
 
     /***
      * 编辑包间or大厅信息

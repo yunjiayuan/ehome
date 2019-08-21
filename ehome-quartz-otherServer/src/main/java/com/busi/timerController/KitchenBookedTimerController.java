@@ -32,57 +32,44 @@ public class KitchenBookedTimerController {
     @Autowired
     KitchenBookedOrdersService kitchenBookedOrdersService;
 
-    @Scheduled(cron = "0 52 16 * * ?") //十五点五十五分
+    @Scheduled(cron = "0 20 16 * * ?") //十五点五十五分
     public void kitchenTimer() throws Exception {
         log.info("开始查询数据库中待处理的厨房订座超时订单...");
         while (true) {
             List arrList = null;
             KitchenBookedOrders r = null;
             int countTime15 = 15 * 60 * 1000;// 15分钟
-            int countTime24 = 24 * 60 * 60 * 1000;// 24小时
+            int countTime3 = 3 * 60 * 60 * 1000;// 3小时
             long nowTime = new Date().getTime();// 系统时间
             arrList = kitchenBookedOrdersService.findOrderList();
             if (arrList != null && arrList.size() > 0) {
                 for (int i = 0; i < arrList.size(); i++) {
                     r = (KitchenBookedOrders) arrList.get(i);
                     if (r != null) {
-                        long sendTime = r.getAddTime().getTime();// 下单时间
-
-                        if (r.getOrdersType() == 0) {
-                            if (sendTime <= nowTime - countTime15) {
-                                r.setOrdersType(5);// 付款超时【未付款】
-                                kitchenBookedOrdersService.updateOrders(r);
-                                //清除缓存中的厨房订单信息
-                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getMyId() + "_" + r.getNo(), 0);
-                                log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：付款超时！");
-                                arrList.remove(i);
-                            } else {
-                                continue;
-                            }
-                        } else if (r.getOrdersType() == 1) {
+                        if (r.getOrdersType() == 1) {
                             long paymentTime = r.getPaymentTime().getTime();// 付款时间
                             if (paymentTime <= nowTime - (countTime15 * 2)) {//30分钟时间差
-                                r.setOrdersType(4);// 接单超时【未接单】
+                                r.setOrdersType(7);// 接单超时【未接单】
                                 kitchenBookedOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单
                                 mqUtils.sendPurseMQ(r.getMyId(), 26, 0, r.getMoney());
                                 //清除缓存中的厨房订单信息
-                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getMyId() + "_" + r.getNo(), 0);
+                                redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + r.getMyId() + "_" + r.getNo(), 0);
                                 log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：接单超时！");
                                 arrList.remove(i);
                             } else {
                                 continue;
                             }
-                        } else if (r.getOrdersType() == 2) {
-                            long deliverTime = r.getOrderTime().getTime();// 接单时间
-                            if (deliverTime <= nowTime - countTime24) {
-                                r.setOrdersType(3);// 确认完成超时 更新为已完成
+                        } else if (r.getOrdersType() == 3) {
+                            long deliverTime = r.getUpperTableTime().getTime();// 接单时间
+                            if (deliverTime <= nowTime - countTime3) {
+                                r.setOrdersType(5);// 确认完成超时 更新为已完成
                                 r.setCompleteTime(new Date());//完成时间
                                 kitchenBookedOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单
                                 mqUtils.sendPurseMQ(r.getMyId(), 26, 0, r.getMoney());
                                 //清除缓存中的厨房订单信息
-                                redisUtils.expire(Constants.REDIS_KEY_KITCHENORDERS + r.getMyId() + "_" + r.getNo(), 0);
+                                redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + r.getMyId() + "_" + r.getNo(), 0);
                                 log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：确认完成超时！");
                                 arrList.remove(i);
                             } else {

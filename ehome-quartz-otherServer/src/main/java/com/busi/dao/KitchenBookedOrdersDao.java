@@ -24,6 +24,9 @@ public interface KitchenBookedOrdersDao {
      */
     @Update("<script>" +
             "update KitchenBookedOrders set" +
+            "<if test=\"upperTableTime != null and upperTableTime != ''\">" +
+            " upperTableTime=#{upperTableTime}," +
+            "</if>" +
             " ordersType=#{ordersType}" +
             " where id=#{id}" +
             "</script>")

@@ -32,18 +32,24 @@ public class KitchenBookedOrders {
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
-    private int ordersType;            //订单类型: 0未付款（已下单未付款),1未接单(已付款未接单),2已接单,3已完成,4接单超时,5付款超时,6卖家取消订单,7用户取消订单 ,8已评价,9确认完成超时
+    private int ordersType;            //订单类型: 0未付款（已下单未付款),1未接单(已付款未接单),2已接单,3菜已上桌，4进餐中，5进餐完成（客户、未评价）,6已清桌，7接单超时,8卖家取消订单,9用户取消订单 ,10已评价
 
     private String kitchenName;                //厨房名称
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date addTime;            // 添加时间
+    private Date addTime;            // 下单时间
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date paymentTime;            // 付款时间
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date orderTime;            // 接单时间
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date eatTime;        //就餐时间
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date upperTableTime;        //菜品上桌时间
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date completeTime;            // 完成时间
@@ -54,13 +60,13 @@ public class KitchenBookedOrders {
 
     private int eatNumber;        //就餐人数
 
-    private String eatDate;        //就餐日期
-
-    private Date eatTime;        //就餐时间
+//    private String eatDate;        //就餐日期
 
     @Max(value = 1, message = "position参数有误，超出指定范围")
-    @Min(value= 0 ,message= "position参数有误，超出指定范围")
+    @Min(value = 0, message = "position参数有误，超出指定范围")
     private int position;        //就餐位置  0大厅  1包间
+
+    private long positionId;        //就餐位置id
 
     private String address_Name;            // 联系人姓名
 
@@ -69,11 +75,11 @@ public class KitchenBookedOrders {
     private String remarks;        //备注
 
     @Max(value = 1, message = "dispensing参数有误，超出指定范围")
-    @Min(value= 0 ,message= "dispensing参数有误，超出指定范围")
+    @Min(value = 0, message = "dispensing参数有误，超出指定范围")
     private int dispensing;        //是否接受位置调剂 0是 1否
 
     @Max(value = 1, message = "sex参数有误，超出指定范围")
-    @Min(value= 0 ,message= "sex参数有误，超出指定范围")
+    @Min(value = 0, message = "sex参数有误，超出指定范围")
     private int sex;        //性别 0男 1女
 
     //与数据库无关字段
@@ -89,6 +95,6 @@ public class KitchenBookedOrders {
 
     private long houseNumber;        // 门牌号
 
-    private long updateCategory;        // 更新类别  默认0删除状态  1由未接单改为已接单  2已接单改为已完成  3取消订单、评价状态  4更新支付状态
+    private long updateCategory;        // 更新类别  0删除状态  1由未接单改为已接单  2由已接单改为菜已上桌  3由菜已上桌改为进餐中  4更新支付状态  5完成   6取消订单、评价状态
 
 }

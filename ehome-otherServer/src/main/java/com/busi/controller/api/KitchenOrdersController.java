@@ -601,7 +601,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                     kitchenBookedService.updateScore(kh);//更新厨房总评分
 
                     io.setOrdersType(8);//更新订单状态为已评价
-                    io.setUpdateCategory(3);
+                    io.setUpdateCategory(6);
                     kitchenBookedOrdersService.updateOrders(io);
                     //清除缓存中的厨房订单信息
                     redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + io.getMyId() + "_" + io.getNo(), 0);

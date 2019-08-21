@@ -24,6 +24,15 @@ public interface KitchenBookedOrdersApiController {
     ReturnData addBookedOrder(@Valid @RequestBody KitchenBookedOrders kitchenBookedOrders, BindingResult bindingResult);
 
     /***
+     * 更新订单（加菜）
+     * @param kitchenBookedOrders
+     * @return
+     */
+    @PutMapping("addToFood")
+    ReturnData addToFood(@Valid @RequestBody KitchenBookedOrders kitchenBookedOrders, BindingResult bindingResult);
+
+
+    /***
      * 删除订单
      * @param id 订单ID
      * @return
@@ -42,12 +51,39 @@ public interface KitchenBookedOrdersApiController {
 
     /***
      * 更改单子状态
-     * 由已接单改为已完成
+     * 由已接单改为菜已上桌
      * @param id  订单Id
      * @return
      */
-    @GetMapping("endBooked/{id}")
-    ReturnData endBooked(@PathVariable long id);
+    @GetMapping("upperTable/{id}")
+    ReturnData upperTable(@PathVariable long id);
+
+    /***
+     * 更改单子状态
+     * 由菜已上桌改为进餐中
+     * @param id  订单Id
+     * @return
+     */
+    @GetMapping("dining/{id}")
+    ReturnData dining(@PathVariable long id);
+
+    /***
+     * 更改单子状态
+     * 由进餐中改为完成
+     * @param id  订单Id
+     * @return
+     */
+    @GetMapping("completeBooked/{id}")
+    ReturnData completeBooked(@PathVariable long id);
+
+    /***
+     * 更改单子状态
+     * 由完成改为已清桌
+     * @param id  订单Id
+     * @return
+     */
+    @GetMapping("clearTable/{id}")
+    ReturnData clearTable(@PathVariable long id);
 
     /***
      * 查看订单详情
