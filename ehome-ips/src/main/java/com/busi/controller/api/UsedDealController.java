@@ -481,16 +481,17 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
             pageBean = usedDealService.findList(sort, userId, province, city, district, minPrice, maxPrice, usedSort1, usedSort2, usedSort3, give, page, count);
         }
         if (pageBean == null) {
-            pageBean = new PageBean<UsedDeal>();
-            pageBean.setList(new ArrayList<>());
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
         }
         List<UsedDeal> list = pageBean.getList();
+        if (list.size() <= 0 || list == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+        }
         if (list.size() < count && sort == 4 && give <= 0) {//附近人数较少时补充推荐数据
             String ids = "";
             List homeList = null;
             homeList = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 100);
-            if (homeList != null || homeList.size() > 0) {
+            if (homeList != null && homeList.size() > 0) {
                 for (int i = 0; i < homeList.size(); i++) {
                     IPS_Home home = (IPS_Home) homeList.get(i);
                     if (home == null) {
@@ -528,18 +529,16 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
                 }
             }
         }
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                UserInfo userInfo = null;
-                UsedDeal t = list.get(i);
-                if (t != null) {
-                    userInfo = userInfoUtils.getUserInfo(t.getUserId());
-                    if (userInfo != null) {
-                        t.setName(userInfo.getName());
-                        t.setHead(userInfo.getHead());
-                        t.setProTypeId(userInfo.getProType());
-                        t.setHouseNumber(userInfo.getHouseNumber());
-                    }
+        for (int i = 0; i < list.size(); i++) {
+            UserInfo userInfo = null;
+            UsedDeal t = list.get(i);
+            if (t != null) {
+                userInfo = userInfoUtils.getUserInfo(t.getUserId());
+                if (userInfo != null) {
+                    t.setName(userInfo.getName());
+                    t.setHead(userInfo.getHead());
+                    t.setProTypeId(userInfo.getProType());
+                    t.setHouseNumber(userInfo.getHouseNumber());
                 }
             }
         }

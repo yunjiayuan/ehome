@@ -270,10 +270,58 @@ public class KitchenBookedService {
      * @return
      */
     public List<KitchenReserveDishes> findDishesList2(long kitchenId) {
-
         List<KitchenReserveDishes> list;
         list = kitchenBookedDao.findDishesList(kitchenId);
-
         return list;
+    }
+
+    /***
+     * 新增上菜时间
+     * @param kitchenDishes
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addUpperTime(KitchenServingTime kitchenDishes) {
+        return kitchenBookedDao.addUpperTime(kitchenDishes);
+    }
+
+    /***
+     * 更新上菜时间
+     * @param kitchenDishes
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateUpperTime(KitchenServingTime kitchenDishes) {
+        return kitchenBookedDao.updateUpperTime(kitchenDishes);
+    }
+
+    /***
+     * 查询上菜时间列表
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    public List<KitchenServingTime> findUpperTimeList(long kitchenId) {
+        List<KitchenServingTime> list;
+        list = kitchenBookedDao.findUpperTimeList(kitchenId);
+        return list;
+    }
+
+    /***
+     * 查询上菜时间
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    public KitchenServingTime findUpperTime(long kitchenId) {
+        return kitchenBookedDao.findUpperTime(kitchenId);
+    }
+
+    /***
+     * 统计该用户上菜时间数量
+     * @param kitchenId
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int findNum(long kitchenId) {
+        return kitchenBookedDao.findNum(kitchenId);
     }
 }

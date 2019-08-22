@@ -600,7 +600,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                     kh.setTotalScore(ev.getScore() + kh.getTotalScore());
                     kitchenBookedService.updateScore(kh);//更新厨房总评分
 
-                    io.setOrdersType(8);//更新订单状态为已评价
+                    io.setOrdersType(10);//更新订单状态为已评价
                     io.setUpdateCategory(6);
                     kitchenBookedOrdersService.updateOrders(io);
                     //清除缓存中的厨房订单信息

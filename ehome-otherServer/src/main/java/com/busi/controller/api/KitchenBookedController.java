@@ -647,6 +647,55 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", collectionMap);
     }
 
+    /***
+     * 新增上菜时间
+     * @param kitchenServingTime
+     * @return
+     */
+    @Override
+    public ReturnData addUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        String[] num = kitchenServingTime.getUpperTime().split(",");
+        if (num.length > 15) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "最多只能添加15个预约时间", new JSONObject());
+        }
+        kitchenBookedService.addUpperTime(kitchenServingTime);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新上菜时间
+     * @param kitchenServingTime
+     * @return
+     */
+    @Override
+    public ReturnData updateUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        kitchenBookedService.updateUpperTime(kitchenServingTime);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询上菜时间
+     * @param kitchenId   厨房ID
+     * @return
+     */
+    @Override
+    public ReturnData findUpperTime(@PathVariable long kitchenId) {
+        //开始查询
+        KitchenServingTime servingTime = kitchenBookedService.findUpperTime(kitchenId);
+        if (servingTime == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", servingTime);
+    }
+
     //根据生日计算年龄
     public int getAge(Date dateOfBirth) {
         int age = 0;

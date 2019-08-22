@@ -39,7 +39,7 @@ public interface LoveAndFriendsDao {
      * @return
      */
     @Update("<script>" +
-            "update loveAndFriends set" +
+            "update LoveAndFriends set" +
             "<if test=\"title != null and title != ''\">" +
             " title=#{title}," +
             "</if>" +

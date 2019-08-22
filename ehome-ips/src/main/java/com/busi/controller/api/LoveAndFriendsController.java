@@ -68,7 +68,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         //查询缓存 缓存中不存在 查询数据库（是否已发布过）
         Map<String, Object> loveAndFriendsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + loveAndFriends.getId());
         if (loveAndFriendsMap == null || loveAndFriendsMap.size() <= 0) {
-            LoveAndFriends andFriends;
+            LoveAndFriends andFriends = null;
             andFriends = loveAndFriendsService.findByIdUser(loveAndFriends.getUserId());
             if (andFriends == null) {
                 //符合推荐规则 添加到缓存home列表中
@@ -328,9 +328,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
-    /**
+    /***
      * 查询
-     *
      * @param id
      * @return
      */
@@ -509,9 +508,8 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 
-    /**
+    /***
      * 查询是否已发布过
-     *
      * @param userId
      * @return
      */

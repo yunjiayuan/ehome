@@ -180,4 +180,28 @@ public interface KitchenBookedApiController {
     @GetMapping("findReserveDishesList/{kitchenId}/{page}/{count}")
     ReturnData findReserveDishesList(@PathVariable long kitchenId, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 新增上菜时间
+     * @param kitchenServingTime
+     * @return
+     */
+    @PostMapping("addUpperTime")
+    ReturnData addUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult bindingResult);
+
+    /***
+     * 更新上菜时间
+     * @param kitchenServingTime
+     * @return
+     */
+    @PutMapping("updateUpperTime")
+    ReturnData updateUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult bindingResult);
+
+    /***
+     * 查询上菜时间列表
+     * @param kitchenId   厨房ID
+     * @return
+     */
+    @GetMapping("findUpperTime/{kitchenId}")
+    ReturnData findUpperTime(@PathVariable long kitchenId);
+
 }

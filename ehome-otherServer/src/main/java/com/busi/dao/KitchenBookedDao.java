@@ -1,9 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.KitchenBooked;
-import com.busi.entity.KitchenPrivateRoom;
-import com.busi.entity.KitchenReserve;
-import com.busi.entity.KitchenReserveDishes;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -366,5 +363,62 @@ public interface KitchenBookedDao {
             " order by addTime desc" +
             "</script>")
     List<KitchenReserveDishes> findDishesList(@Param("kitchenId") long kitchenId);
+
+    /***
+     * 统计该用户上菜时间数量
+     * @param kitchenId
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from KitchenServingTime" +
+            " where 1=1 " +
+            " and kitchenId = #{kitchenId}" +
+            "</script>")
+    int findNum(@Param("kitchenId") long kitchenId);
+
+    /***
+     * 新增上菜时间
+     * @param dishes
+     * @return
+     */
+    @Insert("insert into KitchenServingTime(userId,kitchenId,upperTime) " +
+            "values (#{userId},#{kitchenId},#{upperTime})")
+    @Options(useGeneratedKeys = true)
+    int addUpperTime(KitchenServingTime dishes);
+
+    /***
+     * 更新上菜时间
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenServingTime set" +
+            " upperTime=#{upperTime}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateUpperTime(KitchenServingTime kitchenDishes);
+
+
+    /***
+     * 查询上菜时间列表
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenServingTime" +
+            " where kitchenId=#{kitchenId}" +
+            "</script>")
+    List<KitchenServingTime> findUpperTimeList(@Param("kitchenId") long kitchenId);
+
+    /***
+     * 查询上菜时间
+     * @param kitchenId  厨房ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenServingTime" +
+            " where kitchenId=#{kitchenId}" +
+            "</script>")
+    KitchenServingTime findUpperTime(@Param("kitchenId") long kitchenId);
 
 }

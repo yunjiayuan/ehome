@@ -168,10 +168,10 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
             }
         }
         if (io.getPaymentTime() != null) {//已支付
-            io.setMoney(money);//加菜价格
+            io.setAddToFoodMoney(money);//加菜价格
             io.setDishameCost(dishes);//菜名,数量,价格
         } else {//未支付
-            io.setMoney(money + io.getMoney());//总价格
+            io.setAddToFoodMoney(money + io.getMoney());//总价格
             io.setDishameCost(io.getDishameCost() + ";" + dishes);//菜名,数量,价格
         }
         kitchenBookedOrdersService.upOrders(io);
@@ -312,32 +312,6 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         io.setCompleteTime(new Date());
         io.setUpdateCategory(5);
         kitchenBookedOrdersService.updateOrders(io);
-
-        //清除缓存中的厨房订单信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + CommonUtils.getMyId() + "_" + io.getNo(), 0);
-        //厨房订单放入缓存
-        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-        redisUtils.hmset(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + CommonUtils.getMyId() + "_" + io.getNo(), ordersMap, 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-    }
-
-    /***
-     * 更改单子状态
-     * 由完成改为已清桌
-     * @param id  订单Id
-     * @return
-     */
-    @Override
-    public ReturnData clearTable(@PathVariable long id) {
-        KitchenBookedOrders io = kitchenBookedOrdersService.findById(id, CommonUtils.getMyId(), 7);
-        if (io == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
-        }
-        //由已接单改为已完成
-        io.setOrdersType(6);
-        io.setUpdateCategory(6);
-        kitchenBookedOrdersService.updateOrders(io);
-
         //更新厨房订座剩余数量（+1）
         KitchenBooked booked = kitchenBookedService.findByUserId(io.getUserId());
         if (booked != null) {
@@ -363,6 +337,47 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
     }
 
     /***
+     * 更改单子状态
+     * 由完成改为已清桌
+     * @param id  订单Id
+     * @return
+     */
+    @Override
+    public ReturnData clearTable(@PathVariable long id) {
+//        KitchenBookedOrders io = kitchenBookedOrdersService.findById(id, CommonUtils.getMyId(), 7);
+//        if (io == null) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
+//        }
+//        //由已接单改为已完成
+//        io.setOrdersType(6);
+//        io.setUpdateCategory(6);
+//        kitchenBookedOrdersService.updateOrders(io);
+//
+//        //更新厨房订座剩余数量（+1）
+//        KitchenBooked booked = kitchenBookedService.findByUserId(io.getUserId());
+//        if (booked != null) {
+//            if (io.getPosition() == 0) {//就餐位置  0大厅  1包间
+//                booked.setLooseTableTotal(booked.getLooseTableTotal() + 1);
+//            } else {
+//                booked.setRoomsTotal(booked.getRoomsTotal() + 1);
+//            }
+//            kitchenBookedService.updatePosition(booked);
+//        }
+//        //更新厨房总销量
+//        KitchenReserve kh = kitchenBookedService.findById(io.getKitchenId());
+//        kh.setTotalSales(kh.getTotalSales() + 1);
+//        kitchenBookedService.updateNumber(kh);
+//        //清除缓存中厨房的信息
+//        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kh.getUserId() + "_" + 1, 0);
+//        //清除缓存中的厨房订单信息
+//        redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + CommonUtils.getMyId() + "_" + io.getNo(), 0);
+//        //厨房订单放入缓存
+//        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+//        redisUtils.hmset(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + CommonUtils.getMyId() + "_" + io.getNo(), ordersMap, 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 查看订单详情
      * @param no  订单编号
      * @return
@@ -376,6 +391,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
             io = kitchenBookedOrdersService.findNo(no);
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
+            }
+            if (io.getPaymentTime() != null) {
+                io.setPaymentStatus(1);
             }
             UserInfo userInfo = null;
             userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
@@ -447,6 +465,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         int orderCont6 = 0;
         int orderCont7 = 0;
         int orderCont8 = 0;
+        int orderCont9 = 0;
+        int orderCont10 = 0;
+        int orderCont11 = 0;
 
         KitchenBookedOrders kh = null;
         List list = null;
@@ -466,24 +487,36 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
                     orderCont3++;
                     orderCont0++;
                     break;
-                case 3://已完成
+                case 3://菜已上桌
                     orderCont4++;
                     orderCont0++;
                     break;
-                case 4://接单超时订单
+                case 4://进餐中
                     orderCont5++;
                     orderCont0++;
                     break;
-                case 5://付款超时订单
+                case 5://进餐完成
                     orderCont6++;
                     orderCont0++;
                     break;
-                case 6://卖家取消订单
+                case 6://已清桌
                     orderCont7++;
                     orderCont0++;
                     break;
-                case 7://用户取消订单
+                case 7://接单超时
                     orderCont8++;
+                    orderCont0++;
+                    break;
+                case 8://卖家取消订单
+                    orderCont9++;
+                    orderCont0++;
+                    break;
+                case 9://用户取消订单
+                    orderCont10++;
+                    orderCont0++;
+                    break;
+                case 10://已评价
+                    orderCont11++;
                     orderCont0++;
                     break;
                 default:
@@ -500,6 +533,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         map.put("orderCont6", orderCont6);
         map.put("orderCont7", orderCont7);
         map.put("orderCont8", orderCont8);
+        map.put("orderCont9", orderCont9);
+        map.put("orderCont10", orderCont10);
+        map.put("orderCont11", orderCont11);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -535,6 +571,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
                         userCache = userInfoUtils.getUserInfo(t.getUserId());
                     } else {
                         userCache = userInfoUtils.getUserInfo(t.getMyId());
+                    }
+                    if (t.getPaymentTime() != null) {
+                        t.setPaymentStatus(1);
                     }
                     if (userCache != null) {
                         t.setName(userCache.getName());

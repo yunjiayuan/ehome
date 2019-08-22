@@ -123,8 +123,7 @@ public interface KitchenBookedOrdersDao {
     @Update("<script>" +
             "update KitchenBookedOrders set" +
             " dishameCost =#{dishameCost}," +
-            " money =#{money}," +
-            " eatNumber =#{eatNumber}" +
+            " addToFoodMoney =#{addToFoodMoney}" +
             " where id=#{id} and ordersState=0" +
             "</script>")
     int upOrders(KitchenBookedOrders orders);
@@ -147,10 +146,10 @@ public interface KitchenBookedOrdersDao {
             "<if test=\"ordersType > 0 and ordersType &lt; 3\">" +
             " and ordersType = #{ordersType}" +
             "</if>" +
-            "<if test=\"ordersType = 3\">" +
+            "<if test=\"ordersType == 3\">" +
             " and ordersType = 4" +
             "</if>" +
-            "<if test=\"ordersType = 4\">" +
+            "<if test=\"ordersType == 4\">" +
             " and ordersType = 5" +
             "</if>" +
             " order by addTime desc" +

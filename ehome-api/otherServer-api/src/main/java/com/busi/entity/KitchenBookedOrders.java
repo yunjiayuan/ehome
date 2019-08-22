@@ -54,13 +54,13 @@ public class KitchenBookedOrders {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date completeTime;            // 完成时间
 
-    private double money;            // 商品金额
+    private double money;            // 菜品金额
+
+    private double addToFoodMoney;            // 加菜金额
 
     private String smallMap;            //厨房头像【厨房封面】
 
     private int eatNumber;        //就餐人数
-
-//    private String eatDate;        //就餐日期
 
     @Max(value = 1, message = "position参数有误，超出指定范围")
     @Min(value = 0, message = "position参数有误，超出指定范围")
@@ -83,6 +83,8 @@ public class KitchenBookedOrders {
     private int sex;        //性别 0男 1女
 
     //与数据库无关字段
+    private int paymentStatus;             //支付状态  0未付款 1已付款
+
     private String goodsIds;             //菜品ID
 
     private String foodNumber;           //菜品数量
