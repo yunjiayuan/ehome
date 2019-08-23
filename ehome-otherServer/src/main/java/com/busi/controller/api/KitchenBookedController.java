@@ -403,6 +403,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (list == null && list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
+        if (CommonUtils.checkFull(eatTime)) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
         try {
@@ -654,6 +657,11 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      */
     @Override
     public ReturnData addUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult bindingResult) {
+        //开始查询
+        KitchenServingTime servingTime = kitchenBookedService.findUpperTime(kitchenServingTime.getKitchenId());
+        if (servingTime != null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您已新增过", new JSONArray());
+        }
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -676,6 +684,10 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        String[] num = kitchenServingTime.getUpperTime().split(",");
+        if (num.length > 15) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "最多只能添加15个预约时间", new JSONObject());
         }
         kitchenBookedService.updateUpperTime(kitchenServingTime);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

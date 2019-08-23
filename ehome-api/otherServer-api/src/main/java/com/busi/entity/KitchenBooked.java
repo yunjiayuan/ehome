@@ -29,6 +29,8 @@ public class KitchenBooked {
 
     private int looseTableTotal;        // 散桌总数
 
+    private int servingTimeType;        // 上菜时间类别  0默认  1自定义
+
 //    private int leastNumber;             // 包间最少人数
 //
 //    private int mostNumber;             // 包间最多人数

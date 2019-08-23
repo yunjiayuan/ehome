@@ -21,8 +21,8 @@ public interface KitchenBookedDao {
      * @param kitchenBooked
      * @return
      */
-    @Insert("insert into KitchenBooked(userId,kitchenId,earliestTime,reserveDays,latestTime)" +
-            "values (#{userId},#{kitchenId},#{earliestTime},#{reserveDays},#{latestTime})")
+    @Insert("insert into KitchenBooked(userId,kitchenId,earliestTime,reserveDays,latestTime,servingTimeType)" +
+            "values (#{userId},#{kitchenId},#{earliestTime},#{reserveDays},#{latestTime},#{servingTimeType})")
     @Options(useGeneratedKeys = true)
     int add(KitchenBooked kitchenBooked);
 
@@ -33,6 +33,9 @@ public interface KitchenBookedDao {
      */
     @Update("<script>" +
             "update KitchenBooked set" +
+            "<if test=\"servingTimeType > 0\">" +
+            " servingTimeType = 1," +
+            "</if>" +
             " earliestTime=#{earliestTime}," +
             " latestTime=#{latestTime}," +
             " reserveDays=#{reserveDays}" +
