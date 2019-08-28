@@ -31,7 +31,7 @@ public class KitchenBookedOrdersService {
     public List<KitchenBookedOrders> findOrderList() {
 
         List<KitchenBookedOrders> list;
-        String ids = "0,1,2";
+        String ids = "3,1";
         list = kitchenBookedOrdersDao.findOrderList(ids.split(","));
 
         return list;
@@ -39,12 +39,11 @@ public class KitchenBookedOrdersService {
 
     /***
      * 更新厨房订单类型
-     * @param kitchenOrders
+     * @param kitchenBookedOrders
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int updateOrders(KitchenBookedOrders kitchenOrders) {
-        return kitchenBookedOrdersDao.updateOrders(kitchenOrders);
+    public int upOrders(KitchenBookedOrders kitchenBookedOrders) {
+        return kitchenBookedOrdersDao.upOrders(kitchenBookedOrders);
     }
-
 }

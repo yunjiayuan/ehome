@@ -542,8 +542,8 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                 }
             }
         } else {
-            KitchenBookedOrders io = kitchenBookedOrdersService.findById(ev.getOrderId(), CommonUtils.getMyId(), 4);
-            if (io != null && io.getOrdersType() == 3) {
+            KitchenBookedOrders io = kitchenBookedOrdersService.findById(ev.getOrderId(), CommonUtils.getMyId(), 7);
+            if (io != null && io.getOrdersType() == 5) {
                 //查询缓存 缓存中不存在 查询数据库
                 Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + io.getUserId() + "_" + 1);
                 if (kitchenMap == null || kitchenMap.size() <= 0) {

@@ -24,13 +24,13 @@ public interface KitchenBookedOrdersDao {
      */
     @Update("<script>" +
             "update KitchenBookedOrders set" +
-            "<if test=\"upperTableTime != null and upperTableTime != ''\">" +
-            " upperTableTime=#{upperTableTime}," +
+            "<if test=\"completeTime != null\">" +
+            " completeTime=#{completeTime}," +
             "</if>" +
             " ordersType=#{ordersType}" +
-            " where id=#{id}" +
+            " where id=#{id} and ordersState=0" +
             "</script>")
-    int updateOrders(KitchenBookedOrders orders);
+    int upOrders(KitchenBookedOrders orders);
 
     /***
      * 订单条件查询

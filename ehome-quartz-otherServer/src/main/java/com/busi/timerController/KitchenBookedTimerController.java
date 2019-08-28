@@ -32,8 +32,8 @@ public class KitchenBookedTimerController {
     @Autowired
     KitchenBookedOrdersService kitchenBookedOrdersService;
 
-    @Scheduled(cron = "0 20 16 * * ?") //十五点五十五分
-    public void kitchenTimer() throws Exception {
+    @Scheduled(cron = "0 26 15 * * ?") //十五点五十五分
+    public void kitchenBookedTimer() throws Exception {
         log.info("开始查询数据库中待处理的厨房订座超时订单...");
         while (true) {
             List arrList = null;
@@ -47,12 +47,10 @@ public class KitchenBookedTimerController {
                     r = (KitchenBookedOrders) arrList.get(i);
                     if (r != null) {
                         if (r.getOrdersType() == 1) {
-                            long paymentTime = r.getPaymentTime().getTime();// 付款时间
-                            if (paymentTime <= nowTime - (countTime15 * 2)) {//30分钟时间差
+                            long addTime = r.getAddTime().getTime();// 下單时间
+                            if (addTime <= nowTime - (countTime15 * 2)) {//30分钟时间差
                                 r.setOrdersType(7);// 接单超时【未接单】
-                                kitchenBookedOrdersService.updateOrders(r);
-                                //更新买家缓存、钱包、账单
-                                mqUtils.sendPurseMQ(r.getMyId(), 26, 0, r.getMoney());
+                                kitchenBookedOrdersService.upOrders(r);
                                 //清除缓存中的厨房订单信息
                                 redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + r.getMyId() + "_" + r.getNo(), 0);
                                 log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：接单超时！");
@@ -60,14 +58,14 @@ public class KitchenBookedTimerController {
                             } else {
                                 continue;
                             }
-                        } else if (r.getOrdersType() == 3) {
+                        } else if (r.getOrdersType() == 3 && r.getPaymentTime() != null) {
                             long deliverTime = r.getUpperTableTime().getTime();// 接单时间
                             if (deliverTime <= nowTime - countTime3) {
                                 r.setOrdersType(5);// 确认完成超时 更新为已完成
                                 r.setCompleteTime(new Date());//完成时间
-                                kitchenBookedOrdersService.updateOrders(r);
-                                //更新买家缓存、钱包、账单
-                                mqUtils.sendPurseMQ(r.getMyId(), 26, 0, r.getMoney());
+                                kitchenBookedOrdersService.upOrders(r);
+                                //更新卖家缓存、钱包、账单
+                                mqUtils.sendPurseMQ(r.getUserId(), 26, 0, r.getMoney());
                                 //清除缓存中的厨房订单信息
                                 redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + r.getMyId() + "_" + r.getNo(), 0);
                                 log.info("更新了厨房订座订单[" + r.getId() + "]操作成功,状态为：确认完成超时！");

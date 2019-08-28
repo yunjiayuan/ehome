@@ -331,9 +331,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData findKitchenBooked(@PathVariable long userId) {
         KitchenBooked kitchen = kitchenBookedService.findByUserId(userId);
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-        }
+//        if (kitchen == null) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchen);
     }
 
@@ -702,9 +702,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     public ReturnData findUpperTime(@PathVariable long kitchenId) {
         //开始查询
         KitchenServingTime servingTime = kitchenBookedService.findUpperTime(kitchenId);
-        if (servingTime == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-        }
+//        if (servingTime == null) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", servingTime);
     }
 

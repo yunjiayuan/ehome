@@ -53,7 +53,7 @@ public interface KitchenOrdersDao {
      */
     @Update("<script>" +
             "update KitchenOrders set" +
-            "<if test=\"receivingTime != null and receivingTime != ''\">" +
+            "<if test=\"receivingTime != null\">" +
             " receivingTime=#{receivingTime}," +
             "</if>" +
             " ordersType=#{ordersType}" +

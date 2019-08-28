@@ -33,7 +33,7 @@ public interface KitchenBookedOrdersDao {
     /***
      * 根据用户ID查询订单
      * @param userId
-     * @param type  查询场景 0删除 1由未接单改为已接单 2由已接单改为已上桌 3由菜已上桌改为进餐中 4由进餐中改为完成 5加菜 6取消订单 7清桌
+     * @param type  查询场景 0删除 1由未接单改为已接单 2由已接单改为已上桌 3由进餐中改为完成 5加菜 6取消订单 7清桌
      * @return
      */
     @Select("<script>" +
@@ -43,19 +43,16 @@ public interface KitchenBookedOrdersDao {
             " and ordersType >4 and ordersState!=3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0  and ordersType>=0 and userId=#{userId} and addTime > date_sub(now(), interval 30 minute)" +//接单时间在30分钟内
+            " and ordersState=0  and ordersType=1 and userId=#{userId} and addTime > date_sub(now(), interval 30 minute)" +//接单时间在30分钟内
             "</if>" +
             "<if test=\"type == 2\">" +
             " and ordersState=0 and ordersType=2 and userId=#{userId}" +
             "</if>" +
             "<if test=\"type == 3\">" +
-            " and ordersState = 0 and ordersType=3 and userId=#{userId}" +
-            "</if>" +
-            "<if test=\"type == 4\">" +
-            " and ordersState = 0 and ordersType =4 and myId=#{userId}" +
+            " and ordersState = 0 and ordersType=3 and myId=#{userId} and paymentTime is not null" +
             "</if>" +
             "<if test=\"type == 5\">" +
-            " and ordersState = 0 and ordersType =3 or ordersType =4" +
+            " and ordersState = 0 and ordersType =3" +
             "</if>" +
             "<if test=\"type == 6\">" +
             " and ordersState = 0" +
@@ -147,7 +144,7 @@ public interface KitchenBookedOrdersDao {
             " and ordersType = #{ordersType}" +
             "</if>" +
             "<if test=\"ordersType == 3\">" +
-            " and ordersType = 4" +
+            " and ordersType = 3" +
             "</if>" +
             "<if test=\"ordersType == 4\">" +
             " and ordersType = 5" +

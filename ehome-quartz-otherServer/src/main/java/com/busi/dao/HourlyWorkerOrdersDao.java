@@ -49,7 +49,7 @@ public interface HourlyWorkerOrdersDao {
      */
     @Update("<script>" +
             "update HourlyWorkerOrders set" +
-            "<if test=\"receivingTime != null and receivingTime != ''\">" +
+            "<if test=\"receivingTime != null\">" +
             " receivingTime=#{receivingTime}," +
             "</if>" +
             " ordersType=#{ordersType}" +

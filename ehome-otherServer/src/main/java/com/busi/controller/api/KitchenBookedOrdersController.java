@@ -114,6 +114,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
             kitchenBookedOrders.setSmallMap(kh.getKitchenCover());
             kitchenBookedOrders.setDishameCost(dishes);//菜名,数量,价格
             kitchenBookedOrders.setMoney(money);//总价
+            kitchenBookedOrders.setOrdersType(1);
 
             kitchenBookedOrdersService.addOrders(kitchenBookedOrders);
             map.put("infoId", kitchenBookedOrders.getNo());
@@ -246,7 +247,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
 
     /***
      * 更改单子状态
-     * 由已接单改为菜已上桌
+     * 由已接单改为菜已上桌（同进餐中）
      * @param id  订单Id
      * @return
      */
@@ -257,7 +258,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         //由已接单改为菜已上桌
-        io.setOrdersType(3); //菜已上桌
+        io.setOrdersType(3); //菜已上桌（同进餐中）
         io.setUpperTableTime(new Date());
         io.setUpdateCategory(2);
         kitchenBookedOrdersService.updateOrders(io);
@@ -270,9 +271,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /***
+    /***（暂不用）
      * 更改单子状态
-     * 由菜已上桌改为进餐中
+     * 由菜已上桌改为进餐中（暂不用）
      * @param id  订单Id
      * @return
      */
@@ -303,7 +304,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
      */
     @Override
     public ReturnData completeBooked(@PathVariable long id) {
-        KitchenBookedOrders io = kitchenBookedOrdersService.findById(id, CommonUtils.getMyId(), 4);
+        KitchenBookedOrders io = kitchenBookedOrdersService.findById(id, CommonUtils.getMyId(), 3);
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
@@ -424,7 +425,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         }
         //商家取消订单
         if (ko.getUserId() == CommonUtils.getMyId()) {
-            if (ko.getOrdersType() < 3 && ko.getOrdersType() > 0) {
+            if (ko.getOrdersType() < 3 && ko.getOrdersType() > 1) {
                 ko.setOrdersType(8);
             }
         }
@@ -460,14 +461,12 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         int orderCont1 = 0;
         int orderCont2 = 0;
         int orderCont3 = 0;
-        int orderCont4 = 0;
         int orderCont5 = 0;
         int orderCont6 = 0;
         int orderCont7 = 0;
         int orderCont8 = 0;
         int orderCont9 = 0;
         int orderCont10 = 0;
-        int orderCont11 = 0;
 
         KitchenBookedOrders kh = null;
         List list = null;
@@ -475,48 +474,40 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         for (int i = 0; i < list.size(); i++) {
             kh = (KitchenBookedOrders) list.get(i);
             switch (kh.getOrdersType()) {
-                case 0://未付款
-                    orderCont1++;
-                    orderCont0++;//全部
-                    break;
                 case 1://未接单
-                    orderCont2++;
+                    orderCont1++;
                     orderCont0++;
                     break;
                 case 2://已接单
-                    orderCont3++;
+                    orderCont2++;
                     orderCont0++;
                     break;
                 case 3://菜已上桌
-                    orderCont4++;
-                    orderCont0++;
-                    break;
-                case 4://进餐中
-                    orderCont5++;
+                    orderCont3++;
                     orderCont0++;
                     break;
                 case 5://进餐完成
-                    orderCont6++;
+                    orderCont5++;
                     orderCont0++;
                     break;
                 case 6://已清桌
-                    orderCont7++;
+                    orderCont6++;
                     orderCont0++;
                     break;
                 case 7://接单超时
-                    orderCont8++;
+                    orderCont7++;
                     orderCont0++;
                     break;
                 case 8://卖家取消订单
-                    orderCont9++;
+                    orderCont8++;
                     orderCont0++;
                     break;
                 case 9://用户取消订单
-                    orderCont10++;
+                    orderCont9++;
                     orderCont0++;
                     break;
                 case 10://已评价
-                    orderCont11++;
+                    orderCont10++;
                     orderCont0++;
                     break;
                 default:
@@ -528,14 +519,12 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         map.put("orderCont1", orderCont1);
         map.put("orderCont2", orderCont2);
         map.put("orderCont3", orderCont3);
-        map.put("orderCont4", orderCont4);
         map.put("orderCont5", orderCont5);
         map.put("orderCont6", orderCont6);
         map.put("orderCont7", orderCont7);
         map.put("orderCont8", orderCont8);
         map.put("orderCont9", orderCont9);
         map.put("orderCont10", orderCont10);
-        map.put("orderCont11", orderCont11);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 

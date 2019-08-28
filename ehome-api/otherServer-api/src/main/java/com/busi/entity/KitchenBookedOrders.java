@@ -32,7 +32,7 @@ public class KitchenBookedOrders {
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
-    private int ordersType;            //订单类型: 0未付款（已下单未付款),1未接单(已付款未接单),2已接单,3菜已上桌，4进餐中，5进餐完成（客户、未评价）,6已清桌，7接单超时,8卖家取消订单,9用户取消订单 ,10已评价
+    private int ordersType;            //订单类型: 1未接单,2已接单,3进餐中，5进餐完成（客户、未评价）,6已清桌，7接单超时,8卖家取消订单,9用户取消订单 ,10已评价
 
     private String kitchenName;                //厨房名称
 

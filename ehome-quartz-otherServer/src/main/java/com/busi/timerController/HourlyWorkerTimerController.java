@@ -53,14 +53,14 @@ public class HourlyWorkerTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 50 16 * * ?") //十五点五十五分
+    @Scheduled(cron = "0 10 16 * * ?") //十五点五十五分
     public void hourlyWorkerTimer() throws Exception {
         log.info("开始查询数据库中待处理的小时工超时订单...");
         while (true) {
             List arrList = null;
             HourlyWorkerOrders r = null;
             int countTime15 = 15 * 60 * 1000;// 15分钟
-            int countTime40 = 30 * 60 * 1000;// 40分钟
+            int countTime40 = 40 * 60 * 1000;// 40分钟
             long nowTime = new Date().getTime();// 系统时间
             arrList = hourlyWorkerOrdersService.findOrderList();
             if (arrList != null && arrList.size() > 0) {
@@ -74,9 +74,8 @@ public class HourlyWorkerTimerController {
                                 r.setOrdersType(7);// 付款超时【未付款】
                                 hourlyWorkerOrdersService.updateOrders(r);
                                 //清除缓存中的小时工订单信息
-                                redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + r.getNo(), 0);
+                                redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + r.getMyId() + "_" + r.getNo(), 0);
                                 log.info("更新了小时工订单[" + r.getId() + "]操作成功,状态为：付款超时！");
-                                arrList.remove(i);
                             } else {
                                 continue;
                             }
@@ -87,16 +86,12 @@ public class HourlyWorkerTimerController {
                                 hourlyWorkerOrdersService.updateOrders(r);
                                 //更新买家缓存、钱包、账单
                                 mqUtils.sendPurseMQ(r.getMyId(), 24, 0, r.getMoney());
-                                //清除缓存中的厨房订单信息
-                                redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + r.getNo(), 0);
+                                //清除缓存中的小时工订单信息
+                                redisUtils.expire(Constants.REDIS_KEY_HOURLYORDERS + r.getMyId() + r.getNo(), 0);
                                 log.info("更新了小时工订单[" + r.getId() + "]操作成功,状态为：接单超时！");
-                                arrList.remove(i);
                             } else {
                                 continue;
                             }
-                        } else {
-                            arrList.remove(i);
-                            continue;
                         }
                     }
                 }
