@@ -52,7 +52,7 @@ public interface KitchenBookedOrdersDao {
             " and ordersState = 0 and ordersType=3 and myId=#{userId} and paymentStatus = 1" +
             "</if>" +
             "<if test=\"type == 5\">" +
-            " and ordersState = 0 and ordersType = 3" +
+            " and ordersState = 0 and(ordersType = 3 or ordersType = 2)" +
             "</if>" +
             "<if test=\"type == 6\">" +
             " and ordersState = 0" +

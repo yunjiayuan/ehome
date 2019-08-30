@@ -177,7 +177,11 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         }
         io.setPaymentStatus(0);//每次加菜后重置支付状态为未支付（支付时判断用）
         io.setMoney(money + io.getMoney());//总价格
-        io.setAddToFood(io.getAddToFood() + ";" + dishes);//菜名,数量,价格
+        if (CommonUtils.checkFull(io.getAddToFood())) {
+            io.setAddToFood(dishes);//菜名,数量,价格
+        } else {
+            io.setAddToFood(io.getAddToFood() + ";" + dishes);//菜名,数量,价格
+        }
         kitchenBookedOrdersService.upOrders(io);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", io.getNo());
