@@ -28,7 +28,9 @@ public class KitchenBookedOrders {
 
     private String no;                    //订单编号
 
-    private String dishameCost;        //菜品ID,菜名,数量,价格【格式：12,回锅肉,5,24;木须肉,4,32】
+    private String dishameCost;        //初始菜品  菜品ID,菜名,数量,价格【格式：12,回锅肉,5,24;木须肉,4,32】
+
+    private String addToFood;        //加菜菜品   菜品ID,菜名,数量,价格【格式：12,回锅肉,5,24;木须肉,4,32】
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
@@ -41,6 +43,8 @@ public class KitchenBookedOrders {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date paymentTime;            // 付款时间
+
+    private int paymentStatus;           //支付状态  0未付款 1已付款
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date orderTime;            // 接单时间
@@ -83,8 +87,6 @@ public class KitchenBookedOrders {
     private int sex;        //性别 0男 1女
 
     //与数据库无关字段
-    private int paymentStatus;             //支付状态  0未付款 1已付款
-
     private String goodsIds;             //菜品ID
 
     private String foodNumber;           //菜品数量

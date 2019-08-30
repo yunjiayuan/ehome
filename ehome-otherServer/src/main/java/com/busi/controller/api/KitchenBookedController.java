@@ -379,6 +379,18 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     }
 
     /***
+     * 查询包间or大厅信息
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findRoom(@PathVariable long id) {
+        KitchenPrivateRoom privateRoom = kitchenBookedService.findPrivateRoom(id);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", privateRoom);
+    }
+
+    /***
      * 查看包间or大厅列表
      * @param eatTime  就餐时间
      * @param userId  商家ID

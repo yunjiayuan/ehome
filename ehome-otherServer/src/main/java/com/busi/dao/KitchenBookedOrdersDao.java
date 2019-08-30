@@ -49,16 +49,16 @@ public interface KitchenBookedOrdersDao {
             " and ordersState=0 and ordersType=2 and userId=#{userId}" +
             "</if>" +
             "<if test=\"type == 3\">" +
-            " and ordersState = 0 and ordersType=3 and myId=#{userId} and paymentTime is not null" +
+            " and ordersState = 0 and ordersType=3 and myId=#{userId} and paymentStatus = 1" +
             "</if>" +
             "<if test=\"type == 5\">" +
-            " and ordersState = 0 and ordersType =3" +
+            " and ordersState = 0 and ordersType = 3" +
             "</if>" +
             "<if test=\"type == 6\">" +
             " and ordersState = 0" +
             "</if>" +
             "<if test=\"type == 7\">" +
-            " and ordersState = 0 and ordersType =5 and userId=#{userId}" +
+            " and ordersState = 0 and ordersType = 5 and userId=#{userId}" +
             "</if>" +
             "</script>")
     KitchenBookedOrders findById(@Param("id") long id, @Param("userId") long userId, @Param("type") int type);
@@ -98,7 +98,8 @@ public interface KitchenBookedOrdersDao {
             " ordersType =#{ordersType}" +
             "</if>" +
             "<if test=\"updateCategory == 4\">" +
-            " ordersType =#{ordersType}," +
+            " paymentStatus =#{paymentStatus}," +
+            " addToFoodMoney =#{addToFoodMoney}," +
             " paymentTime=#{paymentTime}" +
             "</if>" +
             "<if test=\"updateCategory == 5\">" +
@@ -119,7 +120,9 @@ public interface KitchenBookedOrdersDao {
      */
     @Update("<script>" +
             "update KitchenBookedOrders set" +
-            " dishameCost =#{dishameCost}," +
+            " money =#{money}," +
+            " addToFood =#{addToFood}," +
+            " paymentStatus =#{paymentStatus}," +
             " addToFoodMoney =#{addToFoodMoney}" +
             " where id=#{id} and ordersState=0" +
             "</script>")

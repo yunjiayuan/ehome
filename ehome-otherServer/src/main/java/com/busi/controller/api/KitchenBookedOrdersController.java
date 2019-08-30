@@ -168,16 +168,21 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
                 }
             }
         }
-        if (io.getPaymentTime() != null) {//已支付
+        if (io.getPaymentStatus() == 1) {//已支付
             io.setAddToFoodMoney(money);//加菜价格
-            io.setDishameCost(dishes);//菜名,数量,价格
-        } else {//未支付
-            io.setAddToFoodMoney(money + io.getMoney());//总价格
-            io.setDishameCost(io.getDishameCost() + ";" + dishes);//菜名,数量,价格
+        } else {
+            if (io.getAddToFoodMoney() > 0) {//支付时判断是否为加菜支付
+                io.setAddToFoodMoney(money + io.getAddToFoodMoney());//多次加菜价格
+            }
         }
+        io.setPaymentStatus(0);//每次加菜后重置支付状态为未支付（支付时判断用）
+        io.setMoney(money + io.getMoney());//总价格
+        io.setAddToFood(io.getAddToFood() + ";" + dishes);//菜名,数量,价格
         kitchenBookedOrdersService.upOrders(io);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", io.getNo());
+        //清除缓存中的厨房订座订单信息
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + io.getMyId() + "_" + io.getNo(), 0);
         //放入缓存
         Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
         redisUtils.hmset(Constants.REDIS_KEY_KITCHENBOOKEDORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
@@ -393,9 +398,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
             }
-            if (io.getPaymentTime() != null) {
-                io.setPaymentStatus(1);
-            }
+//            if (io.getPaymentTime() != null) {
+//                io.setPaymentStatus(1);
+//            }
             UserInfo userInfo = null;
             userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
             if (userInfo != null) {
@@ -561,9 +566,9 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
                     } else {
                         userCache = userInfoUtils.getUserInfo(t.getMyId());
                     }
-                    if (t.getPaymentTime() != null) {
-                        t.setPaymentStatus(1);
-                    }
+//                    if (t.getPaymentTime() != null) {
+//                        t.setPaymentStatus(1);
+//                    }
                     if (userCache != null) {
                         t.setName(userCache.getName());
                         t.setHead(userCache.getHead());

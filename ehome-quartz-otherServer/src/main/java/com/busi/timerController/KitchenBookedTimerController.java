@@ -58,8 +58,8 @@ public class KitchenBookedTimerController {
                             } else {
                                 continue;
                             }
-                        } else if (r.getOrdersType() == 3 && r.getPaymentTime() != null) {
-                            long deliverTime = r.getUpperTableTime().getTime();// 接单时间
+                        } else if (r.getOrdersType() == 3 && r.getPaymentStatus() == 1) {
+                            long deliverTime = r.getUpperTableTime().getTime();// 上菜时间
                             if (deliverTime <= nowTime - countTime3) {
                                 r.setOrdersType(5);// 确认完成超时 更新为已完成
                                 r.setCompleteTime(new Date());//完成时间

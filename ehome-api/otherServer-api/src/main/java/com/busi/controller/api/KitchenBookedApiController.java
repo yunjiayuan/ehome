@@ -103,6 +103,14 @@ public interface KitchenBookedApiController {
     ReturnData addPrivateRoom(@Valid @RequestBody KitchenPrivateRoom kitchenPrivateRoom, BindingResult bindingResult);
 
     /***
+     * 查询包间or大厅信息
+     * @param id
+     * @return
+     */
+    @GetMapping("findRoom/{id}")
+    ReturnData findRoom(@PathVariable long id);
+
+    /***
      * 查看包间or大厅列表
      * @param eatTime  就餐时间
      * @param userId  商家ID
