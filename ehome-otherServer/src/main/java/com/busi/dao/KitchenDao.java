@@ -1,9 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.Kitchen;
-import com.busi.entity.KitchenCollection;
-import com.busi.entity.KitchenDishes;
-import com.busi.entity.KitchenDishesSort;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -276,6 +273,20 @@ public interface KitchenDao {
             "</foreach>" +
             "</script>")
     List<Kitchen> findKitchenList4(@Param("ids") String[] ids);
+
+    /***
+     * 批量查询指定的厨房
+     * @param ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenReserve" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<KitchenReserve> findKitchenList5(@Param("ids") String[] ids);
 
     /***
      * 批量查询指定的厨房菜品

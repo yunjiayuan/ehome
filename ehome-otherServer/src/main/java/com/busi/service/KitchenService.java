@@ -187,8 +187,9 @@ public class KitchenService {
         kitchen = kitchenDao.findWhether2(bookedState, userId, kitchenId);
         if (kitchen == null) {
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
     /***
@@ -225,6 +226,17 @@ public class KitchenService {
     public List<Kitchen> findKitchenList4(String[] ids) {
         List<Kitchen> list;
         list = kitchenDao.findKitchenList4(ids);
+        return list;
+    }
+
+    /***
+     * 批量查询指定的厨房
+     * @param ids
+     * @return
+     */
+    public List<KitchenReserve> findKitchenList5(String[] ids) {
+        List<KitchenReserve> list;
+        list = kitchenDao.findKitchenList5(ids);
         return list;
     }
 

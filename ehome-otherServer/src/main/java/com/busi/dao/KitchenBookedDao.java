@@ -69,8 +69,8 @@ public interface KitchenBookedDao {
      * @param kitchenPrivateRoom
      * @return
      */
-    @Insert("insert into KitchenPrivateRoom(userId,kitchenId,imgUrl,elegantName,leastNumber,mostNumber,bookedType)" +
-            "values (#{userId},#{kitchenId},#{imgUrl},#{elegantName},#{leastNumber},#{mostNumber},#{bookedType})")
+    @Insert("insert into KitchenPrivateRoom(userId,kitchenId,imgUrl,elegantName,leastNumber,mostNumber,bookedType,videoUrl,videoCoverUrl)" +
+            "values (#{userId},#{kitchenId},#{imgUrl},#{elegantName},#{leastNumber},#{mostNumber},#{bookedType},#{videoUrl},#{videoCoverUrl})")
     @Options(useGeneratedKeys = true)
     int addPrivateRoom(KitchenPrivateRoom kitchenPrivateRoom);
 
@@ -84,7 +84,9 @@ public interface KitchenBookedDao {
             " imgUrl=#{imgUrl}," +
             " elegantName=#{elegantName}," +
             " leastNumber=#{leastNumber}," +
-            " mostNumber=#{mostNumber}" +
+            " mostNumber=#{mostNumber}," +
+            " videoUrl=#{videoUrl}," +
+            " videoCoverUrl=#{videoCoverUrl}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int upPrivateRoom(KitchenPrivateRoom kitchenPrivateRoom);

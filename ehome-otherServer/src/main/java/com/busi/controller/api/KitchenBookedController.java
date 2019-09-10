@@ -363,6 +363,12 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        if (CommonUtils.checkFull(kitchenPrivateRoom.getImgUrl())) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        if (kitchenPrivateRoom.getImgUrl().split(",").length > 9) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
         //新增厨房包间or大厅信息
         kitchenBookedService.addPrivateRoom(kitchenPrivateRoom);
         //更新厨房包间or大厅数量（+1）
@@ -482,6 +488,10 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         kitchenBookedService.upPrivateRoom(kitchenPrivateRoom);
+        if (!CommonUtils.checkFull(kitchenPrivateRoom.getDelImgUrls())) {
+            //调用MQ同步 图片到图片删除记录表
+            mqUtils.sendDeleteImageMQ(kitchenPrivateRoom.getUserId(), kitchenPrivateRoom.getDelImgUrls());
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -678,9 +688,17 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        String[] num = kitchenServingTime.getUpperTime().split(",");
-        if (num.length > 15) {
+        String[] time = kitchenServingTime.getUpperTime().split(",");
+        if (time.length > 15) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "最多只能添加15个预约时间", new JSONObject());
+        }
+        KitchenBooked kitchen = kitchenBookedService.findByUserId(kitchenServingTime.getUserId());
+        if (kitchen != null) {
+            for (int i = 0; i < time.length; i++) {
+                if (time[i].compareTo(kitchen.getEarliestTime()) < 0 || kitchen.getLatestTime().compareTo(time[i]) < 0) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                }
+            }
         }
         kitchenBookedService.addUpperTime(kitchenServingTime);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -697,9 +715,17 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        String[] num = kitchenServingTime.getUpperTime().split(",");
-        if (num.length > 15) {
+        String[] time = kitchenServingTime.getUpperTime().split(",");
+        if (time.length > 15) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "最多只能添加15个预约时间", new JSONObject());
+        }
+        KitchenBooked kitchen = kitchenBookedService.findByUserId(kitchenServingTime.getUserId());
+        if (kitchen != null) {
+            for (int i = 0; i < time.length; i++) {//上菜时间要在营业时间范围内
+                if (time[i].compareTo(kitchen.getEarliestTime()) < 0 || kitchen.getLatestTime().compareTo(time[i]) < 0) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                }
+            }
         }
         kitchenBookedService.updateUpperTime(kitchenServingTime);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

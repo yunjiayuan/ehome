@@ -433,31 +433,56 @@ public class KitchenController extends BaseController implements KitchenApiContr
         List ktchenList = null;
         list = pageBean.getList();
         String kitchendIds = "";
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                KitchenCollection kc = (KitchenCollection) list.get(i);
-                if (i == 0) {
-                    kitchendIds = kc.getKitchend() + "";//厨房ID
-                } else {
-                    kitchendIds += "," + kc.getKitchend();
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            KitchenCollection kc = (KitchenCollection) list.get(i);
+            if (i == 0) {
+                kitchendIds = kc.getKitchend() + "";//厨房ID
+            } else {
+                kitchendIds += "," + kc.getKitchend();
+            }
+        }
+        //查詢厨房
+        if (bookedState == 0) {
+            ktchenList = kitchenService.findKitchenList4(kitchendIds.split(","));
+            if (ktchenList == null || ktchenList.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            for (int i = 0; i < ktchenList.size(); i++) {
+                Kitchen ik = (Kitchen) ktchenList.get(i);
+                for (int j = 0; j < list.size(); j++) {
+                    KitchenCollection kc = (KitchenCollection) list.get(j);
+                    if (ik != null && kc != null) {
+                        if (ik.getId() == kc.getKitchend()) {
+                            double userlon = Double.valueOf(ik.getLon() + "");
+                            double userlat = Double.valueOf(ik.getLat() + "");
+                            //计算距离
+                            int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
+                            kc.setDistance(distance);//距离/m
+                            kc.setAddress(ik.getAddress());//详细地址
+                        }
+                    }
                 }
             }
-            //查詢厨房
-            ktchenList = kitchenService.findKitchenList4(kitchendIds.split(","));
-            if (ktchenList != null) {
-                for (int i = 0; i < ktchenList.size(); i++) {
-                    Kitchen ik = (Kitchen) ktchenList.get(i);
-                    for (int j = 0; j < list.size(); j++) {
-                        KitchenCollection kc = (KitchenCollection) list.get(j);
-                        if (ik != null && kc != null) {
-                            if (ik.getId() == kc.getKitchend()) {
-                                double userlon = Double.valueOf(ik.getLon() + "");
-                                double userlat = Double.valueOf(ik.getLat() + "");
-                                //计算距离
-                                int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
-                                kc.setDistance(distance);//距离/m
-                                kc.setAddress(ik.getAddress());//详细地址
-                            }
+        } else {
+            ktchenList = kitchenService.findKitchenList5(kitchendIds.split(","));
+            if (ktchenList == null || ktchenList.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            for (int i = 0; i < ktchenList.size(); i++) {
+                KitchenReserve ik = (KitchenReserve) ktchenList.get(i);
+                for (int j = 0; j < list.size(); j++) {
+                    KitchenCollection kc = (KitchenCollection) list.get(j);
+                    if (ik != null && kc != null) {
+                        if (ik.getId() == kc.getKitchend()) {
+                            double userlon = Double.valueOf(ik.getLon() + "");
+                            double userlat = Double.valueOf(ik.getLat() + "");
+                            //计算距离
+                            int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
+                            kc.setDistance(distance);//距离/m
+                            kc.setAddress(ik.getAddress());//详细地址
                         }
                     }
                 }
