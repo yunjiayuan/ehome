@@ -261,7 +261,7 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
         entity.setContentEncoding("UTF-8");
         entity.setContentType("application/json");
         post.setEntity(entity);
-        String recoveryContent = "你好，我现在有事，稍后再联系你哈";//自动回复内容
+        String recoveryContent = "你好，我现在有点事，稍后再联系你哈";//自动回复内容
         try {
             HttpResponse result = httpClient.execute(post);
             statusCode = result.getStatusLine().getStatusCode();
@@ -270,7 +270,10 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
                 JSONObject jsonObject = JSONObject.parseObject(EntityUtils.toString(result.getEntity()));
                 JSONArray jsonArray = JSONArray.parseArray(jsonObject.getString("results"));
                 String values = jsonArray.getJSONObject(0).getString("values");
-                recoveryContent = JSONObject.parseObject(values).getString("text");
+                String recovery = JSONObject.parseObject(values).getString("text");
+                if(!"请求次数超限制!".equals(recovery)){
+                    recoveryContent = recovery;
+                }
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
