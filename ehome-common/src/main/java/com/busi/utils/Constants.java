@@ -97,6 +97,11 @@ public class Constants {
     public static final String BANKCARD_KEY="e56266e81c79dd76edb09e8c111d3ced";////银行卡四元素认证key
     /** 实名制认证配置 结束**/
 
+    /** 图灵机器人配置 开始**/
+    public static final String TULING_URL="http://openapi.tuling123.com/openapi/api/v2";//请求地址
+    public static final String TULING_KEY="0461974cb80b461699dd6ff57244011d";//机器人key  注意一个机器人对应一个key
+    /** 图灵机器人配置 结束**/
+
     /** 随便走走 各地串串配置 开始**/
     public static final int WALK_LIMIT_COUNT_USER = 30;//普通用户每天30次
     public static final int WALK_LIMIT_COUNT_MEMBER = 100;//普通会员用户每天30次

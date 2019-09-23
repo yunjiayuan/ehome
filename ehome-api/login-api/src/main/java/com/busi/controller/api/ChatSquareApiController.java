@@ -1,6 +1,8 @@
 package com.busi.controller.api;
 
+import com.busi.entity.ChatAutomaticRecovery;
 import com.busi.entity.ChatSquare;
+import com.busi.entity.Footprint;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -53,5 +55,14 @@ public interface ChatSquareApiController {
      */
     @GetMapping("initialChatroom/{proTypeId}")
     ReturnData initialChatroom(@PathVariable int proTypeId);
+
+    /***
+     * 获取聊天自动回复内容
+     * @param chatAutomaticRecovery
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("automaticRecoveryContent")
+    ReturnData automaticRecoveryContent (@Valid @RequestBody ChatAutomaticRecovery chatAutomaticRecovery, BindingResult bindingResult);
 
 }
