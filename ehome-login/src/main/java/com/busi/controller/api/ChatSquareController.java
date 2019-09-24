@@ -265,9 +265,7 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
         jo4.put("userId",chatAutomaticRecovery.getUserId());
         jo.put("userInfo", jo4);
 
-        String parms = jo.toString();
-
-        StringEntity entity = new StringEntity(parms,"utf-8");//解决中文乱码问题
+        StringEntity entity = new StringEntity(jo.toString(),"utf-8");//解决中文乱码问题
         entity.setContentEncoding("UTF-8");
         entity.setContentType("application/json");
         post.setEntity(entity);
