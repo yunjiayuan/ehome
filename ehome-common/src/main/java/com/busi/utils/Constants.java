@@ -99,7 +99,8 @@ public class Constants {
 
     /** 图灵机器人配置 开始**/
     public static final String TULING_URL="http://openapi.tuling123.com/openapi/api/v2";//请求地址
-    public static final String TULING_KEY="0461974cb80b461699dd6ff57244011d";//机器人key  注意一个机器人对应一个key
+    public static final String TULING_KEY_NV="0461974cb80b461699dd6ff57244011d";//女机器人key  注意一个机器人对应一个key
+    public static final String TULING_KEY_NAN="87f74b1c9b6e4542a480a1c7507fa080";//男机器人key  注意一个机器人对应一个key
     /** 图灵机器人配置 结束**/
 
     /** 随便走走 各地串串配置 开始**/

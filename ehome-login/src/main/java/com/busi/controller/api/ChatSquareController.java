@@ -251,7 +251,17 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
 
         jo.put("perception", jo2);
         //设置用户信息和key
-        jo4.put("apiKey",Constants.TULING_KEY);
+        String apiKey = Constants.TULING_KEY_NV;
+        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+chatAutomaticRecovery.getRecoveryUserId() );
+        if(userMap!=null&&userMap.size()>0){
+            UserInfo userInfo = (UserInfo) CommonUtils.mapToObject(userMap,UserInfo.class);
+            if(userInfo!=null){
+                if(userInfo.getSex()==1){//男
+                    apiKey = Constants.TULING_KEY_NAN;
+                }
+            }
+        }
+        jo4.put("apiKey",apiKey);
         jo4.put("userId",chatAutomaticRecovery.getUserId());
         jo.put("userInfo", jo4);
 
@@ -283,6 +293,7 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "获取用户["+chatAutomaticRecovery.getUserId()+"]的聊天信息异常，Json解析错误2",new JSONObject());
         }
         Map<String, Object> map = new HashMap<>();
+        map.put("recoveryUserId",chatAutomaticRecovery.getRecoveryUserId());
         map.put("recoveryContent",recoveryContent);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success",map);
     }

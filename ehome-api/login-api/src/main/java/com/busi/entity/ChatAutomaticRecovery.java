@@ -19,7 +19,7 @@ public class ChatAutomaticRecovery {
 
     @Max(value = 53870, message = "接收消息的用户ID不在自动回复范围之内")
     @Min(value= 13870 ,message= "接收消息的用户ID不在自动回复范围之内")
-    private long recoveryUserId;//发送者 用户ID
+    private long recoveryUserId;//接收者 用户ID
 
     @Max(value = 2, message = "您设置的消息类型超出可用范围")
     @Min(value= 0 ,message= "您设置的消息类型超出可用范围")
