@@ -230,6 +230,7 @@ public enum StatusCode {
 	//厨房
 	CODE_COLLECTED_KITCHEN_ERROR(451,"用户已收藏过此厨房"),
 	CODE_DISHESSORT_KITCHEN_ERROR(452,"菜品分类已达上限"),
+	CODE_BOOKED_KITCHEN_ERROR(453,"未设置订座相关设置"),
 
 	//小时工
 	CODE_COLLECTED_HOURLY_ERROR(461,"用户已收藏过此小时工"),
