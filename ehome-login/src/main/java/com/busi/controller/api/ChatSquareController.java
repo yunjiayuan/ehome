@@ -1,6 +1,7 @@
 package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.ChatAutomaticRecovery;
@@ -9,10 +10,7 @@ import com.busi.entity.ReturnData;
 import com.busi.entity.UserInfo;
 import com.busi.service.ChatSquareService;
 import com.busi.service.UserInfoService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -224,6 +222,78 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前登录用户无权限操作用户["+chatAutomaticRecovery.getUserId()+"]的聊天信息",new JSONObject());
         }
         //开始调用机器人自动回复
+        String recoveryContent = "你好，我现在有点事，稍后再联系你哈";//自动回复内容
+        String session_id = "";
+        JSONObject jo = new JSONObject();
+        try {
+            jo.put("log_id", "unit_yunjiayuan_log_10000");  //参数说明，具体可以参考百度官方说明
+            jo.put("version", "2.0");
+            jo.put("service_id", "S22498");
+            if(CommonUtils.checkFull(chatAutomaticRecovery.getSession_id())){
+                session_id = "yunjiayuan_service_id";//第一次初始化
+            }
+            jo.put("session_id",session_id );
+            JSONObject jsonObject1 = new JSONObject();
+            jsonObject1.put("query", chatAutomaticRecovery.getContent());
+            jsonObject1.put("user_id",chatAutomaticRecovery.getRecoveryUserId());
+            jo.put("request", jsonObject1);
+            //获取缓存中token
+            Object obj = redisUtils.getKey(Constants.REDIS_KEY_UNIT_TOKEN);
+            String baidu_unit_token = "";
+            if(obj==null||CommonUtils.checkFull(obj.toString())){//缓存中不存在 重新生成
+                baidu_unit_token = CommonUtils.getUnitAuth();
+                if(!CommonUtils.checkFull(baidu_unit_token)){
+                    //更新缓存
+                    redisUtils.set(Constants.REDIS_KEY_UNIT_TOKEN,baidu_unit_token,Constants.USER_TIME_OUT);//7天有效期
+                }
+            }else{
+                baidu_unit_token = obj.toString();
+            }
+            if(!CommonUtils.checkFull(baidu_unit_token)){
+                String result = HttpUtil.post(Constants.UNIT_URL,baidu_unit_token , "application/json", jo.toString());
+                if(!CommonUtils.checkFull(result)){
+                    JSONObject json = JSONObject.parseObject(result);
+                    JSONObject jsonResult = json.getJSONObject("result");
+                    session_id = jsonResult.getString("session_id");
+                    JSONArray jsonArray = JSONArray.parseArray(jsonResult.getString("response_list"));
+                    JSONArray jsonActionListArray = JSONArray.parseArray(jsonArray.getJSONObject(0).getString("action_list"));
+                    JSONObject jsonAction = jsonActionListArray.getJSONObject(new Random().nextInt(jsonActionListArray.size()));
+                    String say = jsonAction.getString("say");
+                    if(!CommonUtils.checkFull(say)){
+                        recoveryContent = say;
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "获取用户["+chatAutomaticRecovery.getUserId()+"]的聊天信息异常，Json解析错误",new JSONObject());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "获取用户["+chatAutomaticRecovery.getUserId()+"]的聊天信息异常，请求百度UNIT错误",new JSONObject());
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("recoveryUserId",chatAutomaticRecovery.getRecoveryUserId());
+        map.put("session_id",session_id);
+        map.put("recoveryContent",recoveryContent);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success",map);
+    }
+
+    /***
+     * 获取聊天自动回复内容
+     * @param chatAutomaticRecovery
+     * @param bindingResult
+     * @return
+     *//*
+    @Override
+    public ReturnData automaticRecoveryContent(@Valid @RequestBody ChatAutomaticRecovery chatAutomaticRecovery, BindingResult bindingResult) {
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        if(CommonUtils.getMyId()!=chatAutomaticRecovery.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前登录用户无权限操作用户["+chatAutomaticRecovery.getUserId()+"]的聊天信息",new JSONObject());
+        }
+        //开始调用机器人自动回复
         int statusCode = 0;
         JSONObject jo = new JSONObject();
         JSONObject jo2 = new JSONObject();
@@ -294,5 +364,5 @@ public class ChatSquareController extends BaseController implements ChatSquareAp
         map.put("recoveryUserId",chatAutomaticRecovery.getRecoveryUserId());
         map.put("recoveryContent",recoveryContent);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success",map);
-    }
+    }*/
 }

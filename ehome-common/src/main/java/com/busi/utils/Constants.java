@@ -103,6 +103,12 @@ public class Constants {
     public static final String TULING_KEY_NAN="87f74b1c9b6e4542a480a1c7507fa080";//男机器人key  注意一个机器人对应一个key
     /** 图灵机器人配置 结束**/
 
+    /** 百度UNIT机器人配置 开始**/
+    public static final String UNIT_URL="https://aip.baidubce.com/rpc/2.0/unit/service/chat";//沙盒测试请求地址  调用次数无限制 每秒最多处理请求数3
+    public static final String UNIT_API_KEY="lUPsvMBxBEbXCEWKsapcpeKj";//api key
+    public static final String UNIT_SECRET_KEY="XwTVm7yGG2Gezh3Eo2gNP1Z5ort44u86";//secret key
+    /** 百度UNIT机器人配置 结束**/
+
     /** 随便走走 各地串串配置 开始**/
     public static final int WALK_LIMIT_COUNT_USER = 30;//普通用户每天30次
     public static final int WALK_LIMIT_COUNT_MEMBER = 100;//普通会员用户每天30次
@@ -170,6 +176,7 @@ public class Constants {
     public static final String REDIS_KEY_LOGIN_ERROR_COUNT = "login_error_count";//登录错误记录
     public static final String REDIS_KEY_HOUSEMOVING_ERROR_COUNT = "houseMoving_error_count";//搬家密码错误记录
     public static final String REDIS_KEY_QINIU_TOKEN = "qiniu_token";//七牛token
+    public static final String REDIS_KEY_UNIT_TOKEN = "baidu_unit_token";//百度UNIT token
     public static final String REDIS_KEY_USER_DETAILED = "user_detailed_";//用户详细信息对应关系
     public static final String REDIS_KEY_USERFRIENDLIST = "userFriendList_";//用户好友信息对应关系
     public static final String REDIS_KEY_USERFRIENDGROUP = "userFriendGroup_";//用户好友分组对应关系

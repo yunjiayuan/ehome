@@ -1,13 +1,18 @@
 package com.busi.utils;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.busi.qiniu.util.Auth;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -883,6 +888,51 @@ public class CommonUtils {
 		content = content.replaceAll("0000","");
 		content = content.replaceAll("#@#@#","0000");
 		return content;
+	}
+	/***
+	 * 获取百度UNIT机器人token
+	 * Token的有效期(秒为单位，一般为1个月)
+	 * @return
+	 */
+	public static String getUnitAuth() {
+		// 获取token地址
+		String authHost = "https://aip.baidubce.com/oauth/2.0/token?";
+		String getAccessTokenUrl = authHost
+				// 1. grant_type为固定参数
+				+ "grant_type=client_credentials"
+				// 2. 官网获取的 API Key
+				+ "&client_id=" + Constants.UNIT_API_KEY
+				// 3. 官网获取的 Secret Key
+				+ "&client_secret=" + Constants.UNIT_SECRET_KEY;
+		try {
+			URL realUrl = new URL(getAccessTokenUrl);
+			// 打开和URL之间的连接
+			HttpURLConnection connection = (HttpURLConnection) realUrl.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+			// 获取所有响应头字段
+			Map<String, List<String>> map = connection.getHeaderFields();
+			// 遍历所有的响应头字段
+//			for (String key : map.keySet()) {
+//				System.err.println(key + "--->" + map.get(key));
+//			}
+			// 定义 BufferedReader输入流来读取URL的响应
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			String result = "";
+			String line;
+			while ((line = in.readLine()) != null) {
+				result += line;
+			}
+			/**
+			 * 返回结果示例
+			 */
+			JSONObject jsonObject = JSONObject.parseObject(result);
+			String access_token = jsonObject.getString("access_token");
+			return access_token;
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return null;
 	}
 //	public static void main(String[] args) {
 ////		System.out.println(checkBankCard("6225768308550119"));
