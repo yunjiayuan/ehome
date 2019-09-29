@@ -33,9 +33,7 @@ public interface KitchenBookedDao {
      */
     @Update("<script>" +
             "update KitchenBooked set" +
-            "<if test=\"servingTimeType > 0\">" +
-            " servingTimeType = 1," +
-            "</if>" +
+            " servingTimeType = #{servingTimeType}," +
             " earliestTime=#{earliestTime}," +
             " latestTime=#{latestTime}," +
             " reserveDays=#{reserveDays}" +

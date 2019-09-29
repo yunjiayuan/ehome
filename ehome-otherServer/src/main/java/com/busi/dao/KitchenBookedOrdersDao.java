@@ -24,9 +24,9 @@ public interface KitchenBookedOrdersDao {
      * @return
      */
     @Insert("insert into KitchenBookedOrders(userId,myId,kitchenId,no,dishameCost,ordersType,ordersState,kitchenName,addTime,completeTime,money,smallMap,eatNumber," +
-            "eatTime,position,address_Phone,address_Name,remarks,dispensing,sex,positionId)" +
+            "eatTime,position,address_Phone,address_Name,remarks,dispensing,sex,positionId,elegantName)" +
             "values (#{userId},#{myId},#{kitchenId},#{no},#{dishameCost},#{ordersType},#{ordersState},#{kitchenName},#{addTime},#{completeTime},#{money},#{smallMap},#{eatNumber}" +
-            ",#{eatTime},#{position},#{address_Phone},#{address_Name},#{remarks},#{dispensing},#{sex},#{positionId})")
+            ",#{eatTime},#{position},#{address_Phone},#{address_Name},#{remarks},#{dispensing},#{sex},#{positionId},#{elegantName})")
     @Options(useGeneratedKeys = true)
     int addOrders(KitchenBookedOrders kitchenBookedOrders);
 

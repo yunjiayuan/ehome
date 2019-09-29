@@ -3,6 +3,8 @@ package com.busi.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @program: ehome
  * @description: 厨房订座设置实体
@@ -21,8 +23,10 @@ public class KitchenBooked {
 
     private int reserveDays;             // 可预订天数
 
+    @NotNull(message= "最早营业时间不能为空")
     private String earliestTime;           // 最早营业时间
 
+    @NotNull(message= "最晚营业时间不能为空")
     private String latestTime;             // 最晚营业时间
 
     private int roomsTotal;             // 包间总数

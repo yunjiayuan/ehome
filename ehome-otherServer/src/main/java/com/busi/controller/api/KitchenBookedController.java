@@ -169,6 +169,11 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
         }
+        //是否设置订座设置
+        KitchenBooked kitchen = kitchenBookedService.findByUserId(kitchenReserve.getUserId());
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_BOOKED_KITCHEN_ERROR.CODE_VALUE, "未设置订座相关设置", new JSONObject());
+        }
         kitchenBookedService.updateBusiness(kitchenReserve);
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchenReserve.getUserId() + "_" + 1, 0);

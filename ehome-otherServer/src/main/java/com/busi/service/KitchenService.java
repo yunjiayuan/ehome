@@ -168,13 +168,14 @@ public class KitchenService {
      * @param userId
      * @return
      */
-    public boolean findWhether(long userId, long kitchend, int bookedState) {
+    public boolean findWhether(long userId, long beUserId, int bookedState) {
         KitchenCollection kitchen = null;
-        kitchen = kitchenDao.findWhether(userId, kitchend, bookedState);
+        kitchen = kitchenDao.findWhether(userId, beUserId, bookedState);
         if (kitchen == null) {
             return false;
+        }else {
+            return true;
         }
-        return true;
     }
 
     /***

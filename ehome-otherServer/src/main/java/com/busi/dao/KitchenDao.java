@@ -225,8 +225,8 @@ public interface KitchenDao {
      * @param userId
      * @return
      */
-    @Select("select * from KitchenCollection where userId=#{userId} and kitchend=#{kitchend} and bookedState=#{bookedState}")
-    KitchenCollection findWhether(@Param("userId") long userId, @Param("kitchend") long kitchend, @Param("bookedState") int bookedState);
+    @Select("select * from KitchenCollection where userId=#{userId} and beUserId=#{beUserId} and bookedState=#{bookedState}")
+    KitchenCollection findWhether(@Param("userId") long userId, @Param("beUserId") long beUserId, @Param("bookedState") int bookedState);
 
     /***
      * 验证用户是否收藏过

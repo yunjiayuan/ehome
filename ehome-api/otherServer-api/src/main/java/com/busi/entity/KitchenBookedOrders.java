@@ -72,6 +72,8 @@ public class KitchenBookedOrders {
 
     private long positionId;        //就餐位置id
 
+    private String elegantName;           // 包间or大厅雅称
+
     private String address_Name;            // 联系人姓名
 
     private String address_Phone;                // 联系人电话
