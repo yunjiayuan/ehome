@@ -109,7 +109,12 @@ public class KitchenBookedOrdersService {
      */
     public List<KitchenBookedOrders> findOrdersList(long userId, Date eatTime, int bookedType) {
         List<KitchenBookedOrders> list;
-        list = kitchenBookedOrdersDao.findOrdersList(userId,eatTime, bookedType);
+        if (bookedType == 0) {
+            bookedType = 1;
+        } else {
+            bookedType = 0;
+        }
+        list = kitchenBookedOrdersDao.findOrdersList(userId, eatTime, bookedType);
         return list;
     }
 }
