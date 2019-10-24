@@ -38,6 +38,8 @@ public class HomePageInfo {
 
     private int flag;//临时参数 1禁止查看会员中心 方便IOS平台审核
 
+    private int videoshootType;//临时参数 “生活圈拍摄视频时的拍摄类型” 0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
+
     private long garden;//花园锁状态 1未上锁 2已上锁
 
     private long livingRoom;//客厅锁状态 1未上锁 2已上锁

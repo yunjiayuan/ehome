@@ -168,6 +168,7 @@ public class Constants {
     //redis 0库相关key配置(USER)
     public static final String REDIS_KEY_VERSION = "version_";//版本号key
     public static final String REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG = "admini_homePageInfo_flag";//屏蔽主界面部分功能按钮 0关闭 1开启
+    public static final String REDIS_KEY_ADMINI_VIDEOSHOOT_TYPE = "admini_videoShoot_type";//修改“生活圈拍摄视频时的拍摄类型” 0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
     public static final String REDIS_KEY_USER = "user_";//用户实体key
     public static final String REDIS_KEY_PHONENUMBER = "phoneNumber";//手机号与用户ID对应关系
     public static final String REDIS_KEY_OTHERNUMBER = "otherNumber";//第三方平台账号与用户ID对应关系
