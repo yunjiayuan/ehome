@@ -246,7 +246,7 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         if(videoshootObj!=null){
             videoshootType = Integer.parseInt(videoshootObj.toString());
         }
-        homePageInfo.setFlag(videoshootType);//临时参数 1禁止查看会员中心 方便IOS平台审核
+        homePageInfo.setVideoshootType(videoshootType);//临时参数 1禁止查看会员中心 方便IOS平台审核
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",homePageInfo);
     }
 
@@ -263,7 +263,7 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         if(CommonUtils.getMyId()!=10076){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限操作管理员设置",new JSONObject());
         }
-        if(type!=0||status<0||status>1){
+        if(type<0||type>1||status<0||status>1){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误",new JSONObject());
         }
         switch (type) {
