@@ -34,7 +34,7 @@ public class HomeShopGoods {
 
     private String usedSort;                //商品类目 : 主键ID,类目名称
 
-    private String brand;                //品牌
+    private String brand;                //品牌：主键ID,品牌名称
 
     private String netContent;                //净含量
 
@@ -104,7 +104,7 @@ public class HomeShopGoods {
 
     private double lon;                    //经度
 
-    private int frontPlaceType;			//是否置顶：1未置顶，2已置顶
+    private int frontPlaceType;			//是否置顶：0未置顶，1已置顶
 
     // 与数据库无关字段
     private String name;                //用户名

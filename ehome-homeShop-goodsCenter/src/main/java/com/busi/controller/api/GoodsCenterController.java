@@ -116,7 +116,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
     /***
      * 批量上下架商品
      * @param ids 商品ids(逗号分隔)
-     * @param sellType 商品买卖状态 : 0已上架，1已下架
+     * @param sellType 商品买卖状态 : 0上架，1下架
      * @return
      */
     @Override

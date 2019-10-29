@@ -29,7 +29,7 @@ public interface GoodsCenterDao {
             "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{videoCoverUrl},#{videoUrl}," +
             "#{brand},#{netContent},#{producer},#{specs},#{price},#{stock},#{freight},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId}," +
             "#{province},#{city},#{district},#{pinkageType},#{expressMode},#{invoice},#{guarantee},#{refunds},#{returnPolicy},#{stockCount},#{startTime}," +
-            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType}#{lat},#{lon},#{frontPlaceType})")
+            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType})")
     @Options(useGeneratedKeys = true)
     int add(HomeShopGoods homeShopGoods);
 
@@ -253,7 +253,7 @@ public interface GoodsCenterDao {
      */
     @Select("<script>" +
             "select * from HomeShopGoods" +
-            " where shopId = #{shopId}" +
+            " where shopId = #{shopId} and deleteType=0" +
             "<if test=\"sort != 2\">" +
             " and sellType = #{sort}" +
             "</if>" +
@@ -262,6 +262,9 @@ public interface GoodsCenterDao {
             "</if>" +
             "<if test=\"stock == 1\">" +
             " order by stock asc" +
+            "</if>" +
+            "<if test=\"stock == 0\">" +
+            " order by stock desc" +
             "</if>" +
             " ,refreshTime desc" +
             "</script>")
@@ -277,7 +280,7 @@ public interface GoodsCenterDao {
      */
     @Select("<script>" +
             "select * from HomeShopGoods" +
-            " where shopId = #{shopId}" +
+            " where shopId = #{shopId} and deleteType=0" +
             "<if test=\"sort != 2\">" +
             " and sellType = #{sort}" +
             "</if>" +
