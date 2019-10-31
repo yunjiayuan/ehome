@@ -176,7 +176,7 @@ public class GoodsCenterService {
     /***
      * 分页查询商品
      * @param shopId  店铺ID
-     * @param sort  排序条件:0出售中，1仓库中，2已预约
+     * @param sort  查询条件:-1全部 0出售中，1仓库中，2已预约
      * @param stock  库存：0倒序 1正序
      * @param time  时间：0倒序 1正序
      * @param goodsSort  分类

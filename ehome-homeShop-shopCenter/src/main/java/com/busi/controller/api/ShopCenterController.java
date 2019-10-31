@@ -462,4 +462,38 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
     }
+
+    /***
+     * 查询商品属性名称
+     * @param goodCategoryId 商品分类id
+     * @param goodsBrandId 品牌id
+     * @param page
+     * @param count
+     * @return
+     */
+    @Override
+    public ReturnData findBrandProperty(@PathVariable long goodCategoryId, @PathVariable long goodsBrandId, @PathVariable int page, @PathVariable int count) {
+        //开始查询
+        PageBean<GoodsBrandProperty> pageBean = null;
+        pageBean = shopCenterService.findBrandProperty(goodCategoryId, goodsBrandId, page, count);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+
+    }
+
+    /***
+     * 查询商品属性值
+     * @param goodsBrandPropertyId 商品属性id
+     * @param page
+     * @param count
+     * @return
+     */
+    @Override
+    public ReturnData findBrandPropertyValue(@PathVariable long goodsBrandPropertyId, @PathVariable int page, @PathVariable int count) {
+        //开始查询
+        PageBean<GoodsBrandPropertyValue> pageBean = null;
+        pageBean = shopCenterService.findBrandPropertyValue(goodsBrandPropertyId, page, count);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
 }

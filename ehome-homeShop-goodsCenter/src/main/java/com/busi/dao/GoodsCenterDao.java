@@ -246,7 +246,7 @@ public interface GoodsCenterDao {
     /***
      * 分页查询商品
      * @param shopId  店铺ID
-     * @param sort  排序条件:0出售中，1仓库中，2已预约
+     * @param sort  排序条件: -1全部 0出售中，1仓库中，2已预约
      * @param stock  库存：0倒序 1正序
      * @param goodsSort  分类
      * @return
@@ -254,7 +254,7 @@ public interface GoodsCenterDao {
     @Select("<script>" +
             "select * from HomeShopGoods" +
             " where shopId = #{shopId} and deleteType=0" +
-            "<if test=\"sort != 2\">" +
+            "<if test=\"sort != -1\">" +
             " and sellType = #{sort}" +
             "</if>" +
             "<if test=\"goodsSort > 0\">" +
@@ -281,7 +281,7 @@ public interface GoodsCenterDao {
     @Select("<script>" +
             "select * from HomeShopGoods" +
             " where shopId = #{shopId} and deleteType=0" +
-            "<if test=\"sort != 2\">" +
+            "<if test=\"sort != -1\">" +
             " and sellType = #{sort}" +
             "</if>" +
             "<if test=\"goodsSort > 0\">" +

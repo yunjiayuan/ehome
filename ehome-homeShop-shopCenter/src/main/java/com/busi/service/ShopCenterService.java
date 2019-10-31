@@ -122,7 +122,6 @@ public class ShopCenterService {
         } else {
             list = shopCenterDao.findList(levelOne, levelTwo, levelThree, levelFour, levelFive);
         }
-
         return PageUtils.getPageBean(p, list);
     }
 
@@ -151,5 +150,34 @@ public class ShopCenterService {
             letter = null;
         }
         return shopCenterDao.findBrands(ids, letter);
+    }
+
+    /***
+     * 查询商品属性名称
+     * @param goodCategoryId 商品分类id
+     * @param goodsBrandId 品牌id
+     * @param page
+     * @param count
+     * @return
+     */
+    public PageBean<GoodsBrandProperty> findBrandProperty(long goodCategoryId, long goodsBrandId, int page, int count) {
+        List<GoodsBrandProperty> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = shopCenterDao.findBrandProperty(goodCategoryId, goodsBrandId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询商品属性值
+     * @param goodsBrandPropertyId 品牌商品属性值id
+     * @param page
+     * @param count
+     * @return
+     */
+    public PageBean<GoodsBrandPropertyValue> findBrandPropertyValue(long goodsBrandPropertyId, int page, int count) {
+        List<GoodsBrandPropertyValue> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = shopCenterDao.findBrandPropertyValue(goodsBrandPropertyId);
+        return PageUtils.getPageBean(p, list);
     }
 }
