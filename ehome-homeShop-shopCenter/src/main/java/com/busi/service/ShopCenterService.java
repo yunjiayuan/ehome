@@ -180,4 +180,13 @@ public class ShopCenterService {
         list = shopCenterDao.findBrandPropertyValue(goodsBrandPropertyId);
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * 根据分类&品牌ID查询分类&品牌关联ID
+     * @param goodCategoryId
+     * @return
+     */
+    public GoodsBrandCategoryValue findRelation(long goodCategoryId, long goodsBrandId) {
+        return shopCenterDao.findRelation(goodCategoryId, goodsBrandId);
+    }
 }

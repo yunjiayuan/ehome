@@ -260,4 +260,12 @@ public interface ShopCenterDao {
             "</script>")
     List<GoodsBrandPropertyValue> findBrandPropertyValue(@Param("goodsBrandPropertyId") long goodsBrandPropertyId);
 
+    /***
+     * 根据分类&品牌ID查询分类&品牌关联ID
+     * @param goodCategoryId
+     * @return
+     */
+    @Select("select * from GoodsBrandCategoryValue where categoryId=#{goodCategoryId} and brandId=#{goodsBrandId}")
+    GoodsBrandCategoryValue findRelation(@Param("goodCategoryId") long goodCategoryId,@Param("goodsBrandId") long goodsBrandId);
+
 }

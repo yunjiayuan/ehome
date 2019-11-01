@@ -67,6 +67,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.add(homeShopGoods);
 
+        //新增商品对应属性
+        GoodsProperty property = new GoodsProperty();
+        property.setGoodsId(homeShopGoods.getId());
+        property.setName(homeShopGoods.getPropertyName());
+//        property.setValue(homeShopGoods.getPropertyValue());
+        goodsCenterService.addProperty(property);
+
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", homeShopGoods.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
@@ -103,6 +110,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         }
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.update(homeShopGoods);
+
+        //更新商品对应属性
+        GoodsProperty property = new GoodsProperty();
+        property.setGoodsId(homeShopGoods.getId());
+        property.setName(homeShopGoods.getPropertyName());
+//        property.setValue(homeShopGoods.getPropertyValue());
+        goodsCenterService.updateProperty(property);
 
         if (!CommonUtils.checkFull(homeShopGoods.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
@@ -179,9 +193,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
             }
             UserInfo userInfo = null;
             userInfo = userInfoUtils.getUserInfo(posts.getUserId());
+            //查询商品对应属性
+            GoodsProperty property = goodsCenterService.findProperty(id);
+            posts.setPropertyName(property.getName());
+//            posts.setPropertyValue(property.getValue());
+            num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
+            posts.setSellingNumber(num);
             if (userInfo != null) {
-                num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
-                posts.setSellingNumber(num);
                 posts.setName(userInfo.getName());
                 posts.setHead(userInfo.getHead());
                 posts.setProTypeId(userInfo.getProType());

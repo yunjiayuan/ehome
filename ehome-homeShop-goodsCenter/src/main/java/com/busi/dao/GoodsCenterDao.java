@@ -1,6 +1,7 @@
 package com.busi.dao;
 
 import com.busi.entity.GoodsDescribe;
+import com.busi.entity.GoodsProperty;
 import com.busi.entity.GoodsSort;
 import com.busi.entity.HomeShopGoods;
 import org.apache.ibatis.annotations.*;
@@ -32,6 +33,16 @@ public interface GoodsCenterDao {
             "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType})")
     @Options(useGeneratedKeys = true)
     int add(HomeShopGoods homeShopGoods);
+
+    /***
+     * 新增商品属性
+     * @param dishes
+     * @return
+     */
+    @Insert("insert into GoodsProperty(goodsId,name) " +
+            "values (#{goodsId},#{name})")
+    @Options(useGeneratedKeys = true)
+    int addProperty(GoodsProperty dishes);
 
     /***
      * 删除
@@ -91,6 +102,18 @@ public interface GoodsCenterDao {
     int update(HomeShopGoods homeShopGoods);
 
     /***
+     * 更新商品属性
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update GoodsProperty set" +
+            " name=#{name}" +
+            " where goodsId=#{goodsId}" +
+            "</script>")
+    int updateProperty(GoodsProperty kitchenDishes);
+
+    /***
      * 更新删除状态
      * @param homeShopGoods
      * @return
@@ -138,6 +161,13 @@ public interface GoodsCenterDao {
      */
     @Select("select * from HomeShopGoods where id=#{id} and deleteType=0 and auditType=1")
     HomeShopGoods findUserById(@Param("id") long id);
+
+    /***
+     * 根据Id查询属性
+     * @param id
+     */
+    @Select("select * from GoodsProperty where goodsId=#{id}")
+    GoodsProperty findProperty(@Param("id") long id);
 
     /***
      * 统计已上架,已卖出已下架,我的订单数量

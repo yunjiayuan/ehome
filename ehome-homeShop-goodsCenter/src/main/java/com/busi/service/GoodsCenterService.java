@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.GoodsCenterDao;
-import com.busi.entity.GoodsDescribe;
-import com.busi.entity.GoodsSort;
-import com.busi.entity.HomeShopGoods;
-import com.busi.entity.PageBean;
+import com.busi.entity.*;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -36,6 +33,16 @@ public class GoodsCenterService {
     }
 
     /***
+     * 新增属性
+     * @param homeShopGoods
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addProperty(GoodsProperty homeShopGoods) {
+        return goodsCenterDao.addProperty(homeShopGoods);
+    }
+
+    /***
      * 删除
      * @param id
      * @param userId
@@ -57,12 +64,31 @@ public class GoodsCenterService {
     }
 
     /***
+     * 更新属性
+     * @param homeShopGoods
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateProperty(GoodsProperty homeShopGoods) {
+        return goodsCenterDao.updateProperty(homeShopGoods);
+    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return
      */
     public HomeShopGoods findUserById(long id) {
         return goodsCenterDao.findUserById(id);
+    }
+
+    /***
+     * 根据ID查询属性
+     * @param id
+     * @return
+     */
+    public GoodsProperty findProperty(long id) {
+        return goodsCenterDao.findProperty(id);
     }
 
     /***

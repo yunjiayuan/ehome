@@ -475,7 +475,11 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
     public ReturnData findBrandProperty(@PathVariable long goodCategoryId, @PathVariable long goodsBrandId, @PathVariable int page, @PathVariable int count) {
         //开始查询
         PageBean<GoodsBrandProperty> pageBean = null;
-        pageBean = shopCenterService.findBrandProperty(goodCategoryId, goodsBrandId, page, count);
+        GoodsBrandCategoryValue categoryValue = shopCenterService.findRelation(goodCategoryId, goodsBrandId);
+        if (categoryValue == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+        }
+        pageBean = shopCenterService.findBrandProperty(goodCategoryId, categoryValue.getId(), page, count);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
 
