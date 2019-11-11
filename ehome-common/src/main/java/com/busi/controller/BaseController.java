@@ -37,6 +37,14 @@ public class BaseController {
     }
 
     /***
+     * * 封装返回数据 原始返回
+     * @param data 返回数据对象
+     */
+    public Object returnData(Object data){
+        return data;
+    }
+
+    /***
      * 统一验证请求参数格式
      * @param bindingResult
      * @return

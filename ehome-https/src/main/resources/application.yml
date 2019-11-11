@@ -1,0 +1,99 @@
+#服务启动端口号
+server:
+  port: 443 #应用端口hhtps默认 443
+  connection-timeout: PT30S #修改请用 System.out.println(Duration.ofSeconds(30))  PT30S  PT1M
+  ssl:
+    key-store: /usr/local/webAppServer/httpsServer/server.keystore
+    key-alias: tomcat
+    key-store-password: lichengwang_https_ssl_20191101
+    key-store-type: JKS
+    enabled: true
+  tomcat:
+    uri-encoding: UTF-8 #编码格式
+    min-spare-threads: 10 #线程最小空闲线程数
+    accept-count: 200 #最大线程排队数 默认值为100
+    max-threads: 100 #最大同时处理的线程数 默认值为200
+    max-connections: 200 #最大连接数
+    max-http-post-size: 0  #最大post数据的大小 0表示不限制
+
+#mybatis: 打印完整的sql日志 调试时可开启使用
+#    configuration:
+#      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#简单日志打印
+logging:
+  level:
+    com.busi.dao: debug #dao的路径 和 打印级别
+
+spring:
+  application:
+    name: https-Server #当前项目的对外调用访问的名称
+  activemq:
+    broker-url: tcp://192.168.1.160:61616?jms.useAsyncSend=true #异步请求
+    in-memory: true
+    pool:
+      enabled: false #false 关闭连接池
+      max-connections: 1000 #连接池的最大连接数
+      idle-timeout: PT30S
+#      expiry-timeout: 0 #默认0 从不失效
+  datasource:
+      url: jdbc:mysql://192.168.1.172:3306/ehome_eblog?characterEncoding=utf8&useSSL=false
+      username: root
+      password: LiChengWang_20180531
+      driver-class-name: com.mysql.jdbc.Driver
+      platform: mysql
+      # 使用druid数据源
+      type: com.alibaba.druid.pool.DruidDataSource
+      initialSize: 1000 # 初始化大小
+      minIdle: 100 # 最小空闲连接
+      maxActive: 10000 # 最大连接
+  #   maxWait: 60000 # 配置获取连接等待超时的时间
+      timeBetweenEvictionRunsMillis: 60000 # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 30000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,slf4j
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      # 合并多个DruidDataSource的监控数据
+      #useGlobalDataSourceStat: true
+
+eureka:
+  instance:
+    hostname: localhost #主机名 目前只能写localhost 否则报错
+    prefer-ip-address: true #显示IP
+    instance-id: ${spring.application.name}:${spring.application.instance-id:${server.port}}
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.1.160:8761/eureka/
+
+hystrix: #设置超时 三个时间最好保持一致
+  threadpool:
+    default:
+      coreSize: 100
+      maximumSize: 10000 #最大线程数
+      allowMaximumSizeToDivergeFromCoreSize: true #是否让maximumSize生效，false的话则只有coreSize会生效
+      maxQueueSize: -1 #线程池的队列大小，-1代表使用SynchronousQueue队列
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true #启用超时时间
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000 #60秒
+
+ribbon: #设置超时 三个时间最好保持一致
+  ReadTimeout: 5000 #5秒
+  ConnectTimeout: 5000 #5秒
+  MaxAutoRetries: 1 # 同一实例最大重试次数，不包括首次调用
+  MaxAutoRetriesNextServer: 1 # 重试其他实例的最大重试次数，不包括首次所选的server
+  OkToRetryOnAllOperations: true #对所有请求操作都进行重试
+
