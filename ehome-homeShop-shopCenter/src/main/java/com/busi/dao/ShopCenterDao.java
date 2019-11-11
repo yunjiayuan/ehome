@@ -236,4 +236,36 @@ public interface ShopCenterDao {
             "</if>" +
             "</script>")
     List<GoodsBrands> findBrands(@Param("ids") String[] ids, @Param("letter") String letter);
+
+    /***
+     * 查询商品属性名称
+     * @param goodCategoryId 商品分类id
+     * @param goodsBrandId 品牌id
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsBrandProperty " +
+            "where goodCategoryId=#{goodCategoryId}" +
+            " and goodsBrandId=#{goodsBrandId}" +
+            "</script>")
+    List<GoodsBrandProperty> findBrandProperty(@Param("goodCategoryId") long goodCategoryId, @Param("goodsBrandId") long goodsBrandId);
+
+    /***
+     * 查询商品属性值
+     * @param goodsBrandPropertyId 品牌商品属性值id
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsBrandPropertyValue where goodsBrandPropertyId=#{goodsBrandPropertyId}" +
+            "</script>")
+    List<GoodsBrandPropertyValue> findBrandPropertyValue(@Param("goodsBrandPropertyId") long goodsBrandPropertyId);
+
+    /***
+     * 根据分类&品牌ID查询分类&品牌关联ID
+     * @param goodCategoryId
+     * @return
+     */
+    @Select("select * from GoodsBrandCategoryValue where categoryId=#{goodCategoryId} and brandId=#{goodsBrandId}")
+    GoodsBrandCategoryValue findRelation(@Param("goodCategoryId") long goodCategoryId,@Param("goodsBrandId") long goodsBrandId);
+
 }

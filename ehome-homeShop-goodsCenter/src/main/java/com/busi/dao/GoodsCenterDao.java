@@ -1,6 +1,7 @@
 package com.busi.dao;
 
 import com.busi.entity.GoodsDescribe;
+import com.busi.entity.GoodsProperty;
 import com.busi.entity.GoodsSort;
 import com.busi.entity.HomeShopGoods;
 import org.apache.ibatis.annotations.*;
@@ -29,9 +30,19 @@ public interface GoodsCenterDao {
             "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{videoCoverUrl},#{videoUrl}," +
             "#{brand},#{netContent},#{producer},#{specs},#{price},#{stock},#{freight},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId}," +
             "#{province},#{city},#{district},#{pinkageType},#{expressMode},#{invoice},#{guarantee},#{refunds},#{returnPolicy},#{stockCount},#{startTime}," +
-            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType}#{lat},#{lon},#{frontPlaceType})")
+            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType})")
     @Options(useGeneratedKeys = true)
     int add(HomeShopGoods homeShopGoods);
+
+    /***
+     * 新增商品属性
+     * @param dishes
+     * @return
+     */
+    @Insert("insert into GoodsProperty(goodsId,name) " +
+            "values (#{goodsId},#{name})")
+    @Options(useGeneratedKeys = true)
+    int addProperty(GoodsProperty dishes);
 
     /***
      * 删除
@@ -91,6 +102,18 @@ public interface GoodsCenterDao {
     int update(HomeShopGoods homeShopGoods);
 
     /***
+     * 更新商品属性
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update GoodsProperty set" +
+            " name=#{name}" +
+            " where goodsId=#{goodsId}" +
+            "</script>")
+    int updateProperty(GoodsProperty kitchenDishes);
+
+    /***
      * 更新删除状态
      * @param homeShopGoods
      * @return
@@ -138,6 +161,13 @@ public interface GoodsCenterDao {
      */
     @Select("select * from HomeShopGoods where id=#{id} and deleteType=0 and auditType=1")
     HomeShopGoods findUserById(@Param("id") long id);
+
+    /***
+     * 根据Id查询属性
+     * @param id
+     */
+    @Select("select * from GoodsProperty where goodsId=#{id}")
+    GoodsProperty findProperty(@Param("id") long id);
 
     /***
      * 统计已上架,已卖出已下架,我的订单数量
@@ -246,15 +276,15 @@ public interface GoodsCenterDao {
     /***
      * 分页查询商品
      * @param shopId  店铺ID
-     * @param sort  排序条件:0出售中，1仓库中，2已预约
+     * @param sort  排序条件: -1全部 0出售中，1仓库中，2已预约
      * @param stock  库存：0倒序 1正序
      * @param goodsSort  分类
      * @return
      */
     @Select("<script>" +
             "select * from HomeShopGoods" +
-            " where shopId = #{shopId}" +
-            "<if test=\"sort != 2\">" +
+            " where shopId = #{shopId} and deleteType=0" +
+            "<if test=\"sort != -1\">" +
             " and sellType = #{sort}" +
             "</if>" +
             "<if test=\"goodsSort > 0\">" +
@@ -262,6 +292,9 @@ public interface GoodsCenterDao {
             "</if>" +
             "<if test=\"stock == 1\">" +
             " order by stock asc" +
+            "</if>" +
+            "<if test=\"stock == 0\">" +
+            " order by stock desc" +
             "</if>" +
             " ,refreshTime desc" +
             "</script>")
@@ -277,8 +310,8 @@ public interface GoodsCenterDao {
      */
     @Select("<script>" +
             "select * from HomeShopGoods" +
-            " where shopId = #{shopId}" +
-            "<if test=\"sort != 2\">" +
+            " where shopId = #{shopId} and deleteType=0" +
+            "<if test=\"sort != -1\">" +
             " and sellType = #{sort}" +
             "</if>" +
             "<if test=\"goodsSort > 0\">" +

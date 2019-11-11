@@ -67,6 +67,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.add(homeShopGoods);
 
+        //新增商品对应属性
+        GoodsProperty property = new GoodsProperty();
+        property.setGoodsId(homeShopGoods.getId());
+        property.setName(homeShopGoods.getPropertyName());
+//        property.setValue(homeShopGoods.getPropertyValue());
+        goodsCenterService.addProperty(property);
+
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", homeShopGoods.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
@@ -104,6 +111,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.update(homeShopGoods);
 
+        //更新商品对应属性
+        GoodsProperty property = new GoodsProperty();
+        property.setGoodsId(homeShopGoods.getId());
+        property.setName(homeShopGoods.getPropertyName());
+//        property.setValue(homeShopGoods.getPropertyValue());
+        goodsCenterService.updateProperty(property);
+
         if (!CommonUtils.checkFull(homeShopGoods.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(homeShopGoods.getUserId(), homeShopGoods.getDelImgUrls());
@@ -116,7 +130,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
     /***
      * 批量上下架商品
      * @param ids 商品ids(逗号分隔)
-     * @param sellType 商品买卖状态 : 0已上架，1已下架
+     * @param sellType 商品买卖状态 : 0上架，1下架
      * @return
      */
     @Override
@@ -179,9 +193,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
             }
             UserInfo userInfo = null;
             userInfo = userInfoUtils.getUserInfo(posts.getUserId());
+            //查询商品对应属性
+            GoodsProperty property = goodsCenterService.findProperty(id);
+            posts.setPropertyName(property.getName());
+//            posts.setPropertyValue(property.getValue());
+            num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
+            posts.setSellingNumber(num);
             if (userInfo != null) {
-                num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
-                posts.setSellingNumber(num);
                 posts.setName(userInfo.getName());
                 posts.setHead(userInfo.getHead());
                 posts.setProTypeId(userInfo.getProType());
@@ -207,7 +225,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
     /***
      * 分页查询商品
      * @param shopId  店铺ID
-     * @param sort  排序条件:0出售中，1仓库中，2已预约
+     * @param sort  查询条件:-1全部  0出售中，1仓库中，2已预约
      * @param stock  库存：0倒序 1正序
      * @param time  时间：0倒序 1正序
      * @param goodsSort  分类

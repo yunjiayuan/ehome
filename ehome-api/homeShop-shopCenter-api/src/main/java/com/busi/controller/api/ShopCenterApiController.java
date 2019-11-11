@@ -119,4 +119,25 @@ public interface ShopCenterApiController {
     @GetMapping("findGoodsBrand/{sortId}/{letter}")
     ReturnData findGoodsBrand(@PathVariable long sortId, @PathVariable String letter);
 
+    /***
+     * 查询商品属性名称
+     * @param goodCategoryId 商品分类id
+     * @param goodsBrandId 品牌id
+     * @param page
+     * @param count
+     * @return
+     */
+    @GetMapping("findBrandProperty/{goodCategoryId}/{goodsBrandId}/{page}/{count}")
+    ReturnData findBrandProperty(@PathVariable long goodCategoryId, @PathVariable long goodsBrandId, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询商品属性值
+     * @param goodsBrandPropertyId 品牌商品属性值id
+     * @param page
+     * @param count
+     * @return
+     */
+    @GetMapping("findBrandPropertyValue/{goodsBrandPropertyId}/{page}/{count}")
+    ReturnData findBrandPropertyValue(@PathVariable long goodsBrandPropertyId, @PathVariable int page, @PathVariable int count);
+
 }
