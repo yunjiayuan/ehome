@@ -148,25 +148,42 @@ public interface ShopCenterDao {
     @Select("<script>" +
             "select * from GoodsCategory" +
             " where 1=1" +
-            "<if test=\"levelOne == -2 \">" +
-            " and levelTwo = -1" +
-            "</if>" +
             "<if test=\"levelOne >= 0 \">" +
+            " and levelTwo > -1" +
             " and levelOne = #{levelOne}" +
             "</if>" +
-            "<if test=\"levelTwo == -2 \">" +
-            " and levelThree = -1" +
+            "<if test=\"levelOne == -2 \">" +
+            " and levelOne > -1" +
+            " and levelTwo = -1" +
             "</if>" +
             "<if test=\"levelTwo >= 0 \">" +
+            " and levelThree > -1" +
             " and levelTwo = #{levelTwo}" +
             "</if>" +
-            "<if test=\"levelThree != -2 \">" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelTwo > -1" +
+            " and levelThree = -1" +
+            "</if>" +
+            "<if test=\"levelThree >= 0 \">" +
+            " and levelFour > -1" +
             " and levelThree = #{levelThree}" +
             "</if>" +
-            "<if test=\"levelFour != -2 \">" +
+            "<if test=\"levelThree == -2 \">" +
+            " and levelThree > -1" +
+            " and levelFour = -1" +
+            "</if>" +
+            "<if test=\"levelFour >= 0 \">" +
+            " and levelFive > -1" +
             " and levelFour = #{levelFour}" +
             "</if>" +
-            "<if test=\"levelFive != -2 \">" +
+            "<if test=\"levelFour == -2 \">" +
+            " and levelFour > -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelFive == -2 \">" +
+            " and levelFive > -1" +
+            "</if>" +
+            "<if test=\"levelFive >= 0 \">" +
             " and levelFive = #{levelFive}" +
             "</if>" +
             "</script>")

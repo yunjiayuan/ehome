@@ -43,6 +43,16 @@ public class GoodsCenterService {
     }
 
     /***
+     * 新增特殊属性
+     * @param goodsOfSpecialProperty
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addSpecialProperty(GoodsOfSpecialProperty goodsOfSpecialProperty) {
+        return goodsCenterDao.addSpecialProperty(goodsOfSpecialProperty);
+    }
+
+    /***
      * 删除
      * @param id
      * @param userId
@@ -74,6 +84,16 @@ public class GoodsCenterService {
     }
 
     /***
+     * 更新特殊属性
+     * @param goodsOfSpecialProperty
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateSpecialProperty(GoodsOfSpecialProperty goodsOfSpecialProperty) {
+        return goodsCenterDao.updateSpecialProperty(goodsOfSpecialProperty);
+    }
+
+    /***
      * 根据ID查询
      * @param id
      * @return
@@ -89,6 +109,15 @@ public class GoodsCenterService {
      */
     public GoodsProperty findProperty(long id) {
         return goodsCenterDao.findProperty(id);
+    }
+
+    /***
+     * 根据ID查询特殊属性
+     * @param id
+     * @return
+     */
+    public GoodsOfSpecialProperty findSpecialProperty(long id) {
+        return goodsCenterDao.findSpecialProperty(id);
     }
 
     /***

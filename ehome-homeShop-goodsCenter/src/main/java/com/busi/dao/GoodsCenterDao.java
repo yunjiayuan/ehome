@@ -1,9 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.GoodsDescribe;
-import com.busi.entity.GoodsProperty;
-import com.busi.entity.GoodsSort;
-import com.busi.entity.HomeShopGoods;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -23,14 +20,14 @@ public interface GoodsCenterDao {
      * @param homeShopGoods
      * @return
      */
-    @Insert("insert into HomeShopGoods(shopId,userId,imgUrl,goodsType,goodsTitle,usedSort,videoCoverUrl,videoUrl," +
+    @Insert("insert into HomeShopGoods(shopId,userId,imgUrl,goodsType,goodsTitle,usedSort,levelOne,levelTwo,levelThree,levelFour,levelFive,brandId,videoCoverUrl,videoUrl," +
             "brand,netContent,producer,specs,price,stock,freight,details,detailsId,barCode,code,sort,sortId," +
             "province,city,district,pinkageType,expressMode,invoice,guarantee,refunds,returnPolicy,stockCount,startTime," +
-            "spike,galleryFeatured,releaseTime,refreshTime,sellType,auditType,lat,lon,frontPlaceType) " +
-            "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{videoCoverUrl},#{videoUrl}," +
+            "spike,galleryFeatured,releaseTime,refreshTime,sellType,auditType,lat,lon,frontPlaceType,specialProperty) " +
+            "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{videoCoverUrl},#{videoUrl},#{levelOne},#{levelTwo},#{levelThree},#{levelFour},#{levelFive},#{brandId}," +
             "#{brand},#{netContent},#{producer},#{specs},#{price},#{stock},#{freight},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId}," +
             "#{province},#{city},#{district},#{pinkageType},#{expressMode},#{invoice},#{guarantee},#{refunds},#{returnPolicy},#{stockCount},#{startTime}," +
-            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType})")
+            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType},#{specialProperty})")
     @Options(useGeneratedKeys = true)
     int add(HomeShopGoods homeShopGoods);
 
@@ -43,6 +40,16 @@ public interface GoodsCenterDao {
             "values (#{goodsId},#{name})")
     @Options(useGeneratedKeys = true)
     int addProperty(GoodsProperty dishes);
+
+    /***
+     * 新增商品特殊属性
+     * @param dishes
+     * @return
+     */
+    @Insert("insert into GoodsOfSpecialProperty(goodsId,name) " +
+            "values (#{goodsId},#{name})")
+    @Options(useGeneratedKeys = true)
+    int addSpecialProperty(GoodsOfSpecialProperty dishes);
 
     /***
      * 删除
@@ -69,11 +76,17 @@ public interface GoodsCenterDao {
             " province=#{province}," +
             " city=#{city}," +
             " district=#{district}," +
-            " usedSort=#{usedSort}," +
             " videoUrl=#{videoUrl}," +
+            " usedSort=#{levelOne}," +
+            " usedSort=#{levelTwo}," +
+            " usedSort=#{levelThree}," +
+            " usedSort=#{levelFour}," +
+            " usedSort=#{levelFive}," +
+            " usedSort=#{usedSort}," +
+            " brand=#{brand}," +
+            " brandId=#{brandId}," +
             " videoCoverUrl=#{videoCoverUrl}," +
             " goodsType=#{goodsType}," +
-            " brand=#{brand}," +
             " netContent=#{netContent}," +
             " producer=#{producer}," +
             " specs=#{specs}," +
@@ -96,6 +109,7 @@ public interface GoodsCenterDao {
             " startTime=#{startTime}," +
             " spike=#{spike}," +
             " refreshTime=#{refreshTime}," +
+            " specialProperty=#{specialProperty}," +
             " galleryFeatured=#{galleryFeatured}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -112,6 +126,18 @@ public interface GoodsCenterDao {
             " where goodsId=#{goodsId}" +
             "</script>")
     int updateProperty(GoodsProperty kitchenDishes);
+
+    /***
+     * 更新商品特殊属性
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update GoodsOfSpecialProperty set" +
+            " name=#{name}" +
+            " where goodsId=#{goodsId}" +
+            "</script>")
+    int updateSpecialProperty(GoodsOfSpecialProperty kitchenDishes);
 
     /***
      * 更新删除状态
@@ -168,6 +194,13 @@ public interface GoodsCenterDao {
      */
     @Select("select * from GoodsProperty where goodsId=#{id}")
     GoodsProperty findProperty(@Param("id") long id);
+
+    /***
+     * 根据Id查询特殊属性
+     * @param id
+     */
+    @Select("select * from GoodsOfSpecialProperty where goodsId=#{id}")
+    GoodsOfSpecialProperty findSpecialProperty(@Param("id") long id);
 
     /***
      * 统计已上架,已卖出已下架,我的订单数量

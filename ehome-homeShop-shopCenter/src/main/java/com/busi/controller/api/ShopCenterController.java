@@ -500,4 +500,41 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
+
+    /***
+     * 查询商品特殊属性名称
+     * @param goodCategoryId 商品分类id
+     * @param page
+     * @param count
+     * @return
+     */
+//    @Override
+//    public ReturnData findSpecialProperty(@PathVariable long goodCategoryId, @PathVariable int page, @PathVariable int count) {
+//        //开始查询
+//        PageBean<GoodsBrandProperty> pageBean = null;
+//        GoodsBrandCategoryValue categoryValue = shopCenterService.findRelation(goodCategoryId);
+//        if (categoryValue == null) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+//        }
+//        pageBean = shopCenterService.findBrandProperty(goodCategoryId, categoryValue.getId(), page, count);
+//
+//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+//
+//    }
+
+    /***
+     * 查询商品特殊属性值
+     * @param goodsBrandPropertyId 商品属性id
+     * @param page
+     * @param count
+     * @return
+     */
+//    @Override
+//    public ReturnData findSpecialPropertyValue(@PathVariable long goodsBrandPropertyId, @PathVariable int page, @PathVariable int count) {
+//        //开始查询
+//        PageBean<GoodsBrandPropertyValue> pageBean = null;
+//        pageBean = shopCenterService.findBrandPropertyValue(goodsBrandPropertyId, page, count);
+//
+//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+//    }
 }

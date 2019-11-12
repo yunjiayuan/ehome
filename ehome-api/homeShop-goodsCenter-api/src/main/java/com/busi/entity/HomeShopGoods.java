@@ -32,9 +32,21 @@ public class HomeShopGoods {
 
     private String goodsTitle;                //标题
 
-    private String usedSort;                //商品类目 : 主键ID,类目名称
+    private int levelOne;           //商品1级分类
 
-    private String brand;                //品牌：主键ID,品牌名称
+    private int levelTwo;           //商品2级分类
+
+    private int levelThree;         //商品3级分类
+
+    private int levelFour;          //商品4级分类
+
+    private int levelFive;          //商品5级分类
+
+    private String usedSort;        //商品分类名称
+
+    private long brandId;                //品牌ID
+
+    private String brand;                //品牌名称
 
     private String netContent;                //净含量
 
@@ -106,6 +118,8 @@ public class HomeShopGoods {
 
     private int frontPlaceType;            //是否置顶：0未置顶，1已置顶
 
+    private String specialProperty;       //特殊商品属性(多个属性之间";"分隔)
+
     // 与数据库无关字段
     private String name;                //用户名
 
@@ -118,8 +132,6 @@ public class HomeShopGoods {
     private int sellingNumber;            //在卖宝贝数量
 
     private String propertyName;        //商品属性名称(多个属性之间"_"分隔)
-
-    private String propertyValue;          //商品属性的值(多个属性之间"_"分隔)
 
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 }

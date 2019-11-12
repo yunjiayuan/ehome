@@ -71,8 +71,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         GoodsProperty property = new GoodsProperty();
         property.setGoodsId(homeShopGoods.getId());
         property.setName(homeShopGoods.getPropertyName());
-//        property.setValue(homeShopGoods.getPropertyValue());
         goodsCenterService.addProperty(property);
+
+        //更新商品对应特殊属性
+//        GoodsOfSpecialProperty ofSpecialProperty = new GoodsOfSpecialProperty();
+//        ofSpecialProperty.setGoodsId(homeShopGoods.getId());
+//        ofSpecialProperty.setName(homeShopGoods.getSpecialProperty());
+//        goodsCenterService.addSpecialProperty(ofSpecialProperty);
 
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", homeShopGoods.getId());
@@ -115,8 +120,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         GoodsProperty property = new GoodsProperty();
         property.setGoodsId(homeShopGoods.getId());
         property.setName(homeShopGoods.getPropertyName());
-//        property.setValue(homeShopGoods.getPropertyValue());
         goodsCenterService.updateProperty(property);
+
+        //更新商品对应特殊属性
+//        GoodsOfSpecialProperty ofSpecialProperty = new GoodsOfSpecialProperty();
+//        ofSpecialProperty.setGoodsId(homeShopGoods.getId());
+//        ofSpecialProperty.setName(homeShopGoods.getSpecialProperty());
+//        goodsCenterService.updateSpecialProperty(ofSpecialProperty);
 
         if (!CommonUtils.checkFull(homeShopGoods.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
@@ -196,7 +206,9 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
             //查询商品对应属性
             GoodsProperty property = goodsCenterService.findProperty(id);
             posts.setPropertyName(property.getName());
-//            posts.setPropertyValue(property.getValue());
+            //查询商品对应特殊属性
+//            GoodsOfSpecialProperty goodsOfSpecialProperty = goodsCenterService.findSpecialProperty(id);
+//            posts.setSpecialProperty(goodsOfSpecialProperty.getName());
             num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
             posts.setSellingNumber(num);
             if (userInfo != null) {
