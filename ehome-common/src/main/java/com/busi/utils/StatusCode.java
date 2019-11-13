@@ -253,7 +253,10 @@ public enum StatusCode {
 	CODE_SELF_CHANNEL_VIP_NOT_JOIN_DURATION(505,"档期已排满，明天再来抢吧!"),
 
 	//家店
-	CODE_PERSONALDATA_NOT_AC(601,"个人信息未认证")
+	CODE_PERSONALDATA_NOT_AC(601,"个人信息未认证"),
+
+	//楼店
+	CODE_BOND_NOT_AC(701,"未缴纳保证金")
 
 	;
 	/*-----------业务状态码------------*/

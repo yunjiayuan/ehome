@@ -23,11 +23,11 @@ public interface GoodsCenterDao {
     @Insert("insert into HomeShopGoods(shopId,userId,imgUrl,goodsType,goodsTitle,usedSort,levelOne,levelTwo,levelThree,levelFour,levelFive,brandId,videoCoverUrl,videoUrl," +
             "brand,netContent,producer,specs,price,stock,freight,details,detailsId,barCode,code,sort,sortId," +
             "province,city,district,pinkageType,expressMode,invoice,guarantee,refunds,returnPolicy,stockCount,startTime," +
-            "spike,galleryFeatured,releaseTime,refreshTime,sellType,auditType,lat,lon,frontPlaceType,specialProperty) " +
+            "spike,galleryFeatured,releaseTime,refreshTime,sellType,auditType,lat,lon,frontPlaceType,specialProperty,usedSortId) " +
             "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{videoCoverUrl},#{videoUrl},#{levelOne},#{levelTwo},#{levelThree},#{levelFour},#{levelFive},#{brandId}," +
             "#{brand},#{netContent},#{producer},#{specs},#{price},#{stock},#{freight},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId}," +
             "#{province},#{city},#{district},#{pinkageType},#{expressMode},#{invoice},#{guarantee},#{refunds},#{returnPolicy},#{stockCount},#{startTime}," +
-            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType},#{specialProperty})")
+            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType},#{specialProperty},#{usedSortId})")
     @Options(useGeneratedKeys = true)
     int add(HomeShopGoods homeShopGoods);
 
@@ -83,6 +83,7 @@ public interface GoodsCenterDao {
             " usedSort=#{levelFour}," +
             " usedSort=#{levelFive}," +
             " usedSort=#{usedSort}," +
+            " usedSortId=#{usedSortId}," +
             " brand=#{brand}," +
             " brandId=#{brandId}," +
             " videoCoverUrl=#{videoCoverUrl}," +

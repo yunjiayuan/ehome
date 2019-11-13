@@ -209,6 +209,7 @@ public class Constants {
     public static final String REDIS_KEY_FOLLOW_COUNTS = "follow_counts_";//粉丝数对照 用户ID对应粉丝数
     public static final String REDIS_KEY_CHAT_SQUARE = "chat_square_";//聊天室在线用户对照 省ID对应在线用户
     public static final String REDIS_KEY_SELFCHANNELVIP = "selfChannelVip_";//userId与自频道会员信息对象的关系对照
+    public static final String REDIS_KEY_BONDORDER = "bondOrder_";//userId与楼店保证金订单的关系对照
     public static final String REDIS_KEY_SELFCHANNELVIP_ORDER = "selfChannelVipOrder_";//userId与自频道会员订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER = "goodNumber_order_";//userId与靓号订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER_STATUS = "goodNumber_order_status_";//"省简称ID+门票号(格式0_1001518)"与靓号订单对象关系对照
@@ -254,6 +255,7 @@ public class Constants {
     public static final String REDIS_KEY_HOURLYWORKER = "hourlyWorker_";//小时工关系对照
     public static final String REDIS_KEY_HOURLYORDERS = "hourlyOrders_";//userId与小时工订单对象关系对照
     public static final String REDIS_KEY_HOMESHOP = "homeShop_";//userId与家店对象关系对照
+    public static final String REDIS_KEY_SHOPFLOOR = "shopFloor_";//userId与楼店对象关系对照
 
 
     //redis 2库相关key配置(otherServer)

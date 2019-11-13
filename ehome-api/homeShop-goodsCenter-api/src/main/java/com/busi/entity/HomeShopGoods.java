@@ -44,6 +44,8 @@ public class HomeShopGoods {
 
     private String usedSort;        //商品分类名称
 
+    private long usedSortId;        //商品分类Id
+
     private long brandId;                //品牌ID
 
     private String brand;                //品牌名称
