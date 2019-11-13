@@ -21,13 +21,13 @@ public interface GoodsCenterDao {
      * @return
      */
     @Insert("insert into HomeShopGoods(shopId,userId,imgUrl,goodsType,goodsTitle,usedSort,levelOne,levelTwo,levelThree,levelFour,levelFive,brandId,videoCoverUrl,videoUrl," +
-            "brand,netContent,producer,specs,price,stock,freight,details,detailsId,barCode,code,sort,sortId," +
+            "brand,specs,price,stock,details,detailsId,barCode,code,sort,sortId," +
             "province,city,district,pinkageType,expressMode,invoice,guarantee,refunds,returnPolicy,stockCount,startTime," +
-            "spike,galleryFeatured,releaseTime,refreshTime,sellType,auditType,lat,lon,frontPlaceType,specialProperty,usedSortId) " +
-            "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{videoCoverUrl},#{videoUrl},#{levelOne},#{levelTwo},#{levelThree},#{levelFour},#{levelFive},#{brandId}," +
-            "#{brand},#{netContent},#{producer},#{specs},#{price},#{stock},#{freight},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId}," +
+            "spike,galleryFeatured,releaseTime,refreshTime,sellType,auditType,frontPlaceType,specialProperty,usedSortId) " +
+            "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{levelOne},#{levelTwo},#{levelThree},#{levelFour},#{levelFive},#{brandId},#{videoCoverUrl},#{videoUrl}," +
+            "#{brand},#{specs},#{price},#{stock},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId}," +
             "#{province},#{city},#{district},#{pinkageType},#{expressMode},#{invoice},#{guarantee},#{refunds},#{returnPolicy},#{stockCount},#{startTime}," +
-            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{lat},#{lon},#{frontPlaceType},#{specialProperty},#{usedSortId})")
+            "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{frontPlaceType},#{specialProperty},#{usedSortId})")
     @Options(useGeneratedKeys = true)
     int add(HomeShopGoods homeShopGoods);
 
@@ -77,23 +77,20 @@ public interface GoodsCenterDao {
             " city=#{city}," +
             " district=#{district}," +
             " videoUrl=#{videoUrl}," +
-            " usedSort=#{levelOne}," +
-            " usedSort=#{levelTwo}," +
-            " usedSort=#{levelThree}," +
-            " usedSort=#{levelFour}," +
-            " usedSort=#{levelFive}," +
+            " levelOne=#{levelOne}," +
+            " levelTwo=#{levelTwo}," +
+            " levelThree=#{levelThree}," +
+            " levelFour=#{levelFour}," +
+            " levelFive=#{levelFive}," +
             " usedSort=#{usedSort}," +
             " usedSortId=#{usedSortId}," +
             " brand=#{brand}," +
             " brandId=#{brandId}," +
             " videoCoverUrl=#{videoCoverUrl}," +
             " goodsType=#{goodsType}," +
-            " netContent=#{netContent}," +
-            " producer=#{producer}," +
             " specs=#{specs}," +
             " price=#{price}," +
             " stock=#{stock}," +
-            " freight=#{freight}," +
             " detailsId=#{detailsId}," +
             " barCode=#{barCode}," +
             " code=#{code}," +
@@ -101,8 +98,6 @@ public interface GoodsCenterDao {
             " sortId=#{sortId}," +
             " pinkageType=#{pinkageType}," +
             " expressMode=#{expressMode}," +
-            " lat=#{lat}," +
-            " lon=#{lon}," +
             " guarantee=#{guarantee}," +
             " refunds=#{refunds}," +
             " returnPolicy=#{returnPolicy}," +

@@ -186,52 +186,36 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         if (id <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
-        //查询缓存 缓存中不存在 查询数据库
         int num = 0;
         HomeShopGoods posts = null;
-        Map<String, Object> otherPostsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_USEDDEAL + id + 0);
-        if (otherPostsMap == null || otherPostsMap.size() <= 0) {
-            posts = goodsCenterService.findUserById(id);
-            if (posts == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-            }
-            //商品是下架状态或者查看者不是本人时禁止查看
-            if (posts.getSellType() != 0) {
-                if (posts.getUserId() != CommonUtils.getMyId()) {
-                    return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "您要查看的商品已下架或已被主人删除", new JSONObject());
-                }
-            }
-            UserInfo userInfo = null;
-            userInfo = userInfoUtils.getUserInfo(posts.getUserId());
-            //查询商品对应属性
-            GoodsProperty property = goodsCenterService.findProperty(id);
-            posts.setPropertyName(property.getName());
-            //查询商品对应特殊属性
-//            GoodsOfSpecialProperty goodsOfSpecialProperty = goodsCenterService.findSpecialProperty(id);
-//            posts.setSpecialProperty(goodsOfSpecialProperty.getName());
-            num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
-            posts.setSellingNumber(num);
-            if (userInfo != null) {
-                posts.setName(userInfo.getName());
-                posts.setHead(userInfo.getHead());
-                posts.setProTypeId(userInfo.getProType());
-                posts.setHouseNumber(userInfo.getHouseNumber());
-            }
-            //放入缓存
-            otherPostsMap = CommonUtils.objectToMap(posts);
-        } else {
-            posts = (HomeShopGoods) CommonUtils.mapToObject(otherPostsMap, HomeShopGoods.class);
-            if (posts == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-            }
-            //商品是下架状态或者查看者不是本人时禁止查看
-            if (posts.getSellType() != 0) {
-                if (posts.getUserId() != CommonUtils.getMyId()) {
-                    return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "您要查看的商品已下架或已被主人删除", new JSONObject());
-                }
+        posts = goodsCenterService.findUserById(id);
+        if (posts == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        //商品是下架状态或者查看者不是本人时禁止查看
+        if (posts.getSellType() != 0) {
+            if (posts.getUserId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "您要查看的商品已下架或已被主人删除", new JSONObject());
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
+        UserInfo userInfo = null;
+        userInfo = userInfoUtils.getUserInfo(posts.getUserId());
+        //查询商品对应属性
+        GoodsProperty property = goodsCenterService.findProperty(id);
+        posts.setPropertyName(property.getName());
+        //查询商品对应特殊属性
+//            GoodsOfSpecialProperty goodsOfSpecialProperty = goodsCenterService.findSpecialProperty(id);
+//            posts.setSpecialProperty(goodsOfSpecialProperty.getName());
+        num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
+        posts.setSellingNumber(num);
+        if (userInfo != null) {
+            posts.setName(userInfo.getName());
+            posts.setHead(userInfo.getHead());
+            posts.setProTypeId(userInfo.getProType());
+            posts.setHouseNumber(userInfo.getHouseNumber());
+        }
+        Map<String, Object> map = CommonUtils.objectToMap(posts);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
