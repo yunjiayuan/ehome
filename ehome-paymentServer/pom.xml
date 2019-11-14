@@ -33,6 +33,11 @@
             <artifactId>ehome-activity</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.ehome</groupId>
+            <artifactId>ehome-homeShop-shopCenter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
