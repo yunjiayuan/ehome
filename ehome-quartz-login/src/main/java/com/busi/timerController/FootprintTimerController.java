@@ -23,7 +23,7 @@ public class FootprintTimerController {
     @Autowired
     FootprintService footprintService;
 
-    @Scheduled(cron = "0 0 0 * * ?") // 每天零点执行一次
+    @Scheduled(cron = "0 1 0 * * ?") // 每天零点执行一次
     public void cashbackMembership() {
         //更新无离开时间的脚印记录
         List list = footprintService.find();

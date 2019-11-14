@@ -3,6 +3,7 @@ package com.busi.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
 
@@ -30,6 +31,7 @@ public class HomeShopGoods {
 
     private int goodsType;                //商品类型:0全新  1二手
 
+    @Length(min = 1, max = 30, message = "goodsTitle参数超出合法范围")
     private String goodsTitle;                //标题
 
     private int levelOne;           //商品1级分类
@@ -50,9 +52,9 @@ public class HomeShopGoods {
 
     private String brand;                //品牌名称
 
-    private String netContent;                //净含量
-
-    private String producer;                //产地
+//    private String netContent;                //净含量
+//
+//    private String producer;                //产地
 
     private String specs;                //规格
 
@@ -60,7 +62,7 @@ public class HomeShopGoods {
 
     private int stock;                //库存
 
-    private int freight;                //运费
+//    private int freight;                //运费
 
     private String details;                //商品详情描述
 
@@ -114,9 +116,9 @@ public class HomeShopGoods {
 
     private int sellType;                //商品买卖状态 : 0已上架，1已下架，2已卖出
 
-    private double lat;                    //纬度
-
-    private double lon;                    //经度
+//    private double lat;                    //纬度
+//
+//    private double lon;                    //经度
 
     private int frontPlaceType;            //是否置顶：0未置顶，1已置顶
 
