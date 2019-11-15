@@ -48,6 +48,10 @@ public class ShopFloor {
 
     private String address;                // 详细地址
 
+    private String villageName;                // 小区名称
+
+    private String villageOnly;                // 小区唯一标识
+
     // 与数据库无关字段
 //    private String name;                //用户名
 //
@@ -57,5 +61,7 @@ public class ShopFloor {
 //
 //    private long houseNumber;            //门牌号
 
-    private String delImgUrls;//将要删除的图片地址组合 “,”分隔
+    private String delImgUrls;      //将要删除的图片地址组合 “,”分隔
+
+//    private int villageIs;            //是否存在  0没有  1有
 }

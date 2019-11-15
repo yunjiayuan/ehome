@@ -378,14 +378,14 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         list = pageBean.getList();
         if (list != null && list.size() > 0) {
             //判断该类目下是否存在品牌
-            for (int i = 0; i < list.size(); i++) {
-                GoodsCategory goodsCategory1 = list.get(i);
-                if (goodsCategory1 != null) {
-                    if (goodsCategory1.getId() >= 2581 && goodsCategory1.getId() <= 3552) {
-                        goodsCategory1.setBrand(1);
-                    }
-                }
-            }
+//            for (int i = 0; i < list.size(); i++) {
+//                GoodsCategory goodsCategory1 = list.get(i);
+//                if (goodsCategory1 != null) {
+//                    if (goodsCategory1.getId() >= 2581 && goodsCategory1.getId() <= 3552) {
+//                        goodsCategory1.setBrand(1);
+//                    }
+//                }
+//            }
             //模糊查询时返回组合ID跟名称
             String name = null;
             if (!CommonUtils.checkFull(letter)) {
@@ -395,7 +395,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
                         GoodsCategory cate = null;
                         GoodsCategory goodsCategory = new GoodsCategory();
                         goodsCategory.setId(category.getId());//分类ID
-                        goodsCategory.setBrand(category.getBrand());//是否包含品牌  0没有 1有
+//                        goodsCategory.setBrand(category.getBrand());//是否包含品牌  0没有 1有
                         goodsCategory.setIds(category.getLevelOne() + "," + category.getLevelTwo() + "," + category.getLevelThree() + "," + category.getLevelFour() + "," + category.getLevelFive());
                         cate = shopCenterService.findList2(category.getLevelOne(), -1, -1, -1, -1);
                         name = cate.getName();

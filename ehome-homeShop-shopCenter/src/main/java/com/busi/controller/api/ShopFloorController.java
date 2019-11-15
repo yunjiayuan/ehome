@@ -1,11 +1,9 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.ReturnData;
-import com.busi.entity.ShopFloor;
-import com.busi.entity.ShopFloorBondOrders;
-import com.busi.entity.UserAccountSecurity;
+import com.busi.entity.*;
 import com.busi.service.ShopFloorService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -187,7 +183,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData addBondOrder(@Valid ShopFloorBondOrders shopFloorBondOrders, BindingResult bindingResult) {
+    public ReturnData addBondOrder(@Valid @RequestBody ShopFloorBondOrders shopFloorBondOrders, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -204,5 +200,97 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         Map<String, Object> ordersMap = CommonUtils.objectToMap(shopFloorBondOrders);
         redisUtils.hmset(Constants.REDIS_KEY_BONDORDER + CommonUtils.getMyId() + "_" + shopFloorBondOrders.getOrderNumber(), ordersMap, Constants.TIME_OUT_MINUTE_5);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", noRandom);
+    }
+
+    /***
+     * 查询小区
+     * @param villageOnly
+     * @return
+     */
+    @Override
+    public ReturnData findVillage(@PathVariable String villageOnly) {
+        if (CommonUtils.checkFull(villageOnly)) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        String[] array = villageOnly.split(",");
+        List list = null;
+        List<ShopFloor> list1 = new ArrayList();
+        list = shopCenterService.find();
+        for (int j = 0; j < array.length; j++) {
+            for (int i = 0; i < list.size(); i++) {
+                ShopFloor shopFloor = (ShopFloor) list.get(i);
+                if (shopFloor != null) {
+                    ShopFloor floor = new ShopFloor();
+                    floor.setId(shopFloor.getId());
+                    floor.setVillageOnly(array[j]);
+                    floor.setUserId(shopFloor.getUserId());
+                    if (shopFloor.getVillageOnly().equals(array[j])) {
+//                        floor.setVillageIs(1);
+                        list1.add(floor);
+                        continue;
+                    }
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list1);
+    }
+
+    /***
+     * 新增永辉分类
+     * @param yongHuiGoodsSort
+     * @return
+     */
+    @Override
+    public ReturnData addYHSort(@Valid @RequestBody YongHuiGoodsSort yongHuiGoodsSort, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        shopCenterService.addYHSort(yongHuiGoodsSort);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新永辉分类
+     * @param yongHuiGoodsSort
+     * @return
+     */
+    @Override
+    public ReturnData changeYHSort(@Valid @RequestBody YongHuiGoodsSort yongHuiGoodsSort, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        shopCenterService.changeYHSort(yongHuiGoodsSort);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询永辉分类
+     * @param levelOne 商品1级分类  默认为0, -2为不限
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param letter 商品分类首字母  默认为null
+     * @return
+     */
+    @Override
+    public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable String letter) {
+        List<YongHuiGoodsSort> list = null;
+        list = shopCenterService.findYHSort(levelOne, levelTwo, letter);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
+    }
+
+    /**
+     * @Description: 删除永辉分类
+     * @return:
+     */
+    @Override
+    public ReturnData delYHSort(@PathVariable String ids) {
+        //验证参数
+        if (CommonUtils.checkFull(ids)) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+        }
+        shopCenterService.delYHSort(ids.split(","));
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
