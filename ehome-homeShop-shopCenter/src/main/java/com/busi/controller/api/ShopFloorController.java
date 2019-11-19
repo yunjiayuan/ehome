@@ -53,15 +53,18 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId());
             if (kitchen2 != null) {
-                //放入缓存
-                kitchenMap = CommonUtils.objectToMap(kitchen2);
-                redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+//                //放入缓存
+////                kitchenMap = CommonUtils.objectToMap(kitchen2);
+////                redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增楼店失败，楼店已存在！", new JSONObject());
             }
-        }
-        ShopFloor ik = (ShopFloor) CommonUtils.mapToObject(kitchenMap, ShopFloor.class);
-        if (ik != null) {
+        }else{
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增楼店失败，楼店已存在！", new JSONObject());
         }
+//        ShopFloor ik = (ShopFloor) CommonUtils.mapToObject(kitchenMap, ShopFloor.class);
+//        if (ik != null) {
+//            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增楼店失败，楼店已存在！", new JSONObject());
+//        }
         homeShopCenter.setAddTime(new Date());
         homeShopCenter.setUserId(CommonUtils.getMyId());
         shopCenterService.addHomeShop(homeShopCenter);

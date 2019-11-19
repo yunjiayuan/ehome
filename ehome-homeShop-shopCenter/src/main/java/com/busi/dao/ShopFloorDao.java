@@ -92,8 +92,8 @@ public interface ShopFloorDao {
      * @param homeShopCenter
      * @return
      */
-    @Insert("insert into YongHuiGoodsSort(name,levelOne,levelTwo,letter,picture)" +
-            "values (#{name},#{levelOne},#{levelTwo},#{letter},#{picture})")
+    @Insert("insert into YongHuiGoodsSort(name,levelOne,levelTwo,letter,picture,enabled)" +
+            "values (#{name},#{levelOne},#{levelTwo},#{letter},#{picture},#{enabled})")
     @Options(useGeneratedKeys = true)
     int addYHSort(YongHuiGoodsSort homeShopCenter);
 
@@ -109,6 +109,7 @@ public interface ShopFloorDao {
             " levelTwo=#{levelTwo}," +
             " letter=#{letter}," +
             " picture=#{picture}" +
+            " enabled=#{enabled}" +
             " where id=#{id}" +
             "</script>")
     int changeYHSort(YongHuiGoodsSort homeShopCenter);
@@ -130,12 +131,13 @@ public interface ShopFloorDao {
             " and levelOne > -1" +
             " and levelTwo = -1" +
             "</if>" +
-            "<if test=\"levelTwo >= 0 \">" +
+            " and enabled = 0" +
+            /*"<if test=\"levelTwo >= 0 \">" +
             " and levelTwo = #{levelTwo}" +
             "</if>" +
             "<if test=\"levelTwo == -2 \">" +
             " and levelTwo > -1" +
-            "</if>" +
+            "</if>" +*/
             "</script>")
     List<YongHuiGoodsSort> findYHSort(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo,@Param("letter") String letter);
 
