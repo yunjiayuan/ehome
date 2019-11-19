@@ -25,4 +25,6 @@ public class YongHuiGoodsSort {
 
     private String picture;//商品图片
 
+    private int enabled;//是否启用此类型 0默认启用 1关闭此类型
+
 }
