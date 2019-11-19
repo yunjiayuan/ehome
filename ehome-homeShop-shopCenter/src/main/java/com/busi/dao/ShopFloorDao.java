@@ -108,7 +108,7 @@ public interface ShopFloorDao {
             " levelOne=#{levelOne}," +
             " levelTwo=#{levelTwo}," +
             " letter=#{letter}," +
-            " picture=#{picture}" +
+            " picture=#{picture}," +
             " enabled=#{enabled}" +
             " where id=#{id}" +
             "</script>")
