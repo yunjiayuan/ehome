@@ -93,11 +93,12 @@ public interface ShopFloorApiController {
      * 查询永辉分类
      * @param levelOne 商品1级分类
      * @param levelTwo 商品2级分类
+     * @param levelThree 商品3级分类
      * @param letter 商品分类首字母
      * @return
      */
-    @GetMapping("findYHSort/{levelOne}/{levelTwo}/{letter}")
-    ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable String letter);
+    @GetMapping("findYHSort/{levelOne}/{levelTwo}/{levelThree}/{letter}")
+    ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo,@PathVariable int levelThree, @PathVariable String letter);
 
     /**
      * @Description: 删除永辉分类

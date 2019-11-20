@@ -118,14 +118,15 @@ public class ShopFloorService {
 
     /***
      * 查询商品分类
-     * @param levelOne 商品1级分类  默认为0, -2为不限
-     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelOne 商品1级分类   -2为不限
+     * @param levelTwo 商品2级分类   -2为不限
+     * @param levelTwo 商品3级分类   -2为不限
      * @param letter 商品分类首字母
      * @return
      */
-    public List<YongHuiGoodsSort> findYHSort(int levelOne, int levelTwo, String letter) {
+    public List<YongHuiGoodsSort> findYHSort(int levelOne, int levelTwo, int levelThree, String letter) {
         List<YongHuiGoodsSort> list = null;
-        list = shopCenterDao.findYHSort(levelOne, levelTwo,letter);
+        list = shopCenterDao.findYHSort(levelOne, levelTwo,levelThree,letter);
         return list;
     }
 }

@@ -1,6 +1,5 @@
 package com.busi.controller.api;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
@@ -276,9 +275,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable String letter) {
+    public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo,@PathVariable int levelThree, @PathVariable String letter) {
         List<YongHuiGoodsSort> list = null;
-        list = shopCenterService.findYHSort(levelOne, levelTwo, letter);
+        list = shopCenterService.findYHSort(levelOne, levelTwo,levelThree, letter);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }

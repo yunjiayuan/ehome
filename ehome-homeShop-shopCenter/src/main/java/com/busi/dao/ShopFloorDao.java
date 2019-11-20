@@ -92,10 +92,50 @@ public interface ShopFloorDao {
      * @param homeShopCenter
      * @return
      */
-    @Insert("insert into YongHuiGoodsSort(name,levelOne,levelTwo,letter,picture,enabled)" +
-            "values (#{name},#{levelOne},#{levelTwo},#{letter},#{picture},#{enabled})")
+    @Insert("insert into YongHuiGoodsSort(name,levelOne,levelTwo,levelThree,letter,picture,enabled)" +
+            "values (#{name},#{levelOne},#{levelTwo},#{levelThree},#{letter},#{picture},#{enabled})")
     @Options(useGeneratedKeys = true)
     int addYHSort(YongHuiGoodsSort homeShopCenter);
+
+    /***
+     * 查询永辉分类
+     * @param levelOne 商品1级分类    -2为不限
+     * @param levelTwo 商品2级分类    -2为不限
+     * @param levelThree 商品3级分类  -2为不限
+     * @return
+     */
+    @Select("<script>" +
+            "select * from YongHuiGoodsSort" +
+            " where 1=1" +
+
+            "<if test=\"levelOne == -2 \">" +
+                " and levelOne > -1" +
+                " and levelTwo = -1" +
+                " and levelThree = -1" +
+            "</if>" +
+
+            "<if test=\"levelOne >= 0 \">" +
+                "<if test=\"levelTwo == -2 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo > -1" +
+                    " and levelThree = -1" +
+                "</if>" +
+                "<if test=\"levelTwo > -1 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo = #{levelTwo}" +
+                    " and levelThree > -1" +
+                "</if>" +
+            "</if>" +
+
+            " and enabled = 0" +
+            /*"<if test=\"levelTwo >= 0 \">" +
+            " and levelTwo = #{levelTwo}" +
+            "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelTwo > -1" +
+            "</if>" +*/
+            "</script>")
+    List<YongHuiGoodsSort> findYHSort(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree,@Param("letter") String letter);
 
     /***
      * 更新永辉分类
@@ -107,39 +147,13 @@ public interface ShopFloorDao {
             " name=#{name}," +
             " levelOne=#{levelOne}," +
             " levelTwo=#{levelTwo}," +
+            " levelThree=#{levelThree}," +
             " letter=#{letter}," +
             " picture=#{picture}," +
             " enabled=#{enabled}" +
             " where id=#{id}" +
             "</script>")
     int changeYHSort(YongHuiGoodsSort homeShopCenter);
-
-    /***
-     * 查询永辉分类
-     * @param levelOne 商品1级分类  默认为0, -2为不限
-     * @param levelTwo 商品2级分类  默认为0, -2为不限
-     * @return
-     */
-    @Select("<script>" +
-            "select * from YongHuiGoodsSort" +
-            " where 1=1" +
-            "<if test=\"levelOne >= 0 \">" +
-            " and levelTwo > -1" +
-            " and levelOne = #{levelOne}" +
-            "</if>" +
-            "<if test=\"levelOne == -2 \">" +
-            " and levelOne > -1" +
-            " and levelTwo = -1" +
-            "</if>" +
-            " and enabled = 0" +
-            /*"<if test=\"levelTwo >= 0 \">" +
-            " and levelTwo = #{levelTwo}" +
-            "</if>" +
-            "<if test=\"levelTwo == -2 \">" +
-            " and levelTwo > -1" +
-            "</if>" +*/
-            "</script>")
-    List<YongHuiGoodsSort> findYHSort(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo,@Param("letter") String letter);
 
 
     /***

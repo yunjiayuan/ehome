@@ -21,6 +21,8 @@ public class YongHuiGoodsSort {
 
     private int levelTwo;//商品2级分类
 
+    private int levelThree;//商品3级分类
+
     private String letter;//商品分类首字母
 
     private String picture;//商品图片
