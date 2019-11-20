@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * 商品信息相关DAO
- * author：SunTianJie
+ * author：ZJJ
  * create time：2019-4-17 15:33:37
  */
 @Mapper
