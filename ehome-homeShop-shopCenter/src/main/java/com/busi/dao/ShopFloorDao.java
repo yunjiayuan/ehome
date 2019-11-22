@@ -123,17 +123,16 @@ public interface ShopFloorDao {
                 "<if test=\"levelTwo > -1 \">" +
                     " and levelOne = #{levelOne}" +
                     " and levelTwo = #{levelTwo}" +
-                    " and levelThree > -1" +
+                    "<if test=\"levelThree >= 0\">" +
+                        " and levelThree = #{levelThree}" +
+                    "</if>" +
+                    "<if test=\"levelThree == -2\">" +
+                        " and levelThree > -1" +
+                    "</if>" +
                 "</if>" +
             "</if>" +
 
             " and enabled = 0" +
-            /*"<if test=\"levelTwo >= 0 \">" +
-            " and levelTwo = #{levelTwo}" +
-            "</if>" +
-            "<if test=\"levelTwo == -2 \">" +
-            " and levelTwo > -1" +
-            "</if>" +*/
             "</script>")
     List<YongHuiGoodsSort> findYHSort(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree,@Param("letter") String letter);
 
