@@ -52,18 +52,11 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId());
             if (kitchen2 != null) {
-//                //放入缓存
-////                kitchenMap = CommonUtils.objectToMap(kitchen2);
-////                redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增楼店失败，楼店已存在！", new JSONObject());
             }
-        }else{
+        } else {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增楼店失败，楼店已存在！", new JSONObject());
         }
-//        ShopFloor ik = (ShopFloor) CommonUtils.mapToObject(kitchenMap, ShopFloor.class);
-//        if (ik != null) {
-//            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增楼店失败，楼店已存在！", new JSONObject());
-//        }
         homeShopCenter.setAddTime(new Date());
         homeShopCenter.setUserId(CommonUtils.getMyId());
         shopCenterService.addHomeShop(homeShopCenter);
@@ -194,7 +187,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         String noTime = String.valueOf(time);
         String random = CommonUtils.getRandom(6, 1);
         String noRandom = CommonUtils.strToMD5(noTime + CommonUtils.getMyId() + random, 16);
-        shopFloorBondOrders.setMoney(30000);
+        shopFloorBondOrders.setMoney(0.01);
         shopFloorBondOrders.setOrderNumber(noRandom);
         shopFloorBondOrders.setTime(new Date());
         shopFloorBondOrders.setUserId(CommonUtils.getMyId());
@@ -222,12 +215,11 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             for (int i = 0; i < list.size(); i++) {
                 ShopFloor shopFloor = (ShopFloor) list.get(i);
                 if (shopFloor != null) {
-                    ShopFloor floor = new ShopFloor();
-                    floor.setId(shopFloor.getId());
-                    floor.setVillageOnly(array[j]);
-                    floor.setUserId(shopFloor.getUserId());
                     if (shopFloor.getVillageOnly().equals(array[j])) {
-//                        floor.setVillageIs(1);
+                        ShopFloor floor = new ShopFloor();
+                        floor.setId(shopFloor.getId());
+                        floor.setVillageOnly(array[j]);
+                        floor.setUserId(shopFloor.getUserId());
                         list1.add(floor);
                         continue;
                     }
@@ -271,13 +263,14 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * 查询永辉分类
      * @param levelOne 商品1级分类  默认为0, -2为不限
      * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
      * @param letter 商品分类首字母  默认为null
      * @return
      */
     @Override
-    public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo,@PathVariable int levelThree, @PathVariable String letter) {
+    public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable String letter) {
         List<YongHuiGoodsSort> list = null;
-        list = shopCenterService.findYHSort(levelOne, levelTwo,levelThree, letter);
+        list = shopCenterService.findYHSort(levelOne, levelTwo, levelThree, letter);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }

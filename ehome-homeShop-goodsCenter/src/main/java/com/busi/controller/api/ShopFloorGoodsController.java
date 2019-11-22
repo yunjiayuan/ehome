@@ -182,24 +182,25 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
 
     /***
      * 分页查询商品
-     * @param shopId  店铺ID
-     * @param sort  查询条件:-1全部  0出售中，1仓库中，2已预约
-     * @param stock  库存：0倒序 1正序
-     * @param time  时间：0倒序 1正序
-     * @param goodsSort  分类
+     * @param sort  排序条件:0默认销量倒序，1最新发布 2价格最低，3价格最高 4有货 5没货
+     * @param minPrice  最小价格
+     * @param maxPrice  最大价格
+     * @param levelOne  一级分类:默认值为0,-2为不限
+     * @param levelTwo  二级分类:默认值为0,-2为不限
+     * @param levelThree  三级分类:默认值为0,-2为不限
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
     @Override
-    public ReturnData findFloorGoodsList(@PathVariable int sort, @PathVariable long shopId, @PathVariable int stock, @PathVariable int time, @PathVariable long goodsSort, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findFloorGoodsList(@PathVariable int sort, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<ShopFloorGoods> pageBean = null;
-        pageBean = goodsCenterService.findDishesSortList(sort, shopId, stock, time, goodsSort, page, count);
+        pageBean = goodsCenterService.findDishesSortList(sort, minPrice, maxPrice, levelOne, levelTwo, levelThree, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

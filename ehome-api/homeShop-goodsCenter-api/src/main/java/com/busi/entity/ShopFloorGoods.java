@@ -21,8 +21,6 @@ public class ShopFloorGoods {
 
     private long userId;                //用户
 
-    private long shopId;                //店铺ID
-
     private String imgUrl;            //图片
 
     private String videoUrl;        //视频地址
@@ -32,7 +30,7 @@ public class ShopFloorGoods {
     @Length(min = 1, max = 30, message = "goodsTitle参数超出合法范围")
     private String goodsTitle;                //标题
 
-    @Length(min = 1, max = 140, message = "basicDescribe参数超出合法范围")
+    @Length(max = 140, message = "basicDescribe参数超出合法范围")
     private String basicDescribe;                //基本描述
 
     private int levelOne;           //商品1级分类
@@ -45,15 +43,15 @@ public class ShopFloorGoods {
 
     private String usedSort;        //商品分类名称
 
-    private long usedSortId;        //商品分类Id
-
     private String specs;                //规格
 
     private double price;                //价格
 
     private int discount;                //折扣
 
-    private int stock;                //库存
+    private int stock;                   //库存
+
+    private long sales;                     //销量
 
     private String details;                //商品详情描述
 

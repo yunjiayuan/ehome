@@ -86,24 +86,21 @@ public class ShopFloorGoodsService {
 
     /***
      * 分页查询商品
-     * @param shopId  店铺ID
-     * @param sort  查询条件:-1全部 0出售中，1仓库中，2已预约
-     * @param stock  库存：0倒序 1正序
-     * @param time  时间：0倒序 1正序
-     * @param goodsSort  分类
+     * @param sort  排序条件:0默认销量排序，1最新发布
+     * @param minPrice  最小价格
+     * @param maxPrice  最大价格
+     * @param levelOne  一级分类:默认值为0,-2为不限
+     * @param levelTwo  二级分类:默认值为0,-2为不限
+     * @param levelThree  三级分类:默认值为0,-2为不限
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<ShopFloorGoods> findDishesSortList(int sort, long shopId, int stock, int time, long goodsSort, int page, int count) {
+    public PageBean<ShopFloorGoods> findDishesSortList(int sort, int minPrice, int maxPrice, int levelOne, int levelTwo, int levelThree, int page, int count) {
 
         List<ShopFloorGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        if (stock == 1) {
-            list = goodsCenterDao.findDishesSortList(sort, shopId, stock, goodsSort);
-        } else {
-            list = goodsCenterDao.findDishesSortList2(sort, shopId, time, goodsSort);
-        }
+        list = goodsCenterDao.findDishesSortList(sort, minPrice, maxPrice, levelOne, levelTwo, levelThree);
         return PageUtils.getPageBean(p, list);
     }
 

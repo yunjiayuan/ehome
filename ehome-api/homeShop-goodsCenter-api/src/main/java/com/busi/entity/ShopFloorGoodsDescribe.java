@@ -17,8 +17,6 @@ public class ShopFloorGoodsDescribe {
 
     private long userId;                //用户
 
-    private long shopId;                //店铺ID
-
     private String imgUrl;              //图片
 
     private String content;             //内容

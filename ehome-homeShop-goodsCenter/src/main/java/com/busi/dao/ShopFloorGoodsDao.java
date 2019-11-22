@@ -21,12 +21,12 @@ public interface ShopFloorGoodsDao {
      * @param homeShopGoods
      * @return
      */
-    @Insert("insert into ShopFloorGoods(shopId,userId,imgUrl,goodsTitle,basicDescribe,usedSort,levelOne,levelTwo,levelThree,videoCoverUrl,videoUrl," +
+    @Insert("insert into ShopFloorGoods(userId,imgUrl,goodsTitle,basicDescribe,usedSort,levelOne,levelTwo,levelThree,videoCoverUrl,videoUrl," +
             "specs,price,stock,details,detailsId," +
-            "releaseTime,refreshTime,sellType,auditType,usedSortId,extendSort,discount) " +
-            "values (#{shopId},#{userId},#{imgUrl},#{goodsTitle},#{basicDescribe},#{usedSort},#{levelOne},#{levelTwo},#{levelThree},#{videoCoverUrl},#{videoUrl}," +
+            "releaseTime,refreshTime,sellType,auditType,extendSort,discount) " +
+            "values (#{userId},#{imgUrl},#{goodsTitle},#{basicDescribe},#{usedSort},#{levelOne},#{levelTwo},#{levelThree},#{videoCoverUrl},#{videoUrl}," +
             "#{specs},#{price},#{stock},#{details},#{detailsId}," +
-            "#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{usedSortId},#{extendSort},#{discount})")
+            "#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{extendSort},#{discount})")
     @Options(useGeneratedKeys = true)
     int add(ShopFloorGoods homeShopGoods);
 
@@ -48,8 +48,6 @@ public interface ShopFloorGoodsDao {
             " levelOne=#{levelOne}," +
             " levelTwo=#{levelTwo}," +
             " usedSort=#{usedSort}," +
-            " usedSortId=#{usedSortId}," +
-            " extendSort=#{extendSort}," +
             " videoCoverUrl=#{videoCoverUrl}," +
             " specs=#{specs}," +
             " price=#{price}," +
@@ -119,65 +117,76 @@ public interface ShopFloorGoodsDao {
 
     /***
      * 分页查询商品
-     * @param shopId  店铺ID
-     * @param sort  排序条件: -1全部 0出售中，1仓库中，2已预约
-     * @param stock  库存：0倒序 1正序
-     * @param goodsSort  分类
+     * @param sort  排序条件:0默认销量排序，1最新发布 2价格最低，3价格最高 4有货 5没货
+     * @param minPrice  最小价格
+     * @param maxPrice  最大价格
+     * @param levelOne  一级分类:默认值为0,-2为不限
+     * @param levelTwo  二级分类:默认值为0,-2为不限
+     * @param levelThree  三级分类:默认值为0,-2为不限
      * @return
      */
     @Select("<script>" +
             "select * from ShopFloorGoods" +
-            " where shopId = #{shopId} and deleteType=0" +
-            "<if test=\"sort != -1\">" +
-            " and sellType = #{sort}" +
-            "</if>" +
-            "<if test=\"goodsSort > 0\">" +
-            " and sortId = #{goodsSort}" +
-            "</if>" +
-            "<if test=\"stock == 1\">" +
-            " order by stock asc" +
-            "</if>" +
-            "<if test=\"stock == 0\">" +
-            " order by stock desc" +
-            "</if>" +
-            " ,refreshTime desc" +
-            "</script>")
-    List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort, @Param("shopId") long shopId, @Param("stock") int stock, @Param("goodsSort") long goodsSort);
+            " where deleteType=0 and sellType=0" +
 
-    /***
-     * 分页查询商品
-     * @param shopId  店铺ID
-     * @param sort  排序条件:0出售中，1仓库中，2已预约
-     * @param time  时间：0倒序 1正序
-     * @param goodsSort  分类
-     * @return
-     */
-    @Select("<script>" +
-            "select * from ShopFloorGoods" +
-            " where shopId = #{shopId} and deleteType=0" +
-            "<if test=\"sort != -1\">" +
-            " and sellType = #{sort}" +
+            "<if test=\"levelOne == -2 \">" +
+                " and levelOne > -1" +
+                " and levelTwo = -1" +
+                " and levelThree = -1" +
             "</if>" +
-            "<if test=\"goodsSort > 0\">" +
-            " and sortId = #{goodsSort}" +
+
+            "<if test=\"levelOne >= 0 \">" +
+                "<if test=\"levelTwo == -2 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo > -1" +
+                    " and levelThree = -1" +
+                "</if>" +
+                "<if test=\"levelTwo > -1 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo = #{levelTwo}" +
+                    "<if test=\"levelThree >= 0\">" +
+                        " and levelThree = #{levelThree}" +
+                    "</if>" +
+                    "<if test=\"levelThree == -2\">" +
+                        " and levelThree > -1" +
+                    "</if>" +
+                "</if>" +
             "</if>" +
-            "<if test=\"time == 0\">" +
+
+            "<if test=\"maxPrice > 0\">" +
+            " and price >= #{minPrice} and price &lt;= #{maxPrice}" +
+            "</if>" +
+            "<if test=\"maxPrice &lt;= 0\">" +
+            " and price >= #{minPrice}" +
+            "</if>" +
+            "<if test=\"sort == 0\">" +
+            " order by sales desc" +
+            "</if>" +
+            "<if test=\"sort == 1\">" +
             " order by refreshTime desc" +
             "</if>" +
-            "<if test=\"time == 1\">" +
-            " order by refreshTime asc" +
+            "<if test=\"sort == 2\">" +
+            " order by price asc" +
             "</if>" +
-            " ,stock desc" +
+            "<if test=\"sort == 3\">" +
+            " order by price desc" +
+            "</if>" +
+            "<if test=\"sort == 4\">" +
+            " order by stock desc" +
+            "</if>" +
+            "<if test=\"sort == 5\">" +
+            " order by stock asc" +
+            "</if>" +
             "</script>")
-    List<ShopFloorGoods> findDishesSortList2(@Param("sort") int sort, @Param("shopId") long shopId, @Param("time") int time, @Param("goodsSort") long goodsSort);
+    List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
     /***
      * 新增商品描述
      * @param dishes
      * @return
      */
-    @Insert("insert into ShopFloorGoodsDescribe(userId,imgUrl,shopId,content) " +
-            "values (#{userId},#{imgUrl},#{shopId},#{content})")
+    @Insert("insert into ShopFloorGoodsDescribe(userId,imgUrl,content) " +
+            "values (#{userId},#{imgUrl},#{content})")
     @Options(useGeneratedKeys = true)
     int addGoodsDescribe(ShopFloorGoodsDescribe dishes);
 
