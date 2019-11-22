@@ -187,7 +187,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         String noTime = String.valueOf(time);
         String random = CommonUtils.getRandom(6, 1);
         String noRandom = CommonUtils.strToMD5(noTime + CommonUtils.getMyId() + random, 16);
-        shopFloorBondOrders.setMoney(0.01);
+        shopFloorBondOrders.setMoney(0.01);//初始30000
         shopFloorBondOrders.setOrderNumber(noRandom);
         shopFloorBondOrders.setTime(new Date());
         shopFloorBondOrders.setUserId(CommonUtils.getMyId());
