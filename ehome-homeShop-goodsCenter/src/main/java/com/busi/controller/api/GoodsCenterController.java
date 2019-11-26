@@ -62,7 +62,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
         }
         homeShopGoods.setAuditType(1);
-        homeShopGoods.setSellType(1);
+//        homeShopGoods.setSellType(1);
         homeShopGoods.setReleaseTime(new Date());
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.add(homeShopGoods);

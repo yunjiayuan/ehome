@@ -59,7 +59,7 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
             homeShopGoods.setGoodsTitle(filteringTitle);
         }
         homeShopGoods.setAuditType(1);
-        homeShopGoods.setSellType(1);
+//        homeShopGoods.setSellType(1);
         homeShopGoods.setReleaseTime(new Date());
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.add(homeShopGoods);

@@ -50,6 +50,7 @@ public interface ShopFloorGoodsDao {
             " usedSort=#{usedSort}," +
             " videoCoverUrl=#{videoCoverUrl}," +
             " specs=#{specs}," +
+            " sellType=#{sellType}," +
             " price=#{price}," +
             " stock=#{stock}," +
             " detailsId=#{detailsId}," +

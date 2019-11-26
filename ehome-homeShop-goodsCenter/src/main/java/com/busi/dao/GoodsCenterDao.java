@@ -96,6 +96,7 @@ public interface GoodsCenterDao {
             " code=#{code}," +
             " sort=#{sort}," +
             " sortId=#{sortId}," +
+            " sellType=#{sellType}," +
             " pinkageType=#{pinkageType}," +
             " expressMode=#{expressMode}," +
             " guarantee=#{guarantee}," +
