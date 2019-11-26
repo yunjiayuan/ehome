@@ -49,6 +49,8 @@ public class ShopFloorGoods {
 
     private int discount;                //折扣
 
+    private double discountPrice;        //折扣价
+
     private int stock;                   //库存
 
     private long sales;                     //销量
