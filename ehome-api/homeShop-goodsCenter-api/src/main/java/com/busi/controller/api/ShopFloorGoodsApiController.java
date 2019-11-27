@@ -55,8 +55,10 @@ public interface ShopFloorGoodsApiController {
     ReturnData getFloorGoods(@PathVariable long id);
 
     /***
-     * 分页查询商品
-     * @param sort  排序条件:0默认销量排序，1最新发布 价格最低，3价格最高 4有货 5没货
+     * 分页查询商品(用户调用)
+     * @param sort  排序条件:0默认销量倒序，1最新发布
+     * @param price  0价格最低，1价格最高
+     * @param stock  0有货 1没货
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
      * @param levelOne  一级分类:默认值为0,-2为不限
@@ -66,8 +68,8 @@ public interface ShopFloorGoodsApiController {
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findFloorGoodsList/{sort}/{minPrice}/{maxPrice}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
-    ReturnData findFloorGoodsList(@PathVariable int sort, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findFloorGoodsList/{sort}/{price}/{stock}/{minPrice}/{maxPrice}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
+    ReturnData findFloorGoodsList(@PathVariable int sort,@PathVariable int price,@PathVariable int stock, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
 
     /***
      * 分页查询商品（商家调用）

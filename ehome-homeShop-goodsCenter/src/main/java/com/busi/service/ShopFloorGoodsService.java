@@ -85,8 +85,10 @@ public class ShopFloorGoodsService {
     }
 
     /***
-     * 分页查询商品
-     * @param sort  排序条件:0默认销量排序，1最新发布
+     * 分页查询商品(用户调用)
+     * @param sort  排序条件:0默认销量倒序，1最新发布
+     * @param price  0价格最低，1价格最高
+     * @param stock  0有货 1没货
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
      * @param levelOne  一级分类:默认值为0,-2为不限
@@ -96,11 +98,17 @@ public class ShopFloorGoodsService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<ShopFloorGoods> findDishesSortList(int sort, int minPrice, int maxPrice, int levelOne, int levelTwo, int levelThree, int page, int count) {
+    public PageBean<ShopFloorGoods> findDishesSortList(int sort, int price, int stock, int minPrice, int maxPrice, int levelOne, int levelTwo, int levelThree, int page, int count) {
 
         List<ShopFloorGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = goodsCenterDao.findDishesSortList(sort, minPrice, maxPrice, levelOne, levelTwo, levelThree);
+        if (sort == 1) {
+            list = goodsCenterDao.findDishesSortList(sort, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
+        } else if (price == 1) {
+            list = goodsCenterDao.findDishesSortList2(price, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
+        } else {
+            list = goodsCenterDao.findDishesSortList3(stock,minPrice, maxPrice, levelOne, levelTwo, levelThree);
+        }
         return PageUtils.getPageBean(p, list);
     }
 
@@ -116,7 +124,8 @@ public class ShopFloorGoodsService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<ShopFloorGoods> findFGoodsList(int sort, int stock, int time, int levelOne, int levelTwo, int levelThree, int page, int count) {
+    public PageBean<ShopFloorGoods> findFGoodsList(int sort, int stock, int time, int levelOne, int levelTwo,
+                                                   int levelThree, int page, int count) {
 
         List<ShopFloorGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
