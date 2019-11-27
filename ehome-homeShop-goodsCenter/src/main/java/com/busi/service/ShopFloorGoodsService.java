@@ -105,6 +105,30 @@ public class ShopFloorGoodsService {
     }
 
     /***
+     * 分页查询商品
+     * @param sort  查询条件:-1全部 0出售中，1仓库中，2已预约
+     * @param stock  库存：0倒序 1正序
+     * @param time  时间：0倒序 1正序
+     * @param levelOne  一级分类:默认值为0,-2为不限
+     * @param levelTwo  二级分类:默认值为0,-2为不限
+     * @param levelThree  三级分类:默认值为0,-2为不限
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<ShopFloorGoods> findFGoodsList(int sort, int stock, int time, int levelOne, int levelTwo, int levelThree, int page, int count) {
+
+        List<ShopFloorGoods> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (stock == 1) {
+            list = goodsCenterDao.findFGoodsList(sort, stock, levelOne, levelTwo, levelThree);
+        } else {
+            list = goodsCenterDao.findFGoodsList2(sort, time, levelOne, levelTwo, levelThree);
+        }
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 新增商品描述
      * @param homeShopGoods
      * @return

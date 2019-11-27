@@ -122,9 +122,9 @@ public interface ShopFloorGoodsDao {
      * @param sort  排序条件:0默认销量排序，1最新发布 2价格最低，3价格最高 4有货 5没货
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
-     * @param levelOne  一级分类:默认值为0,-2为不限
-     * @param levelTwo  二级分类:默认值为0,-2为不限
-     * @param levelThree  三级分类:默认值为0,-2为不限
+     * @param levelOne  一级分类:-2为不限
+     * @param levelTwo  二级分类:-2为不限
+     * @param levelThree  三级分类:-2为不限
      * @return
      */
     @Select("<script>" +
@@ -181,6 +181,107 @@ public interface ShopFloorGoodsDao {
             "</if>" +
             "</script>")
     List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+
+    /***
+     * 分页查询商品
+     * @param sort  排序条件: -1全部 0出售中，1仓库中，2已预约
+     * @param stock  库存：0倒序 1正序
+     * @param levelOne  一级分类:-2为不限
+     * @param levelTwo  二级分类:-2为不限
+     * @param levelThree  三级分类:-2为不限
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloorGoods" +
+            " where deleteType=0" +
+            "<if test=\"sort != -1\">" +
+                " and sellType = #{sort}" +
+            "</if>" +
+
+            "<if test=\"levelOne == -2 \">" +
+                " and levelOne > -1" +
+                " and levelTwo > -1" +
+                " and levelThree > -1" +
+            "</if>" +
+
+            "<if test=\"levelOne >= 0 \">" +
+                "<if test=\"levelTwo == -2 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo > -1" +
+                    " and levelThree > -1" +
+                "</if>" +
+                "<if test=\"levelTwo > -1 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo = #{levelTwo}" +
+                        "<if test=\"levelThree >= 0\">" +
+                            " and levelThree = #{levelThree}" +
+                        "</if>" +
+                        "<if test=\"levelThree == -2\">" +
+                            " and levelThree > -1" +
+                        "</if>" +
+                "</if>" +
+            "</if>" +
+
+            "<if test=\"stock == 1\">" +
+                " order by stock asc" +
+            "</if>" +
+            "<if test=\"stock == 0\">" +
+                " order by stock desc" +
+            "</if>" +
+                " ,refreshTime desc" +
+            "</script>")
+    List<ShopFloorGoods> findFGoodsList(@Param("sort") int sort,  @Param("stock") int stock,@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+
+    /***
+     * 分页查询商品
+     * @param sort  排序条件:0出售中，1仓库中，2已预约
+     * @param time  时间：0倒序 1正序
+     * @param levelOne  一级分类:-2为不限
+     * @param levelTwo  二级分类:-2为不限
+     * @param levelThree  三级分类:-2为不限
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloorGoods" +
+            " where deleteType=0" +
+            "<if test=\"sort != -1\">" +
+            " and sellType = #{sort}" +
+            "</if>" +
+
+            "<if test=\"levelOne == -2 \">" +
+                " and levelOne > -1" +
+                " and levelTwo > -1" +
+                " and levelThree > -1" +
+            "</if>" +
+
+            "<if test=\"levelOne >= 0 \">" +
+                "<if test=\"levelTwo == -2 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo > -1" +
+                    " and levelThree > -1" +
+                "</if>" +
+                "<if test=\"levelTwo > -1 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo = #{levelTwo}" +
+                        "<if test=\"levelThree >= 0\">" +
+                            " and levelThree = #{levelThree}" +
+                        "</if>" +
+                        "<if test=\"levelThree == -2\">" +
+                            " and levelThree > -1" +
+                        "</if>" +
+                "</if>" +
+            "</if>" +
+
+            "<if test=\"time == 0\">" +
+                " order by refreshTime desc" +
+            "</if>" +
+                "<if test=\"time == 1\">" +
+            " order by refreshTime asc" +
+            "</if>" +
+                " ,stock desc" +
+            "</script>")
+    List<ShopFloorGoods> findFGoodsList2(@Param("sort") int sort,  @Param("time") int time,@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+
 
     /***
      * 新增商品描述

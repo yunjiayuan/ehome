@@ -33,5 +33,5 @@ public class GoodsCategory {
 
     //与数据库无关
     private String ids;  //分类组合id
-    private int brand;  //是否包含品牌  0没有 1有
+//    private int brand;  //是否包含品牌  0没有 1有
 }

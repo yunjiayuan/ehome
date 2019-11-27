@@ -70,6 +70,22 @@ public interface ShopFloorGoodsApiController {
     ReturnData findFloorGoodsList(@PathVariable int sort, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
 
     /***
+     * 分页查询商品（商家调用）
+     * @param sort  查询条件:-1全部  0出售中，1仓库中，2已预约
+     * @param stock  库存：0倒序 1正序
+     * @param time  时间：0倒序 1正序
+     * @param levelOne  一级分类:默认值为0,-2为不限
+     * @param levelTwo  二级分类:默认值为0,-2为不限
+     * @param levelThree  三级分类:默认值为0,-2为不限
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findFGoodsList/{sort}/{stock}/{time}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
+    ReturnData findFGoodsList(@PathVariable int sort, @PathVariable int stock, @PathVariable int time, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
+
+
+    /***
      * 新增商品描述
      * @param goodsDescribe
      * @return
