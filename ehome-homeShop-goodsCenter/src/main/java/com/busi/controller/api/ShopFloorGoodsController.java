@@ -184,7 +184,7 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
      * 分页查询商品(用户调用)
      * @param sort  排序条件:0默认销量倒序，1最新发布
      * @param price  0价格最低，1价格最高
-     * @param stock  0有货 1没货
+     * @param stock  默认-1所有 0有货 1没货
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
      * @param levelOne  一级分类:默认值为0,-2为不限

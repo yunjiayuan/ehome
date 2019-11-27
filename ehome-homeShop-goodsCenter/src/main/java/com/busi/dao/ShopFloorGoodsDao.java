@@ -120,7 +120,7 @@ public interface ShopFloorGoodsDao {
     /***
      * 分页查询商品(用户调用)
      * @param sort  排序条件:0默认销量倒序，1最新发布
-     * @param stock  0有货 1没货
+     * @param stock  默认-1所有 0有货 1没货
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
      * @param levelOne  一级分类:默认值为0,-2为不限
@@ -162,13 +162,13 @@ public interface ShopFloorGoodsDao {
             "<if test=\"maxPrice &lt;= 0\">" +
             " and price >= #{minPrice}" +
             "</if>" +
-            " order by refreshTime desc" +
             "<if test=\"stock == 0\">" +
-            " ,stock desc" +
+            " and stock > 0" +
             "</if>" +
             "<if test=\"stock == 1\">" +
-            " ,stock asc" +
+            " and stock = 0" +
             "</if>" +
+            " order by refreshTime desc" +
             "</script>")
     List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
     /***
@@ -216,13 +216,13 @@ public interface ShopFloorGoodsDao {
             "<if test=\"maxPrice &lt;= 0\">" +
             " and price >= #{minPrice}" +
             "</if>" +
-            " order by price desc" +
             "<if test=\"stock == 0\">" +
-            " ,stock desc" +
+            " and stock > 0" +
             "</if>" +
             "<if test=\"stock == 1\">" +
-            " ,stock asc" +
+            " and stock = 0" +
             "</if>" +
+            " order by price desc" +
             "</script>")
     List<ShopFloorGoods> findDishesSortList2(@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
@@ -269,13 +269,13 @@ public interface ShopFloorGoodsDao {
             "<if test=\"maxPrice &lt;= 0\">" +
             " and price >= #{minPrice}" +
             "</if>" +
-            " order by sales desc" +
             "<if test=\"stock == 0\">" +
-            " ,stock desc" +
+            " and stock > 0" +
             "</if>" +
             "<if test=\"stock == 1\">" +
-            " ,stock asc" +
+            " and stock = 0" +
             "</if>" +
+            " order by sales desc" +
             "</script>")
     List<ShopFloorGoods> findDishesSortList3(@Param("stock") int stock,@Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
