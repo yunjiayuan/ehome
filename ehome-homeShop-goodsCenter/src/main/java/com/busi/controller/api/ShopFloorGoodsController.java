@@ -168,8 +168,8 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
         }
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(posts.getUserId());
-        num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
-        posts.setSellingNumber(num);
+//        num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
+//        posts.setSellingNumber(num);
         if (userInfo != null) {
             posts.setName(userInfo.getName());
             posts.setHead(userInfo.getHead());
@@ -234,6 +234,23 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /**
+     * @param
+     * @Description: 统计商品上下架数量
+     * @return:
+     */
+    @Override
+    public ReturnData statisticsGoods() {
+
+        int sellCont1 = goodsCenterService.findNum(0);//上架
+        int sellCont2 = goodsCenterService.findNum(1);//下架
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("sellCont1", sellCont1);
+        map.put("sellCont2", sellCont2);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***

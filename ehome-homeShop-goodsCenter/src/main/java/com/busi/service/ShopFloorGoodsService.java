@@ -76,12 +76,11 @@ public class ShopFloorGoodsService {
 
     /***
      * 统计已上架,已卖出已下架,我的订单数量
-     * @param userId
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int findNum(long userId, int type) {
-        return goodsCenterDao.findNum(userId, type);
+    public int findNum(int type) {
+        return goodsCenterDao.findNum(type);
     }
 
     /***
@@ -107,7 +106,7 @@ public class ShopFloorGoodsService {
         } else if (price == 1) {
             list = goodsCenterDao.findDishesSortList2(price, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
         } else {
-            list = goodsCenterDao.findDishesSortList3(stock,minPrice, maxPrice, levelOne, levelTwo, levelThree);
+            list = goodsCenterDao.findDishesSortList3(stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
         }
         return PageUtils.getPageBean(p, list);
     }

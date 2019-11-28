@@ -86,6 +86,13 @@ public interface ShopFloorGoodsApiController {
     @GetMapping("findFGoodsList/{sort}/{stock}/{time}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
     ReturnData findFGoodsList(@PathVariable int sort, @PathVariable int stock, @PathVariable int time, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
 
+    /**
+     * @param
+     * @Description: 统计已上架, 已卖出、已下架
+     * @return:
+     */
+    @GetMapping("statisticsGoods")
+    ReturnData statisticsGoods();
 
     /***
      * 新增商品描述

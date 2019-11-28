@@ -101,21 +101,19 @@ public interface ShopFloorGoodsDao {
 
     /***
      * 统计已上架,已卖出已下架,我的订单数量
-     * @param userId
      * @return
      */
     @Select("<script>" +
             "select count(id) from ShopFloorGoods" +
-            " where userId=#{userId}" +
-            " and auditType = 1 and deleteType = 0" +
-            "<if test=\"type == 1\">" +
+            " where auditType = 1 and deleteType = 0" +
+            "<if test=\"type == 0\">" +
             " and sellType=0" +
             "</if>" +
-            "<if test=\"type == 2\">" +
+            "<if test=\"type == 1\">" +
             " and sellType=1" +
             "</if>" +
             "</script>")
-    int findNum(@Param("userId") long userId, @Param("type") int type);
+    int findNum(@Param("type") int type);
 
     /***
      * 分页查询商品(用户调用)
