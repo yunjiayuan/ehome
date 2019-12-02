@@ -200,8 +200,8 @@ public class SearchUserController extends BaseController implements SearchUserAp
             }
         }
         //补数据处理 如果集合数据太少 则补充系统默认用户数据
-        if (list.size() < 10) {
-            int counts = 20;//补20条
+        if (list.size() < 100) {
+            int counts = 50;//补50条
             for (int i = 0; i < counts; i++) {
                 Random random = new Random();
                 long newUserId = random.nextInt(40000) + 13870;
