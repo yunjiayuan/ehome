@@ -213,13 +213,13 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         List<ShopFloor> serverList;
         List<ShopFloor> newList = new ArrayList();
         serverList = shopCenterService.findByIds(array);
-        if(serverList==null||serverList.size()<=0){
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
-        }
         for (int j = 0; j < array.length; j++) {
             ShopFloor floor = new ShopFloor();
             floor.setVillageOnly(array[j]);
             newList.add(floor);
+        }
+        if(serverList==null||serverList.size()<=0){
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", newList);
         }
         for (int i = 0; i < serverList.size(); i++) {
             ShopFloor serverShopFloor = serverList.get(i);
