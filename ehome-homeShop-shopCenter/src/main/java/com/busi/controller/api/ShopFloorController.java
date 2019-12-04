@@ -1,10 +1,12 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.ShopFloorService;
 import com.busi.utils.*;
+import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -208,25 +210,29 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         String[] array = villageOnly.split(",");
-        List list = null;
-        List<ShopFloor> list1 = new ArrayList();
-        list = shopCenterService.find();
+        List<ShopFloor> serverList;
+        List<ShopFloor> newList = new ArrayList();
+        serverList = shopCenterService.findByIds(array);
+        if(serverList==null||serverList.size()<=0){
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+        }
         for (int j = 0; j < array.length; j++) {
-            for (int i = 0; i < list.size(); i++) {
-                ShopFloor shopFloor = (ShopFloor) list.get(i);
-                if (shopFloor != null) {
-                    if (shopFloor.getVillageOnly().equals(array[j])) {
-                        ShopFloor floor = new ShopFloor();
-                        floor.setId(shopFloor.getId());
-                        floor.setVillageOnly(array[j]);
-                        floor.setUserId(shopFloor.getUserId());
-                        list1.add(floor);
-                        continue;
+            ShopFloor floor = new ShopFloor();
+            floor.setVillageOnly(array[j]);
+            newList.add(floor);
+        }
+        for (int i = 0; i < serverList.size(); i++) {
+            ShopFloor serverShopFloor = serverList.get(i);
+            for (int j = 0; j < array.length; j++) {
+                if (serverShopFloor != null&&!CommonUtils.checkFull(serverShopFloor.getVillageOnly())) {
+                    if (serverShopFloor.getVillageOnly().equals(array[j])) {
+                        newList.remove(i);
+                        newList.add(serverShopFloor);
                     }
                 }
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list1);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", newList);
     }
 
     /***
