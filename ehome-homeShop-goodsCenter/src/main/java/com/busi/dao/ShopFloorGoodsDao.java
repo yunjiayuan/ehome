@@ -118,6 +118,7 @@ public interface ShopFloorGoodsDao {
     /***
      * 分页查询商品(用户调用)
      * @param sort  排序条件:0默认销量倒序，1最新发布
+     * @param price  默认-1不限制 0价格升序，1价格倒序
      * @param stock  默认-1所有 0有货 1没货
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
@@ -132,15 +133,11 @@ public interface ShopFloorGoodsDao {
 
             "<if test=\"levelOne == -2 \">" +
                 " and levelOne > -1" +
-                " and levelTwo = -1" +
-                " and levelThree = -1" +
             "</if>" +
 
             "<if test=\"levelOne >= 0 \">" +
                 "<if test=\"levelTwo == -2 \">" +
                     " and levelOne = #{levelOne}" +
-                    " and levelTwo > -1" +
-                    " and levelThree = -1" +
                 "</if>" +
                 "<if test=\"levelTwo > -1 \">" +
                     " and levelOne = #{levelOne}" +
@@ -149,26 +146,47 @@ public interface ShopFloorGoodsDao {
                         " and levelThree = #{levelThree}" +
                     "</if>" +
                     "<if test=\"levelThree == -2\">" +
-                        " and levelThree > -1" +
+                        " and levelThree >= -1" +
                     "</if>" +
                 "</if>" +
             "</if>" +
 
             "<if test=\"maxPrice > 0\">" +
-            " and price >= #{minPrice} and price &lt;= #{maxPrice}" +
+                " and price >= #{minPrice} and #{maxPrice} >= price" +
             "</if>" +
             "<if test=\"maxPrice &lt;= 0\">" +
-            " and price >= #{minPrice}" +
+                " and price >= #{minPrice}" +
             "</if>" +
             "<if test=\"stock == 0\">" +
-            " and stock > 0" +
+                " and stock > 0" +
             "</if>" +
             "<if test=\"stock == 1\">" +
-            " and stock = 0" +
+                " and stock = 0" +
             "</if>" +
-            " order by refreshTime desc" +
+            "<if test=\"sort == 0\">" +
+                "<if test=\"price == -1\">" +
+                    " order by sales desc" +
+                "</if>" +
+                "<if test=\"price == 0\">" +
+                    " order by price asc,sales desc" +
+                "</if>" +
+                "<if test=\"price == 1\">" +
+                    " order by price desc,sales desc" +
+                "</if>" +
+            "</if>" +
+            "<if test=\"sort == 1\">" +
+                "<if test=\"price == -1\">" +
+                    " order by refreshTime desc" +
+                "</if>" +
+                "<if test=\"price == 0\">" +
+                    " order by price asc,refreshTime desc" +
+                "</if>" +
+                    "<if test=\"price == 1\">" +
+                " order by price desc,refreshTime desc" +
+                "</if>" +
+            "</if>" +
             "</script>")
-    List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+    List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort,@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
     /***
      * 分页查询商品(用户调用)
      * @param price  0价格最低，1价格最高
@@ -180,7 +198,7 @@ public interface ShopFloorGoodsDao {
      * @param levelThree  三级分类:默认值为0,-2为不限
      * @return
      */
-    @Select("<script>" +
+    /*@Select("<script>" +
             "select * from ShopFloorGoods" +
             " where deleteType=0 and sellType=0" +
 
@@ -224,7 +242,7 @@ public interface ShopFloorGoodsDao {
             "</script>")
     List<ShopFloorGoods> findDishesSortList2(@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
-    /***
+    *//***
      * 分页查询商品(用户调用)
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
@@ -232,7 +250,7 @@ public interface ShopFloorGoodsDao {
      * @param levelTwo  二级分类:默认值为0,-2为不限
      * @param levelThree  三级分类:默认值为0,-2为不限
      * @return
-     */
+     *//*
     @Select("<script>" +
             "select * from ShopFloorGoods" +
             " where deleteType=0 and sellType=0" +
@@ -277,7 +295,7 @@ public interface ShopFloorGoodsDao {
             "</script>")
     List<ShopFloorGoods> findDishesSortList3(@Param("stock") int stock,@Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
-
+*/
     /***
      * 分页查询商品
      * @param sort  排序条件: -1全部 0出售中，1仓库中，2已预约
