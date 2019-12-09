@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -48,8 +49,10 @@ public class ShopFloor {
 
     private String address;                // 详细地址
 
+    @NotNull(message= "小区名称不能为空")
     private String villageName;                // 小区名称
 
+    @NotNull(message= "小区唯一标识不能为空")
     private String villageOnly;                // 小区唯一标识
 
     // 与数据库无关字段

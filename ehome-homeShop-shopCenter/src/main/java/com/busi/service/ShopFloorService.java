@@ -80,9 +80,9 @@ public class ShopFloorService {
      * 查询所有店铺
      * @return
      */
-    public List<ShopFloor> find() {
+    public List<ShopFloor> findByIds(String[] villageOnly) {
         List<ShopFloor> list = null;
-        list = shopCenterDao.find();
+        list = shopCenterDao.findByIds(villageOnly);
         return list;
     }
 

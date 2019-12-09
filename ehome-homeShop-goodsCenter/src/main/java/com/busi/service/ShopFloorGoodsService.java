@@ -86,7 +86,7 @@ public class ShopFloorGoodsService {
     /***
      * 分页查询商品(用户调用)
      * @param sort  排序条件:0默认销量倒序，1最新发布
-     * @param price  0价格最低，1价格最高
+     * @param price  默认-1不限制 0价格升序，1价格倒序
      * @param stock  默认-1所有 0有货 1没货
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
@@ -101,13 +101,14 @@ public class ShopFloorGoodsService {
 
         List<ShopFloorGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        if (sort == 1) {
-            list = goodsCenterDao.findDishesSortList(sort, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
-        } else if (price == 1) {
-            list = goodsCenterDao.findDishesSortList2(price, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
-        } else {
-            list = goodsCenterDao.findDishesSortList3(stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
-        }
+        list = goodsCenterDao.findDishesSortList(sort,price, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
+//        if (sort == 1) {
+//            list = goodsCenterDao.findDishesSortList(sort, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
+//        } else if (price == 1) {
+//            list = goodsCenterDao.findDishesSortList2(price, stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
+//        } else {
+//            list = goodsCenterDao.findDishesSortList3(stock, minPrice, maxPrice, levelOne, levelTwo, levelThree);
+//        }
         return PageUtils.getPageBean(p, list);
     }
 

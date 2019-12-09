@@ -84,8 +84,16 @@ public interface ShopFloorDao {
      * 查询所有店铺
      * @return
      */
-    @Select("select * from ShopFloor where deleteType=0")
-    List<ShopFloor> find();
+    @Select("<script>" +
+            "select * from ShopFloor" +
+            " where 1=1" +
+            " and villageOnly in"+
+            "<foreach collection='villageOnly' index='index' item='item' open='(' separator=',' close=')'>" +
+                " #{item}" +
+            "</foreach>" +
+            " and deleteType=0" +
+            "</script>")
+    List<ShopFloor> findByIds(@Param("villageOnly") String[] villageOnly);
 
     /***
      * 新增永辉分类
