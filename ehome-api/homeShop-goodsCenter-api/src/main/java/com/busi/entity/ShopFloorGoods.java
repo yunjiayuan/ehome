@@ -27,6 +27,8 @@ public class ShopFloorGoods {
 
     private String videoCoverUrl;     //视频封面地址
 
+    private String goodsCoverUrl;     //商品封面地址
+
     @Length(min = 1, max = 30, message = "goodsTitle参数超出合法范围")
     private String goodsTitle;                //标题
 
@@ -80,7 +82,7 @@ public class ShopFloorGoods {
 
     private long houseNumber;            //门牌号
 
-    private int sellingNumber;            //在卖宝贝数量
+//    private int sellingNumber;            //在卖宝贝数量
 
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 }
