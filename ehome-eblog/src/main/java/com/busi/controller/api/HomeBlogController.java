@@ -237,6 +237,12 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         }else{
             homeBlog.setIsLike(0);
         }
+        //设置是否为 已付稿费作品
+        if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870){
+            if(homeBlog.getUserId()%2==0){
+                homeBlog.setRemunerationStatus(1);
+            }
+        }
 //        HomeBlogLike homeBlogLike = homeBlogLikeService.checkHomeBlogLike(CommonUtils.getMyId(),blogId);
 //        if(homeBlogLike!=null){
 //            homeBlog.setIsLike(1);
@@ -414,6 +420,12 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setIsLike(1);
             }else{
                 homeBlog.setIsLike(0);
+            }
+            //设置是否为 已付稿费作品
+            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870){
+                if(homeBlog.getUserId()%2==0){
+                    homeBlog.setRemunerationStatus(1);
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
@@ -619,6 +631,12 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }else{
                 homeBlog.setIsLike(0);
             }
+            //设置是否为 已付稿费作品
+            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870){
+                if(homeBlog.getUserId()%2==0){
+                    homeBlog.setRemunerationStatus(1);
+                }
+            }
         }
         if(list.size()<count&&searchType==6){//家门口补充假数据
             Random random = new Random();
@@ -655,6 +673,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     homeBlog.setIsLike(1);
                 }else{
                     homeBlog.setIsLike(0);
+                }
+                //设置是否为 已付稿费作品
+                if(homeBlog.getUserId()%2==0){
+                    homeBlog.setRemunerationStatus(1);
                 }
                 list.add(homeBlog);
             }
