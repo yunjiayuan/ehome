@@ -22,10 +22,10 @@ public interface ShopFloorGoodsDao {
      * @return
      */
     @Insert("insert into ShopFloorGoods(userId,imgUrl,goodsTitle,basicDescribe,usedSort,levelOne,levelTwo,levelThree,videoCoverUrl,videoUrl," +
-            "specs,price,stock,details,detailsId,discountPrice," +
+            "specs,price,stock,details,detailsId,discountPrice,goodsCoverUrl," +
             "releaseTime,refreshTime,sellType,auditType,extendSort,discount) " +
             "values (#{userId},#{imgUrl},#{goodsTitle},#{basicDescribe},#{usedSort},#{levelOne},#{levelTwo},#{levelThree},#{videoCoverUrl},#{videoUrl}," +
-            "#{specs},#{price},#{stock},#{details},#{detailsId},#{discountPrice}," +
+            "#{specs},#{price},#{stock},#{details},#{detailsId},#{discountPrice},#{goodsCoverUrl}," +
             "#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{extendSort},#{discount})")
     @Options(useGeneratedKeys = true)
     int add(ShopFloorGoods homeShopGoods);
@@ -49,6 +49,7 @@ public interface ShopFloorGoodsDao {
             " levelTwo=#{levelTwo}," +
             " usedSort=#{usedSort}," +
             " videoCoverUrl=#{videoCoverUrl}," +
+            " goodsCoverUrl=#{goodsCoverUrl}," +
             " specs=#{specs}," +
             " sellType=#{sellType}," +
             " price=#{price}," +
