@@ -275,10 +275,14 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      */
     @Override
     public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable String letter) {
-        List<YongHuiGoodsSort> list = null;
-        list = shopCenterService.findYHSort(levelOne, levelTwo, levelThree, letter);
-
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
+        List sortList = null;
+        sortList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST+levelOne+"_"+levelTwo, 0, -1);
+        if(sortList==null||sortList.size()<=0){
+            sortList = shopCenterService.findYHSort(levelOne, levelTwo, levelThree, letter);
+            //更新到缓存
+            redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST+levelOne+"_"+levelTwo, sortList);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, sortList);
     }
 
     /**

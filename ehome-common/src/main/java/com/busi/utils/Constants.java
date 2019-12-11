@@ -257,6 +257,7 @@ public class Constants {
     public static final String REDIS_KEY_HOMESHOP = "homeShop_";//userId与家店对象关系对照
     public static final String REDIS_KEY_SHOPFLOOR = "shopFloor_";//userId与楼店对象关系对照
     public static final String REDIS_KEY_SHOPFLOOR_CARTLIST = "shopFloor_cartList";//楼店购物车列表
+    public static final String REDIS_KEY_SHOPFLOOR_SORTLIST = "shopFloor_sortList_";//楼店分类列表 格式 shopFloor_sortList_一级分类ID_二级楼店分类ID
 
 
     //redis 2库相关key配置(otherServer)
