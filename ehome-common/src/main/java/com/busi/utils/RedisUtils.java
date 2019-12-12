@@ -564,7 +564,7 @@ public class RedisUtils {
     }
 
     /**
-     * 将数据放入set缓存
+     * 将数据放入set集合中 永久
      * @param key 键
      * @param values 值 可以是多个
      * @return 成功个数
@@ -579,9 +579,9 @@ public class RedisUtils {
     }
 
     /**
-     * 将set数据放入缓存
-     * @param key 键
-     * @param time 时间(秒)
+     * 将set集合放入缓存中 带时间
+     * @param key    键
+     * @param time   保留时间(秒) 0为永久
      * @param values 值 可以是多个
      * @return 成功个数
      */
@@ -624,6 +624,35 @@ public class RedisUtils {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    /***
+     * 随机获取指定集合中的元素
+     * @param  key set集合所对应的key
+     * @return 随机抽取的集合元素
+     */
+    public Object randomMember(String key){
+        return redisTemplate.opsForSet().randomMember(key);
+    }
+
+    /***
+     * 随机获取指定集合中指定数量的元素（随机的元素可能会重复）
+     * @param key    set集合所对应的key
+     * @param count  将要随机抽取元素的个数
+     * @return       返回元素集合
+     */
+    public List<Object> randomMember(String key,long count){
+        return redisTemplate.opsForSet().randomMembers(key,count);
+    }
+
+    /***
+     * 随机获取指定集合中指定数量的元素（随机的元素不会重复）
+     * @param key   set集合所对应的key
+     * @param count 将要随机抽取元素的个数
+     * @return      返回元素集合
+     */
+    public Set<Object> distinctRandomMembers(String key,long count){
+        return redisTemplate.opsForSet().distinctRandomMembers(key,count);
     }
 
 }

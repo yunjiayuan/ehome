@@ -124,7 +124,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         }
         homeBlogService.add(homeBlog);
         if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0&&homeBlog.getLikeCount()>10000){//制作假数据
-            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, homeBlog, 0);
+//            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, homeBlog, 0);
+
         }
         //添加足迹
 //        String title = homeBlog.getTitle();
@@ -281,16 +282,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         //开始更新删除状态
         homeBlogService.delBlog(blogId,userId);
         //判断是否为生活秀首页推荐数据
-        if(hb.getSendType()==2&&hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
-            //更新生活秀首页推荐列表
-            List list = null;
-            list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, 1001);
-            for (int j = 0; j < list.size(); j++) {
-                HomeBlog homeBlog = (HomeBlog) list.get(j);
-                if (homeBlog.getUserId() == userId && homeBlog.getId() == blogId) {
-                    redisUtils.removeList(Constants.REDIS_KEY_EBLOGLIST, 1, homeBlog);
-                }
-            }
+        if(hb.getSendType()==2){
+            //删除生活秀首页推荐列表中对应的数据
+            redisUtils.removeSetByValues(Constants.REDIS_KEY_EBLOGSET,hb);
         }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_EBLOG + userId+"_"+blogId, 0);
@@ -298,7 +292,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     }
 
     /***
-     * 条件查询生活圈接口（查询所有类型的生活圈）
+     * 条件查询生活圈接口（查询所有类型的生活圈）redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,homeBlog);
      * @param userId     被查询用户ID 默认0查询所有
      * @param searchType 查询类型 0查看朋友圈 1查看关注 2查看兴趣话题 3查询指定用户
      * @param tags       被查询兴趣标签ID组合，逗号分隔例如：1,2,3 仅当searchType=2 时有效 默认传null
@@ -463,28 +457,43 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 //        String str = "^(-)?[0-9]{1,3}+(.[0-9]{1,6})?$";//匹配（正负）整数3位，小数6位的正则表达式
         switch (searchType) {
             case 0://0查询首页推荐
-                long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOGLIST);
-                //处理服务器宕机问题
+                //首页数据初试算法 时间顺序显示
+//                long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_EBLOGLIST);
+//                //处理服务器宕机问题
+//                if(countTotal<=0){
+//                    PageBean<HomeBlog> pb = homeBlogService.findBlogListBylikeCount(Constants.EBLOG_LIKE_COUNT-1,1,Constants.REDIS_KEY_EBLOGLIST_COUNT);
+//                    List<HomeBlog> list = pb.getList();
+//                    if(list!=null){
+//                        //放入缓存中
+//                        redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);
+//                    }
+//                }
+//                int pageCount = page*count;
+//                if(pageCount>countTotal){
+//                    pageCount = -1;
+//                }else{
+//                    pageCount = pageCount-1;
+//                }
+//                List eblogList = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, (page-1)*count, pageCount);
+                //首页数据初试算法 时间顺序显示结束
+
+                //首页数据改为随机算法
+                long countTotal = redisUtils.getSetSize(Constants.REDIS_KEY_EBLOGSET);
                 if(countTotal<=0){
+                    redisUtils.expire(Constants.REDIS_KEY_EBLOGSET,0);
                     PageBean<HomeBlog> pb = homeBlogService.findBlogListBylikeCount(Constants.EBLOG_LIKE_COUNT-1,1,Constants.REDIS_KEY_EBLOGLIST_COUNT);
                     List<HomeBlog> list = pb.getList();
                     if(list!=null){
                         //放入缓存中
-                        redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);
+                        redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET, list.toArray());
                     }
                 }
-                int pageCount = page*count;
-                if(pageCount>countTotal){
-                    pageCount = -1;
-                }else{
-                    pageCount = pageCount-1;
-                }
-                List eblogList = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, (page-1)*count, pageCount);
-                pageBean = new PageBean<HomeBlog>();
-                pageBean.setSize(eblogList.size());
+                Set<Object> set = redisUtils.distinctRandomMembers(Constants.REDIS_KEY_EBLOGSET,count);
+                pageBean = new PageBean<>();
+                pageBean.setSize(set.size());
                 pageBean.setPageNum(page);
                 pageBean.setPageSize(count);
-                pageBean.setList(eblogList);
+                pageBean.setList(new ArrayList(set));
                 break;
             case 1://1查同城
                 if(cityId<0){

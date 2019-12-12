@@ -279,8 +279,10 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         sortList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST+levelOne+"_"+levelTwo, 0, -1);
         if(sortList==null||sortList.size()<=0){
             sortList = shopCenterService.findYHSort(levelOne, levelTwo, levelThree, letter);
-            //更新到缓存
-            redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST+levelOne+"_"+levelTwo, sortList);
+            if(sortList!=null&&sortList.size()>0){//防止没有三级的分类 出现异常
+                //更新到缓存
+                redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST+levelOne+"_"+levelTwo, sortList);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, sortList);
     }

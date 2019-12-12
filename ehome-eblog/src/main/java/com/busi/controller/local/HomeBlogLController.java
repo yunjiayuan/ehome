@@ -35,6 +35,13 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
     @Override
     public ReturnData updateBlog(@RequestBody HomeBlog homeBlog) {
         HomeBlog hb = homeBlogService.findBlogInfo(homeBlog.getId(),homeBlog.getUserId());
+        if(hb==null){
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }
+        if(hb.getBlogType()!=1&&hb.getSendType()==2&&hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
+            //先将此对象从生活秀列表中清除 方便后续操作
+            redisUtils.removeSetByValues(Constants.REDIS_KEY_EBLOGSET,hb);
+        }
         //评论量
         long commentCount = hb.getCommentCount()+homeBlog.getCommentCount();
         if(commentCount<=0){
@@ -56,34 +63,6 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
                 likeCount = 0;
             }
             hb.setLikeCount(likeCount);
-            //更新生活秀首页推荐列表
-            if(hb.getBlogType()!=1&&hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){//转发不进入首页推荐列表
-                List list = null;
-                list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
-                if(list!=null){
-                    boolean falg = false;
-                    for (int i = 0; i < list.size(); i++) {
-                        HomeBlog redisHomeBlog = (HomeBlog) list.get(i);
-                        if(redisHomeBlog!=null){
-                            if(redisHomeBlog.getId()==hb.getId()){//推荐列表中存在 更新
-                                redisUtils.updateListByIndex(Constants.REDIS_KEY_EBLOGLIST,i,hb);
-                                falg = true;
-                                break;
-                            }
-                        }
-                    }
-                    if(!falg){//推荐列表中不存在
-                        redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
-                    }
-                    if (list.size() > Constants.REDIS_KEY_EBLOGLIST_COUNT) {
-                        //清除缓存中多余的信息
-                        redisUtils.expire(Constants.REDIS_KEY_EBLOGLIST, 0);
-                        redisUtils.pushList(Constants.REDIS_KEY_EBLOGLIST, list, 0);
-                    }
-                }else{//不存在
-                    redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, hb, 0);
-                }
-            }
             //判断是否该给用户发送奖励  此活动结束后 将以下代码注释即可
             if(hb.getSendType()==2){//必须为视频
                 double rewardMoney = 0;//奖励金额
@@ -137,21 +116,10 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
                     mqUtils.addRewardLog(hb.getUserId(),rewardType,0,rewardMoney,homeBlog.getId());
                 }
             }
-        }else{
-            //更新缓存中推荐列表
-            List list = null;
-            list = redisUtils.getList(Constants.REDIS_KEY_EBLOGLIST, 0, Constants.REDIS_KEY_EBLOGLIST_COUNT+1);
-            if(list!=null) {
-                for (int i = 0; i < list.size(); i++) {
-                    HomeBlog redisHomeBlog = (HomeBlog) list.get(i);
-                    if (redisHomeBlog != null) {
-                        if (redisHomeBlog.getId() == hb.getId()) {//推荐列表中存在 更新
-                            redisUtils.updateListByIndex(Constants.REDIS_KEY_EBLOGLIST, i, hb);
-                            break;
-                        }
-                    }
-                }
-            }
+        }
+        //上边将生活秀删除 此处重新添加进去
+        if(hb.getBlogType()!=1&&hb.getSendType()==2&&hb.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
+            redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,hb);
         }
         //更新数据库和缓存中的实体对象
         int count = homeBlogService.updateBlog(hb);
