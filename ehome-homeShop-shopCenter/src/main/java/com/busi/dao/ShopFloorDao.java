@@ -96,6 +96,22 @@ public interface ShopFloorDao {
     List<ShopFloor> findByIds(@Param("villageOnly") String[] villageOnly);
 
     /***
+     * 查询附近楼店
+     * @param lat      纬度
+     * @param lon      经度
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloor where" +
+            " deleteType = 0" +
+            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+            " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
+            " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+            "</script>")
+    List<ShopFloor> findNearbySFList(@Param("lat") double lat, @Param("lon") double lon);
+
+
+    /***
      * 新增永辉分类
      * @param homeShopCenter
      * @return

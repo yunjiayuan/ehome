@@ -218,13 +218,13 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             floor.setVillageOnly(array[j]);
             newList.add(floor);
         }
-        if(serverList==null||serverList.size()<=0){
+        if (serverList == null || serverList.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", newList);
         }
         for (int i = 0; i < serverList.size(); i++) {
             ShopFloor serverShopFloor = serverList.get(i);
             for (int j = 0; j < array.length; j++) {
-                if (serverShopFloor != null&&!CommonUtils.checkFull(serverShopFloor.getVillageOnly())) {
+                if (serverShopFloor != null && !CommonUtils.checkFull(serverShopFloor.getVillageOnly())) {
                     if (serverShopFloor.getVillageOnly().equals(array[j])) {
                         newList.remove(i);
                         newList.add(serverShopFloor);
@@ -233,6 +233,63 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", newList);
+    }
+
+    /***
+     * 查询附近楼店
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findNearbySFList(@PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        PageBean<ShopFloor> pageBean = null;
+        pageBean = shopCenterService.findNearbySFList(lat, lon, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                ShopFloor ik = (ShopFloor) list.get(i);
+
+//                double userlon = Double.valueOf(ik.getLon() + "");
+//                double userlat = Double.valueOf(ik.getLat() + "");
+                double userlon = ik.getLon();
+                double userlat = ik.getLat();
+
+                int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
+
+                ik.setDistance(distance);//距离/m
+            }
+            Collections.sort(list, new Comparator<ShopFloor>() {
+                /*
+                 * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+                 * 返回负数表示：o1 小于o2，
+                 * 返回0 表示：o1和p2相等，
+                 * 返回正数表示：o1大于o2
+                 */
+                @Override
+                public int compare(ShopFloor o1, ShopFloor o2) {
+                    // 按照距离进行正序排列
+                    if (o1.getDistance() > o2.getDistance()) {
+                        return 1;
+                    }
+                    if (o1.getDistance() == o2.getDistance()) {
+                        return 0;
+                    }
+                    return -1;
+                }
+            });
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
     /***
@@ -276,12 +333,12 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     @Override
     public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable String letter) {
         List sortList = null;
-        sortList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST+levelOne+"_"+levelTwo, 0, -1);
-        if(sortList==null||sortList.size()<=0){
+        sortList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST + levelOne + "_" + levelTwo, 0, -1);
+        if (sortList == null || sortList.size() <= 0) {
             sortList = shopCenterService.findYHSort(levelOne, levelTwo, levelThree, letter);
-            if(sortList!=null&&sortList.size()>0){//防止没有三级的分类 出现异常
+            if (sortList != null && sortList.size() > 0) {//防止没有三级的分类 出现异常
                 //更新到缓存
-                redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST+levelOne+"_"+levelTwo, sortList);
+                redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST + levelOne + "_" + levelTwo, sortList);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, sortList);

@@ -66,5 +66,6 @@ public class ShopFloor {
 
     private String delImgUrls;      //将要删除的图片地址组合 “,”分隔
 
-//    private int villageIs;            //是否存在  0没有  1有
+    private int distance;            //距离
+
 }

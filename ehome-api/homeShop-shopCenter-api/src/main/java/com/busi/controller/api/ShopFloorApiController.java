@@ -74,6 +74,18 @@ public interface ShopFloorApiController {
     ReturnData findVillage(@PathVariable String villageOnly);
 
     /***
+     * 查询附近楼店
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findNearbySFList/{lat}/{lon}/{page}/{count}")
+    ReturnData findNearbySFList(@PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+
+
+    /***
      * 新增永辉分类
      * @param yongHuiGoodsSort
      * @return
@@ -98,7 +110,7 @@ public interface ShopFloorApiController {
      * @return
      */
     @GetMapping("findYHSort/{levelOne}/{levelTwo}/{levelThree}/{letter}")
-    ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo,@PathVariable int levelThree, @PathVariable String letter);
+    ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable String letter);
 
     /**
      * @Description: 删除永辉分类

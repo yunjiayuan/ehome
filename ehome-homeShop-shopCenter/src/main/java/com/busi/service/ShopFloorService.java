@@ -87,6 +87,21 @@ public class ShopFloorService {
     }
 
     /***
+     * 查询附近楼店
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<ShopFloor> findNearbySFList(double lat, double lon, int page, int count) {
+        List<ShopFloor> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = shopCenterDao.findNearbySFList(lat, lon);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 新增永辉分类
      * @param homeShopCenter
      * @return
@@ -126,7 +141,7 @@ public class ShopFloorService {
      */
     public List<YongHuiGoodsSort> findYHSort(int levelOne, int levelTwo, int levelThree, String letter) {
         List<YongHuiGoodsSort> list = null;
-        list = shopCenterDao.findYHSort(levelOne, levelTwo,levelThree,letter);
+        list = shopCenterDao.findYHSort(levelOne, levelTwo, levelThree, letter);
         return list;
     }
 }
