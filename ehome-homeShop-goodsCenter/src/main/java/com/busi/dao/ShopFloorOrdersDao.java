@@ -38,13 +38,16 @@ public interface ShopFloorOrdersDao {
             "select * from ShopFloorOrders" +
             " where id = #{id}" +
             "<if test=\"type == 0\">" +
-            " and ordersType >3 and ordersState!=3" +
+            " and ordersType >2 and ordersState!=3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0  and ordersType=2 and sellerId=#{userId}" +
+            " and ordersState=0  and ordersType=1 and sellerId=#{userId}" +
             "</if>" +
-            "<if test=\"type >= 2\">" +
-            " and ordersState=0 and ordersType=2 and buyerId=#{userId}" +
+            "<if test=\"type == 2\">" +
+            " and ordersState=0  and ordersType=2 and buyerId=#{userId}" +
+            "</if>" +
+            "<if test=\"type == 3\">" +
+            " and ordersState=0 and ordersType &lt; 3 and buyerId=#{userId}" +
             "</if>" +
             "</script>")
     ShopFloorOrders findById(@Param("id") long id, @Param("userId") long userId, @Param("type") int type);
@@ -95,7 +98,7 @@ public interface ShopFloorOrdersDao {
     /***
      * 分页查询订单列表
      * @param identity  身份区分：1买家 2商家
-     * @param ordersType 订单类型: 0全部 1待付款,2待发货(已付款),3已发货（待收货）, 4已收货（待评价）  5已评价  6付款超时、发货超时、买家取消订单、卖家取消订单
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、买家取消订单、卖家取消订单
      * @return
      */
     @Select("<script>" +
@@ -107,10 +110,10 @@ public interface ShopFloorOrdersDao {
             "<if test=\"identity == 2 \">" +
             " and sellerId = #{userId}" +
             "</if>" +
-            "<if test=\"ordersType > 0 and ordersType &lt; 6\">" +
+            "<if test=\"ordersType > 0 and ordersType &lt; 5\">" +
             " and ordersType = #{ordersType}" +
             "</if>" +
-            "<if test=\"ordersType >= 6\">" +
+            "<if test=\"ordersType >= 5\">" +
             " and ordersType > 5" +
             "</if>" +
             " order by addTime desc" +

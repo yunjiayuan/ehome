@@ -109,7 +109,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         shopFloorOrders.setAddTime(date);
         shopFloorOrders.setGoods(goods);//商品ID,标题,数量,价格，图片;
         shopFloorOrders.setMoney(money);//总价
-        shopFloorOrders.setOrdersType(1);
+        shopFloorOrders.setOrdersType(0);
 
         shopFloorOrdersService.addOrders(shopFloorOrders);
         Map<String, Object> map = new HashMap<>();
@@ -118,7 +118,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         //放入缓存
         // 付款超时 45分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(shopFloorOrders);
-        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS  + shopFloorOrders.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + shopFloorOrders.getBuyerId() + "_" + shopFloorOrders.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -141,7 +141,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         io.setUpdateCategory(0);
         shopFloorOrdersService.updateOrders(io);
         //清除缓存中的厨房订座订单信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS  + io.getNo(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -158,16 +158,16 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         if (io.getBuyerId() != CommonUtils.getMyId()) {
-            io.setOrdersType(3);
+            io.setOrdersType(2);
             io.setDeliveryTime(new Date());
             io.setUpdateCategory(2);
             shopFloorOrdersService.updateOrders(io);
 
             //清除缓存中的订单信息
-            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS  + io.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
             //订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -185,7 +185,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         //由已接单改为已完成
-        io.setOrdersType(5);        //已完成
+        io.setOrdersType(3);        //已收货
         io.setReceivingTime(new Date());
         io.setUpdateCategory(3);
         shopFloorOrdersService.updateOrders(io);
@@ -194,10 +194,10 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         //清除缓存中的商品信息
 
         //清除缓存中的订单信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS  + io.getNo(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
         //订单放入缓存
         Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS  + io.getNo(), ordersMap, 0);
+        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -260,13 +260,13 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         }
         //商家取消订单
         if (ko.getSellerId() == CommonUtils.getMyId()) {
-            if (ko.getOrdersType() < 4 && ko.getOrdersType() > 1) {
-                ko.setOrdersType(9);
+            if (ko.getOrdersType() < 3 && ko.getOrdersType() > 0) {
+                ko.setOrdersType(8);
             }
         }
         if (ko.getBuyerId() == CommonUtils.getMyId()) {//用户可以取消未完成状态的单子
             if (ko.getOrdersType() < 4) {
-                ko.setOrdersType(8);
+                ko.setOrdersType(7);
             }
         }
         ko.setUpdateCategory(4);
@@ -276,10 +276,10 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             mqUtils.sendPurseMQ(ko.getBuyerId(), 30, 0, ko.getMoney());
         }
         //清除缓存中的订单信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS  + ko.getNo(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getNo(), 0);
         //放入缓存
         Map<String, Object> ordersMap = CommonUtils.objectToMap(ko);
-        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS  + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
+        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getBuyerId() + "_" + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -308,7 +308,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             }
             //放入缓存
             ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + no, ordersMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
     }
@@ -323,28 +323,28 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         int orderCont1 = 0;
         int orderCont2 = 0;
         int orderCont3 = 0;
-        int orderCont5 = 0;
+        int orderCont4 = 0;
 
         ShopFloorOrders kh = null;
         List list = null;
-        list = shopFloorOrdersService.findIdentity(identity,CommonUtils.getMyId());//全部
+        list = shopFloorOrdersService.findIdentity(identity, CommonUtils.getMyId());//全部
         for (int i = 0; i < list.size(); i++) {
             kh = (ShopFloorOrders) list.get(i);
             switch (kh.getOrdersType()) {
-                case 1://待付款
+                case 0://待付款
                     orderCont1++;
                     orderCont0++;
                     break;
-                case 2://待发货
+                case 1://待发货
                     orderCont2++;
                     orderCont0++;
                     break;
-                case 3://待收货
+                case 2://待收货
                     orderCont3++;
                     orderCont0++;
                     break;
-                case 4://待评价
-                    orderCont5++;
+                case 3://待评价
+                    orderCont4++;
                     orderCont0++;
                     break;
                 default:
@@ -356,7 +356,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         map.put("orderCont1", orderCont1);
         map.put("orderCont2", orderCont2);
         map.put("orderCont3", orderCont3);
-        map.put("orderCont5", orderCont5);
+        map.put("orderCont4", orderCont4);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }
