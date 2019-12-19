@@ -94,6 +94,20 @@ public interface ShopFloorGoodsDao {
     int changeShopGoods(@Param("ids") String[] ids, @Param("sellType") int sellType);
 
     /***
+     * 批量查询指定的商品
+     * @param ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloorGoods" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<ShopFloorGoods> findList(@Param("ids") String[] ids);
+
+    /***
      * 根据Id查询
      * @param id
      */
@@ -188,115 +202,7 @@ public interface ShopFloorGoodsDao {
             "</if>" +
             "</script>")
     List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort,@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
-    /***
-     * 分页查询商品(用户调用)
-     * @param price  0价格最低，1价格最高
-     * @param stock  0有货 1没货
-     * @param minPrice  最小价格
-     * @param maxPrice  最大价格
-     * @param levelOne  一级分类:默认值为0,-2为不限
-     * @param levelTwo  二级分类:默认值为0,-2为不限
-     * @param levelThree  三级分类:默认值为0,-2为不限
-     * @return
-     */
-    /*@Select("<script>" +
-            "select * from ShopFloorGoods" +
-            " where deleteType=0 and sellType=0" +
 
-            "<if test=\"levelOne == -2 \">" +
-            " and levelOne > -1" +
-            " and levelTwo = -1" +
-            " and levelThree = -1" +
-            "</if>" +
-
-            "<if test=\"levelOne >= 0 \">" +
-            "<if test=\"levelTwo == -2 \">" +
-            " and levelOne = #{levelOne}" +
-            " and levelTwo > -1" +
-            " and levelThree = -1" +
-            "</if>" +
-            "<if test=\"levelTwo > -1 \">" +
-            " and levelOne = #{levelOne}" +
-            " and levelTwo = #{levelTwo}" +
-            "<if test=\"levelThree >= 0\">" +
-            " and levelThree = #{levelThree}" +
-            "</if>" +
-            "<if test=\"levelThree == -2\">" +
-            " and levelThree > -1" +
-            "</if>" +
-            "</if>" +
-            "</if>" +
-
-            "<if test=\"maxPrice > 0\">" +
-            " and price >= #{minPrice} and price &lt;= #{maxPrice}" +
-            "</if>" +
-            "<if test=\"maxPrice &lt;= 0\">" +
-            " and price >= #{minPrice}" +
-            "</if>" +
-            "<if test=\"stock == 0\">" +
-            " and stock > 0" +
-            "</if>" +
-            "<if test=\"stock == 1\">" +
-            " and stock = 0" +
-            "</if>" +
-            " order by price desc" +
-            "</script>")
-    List<ShopFloorGoods> findDishesSortList2(@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
-
-    *//***
-     * 分页查询商品(用户调用)
-     * @param minPrice  最小价格
-     * @param maxPrice  最大价格
-     * @param levelOne  一级分类:默认值为0,-2为不限
-     * @param levelTwo  二级分类:默认值为0,-2为不限
-     * @param levelThree  三级分类:默认值为0,-2为不限
-     * @return
-     *//*
-    @Select("<script>" +
-            "select * from ShopFloorGoods" +
-            " where deleteType=0 and sellType=0" +
-
-            "<if test=\"levelOne == -2 \">" +
-            " and levelOne > -1" +
-            " and levelTwo = -1" +
-            " and levelThree = -1" +
-            "</if>" +
-
-            "<if test=\"levelOne >= 0 \">" +
-            "<if test=\"levelTwo == -2 \">" +
-            " and levelOne = #{levelOne}" +
-            " and levelTwo > -1" +
-            " and levelThree = -1" +
-            "</if>" +
-            "<if test=\"levelTwo > -1 \">" +
-            " and levelOne = #{levelOne}" +
-            " and levelTwo = #{levelTwo}" +
-            "<if test=\"levelThree >= 0\">" +
-            " and levelThree = #{levelThree}" +
-            "</if>" +
-            "<if test=\"levelThree == -2\">" +
-            " and levelThree > -1" +
-            "</if>" +
-            "</if>" +
-            "</if>" +
-
-            "<if test=\"maxPrice > 0\">" +
-            " and price >= #{minPrice} and price &lt;= #{maxPrice}" +
-            "</if>" +
-            "<if test=\"maxPrice &lt;= 0\">" +
-            " and price >= #{minPrice}" +
-            "</if>" +
-            "<if test=\"stock == 0\">" +
-            " and stock > 0" +
-            "</if>" +
-            "<if test=\"stock == 1\">" +
-            " and stock = 0" +
-            "</if>" +
-            " order by sales desc" +
-            "</script>")
-    List<ShopFloorGoods> findDishesSortList3(@Param("stock") int stock,@Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
-
-*/
     /***
      * 分页查询商品
      * @param sort  排序条件: -1全部 0出售中，1仓库中，2已预约

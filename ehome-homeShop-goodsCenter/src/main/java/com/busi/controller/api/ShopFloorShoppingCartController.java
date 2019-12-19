@@ -53,7 +53,7 @@ public class ShopFloorShoppingCartController extends BaseController implements S
      * @return
      */
     @Override
-    public ReturnData changeFShoppingCart(@Valid ShopFloorShoppingCart shopFloorGoods, BindingResult bindingResult) {
+    public ReturnData changeFShoppingCart(@Valid @RequestBody ShopFloorShoppingCart shopFloorGoods, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -65,13 +65,20 @@ public class ShopFloorShoppingCartController extends BaseController implements S
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         if (shopFloorGoods.getNumber() > 1) {
-            goodsCenterService.update(shopFloorGoods);
+            ShopFloorShoppingCart shoppingCart = null;
+            shoppingCart = goodsCenterService.findId(shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
+            if (shoppingCart != null) {
+                if (shoppingCart.getDeleteType() > 0) {//判断是否已删除
+                    shoppingCart.setDeleteType(0);
+                }
+                goodsCenterService.update(shopFloorGoods);
+            }
         } else {
             String ids = shopFloorGoods.getId() + "";
             goodsCenterService.updateDels(ids.split(","));
         }
         //清空缓存列表
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST, 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorGoods.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -95,13 +102,18 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         ShopFloorShoppingCart shoppingCart = null;
         shoppingCart = goodsCenterService.findId(shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
         if (shoppingCart == null) {//新增
+            shopFloorGoods.setNumber(1);
             shopFloorGoods.setAddTime(new Date());
             goodsCenterService.add(shopFloorGoods);
         } else {//更新
+            if (shoppingCart.getDeleteType() > 0) {//已删除的
+                shoppingCart.setDeleteType(0);
+            }
+            shoppingCart.setNumber(shoppingCart.getNumber() + 1);
             goodsCenterService.update(shoppingCart);
         }
         //清空缓存列表
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST, 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorGoods.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -121,7 +133,7 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         }
         goodsCenterService.updateDels(ids.split(","));
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST, 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -137,14 +149,14 @@ public class ShopFloorShoppingCartController extends BaseController implements S
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
         List cartList = null;
-        cartList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST, 0, -1);
+        cartList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + userId, 0, -1);
         if (cartList == null || cartList.size() <= 0) {
             cartList = null;
             //查询数据库
             cartList = goodsCenterService.findList(userId);
             if (cartList != null && cartList.size() > 0) {
                 //更新到缓存
-                redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST, cartList);
+                redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + userId, cartList);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, cartList);

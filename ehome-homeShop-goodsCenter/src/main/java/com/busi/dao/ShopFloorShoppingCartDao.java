@@ -33,7 +33,8 @@ public interface ShopFloorShoppingCartDao {
      */
     @Update("<script>" +
             "update ShopFloorShoppingCart set" +
-            " number=#{number}" +
+            " number=#{number}," +
+            " deleteType=#{deleteType}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(ShopFloorShoppingCart homeShopGoods);
@@ -43,8 +44,10 @@ public interface ShopFloorShoppingCartDao {
      * @param ids
      * @return
      */
-    @Delete("<script>" +
-            "delete from ShopFloorShoppingCart " +
+    @Update("<script>" +
+            "update ShopFloorShoppingCart set" +
+            " number=0," +
+            " deleteType=1" +
             " where id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
@@ -74,7 +77,7 @@ public interface ShopFloorShoppingCartDao {
     @Select("<script>" +
             "select count(id) from ShopFloorShoppingCart" +
             " where 1=1 " +
-            " and userId = #{userId}" +
+            " and userId = #{userId} and deleteType=0" +
             "</script>")
     int findNum(@Param("userId") long userId);
 }

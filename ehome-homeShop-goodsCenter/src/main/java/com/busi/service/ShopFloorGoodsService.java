@@ -65,6 +65,17 @@ public class ShopFloorGoodsService {
     }
 
     /***
+     * 批量查询指定的商品
+     * @param ids
+     * @return
+     */
+    public List<ShopFloorGoods> findList(String[] ids) {
+        List<ShopFloorGoods> list;
+        list = goodsCenterDao.findList(ids);
+        return list;
+    }
+
+    /***
      * 批量上下架商品
      * @param ids
      * @return
