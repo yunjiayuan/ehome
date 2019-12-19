@@ -46,7 +46,7 @@ public class ShopFloorOrders {
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
-    private int ordersType;            // 订单类型: 0全部 1待付款,2待发货(已付款),3已发货（待收货）, 4已收货（待评价）  5已评价  6付款超时  7发货超时, 8买家取消订单  9卖家取消订单
+    private int ordersType;            // 订单类型: 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时  6发货超时, 7买家取消订单  8卖家取消订单
 
     private long addressId;            //地址ID
 
