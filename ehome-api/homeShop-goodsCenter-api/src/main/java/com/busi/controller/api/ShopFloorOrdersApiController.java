@@ -37,7 +37,7 @@ public interface ShopFloorOrdersApiController {
      * @param id  订单Id
      * @return
      */
-    @GetMapping("changeSFdeliver/{infoId}")
+    @GetMapping("changeSFdeliver/{id}")
     ReturnData changeSFdeliver(@PathVariable long id);
 
     /***
@@ -46,7 +46,7 @@ public interface ShopFloorOrdersApiController {
      * @param id  订单Id
      * @return
      */
-    @GetMapping("changeSFreceipt/{infoId}")
+    @GetMapping("changeSFreceipt/{id}")
     ReturnData changeSFreceipt(@PathVariable long id);
 
     /***

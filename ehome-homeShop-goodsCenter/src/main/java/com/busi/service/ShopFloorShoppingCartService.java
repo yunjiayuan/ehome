@@ -61,12 +61,21 @@ public class ShopFloorShoppingCartService {
     }
 
     /***
+     * 根据用户goodsId查询
+     * @param userId
+     * @return
+     */
+    public ShopFloorShoppingCart findGoodsId(long userId, long goodsId) {
+        return goodsCenterDao.findGoodsId(userId, goodsId);
+    }
+
+    /***
      * 根据用户ID查询
      * @param userId
      * @return
      */
-    public ShopFloorShoppingCart findId(long userId, long goodsId) {
-        return goodsCenterDao.findId(userId, goodsId);
+    public ShopFloorShoppingCart findId(long userId, long id) {
+        return goodsCenterDao.findId(userId, id);
     }
 
     /***

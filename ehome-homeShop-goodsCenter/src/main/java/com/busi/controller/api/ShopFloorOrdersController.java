@@ -62,40 +62,47 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (shippingAddress == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "下单失败！收货地址不存在！", new JSONObject());
         }
-        String goods = null; //商品信息
-        String goodsTitle = null; //商品标题
+        String goods = ""; //商品信息
+        String goodsTitle = ""; //商品标题
         double cost = 0.00; //商品价格
         double money = 0.00; // 商品总金额
-        String imgUrl = null; //图片
+        String imgUrl = ""; //图片
         List iup = null;
         ShopFloorGoods laf = null;
-        if (!CommonUtils.checkFull(shopFloorOrders.getGoodsIds()) && !CommonUtils.checkFull(shopFloorOrders.getGoodsNumber())) {
-            String[] sd = shopFloorOrders.getGoodsIds().split(",");//商品ID
-            String[] fn = shopFloorOrders.getGoodsNumber().split(",");//商品数量
-            if (sd != null && fn != null) {
-                iup = shopFloorGoodsService.findList(sd);
-                if (iup != null && iup.size() > 0) {
-                    laf = (ShopFloorGoods) iup.get(0);
-                    if (laf != null && shopFloorOrders.getBuyerId() != laf.getUserId() && iup.size() == sd.length) {
-                        for (int i = 0; i < iup.size(); i++) {
-                            laf = null;
-                            laf = (ShopFloorGoods) iup.get(i);
-                            for (int j = 0; j < sd.length; j++) {
-                                if (laf.getId() == Long.parseLong(sd[j])) {//确认是当前商品ID
-                                    //判断是否有折扣
-                                    if (laf.getDiscountPrice() > 0) {
-                                        cost = laf.getDiscountPrice();//折扣价
-                                    } else {
-                                        cost = laf.getPrice();//原价
-                                    }
-                                    goodsTitle = laf.getGoodsTitle();//标题
-                                    imgUrl = laf.getGoodsCoverUrl();//图片
-                                    goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片;
-                                    money += Integer.parseInt(fn[j]) * cost;//总价格
-                                }
-                            }
-                        }
+        if (CommonUtils.checkFull(shopFloorOrders.getGoodsIds()) || CommonUtils.checkFull(shopFloorOrders.getGoodsNumber())) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        String[] sd = shopFloorOrders.getGoodsIds().split(",");//商品ID
+        String[] fn = shopFloorOrders.getGoodsNumber().split(",");//商品数量
+
+        iup = shopFloorGoodsService.findList(sd);
+        if (iup == null || iup.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        laf = (ShopFloorGoods) iup.get(0);
+        if (laf == null || shopFloorOrders.getBuyerId() == laf.getUserId() || iup.size() != sd.length) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        for (int i = 0; i < iup.size(); i++) {
+            laf = null;
+            laf = (ShopFloorGoods) iup.get(i);
+            for (int j = 0; j < sd.length; j++) {
+                if (laf.getId() == Long.parseLong(sd[j])) {//确认是当前商品ID
+                    //判断是否有折扣
+                    if (laf.getDiscountPrice() > 0) {
+                        cost = laf.getDiscountPrice();//折扣价
+                    } else {
+                        cost = laf.getPrice();//原价
                     }
+                    goodsTitle = laf.getGoodsTitle();//标题
+                    if (CommonUtils.checkFull(laf.getGoodsCoverUrl())) {
+                        String[] img = laf.getImgUrl().split(",");
+                        imgUrl = img[0];//用第一张图做封面
+                    } else {
+                        imgUrl = laf.getGoodsCoverUrl();//图片
+                    }
+                    goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片;
+                    money += Integer.parseInt(fn[j]) * cost;//总价格
                 }
             }
         }
@@ -113,7 +120,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
 
         shopFloorOrdersService.addOrders(shopFloorOrders);
         Map<String, Object> map = new HashMap<>();
-        map.put("infoId", shopFloorOrders.getNo());
+        map.put("no", shopFloorOrders.getNo());
 
         //放入缓存
         // 付款超时 45分钟
@@ -160,7 +167,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (io.getBuyerId() != CommonUtils.getMyId()) {
             io.setOrdersType(2);
             io.setDeliveryTime(new Date());
-            io.setUpdateCategory(2);
+            io.setUpdateCategory(1);
             shopFloorOrdersService.updateOrders(io);
 
             //清除缓存中的订单信息
@@ -187,7 +194,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         //由已接单改为已完成
         io.setOrdersType(3);        //已收货
         io.setReceivingTime(new Date());
-        io.setUpdateCategory(3);
+        io.setUpdateCategory(2);
         shopFloorOrdersService.updateOrders(io);
         //更新销量
 
@@ -260,20 +267,16 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         }
         //商家取消订单
         if (ko.getSellerId() == CommonUtils.getMyId()) {
-            if (ko.getOrdersType() < 3 && ko.getOrdersType() > 0) {
-                ko.setOrdersType(8);
-            }
+            ko.setOrdersType(8);
         }
         if (ko.getBuyerId() == CommonUtils.getMyId()) {//用户可以取消未完成状态的单子
-            if (ko.getOrdersType() < 4) {
-                ko.setOrdersType(7);
-            }
+            ko.setOrdersType(7);
         }
-        ko.setUpdateCategory(4);
+        ko.setUpdateCategory(3);
         shopFloorOrdersService.updateOrders(ko);//更新订单
         //更新缓存、钱包、账单
-        if (ko.getMoney() > 0) {
-            mqUtils.sendPurseMQ(ko.getBuyerId(), 30, 0, ko.getMoney());
+        if (ko.getOrdersType() > 0) {
+            mqUtils.sendPurseMQ(ko.getBuyerId(), 27, 0, ko.getMoney());
         }
         //清除缓存中的订单信息
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getNo(), 0);
@@ -324,6 +327,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         int orderCont2 = 0;
         int orderCont3 = 0;
         int orderCont4 = 0;
+        int orderCont5 = 0;
+        int orderCont6 = 0;
 
         ShopFloorOrders kh = null;
         List list = null;
@@ -347,7 +352,16 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                     orderCont4++;
                     orderCont0++;
                     break;
+                case 7://买家取消
+                    orderCont5++;
+                    orderCont0++;
+                    break;
+                case 8://卖家取消
+                    orderCont6++;
+                    orderCont0++;
+                    break;
                 default:
+                    orderCont0++;
                     break;
             }
         }
@@ -357,6 +371,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         map.put("orderCont2", orderCont2);
         map.put("orderCont3", orderCont3);
         map.put("orderCont4", orderCont4);
+        map.put("orderCont5", orderCont5);
+        map.put("orderCont6", orderCont6);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

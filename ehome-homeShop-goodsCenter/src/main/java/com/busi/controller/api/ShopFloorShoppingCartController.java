@@ -66,12 +66,14 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         }
         if (shopFloorGoods.getNumber() > 1) {
             ShopFloorShoppingCart shoppingCart = null;
-            shoppingCart = goodsCenterService.findId(shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
+            shoppingCart = goodsCenterService.findId(shopFloorGoods.getUserId(), shopFloorGoods.getId());
             if (shoppingCart != null) {
                 if (shoppingCart.getDeleteType() > 0) {//判断是否已删除
                     shoppingCart.setDeleteType(0);
                 }
                 goodsCenterService.update(shopFloorGoods);
+            } else {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
         } else {
             String ids = shopFloorGoods.getId() + "";
@@ -100,8 +102,11 @@ public class ShopFloorShoppingCartController extends BaseController implements S
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         ShopFloorShoppingCart shoppingCart = null;
-        shoppingCart = goodsCenterService.findId(shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
+        shoppingCart = goodsCenterService.findGoodsId(shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
         if (shoppingCart == null) {//新增
+            if (CommonUtils.checkFull(shopFloorGoods.getGoodsTitle()) || CommonUtils.checkFull(shopFloorGoods.getGoodsCoverUrl())) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
             shopFloorGoods.setNumber(1);
             shopFloorGoods.setAddTime(new Date());
             goodsCenterService.add(shopFloorGoods);

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 /**
@@ -23,10 +22,8 @@ public class ShopFloorShoppingCart {
 
     private long goodsId;                //商品ID
 
-    @NotEmpty(message ="商品封面地址不能为空")
     private String goodsCoverUrl;     //商品封面地址
 
-    @NotEmpty(message ="标题不能为空")
     private String goodsTitle;          //标题
 
     private String basicDescribe;         //基本描述

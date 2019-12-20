@@ -63,11 +63,18 @@ public interface ShopFloorShoppingCartDao {
     List<ShopFloorShoppingCart> findList(@Param("userId") long userId);
 
     /***
-     * 根据Id查询
+     * 根据goodsId查询
      * @param goodsId
      */
     @Select("select * from ShopFloorShoppingCart where userId=#{userId} and goodsId=#{goodsId}")
-    ShopFloorShoppingCart findId(@Param("userId") long userId, @Param("goodsId") long goodsId);
+    ShopFloorShoppingCart findGoodsId(@Param("userId") long userId, @Param("goodsId") long goodsId);
+
+    /***
+     * 根据Id查询
+     * @param id
+     */
+    @Select("select * from ShopFloorShoppingCart where userId=#{userId} and id=#{id}")
+    ShopFloorShoppingCart findId(@Param("userId") long userId, @Param("id") long id);
 
     /***
      * 统计用户购物车商品数量
