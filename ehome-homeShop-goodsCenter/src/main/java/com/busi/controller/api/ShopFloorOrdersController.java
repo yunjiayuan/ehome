@@ -115,7 +115,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         shopFloorOrders.setNo(noRandom);//订单编号【MD5】
         shopFloorOrders.setAddTime(date);
         shopFloorOrders.setGoods(goods);//商品ID,标题,数量,价格，图片;
-        shopFloorOrders.setMoney(money);//总价
+        shopFloorOrders.setMoney(money + shopFloorOrders.getFreight());//总价
         shopFloorOrders.setOrdersType(0);
 
         shopFloorOrdersService.addOrders(shopFloorOrders);

@@ -22,9 +22,9 @@ public interface ShopFloorOrdersDao {
      * @return
      */
     @Insert("insert into ShopFloorOrders(buyerId,sellerId,shopId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,expectTime,no,ordersState,ordersType," +
-            "addressId)" +
+            "addressId,freight,distributioMode)" +
             "values (#{buyerId},#{sellerId},#{shopId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{expectTime},#{no},#{ordersState},#{ordersType}" +
-            ",#{addressId})")
+            ",#{addressId},#{freight},#{distributioMode})")
     @Options(useGeneratedKeys = true)
     int addOrders(ShopFloorOrders kitchenBookedOrders);
 

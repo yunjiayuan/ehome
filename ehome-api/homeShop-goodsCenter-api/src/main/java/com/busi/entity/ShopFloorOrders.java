@@ -28,6 +28,10 @@ public class ShopFloorOrders {
 
     private double money;            // 商品总金额
 
+    private int freight;             //运费
+
+    private int distributioMode;    //  配送方式
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;            // 添加时间
 
