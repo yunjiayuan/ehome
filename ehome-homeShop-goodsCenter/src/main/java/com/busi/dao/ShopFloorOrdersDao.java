@@ -21,9 +21,9 @@ public interface ShopFloorOrdersDao {
      * @param kitchenBookedOrders
      * @return
      */
-    @Insert("insert into ShopFloorOrders(buyerId,sellerId,shopId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,expectTime,no,ordersState,ordersType," +
+    @Insert("insert into ShopFloorOrders(buyerId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,expectTime,no,ordersState,ordersType," +
             "addressId,freight,distributioMode)" +
-            "values (#{buyerId},#{sellerId},#{shopId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{expectTime},#{no},#{ordersState},#{ordersType}" +
+            "values (#{buyerId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{expectTime},#{no},#{ordersState},#{ordersType}" +
             ",#{addressId},#{freight},#{distributioMode})")
     @Options(useGeneratedKeys = true)
     int addOrders(ShopFloorOrders kitchenBookedOrders);
@@ -41,7 +41,7 @@ public interface ShopFloorOrdersDao {
             " and ordersType >2 and ordersState!=3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0  and ordersType=1 and sellerId=#{userId}" +
+            " and ordersState=0  and ordersType=1" +
             "</if>" +
             "<if test=\"type == 2\">" +
             " and ordersState=0  and ordersType=2 and buyerId=#{userId}" +
@@ -97,18 +97,14 @@ public interface ShopFloorOrdersDao {
 
     /***
      * 分页查询订单列表
-     * @param identity  身份区分：1买家 2商家
      * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、买家取消订单、卖家取消订单
      * @return
      */
     @Select("<script>" +
             "select * from ShopFloorOrders" +
             " where ordersState=0" +
-            "<if test=\"identity == 1 \">" +
+            "<if test=\"userId > 0 \">" +
             " and buyerId = #{userId}" +
-            "</if>" +
-            "<if test=\"identity == 2 \">" +
-            " and sellerId = #{userId}" +
             "</if>" +
             "<if test=\"ordersType > 0 and ordersType &lt; 5\">" +
             " and ordersType = #{ordersType}" +
@@ -118,25 +114,19 @@ public interface ShopFloorOrdersDao {
             "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<ShopFloorOrders> findOrderList(@Param("identity") int identity, @Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<ShopFloorOrders> findOrderList(@Param("userId") long userId, @Param("ordersType") int ordersType);
 
     /***
      * 统计各类订单数量
-     * @param identity  身份区分：1买家 2商家
      * @return
      */
     @Select("<script>" +
             "select * from ShopFloorOrders" +
             " where 1=1 " +
-            "<if test=\"identity == 1 \">" +
             " and buyerId = #{userId}" +
-            "</if>" +
-            "<if test=\"identity == 2 \">" +
-            " and sellerId = #{userId}" +
-            "</if>" +
             " and ordersState = 0" +
             "</script>")
-    List<ShopFloorOrders> findIdentity(@Param("identity") int identity, @Param("userId") long userId);
+    List<ShopFloorOrders> findIdentity(@Param("userId") long userId);
 
 
 }

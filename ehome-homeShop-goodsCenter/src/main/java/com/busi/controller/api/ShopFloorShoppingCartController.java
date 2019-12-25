@@ -64,7 +64,7 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         if (num >= 1000) {//超出数量限制
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        if (shopFloorGoods.getNumber() > 1) {
+        if (shopFloorGoods.getNumber() >= 1) {
             ShopFloorShoppingCart shoppingCart = null;
             shoppingCart = goodsCenterService.findId(shopFloorGoods.getUserId(), shopFloorGoods.getId());
             if (shoppingCart != null) {
@@ -153,15 +153,29 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         if (userId < 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
         }
-        List cartList = null;
+        List<ShopFloorShoppingCart> cartList = new ArrayList<>();
         cartList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + userId, 0, -1);
         if (cartList == null || cartList.size() <= 0) {
-            cartList = null;
             //查询数据库
             cartList = goodsCenterService.findList(userId);
             if (cartList != null && cartList.size() > 0) {
+                //初始化一个map
+//                Map<String, List<ShopFloorShoppingCart>> map = new HashMap<>();
+//                for (ShopFloorShoppingCart user : cartList) {
+//                    String key = user.getGoodsTitle();//店铺名称暂用标题代替
+//                    if (map.containsKey(key)) {
+//                        //map中存在以此id作为的key，将数据存放当前key的map中
+//                        map.get(key).add(user);
+//                    } else {
+//                        //map中不存在以此id作为的key，新建key用来存放数据
+//                        List<ShopFloorShoppingCart> userList = new ArrayList<>();
+//                        userList.add(user);
+//                        map.put(user.getGoodsTitle(), userList);//店铺名称暂用标题代替
+//                    }
+//                }
                 //更新到缓存
                 redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + userId, cartList);
+//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, cartList);

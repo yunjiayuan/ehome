@@ -45,16 +45,16 @@ public interface ShopFloorApiController {
      * @param userId
      * @return
      */
-    @GetMapping("findShopFloor/{userId}")
-    ReturnData findShopFloor(@PathVariable long userId);
+    @GetMapping("findShopFloor/{userId}/{villageOnly}")
+    ReturnData findShopFloor(@PathVariable long userId, @PathVariable String villageOnly);
 
     /***
      * 查询店铺状态
      * @param userId
      * @return
      */
-    @GetMapping("findFloorState/{userId}")
-    ReturnData findFloorState(@PathVariable long userId);
+    @GetMapping("findFloorState/{userId}/{villageOnly}")
+    ReturnData findFloorState(@PathVariable long userId, @PathVariable String villageOnly);
 
     /***
      * 新增订单

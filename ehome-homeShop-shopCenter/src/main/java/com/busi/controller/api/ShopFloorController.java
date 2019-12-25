@@ -50,9 +50,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         }
         //判断是否已有店铺
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOOR + CommonUtils.getMyId());
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOOR + CommonUtils.getMyId() + "_" + homeShopCenter.getVillageOnly());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId());
+            ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId(), homeShopCenter.getVillageOnly());
             if (kitchen2 != null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增楼店失败，楼店已存在！", new JSONObject());
             }
@@ -85,7 +85,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             mqUtils.sendDeleteImageMQ(homeShopCenter.getUserId(), homeShopCenter.getDelImgUrls());
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId() + "_" + homeShopCenter.getVillageOnly(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -107,31 +107,32 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
         }
         //查询是否缴费
-        ShopFloor dishes = shopCenterService.findByUserId(CommonUtils.getMyId());
+        ShopFloor dishes = shopCenterService.findByUserId(CommonUtils.getMyId(), homeShopCenter.getVillageOnly());
         if (dishes == null || dishes.getPayState() != 1) {
             return returnData(StatusCode.CODE_BOND_NOT_AC.CODE_VALUE, "未缴纳保证金", new JSONObject());
         }
         shopCenterService.updateBusiness(homeShopCenter);
         //清除缓存
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId() + "_" + homeShopCenter.getVillageOnly(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 查询店铺信息
      * @param userId
+     * @param villageOnly  小区唯一标识
      * @return
      */
     @Override
-    public ReturnData findShopFloor(@PathVariable long userId) {
+    public ReturnData findShopFloor(@PathVariable long userId, @PathVariable String villageOnly) {
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOOR + CommonUtils.getMyId());
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOOR + CommonUtils.getMyId() + "_" + villageOnly);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId());
+            ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId(), villageOnly);
             if (kitchen2 != null) {
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen2);
-                redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR + kitchen2.getUserId() + "_" + villageOnly, kitchenMap, Constants.USER_TIME_OUT);
             }
         }
         //判断该用户是否实名
@@ -151,15 +152,15 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData findFloorState(@PathVariable long userId) {
+    public ReturnData findFloorState(@PathVariable long userId, @PathVariable String villageOnly) {
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOOR + CommonUtils.getMyId());
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOOR + CommonUtils.getMyId() + "_" + villageOnly);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId());
+            ShopFloor kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId(), villageOnly);
             if (kitchen2 != null) {
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen2);
-                redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR + kitchen2.getUserId() + "_" + villageOnly, kitchenMap, Constants.USER_TIME_OUT);
             }
         }
         ShopFloor ik = (ShopFloor) CommonUtils.mapToObject(kitchenMap, ShopFloor.class);

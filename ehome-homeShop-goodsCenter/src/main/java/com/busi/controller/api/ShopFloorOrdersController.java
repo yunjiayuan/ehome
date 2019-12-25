@@ -80,7 +80,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         laf = (ShopFloorGoods) iup.get(0);
-        if (laf == null || shopFloorOrders.getBuyerId() == laf.getUserId() || iup.size() != sd.length) {
+        if (laf == null || iup.size() != sd.length) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         for (int i = 0; i < iup.size(); i++) {
@@ -140,11 +140,11 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
-        if (io.getOrdersState() != 0) {
-            io.setOrdersState(io.getSellerId() == CommonUtils.getMyId() ? (io.getOrdersState() == 1 ? 3 : 2) : (io.getOrdersState() == 2 ? 3 : 1));
-        } else {
-            io.setOrdersState(io.getSellerId() == CommonUtils.getMyId() ? 2 : 1);
-        }
+//        if (io.getOrdersState() != 0) {
+//            io.setOrdersState(io.getSellerId() == CommonUtils.getMyId() ? (io.getOrdersState() == 1 ? 3 : 2) : (io.getOrdersState() == 2 ? 3 : 1));
+//        } else {
+//            io.setOrdersState(io.getSellerId() == CommonUtils.getMyId() ? 2 : 1);
+//        }
         io.setUpdateCategory(0);
         shopFloorOrdersService.updateOrders(io);
         //清除缓存中的厨房订座订单信息
@@ -191,40 +191,41 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
-        //由已接单改为已完成
-        io.setOrdersType(3);        //已收货
-        io.setReceivingTime(new Date());
-        io.setUpdateCategory(2);
-        shopFloorOrdersService.updateOrders(io);
-        //更新销量
+        if (io.getBuyerId() == CommonUtils.getMyId()) {
+            //由已接单改为已完成
+            io.setOrdersType(3);        //已收货
+            io.setReceivingTime(new Date());
+            io.setUpdateCategory(2);
+            shopFloorOrdersService.updateOrders(io);
+            //更新销量
 
-        //清除缓存中的商品信息
+            //清除缓存中的商品信息
 
-        //清除缓存中的订单信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
-        //订单放入缓存
-        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
+            //清除缓存中的订单信息
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
+            //订单放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 分页查询订单列表
-     * @param identity  身份区分：1买家 2商家
      * @param ordersType 订单类型: 0全部 1待付款,2待发货(已付款),3已发货（待收货）, 4已收货（待评价）  5已评价  6付款超时、发货超时、买家取消订单、卖家取消订单
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
     @Override
-    public ReturnData findSFordersList(@PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findSFordersList(@PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<ShopFloorOrders> pageBean;
-        pageBean = shopFloorOrdersService.findOrderList(identity, CommonUtils.getMyId(), ordersType, page, count);
+        pageBean = shopFloorOrdersService.findOrderList(CommonUtils.getMyId(), ordersType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -236,11 +237,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             for (int i = 0; i < list.size(); i++) {
                 t = (ShopFloorOrders) list.get(i);
                 if (t != null) {
-                    if (identity == 1) {
-                        userCache = userInfoUtils.getUserInfo(t.getSellerId());
-                    } else {
-                        userCache = userInfoUtils.getUserInfo(t.getBuyerId());
-                    }
+                    userCache = userInfoUtils.getUserInfo(t.getBuyerId());
                     if (userCache != null) {
                         t.setName(userCache.getName());
                         t.setHead(userCache.getHead());
@@ -265,13 +262,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (ko == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
         }
-        //商家取消订单
-        if (ko.getSellerId() == CommonUtils.getMyId()) {
-            ko.setOrdersType(8);
-        }
-        if (ko.getBuyerId() == CommonUtils.getMyId()) {//用户可以取消未完成状态的单子
-            ko.setOrdersType(7);
-        }
+        ko.setOrdersType(7);
         ko.setUpdateCategory(3);
         shopFloorOrdersService.updateOrders(ko);//更新订单
         //更新缓存、钱包、账单
@@ -321,18 +312,17 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
      * @return
      */
     @Override
-    public ReturnData findSFordersCount(@PathVariable int identity) {
+    public ReturnData findSFordersCount() {
         int orderCont0 = 0;
         int orderCont1 = 0;
         int orderCont2 = 0;
         int orderCont3 = 0;
         int orderCont4 = 0;
         int orderCont5 = 0;
-        int orderCont6 = 0;
 
         ShopFloorOrders kh = null;
         List list = null;
-        list = shopFloorOrdersService.findIdentity(identity, CommonUtils.getMyId());//全部
+        list = shopFloorOrdersService.findIdentity(CommonUtils.getMyId());//全部
         for (int i = 0; i < list.size(); i++) {
             kh = (ShopFloorOrders) list.get(i);
             switch (kh.getOrdersType()) {
@@ -356,10 +346,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                     orderCont5++;
                     orderCont0++;
                     break;
-                case 8://卖家取消
-                    orderCont6++;
-                    orderCont0++;
-                    break;
                 default:
                     orderCont0++;
                     break;
@@ -372,7 +358,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         map.put("orderCont3", orderCont3);
         map.put("orderCont4", orderCont4);
         map.put("orderCont5", orderCont5);
-        map.put("orderCont6", orderCont6);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

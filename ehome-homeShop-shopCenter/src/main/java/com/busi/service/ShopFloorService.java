@@ -72,9 +72,10 @@ public class ShopFloorService {
      * @param userId
      * @return
      */
-    public ShopFloor findByUserId(long userId) {
-        return shopCenterDao.findByUserId(userId);
+    public ShopFloor findByUserId(long userId, String villageOnly) {
+        return shopCenterDao.findByUserId(userId, villageOnly);
     }
+
 
     /***
      * 查询所有店铺

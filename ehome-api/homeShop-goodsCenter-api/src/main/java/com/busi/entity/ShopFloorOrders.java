@@ -20,9 +20,9 @@ public class ShopFloorOrders {
 
     private long buyerId;                // 买家ID
 
-    private long sellerId;                // 卖家ID
-
-    private long shopId;                //店铺ID
+//    private long sellerId;                // 卖家ID
+//
+//    private long shopId;                //店铺ID
 
     private String goods;            //商品ID,标题,数量,价格,图片【格式：12,啤酒,5,9,图片;22,啤酒,7,19,图片】
 
@@ -48,9 +48,9 @@ public class ShopFloorOrders {
 
     private String no;            //订单编号
 
-    private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
+    private int ordersState;        // 订单状态:0正常 1删除
 
-    private int ordersType;            // 订单类型: 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时  6发货超时, 7买家取消订单  8卖家取消订单
+    private int ordersType;            // 订单类型: 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时  6发货超时, 7取消订单
 
     private long addressId;            //地址ID
 

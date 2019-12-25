@@ -51,14 +51,13 @@ public interface ShopFloorOrdersApiController {
 
     /***
      * 分页查询订单列表
-     * @param identity  身份区分：1买家 2商家
      * @param ordersType 订单类型: 0全部 1待付款,2待发货(已付款),3已发货（待收货）, 4已收货（待评价）  5已评价  6付款超时  7发货超时, 8取消订单
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
-    @GetMapping("findSFordersList/{identity}/{ordersType}/{page}/{count}")
-    ReturnData findSFordersList(@PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findSFordersList/{ordersType}/{page}/{count}")
+    ReturnData findSFordersList(@PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
     /***
      * 取消订单
@@ -80,6 +79,6 @@ public interface ShopFloorOrdersApiController {
      * 统计各类订单数量
      * @return
      */
-    @GetMapping("findSFordersCount/{identity}")
-    ReturnData findSFordersCount(@PathVariable int identity);
+    @GetMapping("findSFordersCount")
+    ReturnData findSFordersCount();
 }

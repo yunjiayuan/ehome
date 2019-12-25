@@ -77,8 +77,8 @@ public interface ShopFloorDao {
      * @param userId
      * @return
      */
-    @Select("select * from ShopFloor where userId=#{userId} and deleteType=0")
-    ShopFloor findByUserId(@Param("userId") long userId);
+    @Select("select * from ShopFloor where userId=#{userId} and deleteType=0 and villageOnly = #{villageOnly}")
+    ShopFloor findByUserId(@Param("userId") long userId, @Param("villageOnly") String villageOnly);
 
     /***
      * 查询所有店铺
@@ -87,9 +87,9 @@ public interface ShopFloorDao {
     @Select("<script>" +
             "select * from ShopFloor" +
             " where 1=1" +
-            " and villageOnly in"+
+            " and villageOnly in" +
             "<foreach collection='villageOnly' index='index' item='item' open='(' separator=',' close=')'>" +
-                " #{item}" +
+            " #{item}" +
             "</foreach>" +
             " and deleteType=0" +
             "</script>")
@@ -104,9 +104,9 @@ public interface ShopFloorDao {
     @Select("<script>" +
             "select * from ShopFloor where" +
             " deleteType = 0" +
-            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
-            " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
-            " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+            " and lat > #{lat}-0.018018" +  //只对于经度和纬度大于或小于该用户两公里（1度111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+            " and lat &lt; #{lat}+0.018018 and lon > #{lon}-0.018018" +
+            " and lon &lt; #{lon}+0.018018 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</script>")
     List<ShopFloor> findNearbySFList(@Param("lat") double lat, @Param("lon") double lon);
 
@@ -133,32 +133,32 @@ public interface ShopFloorDao {
             " where 1=1" +
 
             "<if test=\"levelOne == -2 \">" +
-                " and levelOne > -1" +
-                " and levelTwo = -1" +
-                " and levelThree = -1" +
+            " and levelOne > -1" +
+            " and levelTwo = -1" +
+            " and levelThree = -1" +
             "</if>" +
 
             "<if test=\"levelOne >= 0 \">" +
-                "<if test=\"levelTwo == -2 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo > -1" +
-                    " and levelThree = -1" +
-                "</if>" +
-                "<if test=\"levelTwo > -1 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo = #{levelTwo}" +
-                    "<if test=\"levelThree >= 0\">" +
-                        " and levelThree = #{levelThree}" +
-                    "</if>" +
-                    "<if test=\"levelThree == -2\">" +
-                        " and levelThree > -1" +
-                    "</if>" +
-                "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo > -1" +
+            " and levelThree = -1" +
+            "</if>" +
+            "<if test=\"levelTwo > -1 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo = #{levelTwo}" +
+            "<if test=\"levelThree >= 0\">" +
+            " and levelThree = #{levelThree}" +
+            "</if>" +
+            "<if test=\"levelThree == -2\">" +
+            " and levelThree > -1" +
+            "</if>" +
+            "</if>" +
             "</if>" +
 
             " and enabled = 0" +
             "</script>")
-    List<YongHuiGoodsSort> findYHSort(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree,@Param("letter") String letter);
+    List<YongHuiGoodsSort> findYHSort(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("letter") String letter);
 
     /***
      * 更新永辉分类
