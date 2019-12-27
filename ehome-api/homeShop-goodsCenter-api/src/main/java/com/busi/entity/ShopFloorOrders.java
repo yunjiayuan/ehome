@@ -20,15 +20,15 @@ public class ShopFloorOrders {
 
     private long buyerId;                // 买家ID
 
-//    private long sellerId;                // 卖家ID
-//
-//    private long shopId;                //店铺ID
+    private long shopId;                //店铺ID
 
-    private String goods;            //商品ID,标题,数量,价格,图片【格式：12,啤酒,5,9,图片;22,啤酒,7,19,图片】
+    private String shopName;            //店铺名称
+
+    private String goods;            //商品ID,标题,数量,价格,图片,规格【格式：12,啤酒,5,9,图片,规格;22,啤酒,7,19,图片,规格】
 
     private double money;            // 商品总金额
 
-    private int freight;             //运费
+//    private int freight;             //运费
 
     private int distributioMode;    //  配送方式
 
@@ -44,7 +44,7 @@ public class ShopFloorOrders {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date receivingTime;            // 收货时间
 
-    private String expectTime;            // 期望时间
+//    private String expectTime;            // 期望时间
 
     private String no;            //订单编号
 
@@ -53,6 +53,8 @@ public class ShopFloorOrders {
     private int ordersType;            // 订单类型: 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时  6发货超时, 7取消订单
 
     private long addressId;            //地址ID
+
+    private String remarks;            //买家留言
 
     //与数据库无关字段
     private String name;                //用户名

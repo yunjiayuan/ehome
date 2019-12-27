@@ -21,10 +21,10 @@ public interface ShopFloorOrdersDao {
      * @param kitchenBookedOrders
      * @return
      */
-    @Insert("insert into ShopFloorOrders(buyerId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,expectTime,no,ordersState,ordersType," +
-            "addressId,freight,distributioMode)" +
-            "values (#{buyerId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{expectTime},#{no},#{ordersState},#{ordersType}" +
-            ",#{addressId},#{freight},#{distributioMode})")
+    @Insert("insert into ShopFloorOrders(buyerId,shopId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,no,ordersState,ordersType," +
+            "addressId,distributioMode,shopName,remarks)" +
+            "values (#{buyerId},#{shopId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{no},#{ordersState},#{ordersType}" +
+            ",#{addressId},#{distributioMode},#{shopName},#{remarks})")
     @Options(useGeneratedKeys = true)
     int addOrders(ShopFloorOrders kitchenBookedOrders);
 

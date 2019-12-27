@@ -66,7 +66,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         String goodsTitle = ""; //商品标题
         double cost = 0.00; //商品价格
         double money = 0.00; // 商品总金额
-        String imgUrl = ""; //图片
+        String imgUrl = "";   //图片
+        String specs = "";    //规格
         List iup = null;
         ShopFloorGoods laf = null;
         if (CommonUtils.checkFull(shopFloorOrders.getGoodsIds()) || CommonUtils.checkFull(shopFloorOrders.getGoodsNumber())) {
@@ -101,7 +102,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                     } else {
                         imgUrl = laf.getGoodsCoverUrl();//图片
                     }
-                    goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片;
+                    specs = laf.getSpecs();
+                    goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片,规格;
                     money += Integer.parseInt(fn[j]) * cost;//总价格
                 }
             }
@@ -114,8 +116,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
 
         shopFloorOrders.setNo(noRandom);//订单编号【MD5】
         shopFloorOrders.setAddTime(date);
-        shopFloorOrders.setGoods(goods);//商品ID,标题,数量,价格，图片;
-        shopFloorOrders.setMoney(money + shopFloorOrders.getFreight());//总价
+        shopFloorOrders.setGoods(goods);//商品ID,标题,数量,价格，图片,规格;
+        shopFloorOrders.setMoney(money);//总价
         shopFloorOrders.setOrdersType(0);
 
         shopFloorOrdersService.addOrders(shopFloorOrders);
