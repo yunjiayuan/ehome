@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.ShopFloorGoodsService;
 import com.busi.service.ShopFloorOrdersService;
+import com.busi.service.ShopFloorShoppingCartService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -45,6 +46,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
 
     @Autowired
     ShopFloorOrdersService shopFloorOrdersService;
+
+    @Autowired
+    private ShopFloorShoppingCartService goodsCenterService;
 
     /***
      * 新增订单
@@ -119,8 +123,13 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         shopFloorOrders.setGoods(goods);//商品ID,标题,数量,价格，图片,规格;
         shopFloorOrders.setMoney(money);//总价
         shopFloorOrders.setOrdersType(0);
-
         shopFloorOrdersService.addOrders(shopFloorOrders);
+
+        //移除购物车当前商品
+        goodsCenterService.delGoods(sd);
+        //清除缓存中购物车的信息
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorOrders.getBuyerId(), 0);
+
         Map<String, Object> map = new HashMap<>();
         map.put("no", shopFloorOrders.getNo());
 
@@ -142,11 +151,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
-//        if (io.getOrdersState() != 0) {
-//            io.setOrdersState(io.getSellerId() == CommonUtils.getMyId() ? (io.getOrdersState() == 1 ? 3 : 2) : (io.getOrdersState() == 2 ? 3 : 1));
-//        } else {
-//            io.setOrdersState(io.getSellerId() == CommonUtils.getMyId() ? 2 : 1);
-//        }
         io.setUpdateCategory(0);
         shopFloorOrdersService.updateOrders(io);
         //清除缓存中的厨房订座订单信息

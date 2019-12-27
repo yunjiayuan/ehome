@@ -39,7 +39,7 @@ public class ShopFloorBondLController extends BaseController implements ShopFloo
 
         shopCenterService.updatePayStates(shopFloor);
         //清除缓存
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + shopFloor.getUserId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + shopFloor.getUserId() + "_" + shopFloor.getVillageOnly(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

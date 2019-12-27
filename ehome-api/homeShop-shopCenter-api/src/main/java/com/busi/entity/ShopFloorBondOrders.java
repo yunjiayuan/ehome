@@ -26,4 +26,6 @@ public class ShopFloorBondOrders {
     private Date time;//支付时间
 
     private int payState;//支付状态  0未支付   1已支付
+
+    private String villageOnly;    // 小区唯一标识
 }

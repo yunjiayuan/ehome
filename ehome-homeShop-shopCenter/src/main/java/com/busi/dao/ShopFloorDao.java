@@ -56,7 +56,7 @@ public interface ShopFloorDao {
     @Update("<script>" +
             "update ShopFloor set" +
             " payState=#{payState}" +
-            " where userId=#{userId}" +
+            " where userId=#{userId} and villageOnly=#{villageOnly}" +
             "</script>")
     int updatePayStates(ShopFloor homeShopCenter);
 

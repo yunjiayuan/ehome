@@ -56,6 +56,20 @@ public interface ShopFloorShoppingCartDao {
     int updateDels(@Param("ids") String[] ids);
 
     /***
+     * 删除购物车商品
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from ShopFloorShoppingCart" +
+            " where deleteType=0 and goodsId in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int delGoods(@Param("ids") String[] ids);
+
+    /***
      * 根据Id查询
      * @param userId
      */

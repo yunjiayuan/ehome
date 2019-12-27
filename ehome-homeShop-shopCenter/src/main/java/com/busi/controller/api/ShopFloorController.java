@@ -201,7 +201,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     }
 
     /***
-     * 查询小区
+     * 根据小区查询楼店
      * @param villageOnly
      * @return
      */
@@ -222,13 +222,14 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (serverList == null || serverList.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", newList);
         }
-        for (int i = 0; i < serverList.size(); i++) {
-            ShopFloor serverShopFloor = serverList.get(i);
-            for (int j = 0; j < array.length; j++) {
-                if (serverShopFloor != null && !CommonUtils.checkFull(serverShopFloor.getVillageOnly())) {
-                    if (serverShopFloor.getVillageOnly().equals(array[j])) {
-                        newList.remove(i);
-                        newList.add(serverShopFloor);
+        for (int j = 0; j < newList.size(); j++) {
+            ShopFloor shopFloor = newList.get(j);
+            for (int i = 0; i < serverList.size(); i++) {
+                ShopFloor serverShopFloor = serverList.get(i);
+                if (serverShopFloor != null && shopFloor != null) {
+                    if (serverShopFloor.getVillageOnly().equals(shopFloor.getVillageOnly())) {
+                        newList.set(j, serverShopFloor);//替换掉原有对象
+                        serverList.remove(i);
                     }
                 }
             }

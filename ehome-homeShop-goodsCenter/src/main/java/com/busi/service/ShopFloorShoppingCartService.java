@@ -40,6 +40,16 @@ public class ShopFloorShoppingCartService {
     }
 
     /***
+     * 批量删除购物车商品
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delGoods(String[] ids) {
+        return goodsCenterDao.delGoods(ids);
+    }
+
+    /***
      * 更新
      * @param homeShopGoods
      * @return
