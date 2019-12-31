@@ -445,7 +445,7 @@ public class KitchenBookedOrdersController extends BaseController implements Kit
         }
         ko.setUpdateCategory(6);
         kitchenBookedOrdersService.updateOrders(ko);//更新订单
-        if (ko.getOrdersType() == 8 || ko.getOrdersType() == 9) {
+        if (ko.getOrdersType() == 8) {
             //更新缓存、钱包、账单
             if (ko.getMoney() > 0) {
                 mqUtils.sendPurseMQ(ko.getMyId(), 26, 0, ko.getMoney());

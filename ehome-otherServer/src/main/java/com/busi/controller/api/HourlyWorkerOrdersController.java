@@ -369,7 +369,7 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         }
         ko.setUpdateCategory(3);
         hourlyWorkerOrdersService.updateOrders(ko);//更新订单
-        if (ko.getOrdersType() == 4 || ko.getOrdersType() == 5) {
+        if (ko.getOrdersType() == 4) {
             //更新缓存、钱包、账单
             mqUtils.sendPurseMQ(ko.getMyId(), 24, 0, ko.getMoney());
             //清除缓存中的小时工订单信息
