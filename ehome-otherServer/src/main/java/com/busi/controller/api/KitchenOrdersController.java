@@ -399,7 +399,7 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
         }
         ko.setUpdateCategory(4);
         kitchenOrdersService.updateOrders(ko);//更新订单
-        if (ko.getOrdersType() == 9 || ko.getOrdersType() == 5) {
+        if (ko.getOrdersType() == 5) {
             //更新缓存、钱包、账单
             mqUtils.sendPurseMQ(ko.getMyId(), 16, 0, ko.getMoney());
             //清除缓存中的厨房订单信息
