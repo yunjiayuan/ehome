@@ -123,9 +123,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         homeBlogService.add(homeBlog);
-        if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0&&homeBlog.getLikeCount()>10000){//制作假数据
+        if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0&&homeBlog.getLikeCount()>10000&&homeBlog.getTag()!=42&&homeBlog.getTag()!=43){//制作假数据
 //            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, homeBlog, 0);
-
+            redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,homeBlog);
         }
         //添加足迹
 //        String title = homeBlog.getTitle();
@@ -426,9 +426,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     }
 
     /***
-     * 条件查询生活秀接口（只查询生活秀内容）
+     * 条件查询生活秀、今日现场、娱乐圈接口（只查询视频内容）
      * @param userId     被查询用户ID 默认0查询所有
-     * @param searchType 查询类型 0查询首页推荐 1查同城 2查看朋友 3查询关注 4查询兴趣标签 5查询指定用户 6查询附近的生活圈（家门口的生活圈）
+     * @param searchType 查询类型 0查询首页推荐 1查同城 2查看朋友 3查询关注 4查询兴趣标签 5查询指定用户 6查询附近的生活秀（家门口的生活圈） 7查询今日现场首页 8查询今日现场同城 9查询今日现场关注  10查询娱乐圈首页  11查询娱乐圈关注 12今日现场查询指定用户 13娱乐圈查询指定用户
      * @param tags       被查询兴趣标签ID组合，逗号分隔例如：1,2,3  仅当searchType=4 时有效 默认传null
      * @param cityId     城市ID 当searchType=1时有效 默认传0
      * @param lat        纬度 小数点后6位 当searchType=6时有效
@@ -443,7 +443,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                                         @PathVariable double lat,@PathVariable double lon,
                                         @PathVariable int page,@PathVariable int count) {
         //验证参数
-        if(searchType<0||searchType>6){
+        if(searchType<0||searchType>13){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"searchType参数有误",new JSONObject());
         }
         if(page<1){
@@ -503,7 +503,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 //                if(lon<0||lat<0||!String.valueOf(lon).matches(str) || !String.valueOf(lat).matches(str)){
 //                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"位置坐标参数格式有误",new JSONObject());
 //                }
-                pageBean = homeBlogService.findBlogListByCityId(userId,cityId,page,count);
+                pageBean = homeBlogService.findBlogListByCityId(userId,cityId,1,page,count);
                 break;
             case 2://0查看朋友的生活秀
                 //从缓存中获取好友列表
@@ -604,6 +604,76 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     }
                 }
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),nearUserIds.split(","),1,1,page,count);
+                break;
+            case 7://7查询今日现场首页
+                pageBean = homeBlogService.findBlogListByTags(new String[]{"42"},1,CommonUtils.getMyId(),page,count);
+                break;
+            case 8://8查询今日现场同城
+                if(cityId<0){
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"cityId参数有误",new JSONObject());
+                }
+                //验证参数
+//                if(lon<0||lat<0||!String.valueOf(lon).matches(str) || !String.valueOf(lat).matches(str)){
+//                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"位置坐标参数格式有误",new JSONObject());
+//                }
+                pageBean = homeBlogService.findBlogListByCityId(userId,cityId,2,page,count);
+                break;
+            case 9://9查询今日现场关注
+                //获取我关注的人的列表
+                String[] followArray1 = null;
+                String followUserIds1 = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
+                //将自己加入查询列表中 关注暂时不查自己的
+//                followUserIds = followUserIds+","+CommonUtils.getMyId();
+                if(!CommonUtils.checkFull(followUserIds1)){
+                    followArray1 = followUserIds1.split(",");
+                }
+                if(followArray1==null||followArray1.length<=0){//无关注列表存在 直接返回
+                    pageBean = new PageBean<HomeBlog>();
+                    pageBean.setList(new ArrayList<>());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
+                }
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray1,2,0,page,count);
+                break;
+            case 10://10查询娱乐圈首页
+                pageBean = homeBlogService.findBlogListByTags(new String[]{"43"},1,CommonUtils.getMyId(),page,count);
+                break;
+            case 11://11查询娱乐圈关注
+                //获取我关注的人的列表
+                String[] followArray2 = null;
+                String followUserIds2 = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
+                //将自己加入查询列表中 关注暂时不查自己的
+//                followUserIds = followUserIds+","+CommonUtils.getMyId();
+                if(!CommonUtils.checkFull(followUserIds2)){
+                    followArray2 = followUserIds2.split(",");
+                }
+                if(followArray2==null||followArray2.length<=0){//无关注列表存在 直接返回
+                    pageBean = new PageBean<HomeBlog>();
+                    pageBean.setList(new ArrayList<>());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
+                }
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray2,2,0,page,count);
+                break;
+            case 12://今日现场查询指定用户
+                if(userId<0){
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+                }
+                //判断是不是查自己的信息
+                int type1 = 0;
+                if(userId!=CommonUtils.getMyId()){
+                    type1 = 1;
+                }
+                pageBean = homeBlogService.findBlogListByUserId(userId,type1,2,page,count);
+                break;
+            case 13://娱乐圈查询指定用户
+                if(userId<0){
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+                }
+                //判断是不是查自己的信息
+                int type2 = 0;
+                if(userId!=CommonUtils.getMyId()){
+                    type2 = 1;
+                }
+                pageBean = homeBlogService.findBlogListByUserId(userId,type2,3,page,count);
                 break;
         }
         if(pageBean==null){

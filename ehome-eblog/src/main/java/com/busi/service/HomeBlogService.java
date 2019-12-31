@@ -75,7 +75,7 @@ public class HomeBlogService {
      * 查询朋友圈和关注的人列表
      * @param myId          当前登录者用户ID
      * @param firendUserIds 好友用户ID组合
-     * @param searchType    博文类型：0所有 1只看视频
+     * @param searchType    博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈
      * @param timeType      查询时间类型：0不限制 1只看今天发布视频
      * @param page          页码 第几页 起始值1
      * @param count         每页条数
@@ -107,7 +107,7 @@ public class HomeBlogService {
     /***
      * 根据指定用户ID查询列表
      * @param searchType 查询类型：0查自己 1查别人
-     * @param sendType   博文类型：0所有 1只看视频
+     * @param sendType   博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈
      * @param userId     被查询用户ID
      * @return
      */
@@ -119,17 +119,18 @@ public class HomeBlogService {
     }
 
     /***
-     * 根据城市ID查询 同城生活秀
-     * @param cityId 博文类型：0查自己 1查别人
-     * @param userId 当前用户ID
+     * 根据城市ID查询 同城
+     * @param cityId      博文类型：0查自己 1查别人
+     * @param searchType  博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈
+     * @param userId      当前用户ID
      * @param page
      * @param count
      * @return
      */
-    public PageBean<HomeBlog> findBlogListByCityId(long userId, int cityId, int page, int count) {
+    public PageBean<HomeBlog> findBlogListByCityId(long userId, int cityId, int searchType ,int page, int count) {
         List<HomeBlog> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByCityId(userId,"," + userId + ",", cityId);
+        list = homeBlogDao.findBlogListByCityId(userId,"," + userId + ",", cityId,searchType);
         return PageUtils.getPageBean(p, list);
     }
 
