@@ -81,15 +81,10 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         String[] fn = shopFloorOrders.getGoodsNumber().split(",");//商品数量
 
         iup = shopFloorGoodsService.findList(sd);
-        if (iup == null || iup.size() <= 0) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-        }
-        laf = (ShopFloorGoods) iup.get(0);
-        if (laf == null || iup.size() != sd.length) {
+        if (iup == null || iup.size() <= 0 || iup.size() != sd.length) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         for (int i = 0; i < iup.size(); i++) {
-            laf = null;
             laf = (ShopFloorGoods) iup.get(i);
             for (int j = 0; j < sd.length; j++) {
                 if (laf.getId() == Long.parseLong(sd[j])) {//确认是当前商品ID
@@ -348,7 +343,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                     orderCont4++;
                     orderCont0++;
                     break;
-                case 7://买家取消
+                case 7://取消订单
                     orderCont5++;
                     orderCont0++;
                     break;
