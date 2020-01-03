@@ -6,9 +6,7 @@ import com.busi.entity.ReturnData;
 import com.busi.entity.StarCertification;
 import com.busi.entity.UserAccountSecurity;
 import com.busi.service.StarCertificationService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.StatusCode;
-import com.busi.utils.UserAccountSecurityUtils;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,6 +25,9 @@ import java.util.Map;
  */
 @RestController
 public class StarCertificationController extends BaseController implements StarCertificationApiController {
+
+    @Autowired
+    RedisUtils redisUtils;
 
     @Autowired
     StarCertificationService starCertificationService;
@@ -60,6 +60,8 @@ public class StarCertificationController extends BaseController implements StarC
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "您的身份证信息与您本人不符，请填写真实信息。", new JSONObject());
         }
         starCertification.setAddTime(new Date());
+        starCertification.setAge(CommonUtils.getAgeByIdCard(starCertification.getIdCard()));
+        starCertification.setSex(CommonUtils.getSexByIdCard(starCertification.getIdCard()));
         starCertificationService.add(starCertification);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -72,19 +74,28 @@ public class StarCertificationController extends BaseController implements StarC
     @Override
     public ReturnData updateCertification(@Valid @RequestBody StarCertification starCertification, BindingResult bindingResult) {
         starCertificationService.update(starCertification);
+        //清除缓存
+        redisUtils.expire(Constants.REDIS_KEY_STAR_CERTIFICATION + starCertification.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
-     * 查询认证状态
+     * 查询认证详情
      * @param userId  被查询用户ID
      * @return
      */
     @Override
     public ReturnData findCertification(@PathVariable long userId) {
-        StarCertification certification = starCertificationService.find(userId);
-        Map<String, Object> map = new HashMap<>();
-        map.put("state", certification.getState());
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_STAR_CERTIFICATION + userId);
+        if (map == null || map.size() <= 0) {
+            StarCertification certification = starCertificationService.find(userId);
+            if (certification != null) {
+                //放入缓存
+                map = CommonUtils.objectToMap(certification);
+                redisUtils.hmset(Constants.REDIS_KEY_STAR_CERTIFICATION + userId, map, -1);
+            }
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

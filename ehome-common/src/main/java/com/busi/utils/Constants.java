@@ -213,6 +213,7 @@ public class Constants {
     public static final String REDIS_KEY_SELFCHANNELVIP_ORDER = "selfChannelVipOrder_";//userId与自频道会员订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER = "goodNumber_order_";//userId与靓号订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER_STATUS = "goodNumber_order_status_";//"省简称ID+门票号(格式0_1001518)"与靓号订单对象关系对照
+    public static final String REDIS_KEY_STAR_CERTIFICATION = "star_certification_";//明星认证对象关系对照
     public static final String REDIS_KEY_GOODCATEGORY_LIST = "goodCategory_List";//商品分类
     public static final String REDIS_KEY_GOODSBRANDS_LIST = "goodsBrands_List";//商品品牌
 
