@@ -651,7 +651,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     pageBean.setList(new ArrayList<>());
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
                 }
-                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray2,2,0,page,count);
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray2,3,0,page,count);
                 break;
             case 12://今日现场查询指定用户
                 if(userId<0){
