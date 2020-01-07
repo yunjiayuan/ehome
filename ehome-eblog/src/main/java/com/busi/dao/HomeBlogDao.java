@@ -94,25 +94,25 @@ public interface HomeBlogDao {
             "</foreach>" +
             "</if>" +
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0  or userId=#{userId} )" +
-            "<if test=\"searchType == 0\">" +
-                " and tag != 42" +
-                " and tag != 43" +
-            "</if>" +
+//            "<if test=\"searchType == 0\">" +
+//                " and tag != 42" +
+//                " and tag != 43" +
+//            "</if>" +
             "<if test=\"searchType == 1\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag != 42" +
-                " and tag != 43" +
+//                " and tag != 42" +
+//                " and tag != 43" +
             "</if>" +
             "<if test=\"searchType == 2\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag = 42" +
+                " and tag = 40" +
             "</if>" +
             "<if test=\"searchType == 3\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag = 43" +
+                " and tag = 39" +
             "</if>" +
             "<if test=\"timeType == 1\">" +
             " and to_days(time) = to_days(now())" +
@@ -163,25 +163,25 @@ public interface HomeBlogDao {
             "<if test=\"searchType != 0\">" +
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
             "</if>" +
-            "<if test=\"sendType == 0\">" +
-                " and tag != 42" +
-                " and tag != 43" +
-            "</if>" +
+//            "<if test=\"sendType == 0\">" +
+//                " and tag != 42" +
+//                " and tag != 43" +
+//            "</if>" +
             "<if test=\"sendType == 1\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag != 42" +
-                " and tag != 43" +
+//                " and tag != 42" +
+//                " and tag != 43" +
             "</if>" +
             "<if test=\"sendType == 2\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag = 42" +
+                " and tag = 40" +
             "</if>" +
             "<if test=\"sendType == 3\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag = 43" +
+                " and tag = 39" +
             "</if>" +
             " and userId = #{userId}" +
             " and blogStatus = 0" +
@@ -202,25 +202,25 @@ public interface HomeBlogDao {
             " and (( classify = 2 and locate(#{userIds},classifyUserIds)>0) or (classify = 3 and locate(#{userIds},classifyUserIds)=0 ) or classify = 0)" +
             " and userId != #{userId}" +
             " and cityId = #{cityId}" +
-            "<if test=\"searchType == 0\">" +
-                " and tag != 42" +
-                " and tag != 43" +
-            "</if>" +
+//            "<if test=\"searchType == 0\">" +
+//                " and tag != 42" +
+//                " and tag != 43" +
+//            "</if>" +
             "<if test=\"searchType == 1\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag != 42" +
-                " and tag != 43" +
+//                " and tag != 42" +
+//                " and tag != 43" +
             "</if>" +
             "<if test=\"searchType == 2\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag = 42" +
+                " and tag = 40" +
             "</if>" +
             "<if test=\"searchType == 3\">" +
                 " and sendType = 2" +
                 " and blogType != 1" +
-                " and tag = 43" +
+                " and tag = 39" +
             "</if>" +
             " and blogStatus = 0" +
             " order by time desc" +

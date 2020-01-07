@@ -35,18 +35,18 @@ public class StarCertification {
     @Length(max = 50, message = "职业不能超过50字")
     private String job;//职业 ：明星/艺人、歌手、演员、模特、舞者、主持人、导演/制片人、经纪人/助理、编曲/作词、监制、编剧、剧务、化妆师/摄影师/灯光师、群演、其他
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date debutTime;//出道时间
 
     @IdCardConstraint(message = "身份证格式有误")
     private String idCard;//身份证
 
-    @Min(value = 1, message = "age参数有误，超出指定范围")
-    private int age;//年龄
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date age;//年龄
 
-    @Max(value = 1, message = "sex参数有误，超出指定范围")
-    @Min(value = 0, message = "sex参数有误，超出指定范围")
-    private int sex;//性别：0男，1女
+    @Max(value = 2, message = "sex参数有误，超出指定范围")
+    @Min(value = 1, message = "sex参数有误，超出指定范围")
+    private int sex;//性别：1男，2女
 
     private String iDPositive;//手持身份证正面
 

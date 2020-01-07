@@ -123,7 +123,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
         }
         homeBlogService.add(homeBlog);
-        if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0&&homeBlog.getLikeCount()>10000&&homeBlog.getTag()!=42&&homeBlog.getTag()!=43){//制作假数据
+        if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0&&homeBlog.getLikeCount()>10000){//制作假数据
 //            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, homeBlog, 0);
             redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,homeBlog);
         }
@@ -606,7 +606,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),nearUserIds.split(","),1,1,page,count);
                 break;
             case 7://7查询今日现场首页
-                pageBean = homeBlogService.findBlogListByTags(new String[]{"42"},1,CommonUtils.getMyId(),page,count);
+                pageBean = homeBlogService.findBlogListByTags(new String[]{"40"},1,CommonUtils.getMyId(),page,count);
                 break;
             case 8://8查询今日现场同城
                 if(cityId<0){
@@ -635,7 +635,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray1,2,0,page,count);
                 break;
             case 10://10查询娱乐圈首页
-                pageBean = homeBlogService.findBlogListByTags(new String[]{"43"},1,CommonUtils.getMyId(),page,count);
+                pageBean = homeBlogService.findBlogListByTags(new String[]{"39"},1,CommonUtils.getMyId(),page,count);
                 break;
             case 11://11查询娱乐圈关注
                 //获取我关注的人的列表
@@ -651,7 +651,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     pageBean.setList(new ArrayList<>());
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
                 }
-                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray2,2,0,page,count);
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray2,3,0,page,count);
                 break;
             case 12://今日现场查询指定用户
                 if(userId<0){

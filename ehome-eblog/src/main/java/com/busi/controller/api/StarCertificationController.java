@@ -60,8 +60,9 @@ public class StarCertificationController extends BaseController implements StarC
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "您的身份证信息与您本人不符，请填写真实信息。", new JSONObject());
         }
         starCertification.setAddTime(new Date());
-        starCertification.setAge(CommonUtils.getAgeByIdCard(starCertification.getIdCard()));
-        starCertification.setSex(CommonUtils.getSexByIdCard(starCertification.getIdCard()));
+//        starCertification.setAge(CommonUtils.getAgeByIdCard(starCertification.getIdCard()));
+//        starCertification.setSex(CommonUtils.getSexByIdCard(starCertification.getIdCard()));//客户端传
+        starCertification.setState(1);//临时措施 暂无审核 先直接通过 suntj 20200106
         starCertificationService.add(starCertification);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
