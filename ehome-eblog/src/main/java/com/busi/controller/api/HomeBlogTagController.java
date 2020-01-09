@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * @program: ehome
- * @description: 生活圈兴趣标签
+ * @description: 用户自定义生活圈兴趣标签
  * @author: ZHaoJiaJie
  * @create: 2018-11-02 17:05
  */
