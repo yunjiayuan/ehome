@@ -53,4 +53,12 @@ public interface ShopFloorShoppingCartApiController {
     @GetMapping("findFShoppingCart/{userId}")
     ReturnData findFShoppingCart(@PathVariable long userId);
 
+    /***
+     * 查询已删除商品
+     * @param userId  用户ID
+     * @return
+     */
+    @GetMapping("findDeleteGoods/{userId}")
+    ReturnData findDeleteGoods(@PathVariable long userId);
+
 }

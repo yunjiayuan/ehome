@@ -71,6 +71,17 @@ public class ShopFloorShoppingCartService {
     }
 
     /***
+     * 根据用户ID查询
+     * @param userId
+     * @return
+     */
+    public List<ShopFloorShoppingCart> findDeleteGoods(long userId) {
+        List<ShopFloorShoppingCart> list = null;
+        list = goodsCenterDao.findDeleteGoods(userId);
+        return list;
+    }
+
+    /***
      * 根据用户goodsId查询
      * @param userId
      * @return

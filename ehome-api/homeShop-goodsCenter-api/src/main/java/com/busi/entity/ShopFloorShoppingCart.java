@@ -35,6 +35,9 @@ public class ShopFloorShoppingCart {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;            //加入时间
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date deleteTime;            //删除时间
+
     private int number;            //商品数量
 
     private int deleteType;        //删除标志：0正常，1用户删除，2管理人员删除

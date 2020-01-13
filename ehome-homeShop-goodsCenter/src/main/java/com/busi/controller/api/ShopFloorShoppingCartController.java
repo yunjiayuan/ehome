@@ -180,4 +180,26 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, cartList);
     }
+
+    /***
+     * 查询已删除商品
+     * @param userId  用户ID
+     * @return
+     */
+    @Override
+    public ReturnData findDeleteGoods(@PathVariable long userId) {
+        //验证参数
+        if (userId < 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "userId参数有误", new JSONObject());
+        }
+        List<ShopFloorShoppingCart> newList = null;
+        List<ShopFloorShoppingCart> cartList = null;
+        cartList = goodsCenterService.findDeleteGoods(userId);
+        if (cartList != null && cartList.size() > 10) {
+            newList = cartList.subList(0, 10);//取前10条数据
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, newList);
+        } else {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, cartList);
+        }
+    }
 }

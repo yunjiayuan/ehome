@@ -133,6 +133,7 @@ public interface ShopFloorGoodsDao {
     /***
      * 分页查询商品(用户调用)
      * @param sort  排序条件:0默认销量倒序，1最新发布
+     * @param discount  0全部，1只看折扣
      * @param price  默认-1不限制 0价格升序，1价格倒序
      * @param stock  默认-1所有 0有货 1没货
      * @param minPrice  最小价格
@@ -200,8 +201,11 @@ public interface ShopFloorGoodsDao {
                 " order by price desc,refreshTime desc" +
                 "</if>" +
             "</if>" +
+            "<if test=\"discount == 1\">" +
+            " and discountPrice > 0" +
+            "</if>" +
             "</script>")
-    List<ShopFloorGoods> findDishesSortList(@Param("sort") int sort,@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+    List<ShopFloorGoods> findDishesSortList(@Param("discount") int discount,@Param("sort") int sort,@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
     /***
      * 分页查询商品

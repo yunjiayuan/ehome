@@ -1,6 +1,7 @@
 package com.busi.controller.local;
 
 import com.busi.entity.ReturnData;
+import com.busi.entity.ShopFloorMasterOrders;
 import com.busi.entity.ShopFloorOrders;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,4 +20,12 @@ public interface ShopFloorOrdersLocalController {
      */
     @PutMapping("updatePayType")
     ReturnData updatePayType(@RequestBody ShopFloorOrders shopFloorOrders);
+
+    /**
+     * @Description: 更新补货订单支付状态
+     * @Param: shopFloorOrders
+     * @return:
+     */
+    @PutMapping("updateMasterPay")
+    ReturnData updateMasterPay(@RequestBody ShopFloorMasterOrders shopFloorOrders);
 }

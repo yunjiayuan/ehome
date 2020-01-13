@@ -46,7 +46,6 @@ public interface ShopFloorShoppingCartDao {
      */
     @Update("<script>" +
             "update ShopFloorShoppingCart set" +
-            " number=0," +
             " deleteType=1" +
             " where id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
@@ -70,11 +69,18 @@ public interface ShopFloorShoppingCartDao {
     int delGoods(@Param("ids") String[] ids);
 
     /***
-     * 根据Id查询
+     * 根据userId查询
      * @param userId
      */
-    @Select("select * from ShopFloorShoppingCart where userId=#{userId} order by addTime desc")
+    @Select("select * from ShopFloorShoppingCart where userId=#{userId} and deleteType=0 order by addTime desc")
     List<ShopFloorShoppingCart> findList(@Param("userId") long userId);
+
+    /***
+     * 根据userId查询
+     * @param userId
+     */
+    @Select("select * from ShopFloorShoppingCart where userId=#{userId} and deleteType>=1 order by deleteTime desc")
+    List<ShopFloorShoppingCart> findDeleteGoods(@Param("userId") long userId);
 
     /***
      * 根据goodsId查询
