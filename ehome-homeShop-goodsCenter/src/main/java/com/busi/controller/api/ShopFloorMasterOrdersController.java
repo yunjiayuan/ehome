@@ -133,7 +133,7 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
         //放入缓存
         // 付款超时 45分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(shopFloorOrders);
-        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + shopFloorOrders.getBuyerId() + "_" + shopFloorOrders.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + shopFloorOrders.getBuyerId() + "_" + shopFloorOrders.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -151,7 +151,7 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
         io.setUpdateCategory(0);
         shopFloorOrdersService.updateOrders(io);
         //清除缓存中的厨房订座订单信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -174,10 +174,10 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
             shopFloorOrdersService.updateOrders(io);
 
             //清除缓存中的订单信息
-            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + io.getNo(), 0);
             //订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -202,10 +202,10 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
             shopFloorOrdersService.updateOrders(io);
 
             //清除缓存中的订单信息
-            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + io.getNo(), 0);
             //订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
+            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -270,10 +270,10 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
             mqUtils.sendPurseMQ(ko.getBuyerId(), 27, 0, ko.getMoney());
         }
         //清除缓存中的订单信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getNo(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + ko.getNo(), 0);
         //放入缓存
         Map<String, Object> ordersMap = CommonUtils.objectToMap(ko);
-        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getBuyerId() + "_" + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
+        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + ko.getBuyerId() + "_" + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -286,7 +286,7 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
     public ReturnData orderMdetails(@PathVariable String no) {
         //查询缓存 缓存中不存在 查询数据库
         ShopFloorMasterOrders io = null;
-        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no);
+        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + CommonUtils.getMyId() + "_" + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
             io = shopFloorOrdersService.findNo(no);
             if (io == null) {
@@ -302,7 +302,7 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
             }
             //放入缓存
             ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOOR_MASTERORDERS + CommonUtils.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
     }
