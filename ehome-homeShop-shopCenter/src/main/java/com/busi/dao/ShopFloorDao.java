@@ -110,6 +110,17 @@ public interface ShopFloorDao {
             "</script>")
     List<ShopFloor> findNearbySFList(@Param("lat") double lat, @Param("lon") double lon);
 
+    /***
+     * 查询用户楼店
+     * @param userId   用户
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloor where" +
+            " deleteType = 0 and shopState>0" +
+            " and payState=1 and userId=#{userId}" +
+            "</script>")
+    List<ShopFloor> findUserSFlist(@Param("userId") long userId);
 
     /***
      * 新增永辉分类

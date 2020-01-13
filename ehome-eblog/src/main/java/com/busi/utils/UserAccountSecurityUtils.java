@@ -1,5 +1,6 @@
 package com.busi.utils;
 
+import com.busi.entity.ReturnData;
 import com.busi.entity.UserAccountSecurity;
 import com.busi.fegin.UserAccountSecurityLocalControllerFegin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,12 @@ import java.util.Map;
 
 /**
  * 查询用户账户安全信息
- * author：SunTianJie
+ * author：ZhaoJiaJie
  * create time：2018/9/7 19:08
  */
 @Component
 public class UserAccountSecurityUtils {
+
     @Autowired
     private UserAccountSecurityLocalControllerFegin userAccountSecurityFegin;
 
@@ -34,5 +36,15 @@ public class UserAccountSecurityUtils {
             userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(userMap, UserAccountSecurity.class);
         }
         return userAccountSecurity;
+    }
+
+    /***
+     * 验证用户实名信息
+     * @param real 实名+身份证
+     * @return
+     */
+    public int testingReal(String real) {
+
+        return userAccountSecurityFegin.testingReal(real);
     }
 }
