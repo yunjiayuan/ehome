@@ -266,6 +266,7 @@ public class Constants {
     public static final String REDIS_KEY_HOMEHOSPITAL = "homeHospital_";//userId与医馆对象关系对照
 
 
+
     //redis 2库相关key配置(otherServer)
     public static final String REDIS_KEY_IPS_TASK = "task_";//userId与任务对象的关系对照
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY = "user_account_security_";//userId与安全中心对象的关系对照
@@ -279,6 +280,7 @@ public class Constants {
     public static final int EBLOG_LIKE_COUNT = 10000;//点赞数临界值 超过临界值 自动进入推荐列表
     public static final int REDIS_KEY_EBLOGLIST_COUNT = 20000;//生活秀首页列表条数临界值
     public static final String EBLOG_LIKE_LIST = "eblog_like_list_";//生活圈ID对应点赞人员记录Set
+    public static final String REDIS_KEY_HOMEBLOGTAG = "eblog_tag";//生活圈标签
 
     /** redis配置 结束**/
 
