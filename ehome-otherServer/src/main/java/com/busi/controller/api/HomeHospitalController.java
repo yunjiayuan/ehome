@@ -169,6 +169,9 @@ public class HomeHospitalController extends BaseController implements HomeHospit
                         }
                     }
                 }
+                if (CommonUtils.checkFull(kitchen.getHeadCover())) {
+                    kitchen.setHeadCover(sendInfoCache.getHead());
+                }
                 kitchen.setProTypeId(sendInfoCache.getProType());
                 kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
             }
@@ -199,7 +202,7 @@ public class HomeHospitalController extends BaseController implements HomeHospit
         }
         //开始查询
         PageBean<HomeHospital> pageBean = null;
-        pageBean = homeHospitalService.findList(watchVideos,CommonUtils.getMyId(), department, search, province, city, district, page, count);
+        pageBean = homeHospitalService.findList(watchVideos, CommonUtils.getMyId(), department, search, province, city, district, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -212,6 +215,9 @@ public class HomeHospitalController extends BaseController implements HomeHospit
                 UserInfo sendInfoCache = null;
                 sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
                 if (sendInfoCache != null) {
+                    if (CommonUtils.checkFull(ik.getHeadCover())) {
+                        ik.setHeadCover(sendInfoCache.getHead());
+                    }
                     ik.setProTypeId(sendInfoCache.getProType());
                     ik.setHouseNumber(sendInfoCache.getHouseNumber());
                 }

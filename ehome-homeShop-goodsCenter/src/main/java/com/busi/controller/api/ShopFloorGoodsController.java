@@ -196,7 +196,7 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
      * @return
      */
     @Override
-    public ReturnData findFloorGoodsList(@PathVariable int discount, @PathVariable int sort, @PathVariable int price, @PathVariable int stock, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findFloorGoodsList(@PathVariable int sort, @PathVariable int discount, @PathVariable int price, @PathVariable int stock, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());

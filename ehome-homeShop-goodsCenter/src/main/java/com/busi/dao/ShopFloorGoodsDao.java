@@ -147,6 +147,10 @@ public interface ShopFloorGoodsDao {
             "select * from ShopFloorGoods" +
             " where deleteType=0 and sellType=0" +
 
+            "<if test=\"discount == 1\">" +
+            " and discountPrice > 0" +
+            "</if>" +
+
             "<if test=\"levelOne == -2 \">" +
                 " and levelOne > -1" +
             "</if>" +
@@ -200,9 +204,6 @@ public interface ShopFloorGoodsDao {
                     "<if test=\"price == 1\">" +
                 " order by price desc,refreshTime desc" +
                 "</if>" +
-            "</if>" +
-            "<if test=\"discount == 1\">" +
-            " and discountPrice > 0" +
             "</if>" +
             "</script>")
     List<ShopFloorGoods> findDishesSortList(@Param("discount") int discount,@Param("sort") int sort,@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);

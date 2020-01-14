@@ -69,8 +69,8 @@ public interface ShopFloorGoodsApiController {
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findFloorGoodsList/{discount}/{sort}/{price}/{stock}/{minPrice}/{maxPrice}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
-    ReturnData findFloorGoodsList(@PathVariable int discount,@PathVariable int sort,@PathVariable int price,@PathVariable int stock, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findFloorGoodsList/{sort}/{discount}/{price}/{stock}/{minPrice}/{maxPrice}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
+    ReturnData findFloorGoodsList(@PathVariable int sort,@PathVariable int discount,@PathVariable int price,@PathVariable int stock, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
 
     /***
      * 分页查询商品（商家调用）
