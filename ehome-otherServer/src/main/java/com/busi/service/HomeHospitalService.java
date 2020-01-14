@@ -96,15 +96,15 @@ public class HomeHospitalService {
      * @param count    条数
      * @return
      */
-    public PageBean<HomeHospital> findList(long userId, int department, String search, int province, int city, int district, int page, int count) {
+    public PageBean<HomeHospital> findList(int watchVideos, long userId, int department, String search, int province, int city, int district, int page, int count) {
 
         List<HomeHospital> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (department >= 0) {//按科室
-            list = homeHospitalDao.findList(userId, department);
+            list = homeHospitalDao.findList(watchVideos,userId, department);
         } else {
+            String departId = "";
             if (!CommonUtils.checkFull(search)) {
-                String departId = "";
                 String[] name = Constants.department;//科室
                 //匹配科室
                 for (int i = 0; i < name.length; i++) {
@@ -116,7 +116,9 @@ public class HomeHospitalService {
                         }
                     }
                 }
-                list = homeHospitalDao.findList2(userId, departId.split(","), search, province, city, district);
+                list = homeHospitalDao.findList2(watchVideos,userId, departId.split(","), search, province, city, district);
+            } else {
+                list = homeHospitalDao.findList3(watchVideos,userId, province, city, district);
             }
         }
         return PageUtils.getPageBean(p, list);

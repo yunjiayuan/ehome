@@ -17,7 +17,7 @@ public interface UserAccountSecurityLocalController {
      * @return
      */
     @GetMapping("getUserAccountSecurity/{userId}")
-    UserAccountSecurity getUserAccountSecurity(@PathVariable(value="userId") long userId);
+    UserAccountSecurity getUserAccountSecurity(@PathVariable(value = "userId") long userId);
 
     /***
      * 更新安全中心信息（目前只提供手机和第三方注册新用户时同步安全中心信息和完善资料时绑定门牌号时使用）
@@ -26,4 +26,12 @@ public interface UserAccountSecurityLocalController {
      */
     @PostMapping("addAccountSecurity")
     ReturnData addAccountSecurity(@RequestBody UserAccountSecurity userAccountSecurity);
+
+    /***
+     * 验证用户实名信息
+     * @param real  实名+身份证
+     * @return
+     */
+    @GetMapping("testingReal/{real}")
+    int testingReal(@PathVariable(value = "real") String real);
 }

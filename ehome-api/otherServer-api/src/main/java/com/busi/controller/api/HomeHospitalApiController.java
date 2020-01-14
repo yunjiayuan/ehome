@@ -57,8 +57,8 @@ public interface HomeHospitalApiController {
      * @param count    条数
      * @return
      */
-    @GetMapping("findHospitalList/{department}/{search}/{province}/{city}/{district}/{page}/{count}")
-    ReturnData findHospitalList(@PathVariable int department, @PathVariable String search, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findHospitalList/{watchVideos}/{department}/{search}/{province}/{city}/{district}/{page}/{count}")
+    ReturnData findHospitalList(@PathVariable int watchVideos, @PathVariable int department, @PathVariable String search, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count);
 
     /**
      * @Description: 删除

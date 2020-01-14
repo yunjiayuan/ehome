@@ -50,18 +50,12 @@ public class StarCertificationController extends BaseController implements StarC
         if (certification != null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        UserAccountSecurity userAccountSecurity = null;
-        userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(starCertification.getUserId());
-        if (userAccountSecurity != null) {
-            if (CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
-                return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "您的身份证信息与您本人不符，请填写真实信息。", new JSONObject());
-            }
-        } else {
+        //验证是否实名
+        int sign = userAccountSecurityUtils.testingReal(starCertification.getName() + "," + starCertification.getIdCard() + "," + starCertification.getUserId());
+        if (sign == 0) {
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "您的身份证信息与您本人不符，请填写真实信息。", new JSONObject());
         }
         starCertification.setAddTime(new Date());
-//        starCertification.setAge(CommonUtils.getAgeByIdCard(starCertification.getIdCard()));
-//        starCertification.setSex(CommonUtils.getSexByIdCard(starCertification.getIdCard()));//客户端传
         starCertification.setState(1);//临时措施 暂无审核 先直接通过 suntj 20200106
         starCertificationService.add(starCertification);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

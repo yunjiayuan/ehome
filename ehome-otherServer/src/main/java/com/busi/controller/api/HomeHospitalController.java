@@ -181,6 +181,7 @@ public class HomeHospitalController extends BaseController implements HomeHospit
 
     /***
      * 查询列表
+     * @param watchVideos 筛选视频：0否 1是
      * @param department  科室
      * @param search    模糊搜索（可以是：症状、疾病、医院、科室、医生名字）
      * @param province     省
@@ -191,14 +192,14 @@ public class HomeHospitalController extends BaseController implements HomeHospit
      * @return
      */
     @Override
-    public ReturnData findHospitalList(@PathVariable int department, @PathVariable String search, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findHospitalList(@PathVariable int watchVideos, @PathVariable int department, @PathVariable String search, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<HomeHospital> pageBean = null;
-        pageBean = homeHospitalService.findList(CommonUtils.getMyId(), department, search, province, city, district, page, count);
+        pageBean = homeHospitalService.findList(watchVideos,CommonUtils.getMyId(), department, search, province, city, district, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

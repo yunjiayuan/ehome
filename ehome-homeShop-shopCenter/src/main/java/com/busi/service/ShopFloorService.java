@@ -103,6 +103,21 @@ public class ShopFloorService {
     }
 
     /***
+     * 查询用户楼店
+     * @param userId   用户
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<ShopFloor> findUserSFlist(long userId,  int page, int count) {
+        List<ShopFloor> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = shopCenterDao.findUserSFlist(userId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+
+    /***
      * 新增永辉分类
      * @param homeShopCenter
      * @return

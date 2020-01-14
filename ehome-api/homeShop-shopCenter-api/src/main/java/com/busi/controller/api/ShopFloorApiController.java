@@ -84,6 +84,16 @@ public interface ShopFloorApiController {
     @GetMapping("findNearbySFList/{lat}/{lon}/{page}/{count}")
     ReturnData findNearbySFList(@PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 查询用户楼店
+     * @param userId   用户
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findUserSFlist/{userId}/{page}/{count}")
+    ReturnData findUserSFlist(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
+
 
     /***
      * 新增永辉分类
