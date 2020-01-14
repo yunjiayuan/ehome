@@ -73,6 +73,8 @@ public class PaymentController extends BaseController implements PaymentApiContr
     @Autowired
     private ShopFloorOrdersService shopFloorOrdersService;
 
+    @Autowired
+    private ShopFloorMasterOrdersService shopFloorMasterOrdersService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -285,8 +287,11 @@ public class PaymentController extends BaseController implements PaymentApiContr
             case 16://缴纳开通楼店保证金订单支付
                 payBaseService = shopFloorBondOrdersService;
                 break;
-            case 17://楼店订单支付
+            case 17://楼店用户购买订单支付
                 payBaseService = shopFloorOrdersService;
+                break;
+            case 18://楼店商家补货订单支付
+                payBaseService = shopFloorMasterOrdersService;
                 break;
             default:
                 break;
