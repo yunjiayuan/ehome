@@ -66,7 +66,7 @@ public class ShopFloorOrdersService {
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: 0全部 1待付款,2待发货(已付款),3已发货（待收货）, 4已收货（待评价）  5已评价  6付款超时  7发货超时, 8取消订单
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return

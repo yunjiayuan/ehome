@@ -22,9 +22,9 @@ public interface ShopFloorMasterOrdersDao {
      * @return
      */
     @Insert("insert into ShopFloorMasterOrders(buyerId,shopId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,no,ordersState,ordersType," +
-            "addressId,distributioMode,shopName,remarks)" +
+            "addressId,distributioMode,shopName,remarks,address,addressName,addressPhone,addressProvince,addressCity,addressDistrict)" +
             "values (#{buyerId},#{shopId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{no},#{ordersState},#{ordersType}" +
-            ",#{addressId},#{distributioMode},#{shopName},#{remarks})")
+            ",#{addressId},#{distributioMode},#{shopName},#{remarks},#{address},#{addressName},#{addressPhone},#{addressProvince},#{addressCity},#{addressDistrict})")
     @Options(useGeneratedKeys = true)
     int addOrders(ShopFloorMasterOrders kitchenBookedOrders);
 
@@ -38,7 +38,7 @@ public interface ShopFloorMasterOrdersDao {
             "select * from ShopFloorMasterOrders" +
             " where id = #{id}" +
             "<if test=\"type == 0\">" +
-            " and ordersType >2 and ordersState!=3" +
+            " and ordersType >2 and ordersState=0" +
             "</if>" +
             "<if test=\"type == 1\">" +
             " and ordersState=0  and ordersType=1" +
@@ -73,7 +73,7 @@ public interface ShopFloorMasterOrdersDao {
     @Update("<script>" +
             "update ShopFloorMasterOrders set" +
             "<if test=\"updateCategory == 0\">" +
-            " ordersState =#{ordersState}," +
+            " ordersState =1," +
             "</if>" +
             "<if test=\"updateCategory == 1\">" +
             " deliveryTime =#{deliveryTime}," +

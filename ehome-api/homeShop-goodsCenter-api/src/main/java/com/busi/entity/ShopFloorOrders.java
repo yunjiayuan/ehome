@@ -54,6 +54,18 @@ public class ShopFloorOrders {
 
     private long addressId;            //地址ID
 
+    private String address;             // 详细地址
+
+    private String addressName;        // 联系人姓名
+
+    private String addressPhone;       // 联系人电话
+
+    private int addressProvince;      // 省
+
+    private int addressCity;          // 城市
+
+    private int addressDistrict;      // 地区或县
+
     private String remarks;            //买家留言
 
     //与数据库无关字段

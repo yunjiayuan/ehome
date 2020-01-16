@@ -24,7 +24,7 @@ public class ShopFloorMasterOrders {
 
     private String shopName;            //店铺名称
 
-    private String goods;            //分类ID,商品ID,标题,数量,价格,图片,规格【格式：11/5/1,12,啤酒,5,9,图片,规格;11/5/1,22,啤酒,7,19,图片,规格】
+    private String goods;            //分类ID,商品ID,标题,数量,价格,图片,规格,商品描述【格式：11/5/1,12,啤酒,5,9,图片,规格,好吃不贵;11/5/1,22,啤酒,7,19,图片,规格,好吃不贵】
 
     private double money;            // 商品总金额
 
@@ -49,6 +49,18 @@ public class ShopFloorMasterOrders {
     private int ordersType;            // 订单类型: 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时  6发货超时, 7取消订单
 
     private long addressId;            //地址ID
+
+    private String address;             // 详细地址
+
+    private String addressName;        // 联系人姓名
+
+    private String addressPhone;       // 联系人电话
+
+    private int addressProvince;      // 省
+
+    private int addressCity;          // 城市
+
+    private int addressDistrict;      // 地区或县
 
     private String remarks;            //买家留言
 

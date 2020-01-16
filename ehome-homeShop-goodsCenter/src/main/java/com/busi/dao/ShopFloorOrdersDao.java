@@ -22,9 +22,9 @@ public interface ShopFloorOrdersDao {
      * @return
      */
     @Insert("insert into ShopFloorOrders(buyerId,shopId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,no,ordersState,ordersType," +
-            "addressId,distributioMode,shopName,remarks)" +
+            "addressId,distributioMode,shopName,remarks,address,addressName,addressPhone,addressProvince,addressCity,addressDistrict)" +
             "values (#{buyerId},#{shopId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{no},#{ordersState},#{ordersType}" +
-            ",#{addressId},#{distributioMode},#{shopName},#{remarks})")
+            ",#{addressId},#{distributioMode},#{shopName},#{remarks},#{address},#{addressName},#{addressPhone},#{addressProvince},#{addressCity},#{addressDistrict})")
     @Options(useGeneratedKeys = true)
     int addOrders(ShopFloorOrders kitchenBookedOrders);
 
@@ -73,7 +73,7 @@ public interface ShopFloorOrdersDao {
     @Update("<script>" +
             "update ShopFloorOrders set" +
             "<if test=\"updateCategory == 0\">" +
-            " ordersState =#{ordersState}," +
+            " ordersState =1," +
             "</if>" +
             "<if test=\"updateCategory == 1\">" +
             " deliveryTime =#{deliveryTime}," +
@@ -97,7 +97,7 @@ public interface ShopFloorOrdersDao {
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、买家取消订单、卖家取消订单
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单
      * @return
      */
     @Select("<script>" +
@@ -106,11 +106,11 @@ public interface ShopFloorOrdersDao {
             "<if test=\"userId > 0 \">" +
             " and buyerId = #{userId}" +
             "</if>" +
-            "<if test=\"ordersType > 0 and ordersType &lt; 5\">" +
+            "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
             " and ordersType = #{ordersType}" +
             "</if>" +
             "<if test=\"ordersType >= 5\">" +
-            " and ordersType > 5" +
+            " and ordersType > 4" +
             "</if>" +
             " order by addTime desc" +
             "</script>")

@@ -73,6 +73,7 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
         double money = 0.00; // 商品总金额
         String imgUrl = "";   //图片
         String specs = "";    //规格
+        String basicDescribe = "";  //基本描述
         List iup = null;
         ShopFloorGoods laf = null;
         if (CommonUtils.checkFull(shopFloorOrders.getGoodsIds()) || CommonUtils.checkFull(shopFloorOrders.getGoodsNumber())) {
@@ -103,8 +104,9 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
                         imgUrl = laf.getGoodsCoverUrl();//图片
                     }
                     specs = laf.getSpecs();
+                    basicDescribe = laf.getBasicDescribe();
                     sort = laf.getLevelOne() + "/" + laf.getLevelTwo() + "/" + laf.getLevelThree();
-                    goods += sort + "," + laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + (i == iup.size() - 1 ? "" : ";");//商品分类,商品ID,标题,数量,价格，图片,规格;
+                    goods += sort + "," + laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + "," + basicDescribe + (i == iup.size() - 1 ? "" : ";");//商品分类,商品ID,标题,数量,价格，图片,规格,商品描述;
                     money += Integer.parseInt(fn[j]) * cost;//总价格
                 }
             }
@@ -117,9 +119,15 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
 
         shopFloorOrders.setNo(noRandom);//订单编号【MD5】
         shopFloorOrders.setAddTime(date);
-        shopFloorOrders.setGoods(goods);//商品ID,标题,数量,价格，图片,规格;
+        shopFloorOrders.setGoods(goods);//分类ID,商品ID,标题,数量,价格,图片,规格,商品描述
         shopFloorOrders.setMoney(money);//总价
         shopFloorOrders.setOrdersType(0);
+        shopFloorOrders.setAddress(shippingAddress.getAddress());
+        shopFloorOrders.setAddressName(shippingAddress.getContactsName());
+        shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
+        shopFloorOrders.setAddressCity(shippingAddress.getCity());
+        shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
+        shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
         shopFloorOrdersService.addOrders(shopFloorOrders);
 
 //        //移除购物车当前商品
