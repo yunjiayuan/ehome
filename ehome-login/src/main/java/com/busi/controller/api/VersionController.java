@@ -2,6 +2,7 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.AdvertPic;
 import com.busi.entity.ReturnData;
 import com.busi.entity.Version;
 import com.busi.service.VersionService;
@@ -19,6 +20,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -72,6 +74,25 @@ public class VersionController extends BaseController implements VersionApiContr
             //放到缓存中
             redisUtils.hmset(Constants.REDIS_KEY_VERSION+type,CommonUtils.objectToMap(version));
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",version);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
+    }
+
+    /***
+     * 查询广告图
+     * @param type 0表示苹果 1表示安卓
+     * @return
+     */
+    @Override
+    public ReturnData findAdvertPic(@PathVariable int type) {
+        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_ADVERTPICADDRESS);
+        if(map==null||map.size()<=0){
+            AdvertPic advertPic = new AdvertPic();
+            advertPic.setAdvertPicAddress("image/advertPic/20200118/guoduye.png");
+            advertPic.setShowType(0);
+            //默认图放到缓存中
+            redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS,CommonUtils.objectToMap(advertPic));
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",advertPic);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
     }

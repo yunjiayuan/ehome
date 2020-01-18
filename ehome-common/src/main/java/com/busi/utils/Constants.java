@@ -63,7 +63,7 @@ public class Constants {
             "login-api/registerByPhone,login-api/findVersion,paymentServer-api/checkAlipaySign,paymentServer-api/checkWeixinSign," +
             "paymentServer-api/checkUnionPaySign,otherServer-api/checkPhoneCode,login-api/checkAccount,otherServer-api/checkQuestion," +
             "otherServer-api/checkEmailCode,login-api/resetPassWord,login-api/SendPhoneMessage,login-api/SendEmailMessage," +
-            "otherServer-api/findUserAccountSecurity,otherServer-api/findQuestion,login-api/privacyPolicy";//白名单接口 服务端将不会验证token权限
+            "otherServer-api/findUserAccountSecurity,otherServer-api/findQuestion,login-api/privacyPolicy,/login-api/findAdvertPic";//白名单接口 服务端将不会验证token权限
     /** 请求接口白名单 结束**/
 
     /** 短信平台配置 开始**/
@@ -170,6 +170,7 @@ public class Constants {
     /** redis配置 开始**/
     //redis 0库相关key配置(USER)
     public static final String REDIS_KEY_VERSION = "version_";//版本号key
+    public static final String REDIS_KEY_ADVERTPICADDRESS = "advert_pic_address";//版本号key
     public static final String REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG = "admini_homePageInfo_flag";//屏蔽主界面部分功能按钮 0关闭 1开启
     public static final String REDIS_KEY_ADMINI_VIDEOSHOOT_TYPE = "admini_videoShoot_type";//修改“生活圈拍摄视频时的拍摄类型” 0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
     public static final String REDIS_KEY_USER = "user_";//用户实体key

@@ -26,4 +26,12 @@ public interface VersionApiController {
      */
     @GetMapping("findVersion/{type}")
     ReturnData findVersion(@PathVariable int type);
+
+    /***
+     * 查询广告图
+     * @param type 0表示苹果 1表示安卓
+     * @return
+     */
+    @GetMapping("findAdvertPic/{type}")
+    ReturnData findAdvertPic(@PathVariable int type);
 }
