@@ -80,7 +80,7 @@ public class VersionController extends BaseController implements VersionApiContr
 
     /***
      * 查询广告图
-     * @param type 0表示苹果 1表示安卓
+     * @param type 0表示苹果  1表示安卓
      * @return
      */
     @Override
