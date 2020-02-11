@@ -40,6 +40,18 @@ public interface HomeBlogDao {
             "</script>")
     @Options(useGeneratedKeys = true)
     int updateBlog(HomeBlog homeBlog);
+    /***
+     * 更新生活圈稿费级别
+     * @param homeBlog
+     * @return
+     */
+    @Update("<script>" +
+            "update homeBlog set" +
+            " remunerationStatus=#{remunerationStatus}," +
+            " where id=#{id}" +
+            "</script>")
+    @Options(useGeneratedKeys = true)
+    int updateGradeBlog(HomeBlog homeBlog);
 
     /***
      * 根据生活圈ID查询生活圈详情接口

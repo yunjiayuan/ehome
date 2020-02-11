@@ -9,7 +9,6 @@ import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ public class RewardLogController extends BaseController implements RewardLogApiC
      * 查询指定用户的奖励列表
      * @param userId  用户ID
      * @param rewardType  奖励类型 -1所以 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
+     *                    7是一级稿费作品 8是二级稿费作品 9是三级稿费作品 10是四级稿费作品
      * @return
      */
     @Override

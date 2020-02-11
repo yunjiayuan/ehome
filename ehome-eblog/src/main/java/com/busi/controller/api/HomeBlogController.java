@@ -203,6 +203,63 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     }
 
     /***
+     * 生活圈视频稿费评级
+     * @param blogId 生活圈ID
+     * @param userId 生活圈主任ID 注意不是当前登录这ID
+     * @param grade 1是一级稿费作品 2是二级稿费作品 3是三级稿费作品 4是四级稿费作品
+     * @param type  0:默认随机给钱 1:当前等级范围内最低金额 2:自定义金额
+     * @param money  当type=2时，此字段有效
+     * @return
+     */
+    @Override
+    public ReturnData gradeBlog(@PathVariable long userId,@PathVariable long blogId,@PathVariable int grade,@PathVariable int type,@PathVariable double money) {
+        long myId = CommonUtils.getMyId();
+        if(myId!=10076&&myId!=12770&&myId!=9389&&myId!=9999&&myId!=13005&&myId!=12774&&myId!=13031){
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
+        double moneyNew = 0;
+        Random random = new Random();
+        if(type==1){//当前等级范围内最低金额
+            if(grade==1){
+                moneyNew = 10;
+            }else if(grade==2){//20-100元
+                moneyNew = 20;
+            }else if(grade==3){//100-2000
+                moneyNew = 100;//
+            }else if(grade==4){//2000-20000
+                moneyNew = 2000;
+            }
+        }else if(type==2){//自定义金额
+            moneyNew = money;
+        }else{//当前等级范围内随机给钱
+            if(grade==1){
+                moneyNew = 10;
+            }else if(grade==2){//20-100元
+                moneyNew = (random.nextInt(501) + 2000)/100.0;//临时20-25
+            }else if(grade==3){//100-2000
+                moneyNew = (random.nextInt(11) + 100);//临时100-110
+            }else if(grade==4){//2000-20000
+                moneyNew = random.nextInt(101) + 2000;//临时2000-2100
+            }
+        }
+        if(moneyNew>0){
+            //更新生活圈
+            HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId,userId);
+            if(homeBlog.getBlogType()!=1&&homeBlog.getSendType()==2&&homeBlog.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
+                //先将此对象从生活秀列表中清除 方便后续操作
+                redisUtils.removeSetByValues(Constants.REDIS_KEY_EBLOGSET,homeBlog);
+            }
+            homeBlog.setRemunerationStatus(grade);
+            homeBlogService.updateGradeBlog(homeBlog);
+            //上边将生活秀删除 此处重新添加进去
+            redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,homeBlog);
+            //更新奖励系统
+            mqUtils.addRewardLog(userId,grade+6,0,moneyNew,blogId);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 根据生活圈ID查询生活圈详情接口
      * @param userId 被查询用户ID
      * @param blogId 被查询生活圈ID
@@ -711,8 +768,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setIsLike(0);
             }
             //设置是否为 已付稿费作品
-            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870){
+            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0){
                 if(homeBlog.getUserId()%2==0){
+                    Random random = new Random();
                     homeBlog.setRemunerationStatus(1);
                 }
             }
@@ -753,9 +811,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 }else{
                     homeBlog.setIsLike(0);
                 }
-                //设置是否为 已付稿费作品
+                //随机设置是否为 已付稿费作品
                 if(homeBlog.getUserId()%2==0){
-                    homeBlog.setRemunerationStatus(1);
+                    homeBlog.setRemunerationStatus(random.nextInt(4)+1);
                 }
                 list.add(homeBlog);
             }

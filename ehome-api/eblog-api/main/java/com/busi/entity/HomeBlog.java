@@ -128,13 +128,14 @@ public class HomeBlog {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;//发布时间
 
+    private int remunerationStatus; //稿费作品状态 0不是稿费作品 1是一级稿费作品 2是二级稿费作品 3是三级稿费作品 4是四级稿费作品
+
     private int isLike;          //是否点赞  0未点赞 1点赞  与数据库无关字段
     private String userName;      //发布者用户名	 与数据库无关字段
     private String userHead;    //发布者头像	 与数据库无关字段
     private int proTypeId;      //发布者省简称ID 与数据库无关字段
     private long houseNumber;   //发布者门牌号   与数据库无关字段
     private double distance;    //距离	 与数据库无关字段
-    private int remunerationStatus; //稿费作品状态 0不是稿费作品 1是稿费作品 与数据库无关字段
 //  private String shareName;	  //shareUserId 用户名称
 //  private String origUserName;//原始博主用户名 转载使用
 

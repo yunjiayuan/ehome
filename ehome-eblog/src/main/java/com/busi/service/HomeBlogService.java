@@ -44,6 +44,16 @@ public class HomeBlogService {
     }
 
     /***
+     * 更新生活圈稿费级别
+     * @param homeBlog
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateGradeBlog(HomeBlog homeBlog) {
+        return homeBlogDao.updateGradeBlog(homeBlog);
+    }
+
+    /***
      * 根据生活圈ID查询生活圈详情接口
      * @param id      生活圈ID
      * @param userId  登录者用户ID

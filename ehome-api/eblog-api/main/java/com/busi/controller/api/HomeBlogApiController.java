@@ -22,6 +22,18 @@ public interface HomeBlogApiController {
     ReturnData addBlog(@Valid @RequestBody HomeBlog homeBlog, BindingResult bindingResult);
 
     /***
+     * 生活圈视频稿费评级
+     * @param blogId 生活圈ID
+     * @param userId 生活圈主任ID 注意不是当前登录这ID
+     * @param grade 1是一级稿费作品 2是二级稿费作品 3是三级稿费作品 4是四级稿费作品
+     * @param type  0:默认随机给钱 1:当前等级范围内最低金额 2:自定义金额
+     * @param money  当type=2时，此字段有效
+     * @return
+     */
+    @GetMapping("gradeBlog/{grade}")
+    ReturnData gradeBlog(@PathVariable long userId,@PathVariable long blogId,@PathVariable int grade,@PathVariable int type,@PathVariable double money);
+
+    /***
      * 根据生活圈ID查询生活圈详情接口
      * @param userId 被查询用户ID
      * @param blogId 被查询生活圈ID
