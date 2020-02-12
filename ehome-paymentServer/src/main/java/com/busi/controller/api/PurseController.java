@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 钱包相关接口
@@ -109,9 +110,17 @@ public class PurseController extends BaseController implements PurseApiControlle
             if(userIdPurse==null){
                 userIdPurse = new Purse();
                 userIdPurse.setUserId(userId);
+                //判断是否为机器人账号13870-53870
+                if(userId>=13870&&userId<=53870){
+                    Random random = new Random();
+                    userIdPurse.setHomeCoin(random.nextInt(101)+100);
+                    userIdPurse.setHomePoint(random.nextInt(100001)+10000);
+                }
             }else{
                 userIdPurse.setRedisStatus(1);//数据库中已有对应记录
             }
+            //更新数据库
+            purseInfoService.addPurseInfo(userIdPurse);
             //更新缓存
             userIdPurseMap = CommonUtils.objectToMap(userIdPurse);
             redisUtils.hmset(Constants.REDIS_KEY_PAYMENT_PURSEINFO+userId,userIdPurseMap,Constants.USER_TIME_OUT);
