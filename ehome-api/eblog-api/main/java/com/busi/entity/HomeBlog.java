@@ -129,6 +129,7 @@ public class HomeBlog {
     private Date time;//发布时间
 
     private int remunerationStatus; //稿费作品状态 0不是稿费作品 1是一级稿费作品 2是二级稿费作品 3是三级稿费作品 4是四级稿费作品
+    private double remunerationMoney; //稿费奖励金额
 
     private int isLike;          //是否点赞  0未点赞 1点赞  与数据库无关字段
     private String userName;      //发布者用户名	 与数据库无关字段

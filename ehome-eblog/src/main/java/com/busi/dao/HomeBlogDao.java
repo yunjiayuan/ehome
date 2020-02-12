@@ -41,13 +41,14 @@ public interface HomeBlogDao {
     @Options(useGeneratedKeys = true)
     int updateBlog(HomeBlog homeBlog);
     /***
-     * 更新生活圈稿费级别
+     * 更新生活圈稿费级别和金额
      * @param homeBlog
      * @return
      */
     @Update("<script>" +
             "update homeBlog set" +
             " remunerationStatus=#{remunerationStatus}," +
+            " remunerationMoney=#{remunerationMoney}" +
             " where id=#{id}" +
             "</script>")
     @Options(useGeneratedKeys = true)

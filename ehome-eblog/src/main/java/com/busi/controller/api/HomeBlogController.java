@@ -235,11 +235,11 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             if(grade==1){
                 moneyNew = 10;
             }else if(grade==2){//20-100元
-                moneyNew = (random.nextInt(501) + 2000)/100.0;//临时20-25
+                moneyNew = random.nextInt(4)*10 + 20;//临时20-50
             }else if(grade==3){//100-2000
-                moneyNew = (random.nextInt(11) + 100);//临时100-110
+                moneyNew = random.nextInt(5)*100 + 100;//临时100-500
             }else if(grade==4){//2000-20000
-                moneyNew = random.nextInt(101) + 2000;//临时2000-2100
+                moneyNew = random.nextInt(4)*1000 + 2000;//临时2000-5000
             }
         }
         if(moneyNew>0){
@@ -250,6 +250,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 redisUtils.removeSetByValues(Constants.REDIS_KEY_EBLOGSET,homeBlog);
             }
             homeBlog.setRemunerationStatus(grade);
+            homeBlog.setRemunerationMoney(moneyNew);
             homeBlogService.updateGradeBlog(homeBlog);
             //上边将生活秀删除 此处重新添加进去
             redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,homeBlog);
@@ -296,9 +297,32 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             homeBlog.setIsLike(0);
         }
         //设置是否为 已付稿费作品
-        if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870){
+        if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0){
             if(homeBlog.getUserId()%2==0){
-                homeBlog.setRemunerationStatus(1);
+                Random random = new Random();
+                double moneyNew = 10;
+                int remunerationStatus = random.nextInt(4)+1;
+                if(remunerationStatus==1){
+                    moneyNew = 10;
+                }else if(remunerationStatus==2){//20-100元
+                    moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                }else if(remunerationStatus==3){//100-2000
+                    int cc = random.nextInt(10);
+                    if(cc==1||cc==5){//五分之一概率
+                        moneyNew = random.nextInt(20)*100 + 100;//临时100-2000
+                    }else{
+                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                    }
+                }else if(remunerationStatus==4){//2000-20000
+                    int cc = random.nextInt(10);
+                    if(cc==1){//十分之一概率
+                        moneyNew = random.nextInt(19)*1000 + 2000;//临时2000-20000
+                    }else{
+                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                    }
+                }
+                homeBlog.setRemunerationStatus(remunerationStatus);
+                homeBlog.setRemunerationMoney(moneyNew);
             }
         }
 //        HomeBlogLike homeBlogLike = homeBlogLikeService.checkHomeBlogLike(CommonUtils.getMyId(),blogId);
@@ -473,9 +497,32 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setIsLike(0);
             }
             //设置是否为 已付稿费作品
-            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870){
+            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0){
                 if(homeBlog.getUserId()%2==0){
-                    homeBlog.setRemunerationStatus(1);
+                    Random random = new Random();
+                    double moneyNew = 10;
+                    int remunerationStatus = random.nextInt(4)+1;
+                    if(remunerationStatus==1){
+                        moneyNew = 10;
+                    }else if(remunerationStatus==2){//20-100元
+                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                    }else if(remunerationStatus==3){//100-2000
+                        int cc = random.nextInt(10);
+                        if(cc==1||cc==5){//五分之一概率
+                            moneyNew = random.nextInt(20)*100 + 100;//临时100-2000
+                        }else{
+                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                        }
+                    }else if(remunerationStatus==4){//2000-20000
+                        int cc = random.nextInt(10);
+                        if(cc==1){//十分之一概率
+                            moneyNew = random.nextInt(19)*1000 + 2000;//临时2000-20000
+                        }else{
+                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                        }
+                    }
+                    homeBlog.setRemunerationStatus(remunerationStatus);
+                    homeBlog.setRemunerationMoney(moneyNew);
                 }
             }
         }
@@ -771,7 +818,29 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0){
                 if(homeBlog.getUserId()%2==0){
                     Random random = new Random();
-                    homeBlog.setRemunerationStatus(1);
+                    double moneyNew = 10;
+                    int remunerationStatus = random.nextInt(4)+1;
+                    if(remunerationStatus==1){
+                        moneyNew = 10;
+                    }else if(remunerationStatus==2){//20-100元
+                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                    }else if(remunerationStatus==3){//100-2000
+                        int cc = random.nextInt(10);
+                        if(cc==1||cc==5){//五分之一概率
+                            moneyNew = random.nextInt(20)*100 + 100;//临时100-2000
+                        }else{
+                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                        }
+                    }else if(remunerationStatus==4){//2000-20000
+                        int cc = random.nextInt(10);
+                        if(cc==1){//十分之一概率
+                            moneyNew = random.nextInt(19)*1000 + 2000;//临时2000-20000
+                        }else{
+                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                        }
+                    }
+                    homeBlog.setRemunerationStatus(remunerationStatus);
+                    homeBlog.setRemunerationMoney(moneyNew);
                 }
             }
         }

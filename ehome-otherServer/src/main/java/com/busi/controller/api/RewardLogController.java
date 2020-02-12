@@ -80,11 +80,20 @@ public class RewardLogController extends BaseController implements RewardLogApiC
         }
         int isNewRewardLog = 0;//已读
         List<RewardLog> list =  rewardLogService.findRewardLogNewList(userId);
+        int rewardMoneyType = 0;
+        double rewardMoney = 0;
         if(list!=null&&list.size()>0){
             isNewRewardLog = 1;//未读 新的
+            RewardLog rewardLog = list.get(0);
+            if(rewardLog!=null){
+                rewardMoneyType = rewardLog.getRewardMoneyType();
+                rewardMoney = rewardLog.getRewardMoney();
+            }
         }
         Map<String,Object> map = new HashMap<>();
         map.put("isNewRewardLog",isNewRewardLog);
+        map.put("rewardMoneyType",rewardMoneyType);
+        map.put("rewardMoney",rewardMoney);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }
