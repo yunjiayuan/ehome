@@ -30,7 +30,7 @@ public interface HomeBlogApiController {
      * @param money  当type=2时，此字段有效
      * @return
      */
-    @GetMapping("gradeBlog/{grade}")
+    @GetMapping("gradeBlog/{userId}/{blogId}/{grade}/{type}/{money}")
     ReturnData gradeBlog(@PathVariable long userId,@PathVariable long blogId,@PathVariable int grade,@PathVariable int type,@PathVariable double money);
 
     /***
