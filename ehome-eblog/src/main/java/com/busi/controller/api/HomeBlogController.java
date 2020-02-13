@@ -665,10 +665,11 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray,1,0,page,count);
                 break;
             case 4://2查看兴趣话题
-//                if(CommonUtils.checkFull(tags)){
-//                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"tags参数有误",new JSONObject());
-//                }
-                pageBean = homeBlogService.findBlogListByTags(tags.split(","),1,CommonUtils.getMyId(),page,count);
+                String[] array = null;
+                if(!CommonUtils.checkFull(tags)){
+                    array = tags.split(",");
+                }
+                pageBean = homeBlogService.findBlogListByTags(array,1,CommonUtils.getMyId(),page,count);
                 break;
             case 5://3查询指定用户
                 if(userId<0){
