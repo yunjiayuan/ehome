@@ -115,6 +115,22 @@ public class HomeBlogService {
     }
 
     /***
+     * 查询待稿费审核视频列表
+     * @param tags       标签数组格式 1,2,3
+     * @param searchType 博文类型：0所有 1只看视频
+     * @param userId     当前登录者用户ID  用于判断权限
+     * @param page       页码 第几页 起始值1
+     * @param count      每页条数
+     * @return
+     */
+    public PageBean<HomeBlog> findBlogListByTags2(String[] tags, int searchType, long userId, int page, int count) {
+        List<HomeBlog> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeBlogDao.findBlogListByTags2(tags, searchType, userId, "," + userId + ",");
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 根据指定用户ID查询列表
      * @param searchType 查询类型：0查自己 1查别人
      * @param sendType   博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈

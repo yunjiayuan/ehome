@@ -245,6 +245,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
         if(moneyNew>0){
             //更新生活圈
             HomeBlog homeBlog = homeBlogService.findBlogInfo(blogId,userId);
+            if(homeBlog.getRemunerationStatus()>0){
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "该视频已被审核过!", new JSONObject());
+            }
             if(homeBlog.getBlogType()!=1&&homeBlog.getSendType()==2&&homeBlog.getLikeCount()>=Constants.EBLOG_LIKE_COUNT){
                 //先将此对象从生活秀列表中清除 方便后续操作
                 redisUtils.removeSetByValues(Constants.REDIS_KEY_EBLOGSET,homeBlog);
@@ -532,7 +535,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     /***
      * 条件查询生活秀、今日现场、娱乐圈接口（只查询视频内容）
      * @param userId     被查询用户ID 默认0查询所有
-     * @param searchType 查询类型 0查询首页推荐 1查同城 2查看朋友 3查询关注 4查询兴趣标签 5查询指定用户 6查询附近的生活秀（家门口的生活圈） 7查询今日现场首页 8查询今日现场同城 9查询今日现场关注  10查询娱乐圈首页  11查询娱乐圈关注 12今日现场查询指定用户 13娱乐圈查询指定用户
+     * @param searchType 查询类型 0查询首页推荐 1查同城 2查看朋友 3查询关注 4查询兴趣标签 5查询指定用户 6查询附近的生活秀（家门口的生活圈）
+     *                   7查询今日现场首页 8查询今日现场同城 9查询今日现场关注  10查询娱乐圈首页  11查询娱乐圈关注 12今日现场查询指定用户
+     *                   13娱乐圈查询指定用户  14查询待稿费审核视频列表
      * @param tags       被查询兴趣标签ID组合，逗号分隔例如：1,2,3  仅当searchType=4 时有效 默认传null
      * @param cityId     城市ID 当searchType=1时有效 默认传0
      * @param lat        纬度 小数点后6位 当searchType=6时有效
@@ -779,6 +784,13 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     type2 = 1;
                 }
                 pageBean = homeBlogService.findBlogListByUserId(userId,type2,3,page,count);
+                break;
+            case 14://查询待稿费审核视频列表
+                String[] tagArray = null;
+                if(!CommonUtils.checkFull(tags)){
+                    tagArray = tags.split(",");
+                }
+                pageBean = homeBlogService.findBlogListByTags2(tagArray,1,CommonUtils.getMyId(),page,count);
                 break;
         }
         if(pageBean==null){

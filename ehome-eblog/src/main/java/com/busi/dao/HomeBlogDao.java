@@ -163,6 +163,35 @@ public interface HomeBlogDao {
     List<HomeBlog> findBlogListByTags(@Param("tags") String[] tags, @Param("searchType") int searchType, @Param("userId") long userId, @Param("userIds") String userIds);
 
     /***
+     * 查询待稿费审核视频列表
+     * @param tags       标签数组格式 1,2,3
+     * @param searchType 博文类型：0所有 1只看视频
+     * @param userId     当前登录用户ID
+     * @param userIds    处理过的登录者用户ID 用于判断可见范围
+     * @return
+     */
+    @Select("<script>" +
+            "select * from homeBlog" +
+            " where 1=1" +
+            "<if test=\"tags != null\">" +
+            " and tag in" +
+            "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</if>" +
+            "<if test=\"searchType != 0\">" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            "</if>" +
+            " and classify = 0" +
+            " and blogStatus = 0" +
+            " and remunerationStatus = 0" +
+            " order by time desc" +
+            "</script>")
+    List<HomeBlog> findBlogListByTags2(@Param("tags") String[] tags, @Param("searchType") int searchType, @Param("userId") long userId, @Param("userIds") String userIds);
+
+
+    /***
      * 根据指定用户ID查询列表
      * @param searchType 博文类型：0查自己 1查别人
      * @param sendType   博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈
