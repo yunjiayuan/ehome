@@ -64,6 +64,13 @@ public class EpidemicSituation {
 
     private String  hbFeiHbTrendCharts;//湖北/非湖北疫情趋势图 格式 图片地址,标题;图片地址,标题;图片地址,标题
 
+    private String listByArea;//全国省市地区疫情情况 json格式数据
+
+    private String listByOther;//全国省市地区疫情情况 json格式数据
+
+
+
+
     private EpidemicSituationImage[] quanguoTrendChart;//全国疫情趋势图  与数据库无关字段 只用于解析
 
     private EpidemicSituationImage[] hbFeiHbTrendChart;//湖北/非湖北疫情趋势图 与数据库无关字段 只用于解析
