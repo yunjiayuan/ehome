@@ -25,7 +25,7 @@ public class EpidemicSituationUtils {
 	 * 调用第三方疫情接口主逻辑
 	 * @return
 	 */
-	public static Object getEpidemicSituation(){
+	public static EpidemicSituation getEpidemicSituation(){
 
 		String returnStr = null; // 返回结果定义
 		URL url = null;
