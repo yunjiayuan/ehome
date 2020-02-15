@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
  * author：SunTianJie
  * create time：2018/6/12 19:12
  */
-@FeignClient("otherServer")
-@Component
-public interface EpidemicSituationLControllerFegin extends EpidemicSituationLocalController {
-
-}
+//@FeignClient("otherServer")
+//@Component
+//public interface EpidemicSituationLControllerFegin extends EpidemicSituationLocalController {
+//
+//}

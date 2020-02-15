@@ -1,7 +1,7 @@
 package com.busi.timerController;
 
 import com.busi.entity.EpidemicSituation;
-import com.busi.fegin.EpidemicSituationLControllerFegin;
+import com.busi.servive.EpidemicSituationService;
 import com.busi.utils.EpidemicSituationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +20,14 @@ import org.springframework.stereotype.Component;
 public class EpidemicSituationTimerController {
 
     @Autowired
-    EpidemicSituationLControllerFegin epidemicSituationLControllerFegin;
+    EpidemicSituationService epidemicSituationService;
 
     @Scheduled(cron = "0 0/30 * * * ?") //每30分钟一次
     public void epidemicSituationTimer() throws Exception {
         log.info("开始查询第三方最新疫情数据并更新数据库...");
         EpidemicSituation epidemicSituation = EpidemicSituationUtils.getEpidemicSituation();
         if (epidemicSituation != null) {
-            epidemicSituationLControllerFegin.addEpidemicSituation(epidemicSituation);
+            epidemicSituationService.add(epidemicSituation);
         }
     }
 }
