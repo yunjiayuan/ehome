@@ -18,7 +18,7 @@ public interface EpidemicSituationApiController {
      * @param count    条数
      * @return
      */
-    @GetMapping("findKitchenCollectList/{page}/{count}")
-    ReturnData findKitchenCollectList(@PathVariable int page, @PathVariable int count);
+    @GetMapping("findEpidemicSituation/{page}/{count}")
+    ReturnData findEpidemicSituation(@PathVariable int page, @PathVariable int count);
 
 }

@@ -29,7 +29,7 @@ public class EpidemicSituationController extends BaseController implements Epide
      * @return
      */
     @Override
-    public ReturnData findKitchenCollectList(@PathVariable int page, @PathVariable int count) {
+    public ReturnData findEpidemicSituation(@PathVariable int page, @PathVariable int count) {
         //开始查询
         PageBean<EpidemicSituation> pageBean = null;
         pageBean = epidemicSituationService.findList(page, count);
