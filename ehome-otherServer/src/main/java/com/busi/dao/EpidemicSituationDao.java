@@ -32,7 +32,9 @@ public interface EpidemicSituationDao {
      * @return
      */
     @Select("<script>" +
-            "SELECT * FROM EpidemicSituation where id=( SELECT MAX(id) FROM EpidemicSituation )" +
+//            "SELECT * FROM EpidemicSituation where id=( SELECT MAX(id) FROM EpidemicSituation )" +
+            "SELECT * FROM EpidemicSituation" +
+            " order by id desc" +
             "</script>")
     List<EpidemicSituation> findList();
 }
