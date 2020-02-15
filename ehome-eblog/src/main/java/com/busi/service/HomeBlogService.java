@@ -126,7 +126,7 @@ public class HomeBlogService {
     public PageBean<HomeBlog> findBlogListByTags2(String[] tags, int searchType, long userId, int page, int count) {
         List<HomeBlog> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByTags2(tags, searchType, userId, "," + userId + ",");
+        list = homeBlogDao.findBlogListByTags2(tags, searchType, userId, null);
         return PageUtils.getPageBean(p, list);
     }
 
