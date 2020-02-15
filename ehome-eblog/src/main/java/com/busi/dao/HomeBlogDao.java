@@ -187,11 +187,20 @@ public interface HomeBlogDao {
             "<if test=\"searchType == 1\">" +
                 " and remunerationStatus = 0" +
             "</if>" +
+            "<if test=\"userId > 0\">" +
+              " and userId = #{userId}" +
+            "</if>" +
             " and classify = 0" +
             " and blogStatus = 0" +
             " and sendType = 2" +
             " and blogType != 1" +
-            " order by time desc" +
+            "<if test=\"searchType == 0\">" +
+                " order by remunerationTime desc" +
+            "</if>" +
+            "<if test=\"searchType == 1\">" +
+                " order by time desc" +
+            "</if>" +
+
             "</script>")
     List<HomeBlog> findBlogListByTags2(@Param("tags") String[] tags, @Param("searchType") int searchType, @Param("userId") long userId, @Param("userIds") String userIds);
 
@@ -232,7 +241,7 @@ public interface HomeBlogDao {
             "</if>" +
             " and userId = #{userId}" +
             " and blogStatus = 0" +
-            " order by remunerationTime desc" +
+            " order by time desc" +
             "</script>")
     List<HomeBlog> findBlogListByUserId(@Param("userId") long userId, @Param("userIds") String userIds, @Param("searchType") int searchType ,@Param("sendType") int sendType);
 
