@@ -552,7 +552,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                                         @PathVariable double lat,@PathVariable double lon,
                                         @PathVariable int page,@PathVariable int count) {
         //验证参数
-        if(searchType<0||searchType>14){
+        if(searchType<0||searchType>15){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"searchType参数有误",new JSONObject());
         }
         if(page<1){
