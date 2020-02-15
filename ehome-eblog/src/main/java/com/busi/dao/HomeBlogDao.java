@@ -165,7 +165,7 @@ public interface HomeBlogDao {
     List<HomeBlog> findBlogListByTags(@Param("tags") String[] tags, @Param("searchType") int searchType, @Param("userId") long userId, @Param("userIds") String userIds);
 
     /***
-     * 查询待稿费审核视频列表
+     * 查询稿费审核视频列表
      * @param tags       标签数组格式 1,2,3
      * @param searchType 查看类型：0查看已审核视频 1查看未审核视频
      * @param userId     当前登录用户ID
@@ -187,7 +187,7 @@ public interface HomeBlogDao {
             "<if test=\"searchType == 1\">" +
                 " and remunerationStatus = 0" +
             "</if>" +
-            "<if test=\"userId > 0\">" +
+            "<if test=\"userId != 0\">" +
               " and userId = #{userId}" +
             "</if>" +
             " and classify = 0" +
