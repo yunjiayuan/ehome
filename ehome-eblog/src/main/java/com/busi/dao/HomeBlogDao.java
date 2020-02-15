@@ -187,8 +187,8 @@ public interface HomeBlogDao {
             "<if test=\"searchType == 1\">" +
                 " and remunerationStatus = 0" +
             "</if>" +
-            "<if test=\"userIds != null \">" +
-              " and userId = #{userId}" +
+            "<if test=\"userId > 0 \">" +
+              " and remunerationUserId = #{userId}" +
             "</if>" +
             " and classify = 0" +
             " and blogStatus = 0" +
