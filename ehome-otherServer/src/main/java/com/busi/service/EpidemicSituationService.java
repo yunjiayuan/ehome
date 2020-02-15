@@ -2,6 +2,7 @@ package com.busi.service;
 
 import com.busi.dao.EpidemicSituationDao;
 import com.busi.entity.EpidemicSituation;
+import com.busi.entity.EpidemicSituationAbout;
 import com.busi.entity.PageBean;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -47,4 +48,34 @@ public class EpidemicSituationService {
 
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * 新建我和疫情
+     * @param epidemicSituation
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addESabout(EpidemicSituationAbout epidemicSituation) {
+        return epidemicSituationDao.addESabout(epidemicSituation);
+    }
+
+    /***
+     * 更新我和疫情
+     * @param kitchenDishes
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeESabout(EpidemicSituationAbout kitchenDishes) {
+        return epidemicSituationDao.changeESabout(kitchenDishes);
+    }
+
+    /***
+     * 根据ID查询我和疫情
+     * @param id
+     * @return
+     */
+    public EpidemicSituationAbout findESabout(long id) {
+        return epidemicSituationDao.findESabout(id);
+    }
+
 }
