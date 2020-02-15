@@ -28,6 +28,7 @@ public class EpidemicSituationTimerController {
         EpidemicSituation epidemicSituation = EpidemicSituationUtils.getEpidemicSituation();
         if (epidemicSituation != null) {
             epidemicSituationService.add(epidemicSituation);
+            log.info("查询&更新最新疫情数据成功...");
         }
     }
 }
