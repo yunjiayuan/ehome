@@ -22,7 +22,7 @@ public class EpidemicSituationTimerController {
     @Autowired
     EpidemicSituationService epidemicSituationService;
 
-    @Scheduled(cron = "0 0/30 * * * ?") //每30分钟一次
+    @Scheduled(cron = "0 */30 * * * ?") //每30分钟一次
     public void epidemicSituationTimer() throws Exception {
         log.info("开始查询第三方最新疫情数据并更新数据库...");
         EpidemicSituation epidemicSituation = EpidemicSituationUtils.getEpidemicSituation();
