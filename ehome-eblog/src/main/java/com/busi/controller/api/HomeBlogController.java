@@ -254,6 +254,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
             homeBlog.setRemunerationStatus(grade);
             homeBlog.setRemunerationMoney(moneyNew);
+            homeBlog.setRemunerationUserId(CommonUtils.getMyId());
+            homeBlog.setRemunerationTime(new Date());
             homeBlogService.updateGradeBlog(homeBlog);
             //上边将生活秀删除 此处重新添加进去
             redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,homeBlog);

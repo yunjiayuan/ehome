@@ -48,6 +48,8 @@ public interface HomeBlogDao {
     @Update("<script>" +
             "update homeBlog set" +
             " remunerationStatus=#{remunerationStatus}," +
+            " remunerationUserId=#{remunerationUserId}," +
+            " remunerationTime=#{remunerationTime}," +
             " remunerationMoney=#{remunerationMoney}" +
             " where id=#{id}" +
             "</script>")
@@ -230,7 +232,7 @@ public interface HomeBlogDao {
             "</if>" +
             " and userId = #{userId}" +
             " and blogStatus = 0" +
-            " order by time desc" +
+            " order by remunerationTime desc" +
             "</script>")
     List<HomeBlog> findBlogListByUserId(@Param("userId") long userId, @Param("userIds") String userIds, @Param("searchType") int searchType ,@Param("sendType") int sendType);
 
