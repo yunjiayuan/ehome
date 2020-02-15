@@ -83,7 +83,7 @@ public class EpidemicSituationController extends BaseController implements Epide
     @Override
     public ReturnData findESabout(@PathVariable long userId) {
         EpidemicSituationAbout situationAbout = epidemicSituationService.findESabout(userId);
-        if (situationAbout != null) {
+        if (situationAbout == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", situationAbout);

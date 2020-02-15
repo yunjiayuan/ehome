@@ -40,7 +40,7 @@ public interface EpidemicSituationDao {
     List<EpidemicSituation> findList();
 
     /***
-     * 新增菜品
+     * 新增我和疫情
      * @param dishes
      * @return
      */
@@ -50,7 +50,7 @@ public interface EpidemicSituationDao {
     int addESabout(EpidemicSituationAbout dishes);
 
     /***
-     * 更新菜品
+     * 更新我和疫情
      * @param kitchenDishes
      * @return
      */
@@ -68,7 +68,7 @@ public interface EpidemicSituationDao {
     int changeESabout(EpidemicSituationAbout kitchenDishes);
 
     /***
-     * 根据ID查询菜品
+     * 根据ID查询我和疫情
      * @param id
      * @return
      */
