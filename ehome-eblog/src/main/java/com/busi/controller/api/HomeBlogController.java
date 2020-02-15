@@ -792,14 +792,14 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 if(!CommonUtils.checkFull(tags)){
                     tagArray = tags.split(",");
                 }
-                pageBean = homeBlogService.findBlogListByTags2(tagArray,1,CommonUtils.getMyId(),page,count);
+                pageBean = homeBlogService.findBlogListByTags2(tagArray,1,userId,page,count);
                 break;
             case 15://查询已审核稿费视频列表
                 String[] tagArray2 = null;
                 if(!CommonUtils.checkFull(tags)){
                     tagArray2 = tags.split(",");
                 }
-                pageBean = homeBlogService.findBlogListByTags2(tagArray2,0,CommonUtils.getMyId(),page,count);
+                pageBean = homeBlogService.findBlogListByTags2(tagArray2,0,userId,page,count);
                 break;
         }
         if(pageBean==null){
