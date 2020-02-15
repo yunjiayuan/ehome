@@ -792,6 +792,13 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 }
                 pageBean = homeBlogService.findBlogListByTags2(tagArray,1,CommonUtils.getMyId(),page,count);
                 break;
+            case 15://查询已审核稿费视频列表
+                String[] tagArray2 = null;
+                if(!CommonUtils.checkFull(tags)){
+                    tagArray2 = tags.split(",");
+                }
+                pageBean = homeBlogService.findBlogListByTags2(tagArray2,0,CommonUtils.getMyId(),page,count);
+                break;
         }
         if(pageBean==null){
             pageBean = new PageBean<HomeBlog>();
@@ -828,7 +835,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setIsLike(0);
             }
             //设置是否为 已付稿费作品
-            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0){
+            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0&&searchType!=14&&searchType!=15){
                 if(homeBlog.getUserId()%2==0){
                     Random random = new Random();
                     double moneyNew = 10;

@@ -117,7 +117,7 @@ public class HomeBlogService {
     /***
      * 查询待稿费审核视频列表
      * @param tags       标签数组格式 1,2,3
-     * @param searchType 博文类型：0所有 1只看视频
+     * @param searchType 查看类型：0查看已审核视频 1查看未审核视频
      * @param userId     当前登录者用户ID  用于判断权限
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
