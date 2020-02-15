@@ -117,7 +117,7 @@ public class HomeBlogService {
     /***
      * 查询待稿费审核视频列表
      * @param tags       标签数组格式 1,2,3
-     * @param searchType 博文类型：0所有 1只看视频
+     * @param searchType 查看类型：0查看已审核视频 1查看未审核视频
      * @param userId     当前登录者用户ID  用于判断权限
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
@@ -126,7 +126,11 @@ public class HomeBlogService {
     public PageBean<HomeBlog> findBlogListByTags2(String[] tags, int searchType, long userId, int page, int count) {
         List<HomeBlog> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeBlogDao.findBlogListByTags2(tags, searchType, userId, "," + userId + ",");
+        String userIds = null;
+        if(userId>0){
+            userIds = ""+userId;
+        }
+        list = homeBlogDao.findBlogListByTags2(tags, searchType, userId, userIds);
         return PageUtils.getPageBean(p, list);
     }
 

@@ -254,6 +254,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
             homeBlog.setRemunerationStatus(grade);
             homeBlog.setRemunerationMoney(moneyNew);
+            homeBlog.setRemunerationUserId(CommonUtils.getMyId());
+            homeBlog.setRemunerationTime(new Date());
             homeBlogService.updateGradeBlog(homeBlog);
             //上边将生活秀删除 此处重新添加进去
             redisUtils.addSet(Constants.REDIS_KEY_EBLOGSET,homeBlog);
@@ -552,7 +554,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                                         @PathVariable double lat,@PathVariable double lon,
                                         @PathVariable int page,@PathVariable int count) {
         //验证参数
-        if(searchType<0||searchType>14){
+        if(searchType<0||searchType>15){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"searchType参数有误",new JSONObject());
         }
         if(page<1){
@@ -790,7 +792,14 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 if(!CommonUtils.checkFull(tags)){
                     tagArray = tags.split(",");
                 }
-                pageBean = homeBlogService.findBlogListByTags2(tagArray,1,CommonUtils.getMyId(),page,count);
+                pageBean = homeBlogService.findBlogListByTags2(tagArray,1,userId,page,count);
+                break;
+            case 15://查询已审核稿费视频列表
+                String[] tagArray2 = null;
+                if(!CommonUtils.checkFull(tags)){
+                    tagArray2 = tags.split(",");
+                }
+                pageBean = homeBlogService.findBlogListByTags2(tagArray2,0,userId,page,count);
                 break;
         }
         if(pageBean==null){
@@ -828,7 +837,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setIsLike(0);
             }
             //设置是否为 已付稿费作品
-            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0){
+            if(homeBlog.getUserId()>=13870&&homeBlog.getUserId()<=53870&&homeBlog.getRemunerationStatus()==0&&searchType!=14&&searchType!=15){
                 if(homeBlog.getUserId()%2==0){
                     Random random = new Random();
                     double moneyNew = 10;

@@ -48,6 +48,8 @@ public interface HomeBlogDao {
     @Update("<script>" +
             "update homeBlog set" +
             " remunerationStatus=#{remunerationStatus}," +
+            " remunerationUserId=#{remunerationUserId}," +
+            " remunerationTime=#{remunerationTime}," +
             " remunerationMoney=#{remunerationMoney}" +
             " where id=#{id}" +
             "</script>")
@@ -163,9 +165,9 @@ public interface HomeBlogDao {
     List<HomeBlog> findBlogListByTags(@Param("tags") String[] tags, @Param("searchType") int searchType, @Param("userId") long userId, @Param("userIds") String userIds);
 
     /***
-     * 查询待稿费审核视频列表
+     * 查询稿费审核视频列表
      * @param tags       标签数组格式 1,2,3
-     * @param searchType 博文类型：0所有 1只看视频
+     * @param searchType 查看类型：0查看已审核视频 1查看未审核视频
      * @param userId     当前登录用户ID
      * @param userIds    处理过的登录者用户ID 用于判断可见范围
      * @return
@@ -179,14 +181,26 @@ public interface HomeBlogDao {
             " #{item}" +
             "</foreach>" +
             "</if>" +
-            "<if test=\"searchType != 0\">" +
-            " and sendType = 2" +
-            " and blogType != 1" +
+            "<if test=\"searchType == 0\">" +
+                " and remunerationStatus > 0" +
+            "</if>" +
+            "<if test=\"searchType == 1\">" +
+                " and remunerationStatus = 0" +
+            "</if>" +
+            "<if test=\"userIds != null \">" +
+              " and userId = #{userId}" +
             "</if>" +
             " and classify = 0" +
             " and blogStatus = 0" +
-            " and remunerationStatus = 0" +
-            " order by time desc" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            "<if test=\"searchType == 0\">" +
+                " order by remunerationTime desc" +
+            "</if>" +
+            "<if test=\"searchType == 1\">" +
+                " order by time desc" +
+            "</if>" +
+
             "</script>")
     List<HomeBlog> findBlogListByTags2(@Param("tags") String[] tags, @Param("searchType") int searchType, @Param("userId") long userId, @Param("userIds") String userIds);
 
