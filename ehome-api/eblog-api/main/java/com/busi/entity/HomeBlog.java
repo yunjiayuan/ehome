@@ -26,7 +26,7 @@ public class HomeBlog {
     private String title;//标题（最多30个字）
 
 //    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,，\\.。;；\\:\"'？?！!#@￥$%*（）《》()&|、‘’”“<>\\-\\s*]", message = "内容格式有误,不能包含非法字符")
-    @Length(max = 10000, message = "转发评论内容不能超过1万字")
+    @Length(max = 10000, message = "内容不能超过1万字")
     private String content;//内容（最多1万字）
 
     @Length(max = 140, message = "基本内容字数最多140字")
