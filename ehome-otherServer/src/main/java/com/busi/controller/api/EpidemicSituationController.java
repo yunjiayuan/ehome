@@ -170,7 +170,7 @@ public class EpidemicSituationController extends BaseController implements Epide
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0表示默认全部，1表示查询有视频的  2按编号查询
+     * @param findType   查询类型： 0表示默认全部，1表示查询有视频的
      * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
      * @param province  省ID -1不限
      * @param city   市ID -1不限
