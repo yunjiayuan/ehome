@@ -27,11 +27,23 @@ public class EpidemicSituationAbout {
 
     private String whatAmIdoing;            // 我在做什么
 
-    private String whatIsDone;            // 为抗疫做了什么
+//    private String whatIsDone;            // 为抗疫做了什么
+
+    private String donateMoney;            // 捐钱
+
+    private String benevolence;            // 捐物
+
+    private String other;            // 其他
 
     private String shoutSentence;            // 为武汉喊句话
 
-    private String later;            // 疫情过后
+//    private String later;            // 疫情过后
+
+    private String imagine;            // 最想见的人
+
+    private String wantToDo;            // 最想做的事
+
+    private String wantToGo;            // 最想去的地方
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;            // 添加时间

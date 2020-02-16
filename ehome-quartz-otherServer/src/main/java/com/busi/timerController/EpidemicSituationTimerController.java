@@ -26,9 +26,12 @@ public class EpidemicSituationTimerController {
     public void epidemicSituationTimer() throws Exception {
         log.info("开始查询第三方最新疫情数据并更新数据库...");
         EpidemicSituation epidemicSituation = EpidemicSituationUtils.getEpidemicSituation();
-        if (epidemicSituation != null) {
-            epidemicSituationService.add(epidemicSituation);
-            log.info("查询&更新最新疫情数据成功...");
+        if (epidemicSituation != null && epidemicSituation.getModifyTime() > 0) {
+            EpidemicSituation situation = epidemicSituationService.findEpidemicSituation(epidemicSituation.getModifyTime());
+            if (situation == null) {
+                epidemicSituationService.add(epidemicSituation);
+                log.info("查询&更新最新疫情数据成功...");
+            }
         }
     }
 }

@@ -44,8 +44,8 @@ public interface EpidemicSituationDao {
      * @param dishes
      * @return
      */
-    @Insert("insert into EpidemicSituationAbout(userId,lat,lon,address,whatAmIdoing,whatIsDone,shoutSentence,later,addTime) " +
-            "values (#{userId},#{lat},#{lon},#{address},#{whatAmIdoing},#{whatIsDone},#{shoutSentence},#{later},#{addTime})")
+    @Insert("insert into EpidemicSituationAbout(userId,lat,lon,address,whatAmIdoing,donateMoney,benevolence,other,shoutSentence,imagine,wantToDo,wantToGo,addTime) " +
+            "values (#{userId},#{lat},#{lon},#{address},#{whatAmIdoing},#{donateMoney},#{benevolence},#{other},#{shoutSentence},#{imagine},#{wantToDo},#{wantToGo},#{addTime})")
     @Options(useGeneratedKeys = true)
     int addESabout(EpidemicSituationAbout dishes);
 
@@ -60,9 +60,13 @@ public interface EpidemicSituationDao {
             " lon=#{lon}," +
             " address=#{address}," +
             " whatAmIdoing=#{whatAmIdoing}," +
-            " whatIsDone=#{whatIsDone}," +
-            " shoutSentence=#{shoutSentence}," +
-            " later=#{later}" +
+            " donateMoney=#{donateMoney}," +
+            " benevolence=#{benevolence}," +
+            " other=#{other}," +
+            " imagine=#{imagine}," +
+            " wantToDo=#{wantToDo}," +
+            " wantToGo=#{wantToGo}," +
+            " shoutSentence=#{shoutSentence}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int changeESabout(EpidemicSituationAbout kitchenDishes);

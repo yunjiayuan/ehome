@@ -1,10 +1,7 @@
 package com.busi.dao;
 
 import com.busi.entity.EpidemicSituation;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,4 +26,12 @@ public interface EpidemicSituationDao {
             ",#{remark4},#{remark5},#{note1},#{note2},#{note3},#{generalRemark},#{abroadRemark},#{quanguoTrendCharts},#{hbFeiHbTrendCharts},#{listByArea},#{listByOther})")
     @Options(useGeneratedKeys = true)
     int add(EpidemicSituation epidemicSituation);
+
+    /***
+     * 根据更新时间查疫情
+     * @param modifyTime
+     * @return
+     */
+    @Select("select * from EpidemicSituation where modifyTime=#{modifyTime}")
+    EpidemicSituation findEpidemicSituation(@Param("modifyTime") long modifyTime);
 }
