@@ -27,20 +27,4 @@ public class CampaignAwardVote {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;
 
-    //与数据库无关字段
-    private String userName;//用户名
-
-    private String userHead;//头像
-
-    private int sex;//性别 1男2女
-
-    private int province;//省
-
-    private int city;//城市
-
-    private int district;//地区或县
-
-    private int proTypeId;//省简称ID
-
-    private long houseNumber;// 门牌号
 }
