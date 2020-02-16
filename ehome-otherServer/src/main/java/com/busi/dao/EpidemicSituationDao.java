@@ -173,7 +173,7 @@ public interface EpidemicSituationDao {
             " and myId = #{myId} " +
             " and TO_DAYS(time)=TO_DAYS(NOW())"
     )
-    CampaignAwardVote findTicket(@Param("myId") long myId, @Param("userId") long campaignAwardId);
+    CampaignAwardVote findTicket(@Param("myId") long myId, @Param("campaignAwardId") long campaignAwardId);
 
     /***
      * 分页查询评选作品列表
