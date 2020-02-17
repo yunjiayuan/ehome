@@ -56,7 +56,7 @@ public class EpidemicSituationController extends BaseController implements Epide
      * @return
      */
     @Override
-    public ReturnData findEStianQi(int page, int count) {
+    public ReturnData findEStianQi(@PathVariable int page,@PathVariable  int count) {
         //开始查询
         PageBean<EpidemicSituationTianqi> pageBean = null;
         pageBean = epidemicSituationService.findTQlist(page, count);

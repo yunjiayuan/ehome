@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.awt.color.CMMException;
+import java.util.Date;
 
 
 /**
@@ -33,6 +34,7 @@ public class EpidemicSituationTimerController {
         if (epidemicSituationTianqi != null && !CommonUtils.checkFull(epidemicSituationTianqi.getDate())) {
             EpidemicSituationTianqi situation = epidemicSituationService.findEStianQi(epidemicSituationTianqi.getDate());
             if (situation == null) {
+                epidemicSituationTianqi.setTime(new Date());
                 epidemicSituationService.addTianQi(epidemicSituationTianqi);
                 log.info("查询&更新天气平台最新疫情数据成功...");
             }
