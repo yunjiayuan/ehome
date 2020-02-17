@@ -27,6 +27,15 @@ public interface EpidemicSituationApiController {
     ReturnData findEpidemicSituation(@PathVariable int page, @PathVariable int count);
 
     /***
+     * 查询疫情(天气平台)
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findEStianQi/{page}/{count}")
+    ReturnData findEStianQi(@PathVariable int page, @PathVariable int count);
+
+    /***
      * 新增我和疫情
      * @param epidemicSituationAbout
      * @return
