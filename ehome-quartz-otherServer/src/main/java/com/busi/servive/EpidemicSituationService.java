@@ -3,6 +3,7 @@ package com.busi.servive;
 import com.busi.dao.EpidemicSituationDao;
 import com.busi.entity.EpidemicSituation;
 import com.busi.entity.EpidemicSituationAbout;
+import com.busi.entity.EpidemicSituationTianqi;
 import com.busi.entity.PageBean;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -35,11 +36,30 @@ public class EpidemicSituationService {
     }
 
     /***
+     * 新建（天气平台）
+     * @param epidemicSituation
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addTianQi(EpidemicSituationTianqi epidemicSituation) {
+        return epidemicSituationDao.addTianQi(epidemicSituation);
+    }
+
+    /***
      * 根据更新时间查疫情
      * @param modifyTime
      * @return
      */
     public EpidemicSituation findEpidemicSituation(long modifyTime) {
         return epidemicSituationDao.findEpidemicSituation(modifyTime);
+    }
+
+    /***
+     * 根据更新时间查疫情(天气平台)
+     * @param modifyTime
+     * @return
+     */
+    public EpidemicSituationTianqi findEStianQi(String modifyTime) {
+        return epidemicSituationDao.findEStianQi(modifyTime);
     }
 }

@@ -48,6 +48,21 @@ public class EpidemicSituationService {
     }
 
     /***
+     * 查询列表(天气平台)
+     * @param page     页码 第几页 起始值1
+     * @param count    每页条数
+     * @return
+     */
+    public PageBean<EpidemicSituationTianqi> findTQlist(int page, int count) {
+
+        List<EpidemicSituationTianqi> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findTQlist();
+
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 新建我和疫情
      * @param epidemicSituation
      * @return

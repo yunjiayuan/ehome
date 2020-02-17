@@ -50,6 +50,23 @@ public class EpidemicSituationController extends BaseController implements Epide
     }
 
     /***
+     * 查询疫情(天气平台)
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findEStianQi(int page, int count) {
+        //开始查询
+        PageBean<EpidemicSituationTianqi> pageBean = null;
+        pageBean = epidemicSituationService.findTQlist(page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
      * 新增我和疫情
      * @param epidemicSituationAbout
      * @return

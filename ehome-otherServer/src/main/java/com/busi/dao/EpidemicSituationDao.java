@@ -1,9 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.CampaignAwardActivity;
-import com.busi.entity.CampaignAwardVote;
-import com.busi.entity.EpidemicSituation;
-import com.busi.entity.EpidemicSituationAbout;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -40,6 +37,17 @@ public interface EpidemicSituationDao {
             " order by id desc" +
             "</script>")
     List<EpidemicSituation> findList();
+
+    /***
+     * 查询列表(天气平台)
+     * @return
+     */
+    @Select("<script>" +
+//            "SELECT * FROM EpidemicSituationTianqi where id=( SELECT MAX(id) FROM EpidemicSituation )" +
+            "SELECT * FROM EpidemicSituationTianqi" +
+            " order by id desc" +
+            "</script>")
+    List<EpidemicSituationTianqi> findTQlist();
 
     /***
      * 新增我和疫情
