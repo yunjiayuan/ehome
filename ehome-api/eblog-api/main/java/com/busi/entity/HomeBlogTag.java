@@ -19,7 +19,7 @@ public class HomeBlogTag {
     private long id;//主建ID
 
     @Min(value = 0, message = "tagValue参数有误，超出最小取值范围")
-    @Max(value = 47, message = "tagValue参数有误，超出最大取值范围")
+    @Max(value = 48, message = "tagValue参数有误，超出最大取值范围")
     private int tagValue;//标签值
 
     @Length(max = 10, message = "tagName标签名字不能超过10个字")
