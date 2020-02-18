@@ -235,8 +235,8 @@ public interface EpidemicSituationDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into EpidemicSituationAbout(userId,setOutTime,placeOfDeparture,setOutLat,setOutLon,arriveTime,destination,arriveLat,arriveLon,vehicle,trainNumber,time) " +
-            "values (#{userId},#{setOutTime},#{placeOfDeparture},#{setOutLat},#{setOutLon},#{arriveTime},#{destination},#{arriveLat},#{arriveLon},#{vehicle},#{trainNumber},#{time}})")
+    @Insert("insert into MyTrajectory(userId,departTime,placeOfDeparture,setOutLat,setOutLon,arriveTime,destination,arriveLat,arriveLon,vehicle,trainNumber,time) " +
+            "values (#{userId},#{departTime},#{placeOfDeparture},#{setOutLat},#{setOutLon},#{arriveTime},#{destination},#{arriveLat},#{arriveLon},#{vehicle},#{trainNumber},#{time})")
     @Options(useGeneratedKeys = true)
     int addTrajectory(MyTrajectory selectionVote);
 
@@ -247,7 +247,7 @@ public interface EpidemicSituationDao {
      */
     @Update("<script>" +
             "update MyTrajectory set" +
-            " setOutTime=#{setOutTime}," +
+            " departTime=#{departTime}," +
             " placeOfDeparture=#{placeOfDeparture}," +
             " setOutLat=#{setOutLat}," +
             " setOutLon=#{setOutLon}," +

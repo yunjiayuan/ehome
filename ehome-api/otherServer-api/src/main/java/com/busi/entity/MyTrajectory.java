@@ -21,7 +21,7 @@ public class MyTrajectory {
     @Min(value = 1, message = "userId参数有误，超出指定范围")
     private long userId;                   //用户ID
 
-    private String setOutTime;             //出发时间
+    private String departTime;             //出发时间
 
     private String placeOfDeparture;       //出发地
 
