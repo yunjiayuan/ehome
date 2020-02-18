@@ -54,7 +54,7 @@ public interface EpidemicSituationDao {
      * @return
      */
     @Select("<script>" +
-            "SELECT * FROM EpidemicSituationTianqi where id=( SELECT MAX(id) FROM EpidemicSituation )" +
+            "SELECT * FROM EpidemicSituationTianqi where id=( SELECT MAX(id) FROM EpidemicSituationTianqi )" +
             "</script>")
     EpidemicSituationTianqi findNewEStianQi();
 
