@@ -309,22 +309,19 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 int remunerationStatus = random.nextInt(4)+1;
                 if(remunerationStatus==1){
                     moneyNew = 10;
-                }else if(remunerationStatus==2){//20-100元
-                    moneyNew = random.nextInt(9)*10 + 20;//临时20-100
-                }else if(remunerationStatus==3){//100-2000
-                    int cc = random.nextInt(10);
-                    if(cc==1||cc==5){//五分之一概率
-                        moneyNew = random.nextInt(20)*100 + 100;//临时100-2000
+                }else if(remunerationStatus==2){//20 50 100元
+                    double rs2 = random.nextInt(3) ;
+                    if(rs2==2){
+                        moneyNew = 20;
+                    }else if(rs2==1){
+                        moneyNew = 50;
                     }else{
-                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                        moneyNew = 10;
                     }
-                }else if(remunerationStatus==4){//2000-20000
-                    int cc = random.nextInt(10);
-                    if(cc==1){//十分之一概率
-                        moneyNew = random.nextInt(19)*1000 + 2000;//临时2000-20000
-                    }else{
-                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
-                    }
+                }else if(remunerationStatus==3){
+                    moneyNew = 10;
+                }else if(remunerationStatus==4){
+                    moneyNew = 20;
                 }
                 homeBlog.setRemunerationStatus(remunerationStatus);
                 homeBlog.setRemunerationMoney(moneyNew);
@@ -509,22 +506,19 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     int remunerationStatus = random.nextInt(4)+1;
                     if(remunerationStatus==1){
                         moneyNew = 10;
-                    }else if(remunerationStatus==2){//20-100元
-                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
-                    }else if(remunerationStatus==3){//100-2000
-                        int cc = random.nextInt(10);
-                        if(cc==1||cc==5){//五分之一概率
-                            moneyNew = random.nextInt(20)*100 + 100;//临时100-2000
+                    }else if(remunerationStatus==2){//20 50 100元
+                        double rs2 = random.nextInt(3) ;
+                        if(rs2==2){
+                            moneyNew = 20;
+                        }else if(rs2==1){
+                            moneyNew = 50;
                         }else{
-                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                            moneyNew = 10;
                         }
-                    }else if(remunerationStatus==4){//2000-20000
-                        int cc = random.nextInt(10);
-                        if(cc==1){//十分之一概率
-                            moneyNew = random.nextInt(19)*1000 + 2000;//临时2000-20000
-                        }else{
-                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
-                        }
+                    }else if(remunerationStatus==3){
+                        moneyNew = 10;
+                    }else if(remunerationStatus==4){
+                        moneyNew = 20;
                     }
                     homeBlog.setRemunerationStatus(remunerationStatus);
                     homeBlog.setRemunerationMoney(moneyNew);
@@ -844,22 +838,19 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     int remunerationStatus = random.nextInt(4)+1;
                     if(remunerationStatus==1){
                         moneyNew = 10;
-                    }else if(remunerationStatus==2){//20-100元
-                        moneyNew = random.nextInt(9)*10 + 20;//临时20-100
-                    }else if(remunerationStatus==3){//100-2000
-                        int cc = random.nextInt(10);
-                        if(cc==1||cc==5){//五分之一概率
-                            moneyNew = random.nextInt(20)*100 + 100;//临时100-2000
+                    }else if(remunerationStatus==2){//20 50 100元
+                        double rs2 = random.nextInt(3) ;
+                        if(rs2==2){
+                            moneyNew = 20;
+                        }else if(rs2==1){
+                            moneyNew = 50;
                         }else{
-                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
+                            moneyNew = 10;
                         }
-                    }else if(remunerationStatus==4){//2000-20000
-                        int cc = random.nextInt(10);
-                        if(cc==1){//十分之一概率
-                            moneyNew = random.nextInt(19)*1000 + 2000;//临时2000-20000
-                        }else{
-                            moneyNew = random.nextInt(9)*10 + 20;//临时20-100
-                        }
+                    }else if(remunerationStatus==3){
+                        moneyNew = 10;
+                    }else if(remunerationStatus==4){
+                        moneyNew = 20;
                     }
                     homeBlog.setRemunerationStatus(remunerationStatus);
                     homeBlog.setRemunerationMoney(moneyNew);
