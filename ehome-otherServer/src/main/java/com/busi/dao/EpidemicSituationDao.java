@@ -215,4 +215,70 @@ public interface EpidemicSituationDao {
             "</script>")
     List<CampaignAwardActivity> findsSelectionList(@Param("userId") long userId, @Param("findType") int findType);
 
+    /***
+     * 删除轨迹
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from MyTrajectory" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and userId=#{userId}" +
+            "</script>")
+    int delTrajectory(@Param("ids") String[] ids, @Param("userId") long userId);
+
+    /***
+     * 新增轨迹
+     * @param selectionVote
+     * @return
+     */
+    @Insert("insert into EpidemicSituationAbout(userId,setOutTime,placeOfDeparture,setOutLat,setOutLon,arriveTime,destination,arriveLat,arriveLon,vehicle,trainNumber,time) " +
+            "values (#{userId},#{setOutTime},#{placeOfDeparture},#{setOutLat},#{setOutLon},#{arriveTime},#{destination},#{arriveLat},#{arriveLon},#{vehicle},#{trainNumber},#{time}})")
+    @Options(useGeneratedKeys = true)
+    int addTrajectory(MyTrajectory selectionVote);
+
+    /***
+     * 更新轨迹
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update MyTrajectory set" +
+            " setOutTime=#{setOutTime}," +
+            " placeOfDeparture=#{placeOfDeparture}," +
+            " setOutLat=#{setOutLat}," +
+            " setOutLon=#{setOutLon}," +
+            " arriveTime=#{arriveTime}," +
+            " destination=#{destination}," +
+            " arriveLat=#{arriveLat}," +
+            " arriveLon=#{arriveLon}," +
+            " vehicle=#{vehicle}," +
+            " trainNumber=#{trainNumber}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int editTrajectory(MyTrajectory selectionActivities);
+
+    /***
+     * 根据ID查询轨迹
+     * @param id
+     * @return
+     */
+    @Select("select * from MyTrajectory where id = #{id}")
+    MyTrajectory findTrajectory(@Param("id") long id);
+
+    /***
+     * 分页查询轨迹列表
+     * @param userId   用戶ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from MyTrajectory" +
+            " where 1=1" +
+            " and userId =#{userId}" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<MyTrajectory> findTrajectoryList(@Param("userId") long userId);
 }

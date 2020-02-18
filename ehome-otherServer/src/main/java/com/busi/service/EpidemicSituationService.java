@@ -182,4 +182,56 @@ public class EpidemicSituationService {
         return PageUtils.getPageBean(p, list);
     }
 
+    /***
+     * 删除轨迹
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delTrajectory(String[] ids, long userId) {
+        return epidemicSituationDao.delTrajectory(ids, userId);
+    }
+
+    /***
+     * 更新轨迹
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int editTrajectory(MyTrajectory selectionVote) {
+        return epidemicSituationDao.editTrajectory(selectionVote);
+    }
+
+    /***
+     * 新增轨迹
+     * @param selectionActivities
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addTrajectory(MyTrajectory selectionActivities) {
+        return epidemicSituationDao.addTrajectory(selectionActivities);
+    }
+
+    /***
+     * 根据ID查询轨迹
+     * @param id
+     * @return
+     */
+    public MyTrajectory findTrajectory(long id) {
+        return epidemicSituationDao.findTrajectory(id);
+    }
+
+    /***
+     * 分页查询轨迹列表
+     * @param userId   用戶ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<MyTrajectory> findTrajectoryList(long userId, int page, int count) {
+        List<MyTrajectory> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findTrajectoryList(userId);
+        return PageUtils.getPageBean(p, list);
+    }
 }

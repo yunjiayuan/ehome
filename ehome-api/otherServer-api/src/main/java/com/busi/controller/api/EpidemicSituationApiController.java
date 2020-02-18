@@ -1,10 +1,7 @@
 package com.busi.controller.api;
 
 
-import com.busi.entity.CampaignAwardActivity;
-import com.busi.entity.CampaignAwardVote;
-import com.busi.entity.EpidemicSituationAbout;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -118,5 +115,47 @@ public interface EpidemicSituationApiController {
      */
     @PostMapping("voteCampaignAward")
     ReturnData voteCampaignAward(@Valid @RequestBody CampaignAwardVote selectionVote, BindingResult bindingResult);
+
+    /***
+     * 新增轨迹
+     * @param selectionActivities
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("addTrajectory")
+    ReturnData addTrajectory(@Valid @RequestBody MyTrajectory selectionActivities, BindingResult bindingResult);
+
+    /**
+     * @Description: 更新轨迹
+     * @Param: selectionActivities
+     * @return:
+     */
+    @PutMapping("editTrajectory")
+    ReturnData editTrajectory(@Valid @RequestBody MyTrajectory selectionActivities, BindingResult bindingResult);
+
+    /**
+     * @Description: 删除轨迹
+     * @return:
+     */
+    @DeleteMapping("delTrajectory/{ids}")
+    ReturnData delTrajectory(@PathVariable String ids);
+
+    /***
+     * 查询轨迹
+     * @param id
+     * @return
+     */
+    @GetMapping("findTrajectory/{id}")
+    ReturnData findTrajectory(@PathVariable long id);
+
+    /***
+     * 分页查询轨迹列表
+     * @param userId   用戶ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findTrajectoryList/{userId}/{page}/{count}")
+    ReturnData findTrajectoryList(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
 
 }

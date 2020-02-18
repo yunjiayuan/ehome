@@ -282,4 +282,83 @@ public class EpidemicSituationController extends BaseController implements Epide
         epidemicSituationService.updateNumber(activities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
+
+    /***
+     * 新增轨迹
+     * @param selectionActivities
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addTrajectory(@Valid @RequestBody MyTrajectory selectionActivities, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        selectionActivities.setTime(new Date());
+        epidemicSituationService.addTrajectory(selectionActivities);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /**
+     * @Description: 更新轨迹
+     * @Param: selectionActivities
+     * @return:
+     */
+    @Override
+    public ReturnData editTrajectory(@Valid @RequestBody MyTrajectory selectionActivities, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        epidemicSituationService.editTrajectory(selectionActivities);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /**
+     * @Description: 删除轨迹
+     * @return:
+     */
+    @Override
+    public ReturnData delTrajectory(@PathVariable String ids) {
+        //查询数据库
+        epidemicSituationService.delTrajectory(ids.split(","), CommonUtils.getMyId());
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询轨迹
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findTrajectory(@PathVariable long id) {
+        MyTrajectory situationAbout = epidemicSituationService.findTrajectory(id);
+        if (situationAbout == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", situationAbout);
+    }
+
+    /***
+     * 分页查询轨迹列表
+     * @param userId   用戶ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findTrajectoryList(@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        PageBean<MyTrajectory> pageBean = null;
+        pageBean = epidemicSituationService.findTrajectoryList(userId, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
 }
