@@ -271,6 +271,7 @@ public class Constants {
     public static final String REDIS_KEY_SHOPFLOORORDERS = "shopFloorOrders_";//订单编号与楼店订单对象关系对照
     public static final String REDIS_KEY_SHOPFLOOR_MASTERORDERS = "shopFloor_masterOrders_";//订单编号与楼店补货订单对象关系对照
     public static final String REDIS_KEY_HOMEHOSPITAL = "homeHospital_";//userId与医馆对象关系对照
+    public static final String REDIS_KEY_EPIDEMICSITUATION = "epidemicSituation";//最新疫情
 
 
 

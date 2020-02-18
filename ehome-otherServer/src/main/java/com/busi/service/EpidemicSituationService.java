@@ -48,6 +48,15 @@ public class EpidemicSituationService {
     }
 
     /***
+     * 查询疫情(天气平台)
+     * @return
+     */
+    public EpidemicSituationTianqi findNewEStianQi() {
+        return epidemicSituationDao.findNewEStianQi();
+    }
+
+
+    /***
      * 查询列表(天气平台)
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
@@ -160,21 +169,16 @@ public class EpidemicSituationService {
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0表示默认全部，1表示查询有视频的
-     * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
-     * @param province  省ID -1不限
-     * @param city   市ID -1不限
-     * @param district  区ID -1不限
+     * @param findType   查询类型： 0表示默认全部，1查我的
+     * @param orderVoteCountType  0综合 1票数最高 2票数最低
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<CampaignAwardActivity> findsSelectionActivitiesList(int findType, int orderVoteCountType,
-                                                                        int province, int city, int district,
-                                                                        int page, int count) {
+    public PageBean<CampaignAwardActivity> findsSelectionActivitiesList(long userId, int findType, int orderVoteCountType, int page, int count) {
         List<CampaignAwardActivity> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = epidemicSituationDao.findsSelectionList(findType, orderVoteCountType , province, city, district);
+        list = epidemicSituationDao.findsSelectionList(userId, findType, orderVoteCountType);
         return PageUtils.getPageBean(p, list);
     }
 

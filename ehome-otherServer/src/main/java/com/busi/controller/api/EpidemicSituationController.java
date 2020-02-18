@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /***
  * 疫情相关接口
@@ -25,6 +27,9 @@ public class EpidemicSituationController extends BaseController implements Epide
 
     @Autowired
     MqUtils mqUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
 
     @Autowired
     UserInfoUtils userInfoUtils;
@@ -56,7 +61,7 @@ public class EpidemicSituationController extends BaseController implements Epide
      * @return
      */
     @Override
-    public ReturnData findEStianQi(@PathVariable int page,@PathVariable  int count) {
+    public ReturnData findEStianQi(@PathVariable int page, @PathVariable int count) {
         //开始查询
         PageBean<EpidemicSituationTianqi> pageBean = null;
         pageBean = epidemicSituationService.findTQlist(page, count);
@@ -64,6 +69,25 @@ public class EpidemicSituationController extends BaseController implements Epide
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 查询疫情信息(天气平台)
+     * @return
+     */
+    @Override
+    public ReturnData findNewEStianQi() {
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_EPIDEMICSITUATION);
+        if (map == null || map.size() <= 0) {
+            EpidemicSituationTianqi eSabout = epidemicSituationService.findNewEStianQi();
+            if (eSabout == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            map = CommonUtils.objectToMap(eSabout);
+            redisUtils.hmset(Constants.REDIS_KEY_EPIDEMICSITUATION, map, Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
@@ -91,7 +115,13 @@ public class EpidemicSituationController extends BaseController implements Epide
      */
     @Override
     public ReturnData changeESabout(@Valid @RequestBody EpidemicSituationAbout epidemicSituationAbout, BindingResult bindingResult) {
-        epidemicSituationService.changeESabout(epidemicSituationAbout);
+        EpidemicSituationAbout situationAbout = epidemicSituationService.findESabout(epidemicSituationAbout.getUserId());
+        if (situationAbout != null) {
+            epidemicSituationService.changeESabout(epidemicSituationAbout);
+        } else {
+            epidemicSituationAbout.setAddTime(new Date());
+            epidemicSituationService.addESabout(epidemicSituationAbout);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -187,30 +217,42 @@ public class EpidemicSituationController extends BaseController implements Epide
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0表示默认全部，1表示查询有视频的
-     * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
-     * @param province  省ID -1不限
-     * @param city   市ID -1不限
-     * @param district  区ID -1不限
+     * @param findType   查询类型： 0表示默认全部，1查我的
+     * @param orderVoteCountType  排序规则 0综合 1票数最高 2票数最低
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
     @Override
     public ReturnData findCampaignAwardList(@PathVariable int findType, @PathVariable int orderVoteCountType,
-                                            @PathVariable int province, @PathVariable int city, @PathVariable int district,
                                             @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<CampaignAwardActivity> pageBean = null;
-        pageBean = epidemicSituationService.findsSelectionActivitiesList(findType, orderVoteCountType, province, city,
-                district, page, count);
+        pageBean = epidemicSituationService.findsSelectionActivitiesList(CommonUtils.getMyId(), findType, orderVoteCountType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        List list = pageBean.getList();
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            CampaignAwardActivity sa = (CampaignAwardActivity) list.get(i);
+            if (sa != null) {
+                UserInfo userInfo = null;
+                userInfo = userInfoUtils.getUserInfo(sa.getUserId());
+                if (userInfo != null) {
+                    sa.setName(userInfo.getName());
+                    sa.setHead(userInfo.getHead());
+                    sa.setProTypeId(userInfo.getProType());
+                    sa.setHouseNumber(userInfo.getHouseNumber());
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
     /***

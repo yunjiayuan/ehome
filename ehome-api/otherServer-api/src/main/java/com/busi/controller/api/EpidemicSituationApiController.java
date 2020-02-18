@@ -32,8 +32,15 @@ public interface EpidemicSituationApiController {
      * @param count    条数
      * @return
      */
-    @GetMapping("findEStianQi/{page}/{count}")
+    @GetMapping("/{page}/{count}")
     ReturnData findEStianQi(@PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询疫情信息(天气平台)
+     * @return
+     */
+    @GetMapping("findNewEStianQi")
+    ReturnData findNewEStianQi();
 
     /***
      * 新增我和疫情
@@ -92,19 +99,15 @@ public interface EpidemicSituationApiController {
     ReturnData findCampaignAward(@PathVariable long id);
 
     /***
-     * 分页查询活动列表
-     * @param findType   查询类型： 0表示默认全部，1表示查询有视频的  2按编号查询
-     * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
-     * @param province  省ID -1不限
-     * @param city   市ID -1不限
-     * @param district  区ID -1不限
+     * 分页查询评选作品列表
+     * @param findType   查询类型： 0表示默认全部，1查我的
+     * @param orderVoteCountType  排序规则 0综合 1票数最高 2票数最低
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findCampaignAwardList/{findType}/{orderVoteCountType}/{province}/{city}/{district}/{page}/{count}")
+    @GetMapping("findCampaignAwardList/{findType}/{orderVoteCountType}/{page}/{count}")
     ReturnData findCampaignAwardList(@PathVariable int findType, @PathVariable int orderVoteCountType,
-                                     @PathVariable int province, @PathVariable int city, @PathVariable int district,
                                      @PathVariable int page, @PathVariable int count);
 
     /***

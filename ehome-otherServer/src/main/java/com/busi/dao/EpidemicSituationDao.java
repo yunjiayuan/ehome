@@ -50,6 +50,15 @@ public interface EpidemicSituationDao {
     List<EpidemicSituationTianqi> findTQlist();
 
     /***
+     * 查询列表(天气平台)
+     * @return
+     */
+    @Select("<script>" +
+            "SELECT * FROM EpidemicSituationTianqi where id=( SELECT MAX(id) FROM EpidemicSituation )" +
+            "</script>")
+    EpidemicSituationTianqi findNewEStianQi();
+
+    /***
      * 新增我和疫情
      * @param dishes
      * @return
@@ -77,7 +86,7 @@ public interface EpidemicSituationDao {
             " wantToDo=#{wantToDo}," +
             " wantToGo=#{wantToGo}," +
             " shoutSentence=#{shoutSentence}" +
-            " where id=#{id} and userId=#{userId}" +
+            " where userId=#{userId}" +
             "</script>")
     int changeESabout(EpidemicSituationAbout kitchenDishes);
 
@@ -106,9 +115,9 @@ public interface EpidemicSituationDao {
      * @param selectionActivities
      * @return
      */
-    @Insert("insert into CampaignAwardActivity(userId,title,content,imgUrl,videoUrl,videoCoverUrl,votesCounts,status,province,city,district" +
+    @Insert("insert into CampaignAwardActivity(userId,title,content,imgUrl,videoUrl,videoCoverUrl,votesCounts,status" +
             ",time) " +
-            "values (#{userId},#{title},#{content},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{votesCounts},#{status},#{province},#{city},#{district}" +
+            "values (#{userId},#{title},#{content},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{votesCounts},#{status}" +
             ",#{time})")
     @Options(useGeneratedKeys = true)
     int addSelection(CampaignAwardActivity selectionActivities);
@@ -145,9 +154,7 @@ public interface EpidemicSituationDao {
             "<if test=\"videoCoverUrl != null and videoCoverUrl != ''\">" +
             " videoCoverUrl=#{videoCoverUrl}," +
             "</if>" +
-            " province=#{province}," +
-            " city=#{city}," +
-            " district=#{district}" +
+            " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateSelection(CampaignAwardActivity selectionActivities);
@@ -185,11 +192,8 @@ public interface EpidemicSituationDao {
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0表示默认全部，1表示查询有视频的
-     * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
-     * @param province  省ID -1不限
-     * @param city   市ID -1不限
-     * @param district  区ID -1不限
+     * @param findType   查询类型： 0表示默认全部，1查我的
+     * @param orderVoteCountType  排序规则 0综合 1票数最高 2票数最低
      * @return
      */
     @Select("<script>" +
@@ -197,25 +201,18 @@ public interface EpidemicSituationDao {
             " where 1=1" +
             " and status = 0" +
             "<if test=\"findType == 1\">" +
-            " and activityVideo is not null" +
-            "</if>" +
-            " <if test=\"province>=0\">" +
-            " and province=#{province}" +
-            "</if>" +
-            " <if test=\"city>=0\">" +
-            " and city=#{city}" +
-            "</if>" +
-            " <if test=\"district>=0\">" +
-            " and district=#{district}" +
-            "</if>" +
-            " <if test=\"orderVoteCountType!=0\">" +
-            " ORDER BY votesCounts ASC" +
+            " and userId =#{userId}" +
             "</if>" +
             " <if test=\"orderVoteCountType==0\">" +
-            " ORDER BY votesCounts DESC" +
+            " ORDER BY votesCounts DESC,time DESC" +
+            "</if>" +
+            " <if test=\"orderVoteCountType==1\">" +
+            " order by votesCounts desc" +
+            "</if>" +
+            " <if test=\"orderVoteCountType==2\">" +
+            " ORDER BY votesCounts ASC" +
             "</if>" +
             "</script>")
-    List<CampaignAwardActivity> findsSelectionList(@Param("findType") int findType, @Param("orderVoteCountType") int orderVoteCountType,
-                                                   @Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<CampaignAwardActivity> findsSelectionList(@Param("userId") long userId, @Param("findType") int findType, @Param("orderVoteCountType") int orderVoteCountType);
 
 }
