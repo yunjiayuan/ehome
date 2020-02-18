@@ -169,16 +169,16 @@ public class EpidemicSituationService {
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0表示默认全部，1查我的
-     * @param orderVoteCountType  0综合 1票数最高 2票数最低
+     * @param findType   查询类型： 0默认全部，1票数最高 2票数最低
+     * @param userId   用戶ID
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<CampaignAwardActivity> findsSelectionActivitiesList(long userId, int findType, int orderVoteCountType, int page, int count) {
+    public PageBean<CampaignAwardActivity> findsSelectionActivitiesList(long userId, int findType, int page, int count) {
         List<CampaignAwardActivity> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = epidemicSituationDao.findsSelectionList(userId, findType, orderVoteCountType);
+        list = epidemicSituationDao.findsSelectionList(userId, findType);
         return PageUtils.getPageBean(p, list);
     }
 

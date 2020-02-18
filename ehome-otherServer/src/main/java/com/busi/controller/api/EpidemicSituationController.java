@@ -217,21 +217,20 @@ public class EpidemicSituationController extends BaseController implements Epide
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0表示默认全部，1查我的
-     * @param orderVoteCountType  排序规则 0综合 1票数最高 2票数最低
+     * @param findType   查询类型： 0默认全部，1票数最高 2票数最低
+     * @param userId   用戶ID
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
     @Override
-    public ReturnData findCampaignAwardList(@PathVariable int findType, @PathVariable int orderVoteCountType,
-                                            @PathVariable int page, @PathVariable int count) {
+    public ReturnData findCampaignAwardList(@PathVariable int findType, @PathVariable long userId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<CampaignAwardActivity> pageBean = null;
-        pageBean = epidemicSituationService.findsSelectionActivitiesList(CommonUtils.getMyId(), findType, orderVoteCountType, page, count);
+        pageBean = epidemicSituationService.findsSelectionActivitiesList(userId, findType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

@@ -100,14 +100,14 @@ public interface EpidemicSituationApiController {
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0表示默认全部，1查我的
-     * @param orderVoteCountType  排序规则 0综合 1票数最高 2票数最低
+     * @param findType   查询类型： 0默认全部，1票数最高 2票数最低
+     * @param userId   用戶ID
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findCampaignAwardList/{findType}/{orderVoteCountType}/{page}/{count}")
-    ReturnData findCampaignAwardList(@PathVariable int findType, @PathVariable int orderVoteCountType,
+    @GetMapping("findCampaignAwardList/{findType}/{userId}/{page}/{count}")
+    ReturnData findCampaignAwardList(@PathVariable int findType, @PathVariable long userId,
                                      @PathVariable int page, @PathVariable int count);
 
     /***
