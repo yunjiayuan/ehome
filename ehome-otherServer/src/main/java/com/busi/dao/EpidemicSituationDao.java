@@ -199,7 +199,7 @@ public interface EpidemicSituationDao {
 
     /***
      * 分页查询评选作品列表
-     * @param findType   查询类型： 0默认全部，1票数最高 2票数最低
+     * @param findType   查询类型： 0综合排序，1票数最高 2时间最新
      * @param userId   用戶ID
      * @return
      */
@@ -211,13 +211,13 @@ public interface EpidemicSituationDao {
             " and userId =#{userId}" +
             "</if>" +
             " <if test=\"findType==0\">" +
-            " ORDER BY votesCounts DESC,time DESC" +
+            " order by votesCounts desc,time desc" +
             "</if>" +
             " <if test=\"findType==1\">" +
             " order by votesCounts desc" +
             "</if>" +
             " <if test=\"findType==2\">" +
-            " ORDER BY votesCounts ASC" +
+            " order by time desc" +
             "</if>" +
             "</script>")
     List<CampaignAwardActivity> findsSelectionList(@Param("userId") long userId, @Param("findType") int findType);
