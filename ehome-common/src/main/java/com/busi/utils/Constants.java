@@ -111,7 +111,7 @@ public class Constants {
 
     /** 对接第三方平台疫情数据配置 开始**/
     public static final String EPIDEMIC_SITUATION_TIANQI_URL="https://tianqiapi.com/api?version=epidemic&appid=71529344&appsecret=u3xUHXaN";
-    public static final String EPIDEMIC_SITUATION_URL="https://service-f9fjwngp-1252021671.bj.apigw.tencentcs.com/release/pneumonia";
+    public static final String EPIDEMIC_SITUATION_URL="https://service-belpsb9f-1257860988.bj.apigw.tencentcs.com/release/epidemicSituationReptil";//自研爬虫系统 已部署到腾讯云函数
     /** 对接第三方平台疫情数据配置 结束**/
 
     /** 随便走走 各地串串配置 开始**/
