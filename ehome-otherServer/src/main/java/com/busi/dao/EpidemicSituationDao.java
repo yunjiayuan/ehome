@@ -32,25 +32,32 @@ public interface EpidemicSituationDao {
      * @return
      */
     @Select("<script>" +
-//            "SELECT * FROM EpidemicSituation where id=( SELECT MAX(id) FROM EpidemicSituation )" +
             "SELECT * FROM EpidemicSituation" +
             " order by id desc" +
             "</script>")
     List<EpidemicSituation> findList();
 
     /***
+     * 查询疫情（最新一条）
+     * @return
+     */
+    @Select("<script>" +
+            "SELECT * FROM EpidemicSituation where id=( SELECT MAX(id) FROM EpidemicSituation )" +
+            "</script>")
+    EpidemicSituation findNew();
+
+    /***
      * 查询列表(天气平台)
      * @return
      */
     @Select("<script>" +
-//            "SELECT * FROM EpidemicSituationTianqi where id=( SELECT MAX(id) FROM EpidemicSituation )" +
             "SELECT * FROM EpidemicSituationTianqi" +
             " order by id desc" +
             "</script>")
     List<EpidemicSituationTianqi> findTQlist();
 
     /***
-     * 查询列表(天气平台)
+     * 查询疫情(天气平台)
      * @return
      */
     @Select("<script>" +

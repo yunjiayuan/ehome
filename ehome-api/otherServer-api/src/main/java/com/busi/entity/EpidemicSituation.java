@@ -1,7 +1,10 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 /**
  * 疫情基本信息概括类
@@ -68,7 +71,8 @@ public class EpidemicSituation {
 
     private String listByOther;//全国省市地区疫情情况 json格式数据
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date time;//入库时间
 
 
     private EpidemicSituationImage[] quanguoTrendChart;//全国疫情趋势图  与数据库无关字段 只用于解析

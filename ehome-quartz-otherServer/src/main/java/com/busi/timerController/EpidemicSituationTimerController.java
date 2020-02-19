@@ -36,25 +36,31 @@ public class EpidemicSituationTimerController {
     @Scheduled(cron = "0 */15 * * * ?") //每15分钟一次
     public void epidemicSituationTimer() throws Exception {
         log.info("开始查询第三方最新疫情数据并更新数据库...");
-        EpidemicSituationTianqi epidemicSituationTianqi = EpidemicSituationUtils.getEpidemicSituationByTianqi();
-        if (epidemicSituationTianqi != null && !CommonUtils.checkFull(epidemicSituationTianqi.getDate())) {
-            EpidemicSituationTianqi situation = epidemicSituationService.findEStianQi(epidemicSituationTianqi.getDate());
-            if (situation == null) {
-                epidemicSituationTianqi.setTime(new Date());
-                //清除缓存
-                redisUtils.expire(Constants.REDIS_KEY_EPIDEMICSITUATION, 0);
-                epidemicSituationService.addTianQi(epidemicSituationTianqi);
-                //放入缓存
-                Map<String, Object> map = CommonUtils.objectToMap(epidemicSituationTianqi);
-                redisUtils.hmset(Constants.REDIS_KEY_EPIDEMICSITUATION, map, Constants.USER_TIME_OUT);
-                log.info("查询&更新天气平台最新疫情数据成功...");
-            }
-        }
+//        EpidemicSituationTianqi epidemicSituationTianqi = EpidemicSituationUtils.getEpidemicSituationByTianqi();
+//        if (epidemicSituationTianqi != null && !CommonUtils.checkFull(epidemicSituationTianqi.getDate())) {
+//            EpidemicSituationTianqi situation = epidemicSituationService.findEStianQi(epidemicSituationTianqi.getDate());
+//            if (situation == null) {
+//                epidemicSituationTianqi.setTime(new Date());
+//                //清除缓存
+//                redisUtils.expire(Constants.REDIS_KEY_EPIDEMICSITUATION, 0);
+//                epidemicSituationService.addTianQi(epidemicSituationTianqi);
+//                //放入缓存
+//                Map<String, Object> map = CommonUtils.objectToMap(epidemicSituationTianqi);
+//                redisUtils.hmset(Constants.REDIS_KEY_EPIDEMICSITUATION, map, Constants.USER_TIME_OUT);
+//                log.info("查询&更新天气平台最新疫情数据成功...");
+//            }
+//        }
         EpidemicSituation epidemicSituation = EpidemicSituationUtils.getEpidemicSituation();
         if (epidemicSituation != null && epidemicSituation.getModifyTime() > 0) {
             EpidemicSituation situation = epidemicSituationService.findEpidemicSituation(epidemicSituation.getModifyTime());
             if (situation == null) {
+                epidemicSituation.setTime(new Date());
+                //清除缓存
+                redisUtils.expire(Constants.REDIS_KEY_EPIDEMICSITUATION, 0);
                 epidemicSituationService.add(epidemicSituation);
+                //放入缓存
+                Map<String, Object> map = CommonUtils.objectToMap(epidemicSituation);
+                redisUtils.hmset(Constants.REDIS_KEY_EPIDEMICSITUATION, map, Constants.USER_TIME_OUT);
                 log.info("查询&更新最新疫情数据成功...");
             }
         }

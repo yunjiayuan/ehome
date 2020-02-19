@@ -48,6 +48,15 @@ public class EpidemicSituationService {
     }
 
     /***
+     * 查询疫情(最新一条)
+     * @return
+     */
+    public EpidemicSituation findNew() {
+        return epidemicSituationDao.findNew();
+    }
+
+
+    /***
      * 查询疫情(天气平台)
      * @return
      */

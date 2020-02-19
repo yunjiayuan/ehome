@@ -38,6 +38,25 @@ public class EpidemicSituationController extends BaseController implements Epide
     EpidemicSituationService epidemicSituationService;
 
     /***
+     * 查询最新疫情信息(天气平台)
+     * @return
+     */
+    @Override
+    public ReturnData findNew() {
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_EPIDEMICSITUATION);
+        if (map == null || map.size() <= 0) {
+            EpidemicSituation eSabout = epidemicSituationService.findNew();
+            if (eSabout == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            map = CommonUtils.objectToMap(eSabout);
+            redisUtils.hmset(Constants.REDIS_KEY_EPIDEMICSITUATION, map, Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
      * 查询疫情
      * @param page     页码
      * @param count    条数
@@ -72,7 +91,7 @@ public class EpidemicSituationController extends BaseController implements Epide
     }
 
     /***
-     * 查询疫情信息(天气平台)
+     * 查询最新疫情信息(天气平台)
      * @return
      */
     @Override

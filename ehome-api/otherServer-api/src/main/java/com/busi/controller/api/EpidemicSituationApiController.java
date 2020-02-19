@@ -15,6 +15,13 @@ import javax.validation.Valid;
 public interface EpidemicSituationApiController {
 
     /***
+     * 查询疫情信息(最新一条)
+     * @return
+     */
+    @GetMapping("findNew")
+    ReturnData findNew();
+
+    /***
      * 查询疫情
      * @param page     页码
      * @param count    条数
