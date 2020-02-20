@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /***
  * 疫情相关接口
@@ -171,6 +172,12 @@ public class EpidemicSituationController extends BaseController implements Epide
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         selectionActivities.setTime(new Date());
+        if(selectionActivities.getUserId()==56555){//添加机器人数据 suntj 20200220
+            Random ra =new Random();
+            Random ra2 =new Random();
+            selectionActivities.setUserId(ra.nextInt(40000)+13870);//随机13870-53870
+            selectionActivities.setVotesCounts(ra2.nextInt(1000)+200);
+        }
         epidemicSituationService.addSelection(selectionActivities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

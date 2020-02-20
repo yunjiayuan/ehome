@@ -128,7 +128,7 @@ public class HomeBlog {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;//发布时间
 
-    private int remunerationStatus; //稿费作品状态 0不是稿费作品 1是一级稿费作品 2是二级稿费作品 3是三级稿费作品 4是四级稿费作品
+    private int remunerationStatus; //稿费作品状态 -1说明此生活圈不参与审核（不给稿费） 0不是稿费作品 1是一级稿费作品 2是二级稿费作品 3是三级稿费作品 4是四级稿费作品
     private double remunerationMoney; //稿费奖励金额
     private long remunerationUserId;//审核人用户ID
     private Date remunerationTime;//审核时间
