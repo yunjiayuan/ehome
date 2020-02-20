@@ -172,11 +172,11 @@ public class EpidemicSituationController extends BaseController implements Epide
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         selectionActivities.setTime(new Date());
-        if(selectionActivities.getUserId()==56555){//添加机器人数据 suntj 20200220
-            Random ra =new Random();
-            Random ra2 =new Random();
-            selectionActivities.setUserId(ra.nextInt(40000)+13870);//随机13870-53870
-            selectionActivities.setVotesCounts(ra2.nextInt(1000)+200);
+        if (selectionActivities.getUserId() == 56555) {//添加机器人数据 suntj 20200220
+            Random ra = new Random();
+            Random ra2 = new Random();
+            selectionActivities.setUserId(ra.nextInt(40000) + 13870);//随机13870-53870
+            selectionActivities.setVotesCounts(ra2.nextInt(1000) + 200);
         }
         epidemicSituationService.addSelection(selectionActivities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -220,6 +220,31 @@ public class EpidemicSituationController extends BaseController implements Epide
     }
 
     /***
+     * 审核活动作品
+     * @param id  作品ID
+     * @param examineType  0 待审核 1已审核无稿费 2已审核有稿费
+     * @param draftMoney  稿费
+     * @return
+     */
+    @Override
+    public ReturnData examineWorks(@PathVariable long id, @PathVariable int examineType, @PathVariable double draftMoney) {
+        long myId = CommonUtils.getMyId();
+        if (myId != 10076 && myId != 12770 && myId != 9389 && myId != 9999 && myId != 13005 && myId != 12774 && myId != 13031 && myId != 12769 && myId != 12796 && myId != 10053) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
+        CampaignAwardActivity sa = epidemicSituationService.findById(id);
+        if (sa == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询作品不存在!", new JSONObject());
+        }
+        if (examineType == 2) {
+            sa.setDraftMoney(draftMoney);
+        }
+        sa.setExamineType(examineType);
+        epidemicSituationService.updateExamine(sa);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 查询评选作品的详细信息
      * @param id
      * @return
@@ -228,7 +253,7 @@ public class EpidemicSituationController extends BaseController implements Epide
     public ReturnData findCampaignAward(@PathVariable long id) {
         CampaignAwardActivity sa = epidemicSituationService.findById(id);
         if (sa == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询活动不存在!", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询作品不存在!", new JSONObject());
         }
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(sa.getUserId());

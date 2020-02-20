@@ -120,6 +120,16 @@ public class EpidemicSituationService {
     }
 
     /***
+     * 更新评选作品审核状态
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateExamine(CampaignAwardActivity kitchen) {
+        return epidemicSituationDao.updateExamine(kitchen);
+    }
+
+    /***
      * 新增评选作品信息
      * @param selectionActivities
      * @return

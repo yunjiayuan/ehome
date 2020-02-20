@@ -118,14 +118,29 @@ public interface EpidemicSituationDao {
     int updateDel(CampaignAwardActivity kitchen);
 
     /***
+     * 更新评选作品审核状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update CampaignAwardActivity set" +
+            " examineType=#{examineType}," +
+            "<if test=\"draftMoney > 0\">" +
+            " draftMoney=#{draftMoney}" +
+            "</if>" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateExamine(CampaignAwardActivity kitchen);
+
+    /***
      * 新增评选作品信息
      * @param selectionActivities
      * @return
      */
     @Insert("insert into CampaignAwardActivity(userId,title,content,imgUrl,videoUrl,videoCoverUrl,votesCounts,status" +
-            ",time) " +
+            ",time,examineType,draftMoney) " +
             "values (#{userId},#{title},#{content},#{imgUrl},#{videoUrl},#{videoCoverUrl},#{votesCounts},#{status}" +
-            ",#{time})")
+            ",#{time},#{examineType},#{draftMoney})")
     @Options(useGeneratedKeys = true)
     int addSelection(CampaignAwardActivity selectionActivities);
 
@@ -146,22 +161,11 @@ public interface EpidemicSituationDao {
      */
     @Update("<script>" +
             "update CampaignAwardActivity set" +
-            "<if test=\"title != null and title != ''\">" +
             " title=#{title}," +
-            "</if>" +
-            "<if test=\"content != null and content != ''\">" +
             " content=#{content}," +
-            "</if>" +
-            "<if test=\"imgUrl != null and imgUrl != ''\">" +
             " imgUrl=#{imgUrl}," +
-            "</if>" +
-            "<if test=\"videoUrl != null and videoUrl != ''\">" +
             " videoUrl=#{videoUrl}," +
-            "</if>" +
-            "<if test=\"videoCoverUrl != null and videoCoverUrl != ''\">" +
-            " videoCoverUrl=#{videoCoverUrl}," +
-            "</if>" +
-            " userId=#{userId}" +
+            " videoCoverUrl=#{videoCoverUrl}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateSelection(CampaignAwardActivity selectionActivities);

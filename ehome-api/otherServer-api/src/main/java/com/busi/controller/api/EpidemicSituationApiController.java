@@ -95,6 +95,14 @@ public interface EpidemicSituationApiController {
     ReturnData delCampaignAward(@PathVariable long id);
 
     /***
+     * 审核活动作品
+     * @param id
+     * @return
+     */
+    @GetMapping("examineWorks/{id}/{examineType}/{draftMoney}")
+    ReturnData examineWorks(@PathVariable long id,@PathVariable int examineType,@PathVariable double draftMoney);
+
+    /***
      * 查询活动的详细信息
      * @param id
      * @return

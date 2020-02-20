@@ -37,7 +37,7 @@ public class MyTrajectory {
 
     private double arriveLon;              //到达地经度
 
-    private int vehicle;                   //交通工具：0火车 1飞机 2地铁 3客车 4公交 5出租车 6轮船 7其他
+    private int vehicle;                   //交通工具：0火车 1飞机 2地铁 3客车 4公交 5出租车 6轮船 7自驾 8其他
 
     private String trainNumber;            // 车次/航班号
 
