@@ -174,9 +174,20 @@ public class EpidemicSituationController extends BaseController implements Epide
         selectionActivities.setTime(new Date());
         if (selectionActivities.getUserId() == 56555) {//添加机器人数据 suntj 20200220
             Random ra = new Random();
-            Random ra2 = new Random();
             selectionActivities.setUserId(ra.nextInt(40000) + 13870);//随机13870-53870
-            selectionActivities.setVotesCounts(ra2.nextInt(1000) + 200);
+            selectionActivities.setVotesCounts(ra.nextInt(1000) + 200);
+            double rs2 = ra.nextInt(3) ;
+            double moneyNew = 0;
+            if(rs2==2){
+                if(ra.nextInt(3)==1){
+                    moneyNew = 50;
+                }
+            }else if(rs2==1){
+                moneyNew = 20;
+            }else{
+                moneyNew = 10;
+            }
+            selectionActivities.setDraftMoney(moneyNew);
         }
         epidemicSituationService.addSelection(selectionActivities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
