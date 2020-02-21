@@ -191,4 +191,27 @@ public interface EpidemicSituationApiController {
     @GetMapping("findTrajectoryList/{userId}/{page}/{count}")
     ReturnData findTrajectoryList(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 新增居家轨迹
+     * @param homeTrajectory
+     * @return
+     */
+    @PostMapping("addHtrajectory")
+    ReturnData addHtrajectory(@Valid @RequestBody HomeTrajectory homeTrajectory, BindingResult bindingResult);
+
+    /**
+     * @Description: 删除居家轨迹
+     * @return:
+     */
+    @DeleteMapping("delHtrajectory/{id}")
+    ReturnData delHtrajectory(@PathVariable long id);
+
+    /***
+     * 查询居家轨迹
+     * @param id
+     * @return
+     */
+    @GetMapping("findHtrajectory/{id}")
+    ReturnData findHtrajectory(@PathVariable long id);
+
 }

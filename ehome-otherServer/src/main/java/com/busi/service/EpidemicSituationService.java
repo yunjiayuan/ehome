@@ -276,4 +276,33 @@ public class EpidemicSituationService {
         list = epidemicSituationDao.findTrajectoryList(userId);
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * 新增轨迹
+     * @param selectionActivities
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addHtrajectory(HomeTrajectory selectionActivities) {
+        return epidemicSituationDao.addHtrajectory(selectionActivities);
+    }
+
+    /***
+     * 根据ID查询轨迹
+     * @param id
+     * @return
+     */
+    public HomeTrajectory findHtrajectory(long id) {
+        return epidemicSituationDao.findHtrajectory(id);
+    }
+
+    /***
+     * 删除轨迹
+     * @param id
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delHtrajectory(long id) {
+        return epidemicSituationDao.delHtrajectory(id);
+    }
 }

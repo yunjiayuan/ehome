@@ -543,4 +543,46 @@ public class EpidemicSituationController extends BaseController implements Epide
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
+
+    /***
+     * 新增居家轨迹
+     * @param homeTrajectory
+     * @return
+     */
+    @Override
+    public ReturnData addHtrajectory(@RequestBody @Valid HomeTrajectory homeTrajectory, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        homeTrajectory.setTime(new Date());
+        epidemicSituationService.addHtrajectory(homeTrajectory);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /**
+     * @Description: 删除居家轨迹
+     * @return:
+     */
+    @Override
+    public ReturnData delHtrajectory(@PathVariable long id) {
+        //查询数据库
+        epidemicSituationService.delHtrajectory(id);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询居家轨迹
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findHtrajectory(@PathVariable long id) {
+        HomeTrajectory homeTrajectory = epidemicSituationService.findHtrajectory(id);
+        if (homeTrajectory == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", homeTrajectory);
+    }
 }

@@ -324,4 +324,33 @@ public interface EpidemicSituationDao {
             " ORDER BY time desc" +
             "</script>")
     List<MyTrajectory> findTrajectoryList(@Param("userId") long userId);
+
+    /***
+     * 根据ID查询轨迹
+     * @param id
+     * @return
+     */
+    @Select("select * from HomeTrajectory where id = #{id}")
+    HomeTrajectory findHtrajectory(@Param("id") long id);
+
+    /***
+     * 删除轨迹
+     * @param id
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from HomeTrajectory" +
+            " where id =#{id}" +
+            "</script>")
+    int delHtrajectory(@Param("id") long id);
+
+    /***
+     * 新增轨迹
+     * @param selectionVote
+     * @return
+     */
+    @Insert("insert into HomeTrajectory(userId,time) " +
+            "values (#{userId},#{time})")
+    @Options(useGeneratedKeys = true)
+    int addHtrajectory(HomeTrajectory selectionVote);
 }
