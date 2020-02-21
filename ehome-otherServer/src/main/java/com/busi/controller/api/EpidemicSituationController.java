@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.util.*;
 
 /***
  * 疫情相关接口
@@ -152,11 +151,95 @@ public class EpidemicSituationController extends BaseController implements Epide
      */
     @Override
     public ReturnData findESabout(@PathVariable long userId) {
-        EpidemicSituationAbout situationAbout = epidemicSituationService.findESabout(userId);
-        if (situationAbout == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        EpidemicSituationAbout about = new EpidemicSituationAbout();
+        if (userId >= 13870 && userId <= 53870) {
+            //随机返回机器人数据
+            // 我在做什么
+            String[] whatAmIdoing = {"宅着", "一直在家", "宅在家里", "不让出门", "什么都不能做", "什么也不做", "猪一样活着", "吃了睡睡了吃", "在家办公", "网上办公", "在家养膘", "在家大眼瞪小眼", "在家研究厨艺", "在家孝敬父母", "除了吃睡没别的", "追剧", "颠三倒四的日子", "玩游戏的大好时光", "玩游戏", "除了刷屏还是刷屏", "老婆孩子热炕头", "在家猫着", "喝酒喝酒喝酒", "喝酒", "足不出户", "想看外面的世界", "懒床", "不梳妆的生活", "披头散发的日子", "百无聊赖的生活", "在家为国做贡献", "吃喝拉撒睡", "在家和疫情作斗争", "在家做直播", "做主播的好日子", "老师网上授课", "看电视看电视", "抱着手机过日子", "隔离过程中", "自我隔离中", "十四天隔离中", "接触者隔离中", "在路上", "异地回不了家", "在酒店等待着回家", "我是驰援武汉的医生在一线", "我是驰援武汉的护士在一线", "在武汉", "在抗疫一线", "新闻工作者在一线", "每天都在抢救病人", "抢救病人", "在一线和病毒作斗争", "在坚守岗位", "在抗击疫情的战斗中", "抗疫工作人员在工作", "在小区参与管控工作", "社区抗击疫情工作", "在村口值守", "在村口站岗", "在值班", "疫情相关工作", "超市工作不放假", "运送物资去武汉", "开车送物资", "志愿者在武汉", "志愿者", "紧张抗击疫情工作中", "医务工作者坚守岗位", "等待接受任务", "终止休假在岗", "物业不打烊", "公安干警冲在一线", "军人自有担当", "哪里有灾难哪里就有我们当兵人的身影"};
+            // 捐钱
+            String[] donateMoney = {"30", "50", "100", "200", "3000", "500", "1000", "2000", "3000", "5000", "10000", "20000", "30000", "50000", "60000", "800000", "100000"};
+            // 捐物
+            String[] benevolence = {"口罩100只", "200只", "300只", "500只", "1000只", "2000只", "3000只", "5000只", "10000只", "20000只", "牛奶50箱", "牛奶100箱", "牛奶200箱", "牛奶300箱", "牛奶500箱"};
+            // 其他
+            String[] other = {"没什么不出门", "宅着", "在家就是贡献", "什么也没做", "配合政府", "不添乱"};
+            // 为武汉喊句话
+            String[] shoutSentence = {"武汉加油", "武汉加油中国加油", "武汉挺住", "武汉不倒", "武汉不哭", "武汉是座英雄的城市", "大武汉加油", "我的大武汉", "我的大武汉挺住", "胜利属于武汉人民", "我的武汉我的家", "受伤的武汉挺住", "可怜的大武汉", "久违的热干面呀", "武汉人民一定会战胜病魔", "全国人民和你在一起", "十四亿同胞是你的坚强后盾", "我们永远在一起", "全国人民不会忘记你", "走，去武汉", "你的同胞们来了", "坚持就是胜利", "坚强的大武汉", "不要被病魔吓倒", "武汉，全国人民都注视着你", "武汉，你不孤单", "武汉的樱花马上就会盛开", "春天就要来了", "希望就在前方", "疫情过后就去武汉", "病魔吓不倒英雄的武汉人民", "我爱你武汉", "我们都爱你武汉", "英雄的武汉", "我们要求看长江大桥", "我们要去黄鹤楼", "我们要吃热干面", "等到黎明的一天", "问候武汉人民", "全国人民问候你武汉"};
+            // 最想见的人
+            String[] imagine = {"亲人", "恋人", "家人", "朋友", "客户", "谁也不想见", "见不到的人", "想见又见不到的人", "该见谁见谁", "见了谁是谁", "没有想见的人", "不知道", "继续不见人", "不告诉你", "想见的人在心里", "不能说", "想见的人不想见我", "想见你但不知道你是谁", "谁想见我我见谁", "瞎扯", "别问我", "见了谁是谁", "见你", "见千里之外的人"};
+            // 最想做的事
+            String[] wantToDo = {"能赚钱的事", "会会朋友", "会会客户", "没有最想做的事", "想做但做不到的事", "什么事也不想做", "不告诉你", "想做的事不会告诉别人", "你说", "不能说", "不会说的", "想做的事多了", "什么事都想做", "想做坏事但犯法", "不好不坏的事", "该做的事", "按部就班的事", "没人做的事", "还是最想做的事", "就是最想做的事", "做了才知道", "最想做的事可惜做不了", "都是不能说的事", "无聊", "没事找事"};
+            // 最想去的地方
+            String[] wantToGo = {"湖北", "武汉", "那也不想去", "想去哪去哪", "管得着吗", "不告诉你", "天涯海角", "旅游胜地", "哪里也想去但没钱", "你给钱呀", "有人报销吗", "缺个伴儿", "太空", "女儿国", "没去过的地方", "国外", "没有", "很多", "说不清楚"};
+
+            //随机经纬度
+            Map<String, String> jw = randomLonLat(85, 122, 29, 116);
+            //纬度
+            double lon = Double.parseDouble(jw.get("J"));
+            //经度
+            double lat = Double.parseDouble(jw.get("W"));
+            //组合实体
+            Random ra = new Random();
+            about.setUserId(userId);
+            about.setLat(lat);
+            about.setLon(lon);
+            about.setAddress(getAdd(lat + "", lon + ""));
+            about.setWhatAmIdoing(whatAmIdoing[ra.nextInt(whatAmIdoing.length) + 0]);
+            about.setDonateMoney(donateMoney[ra.nextInt(donateMoney.length) + 0]);
+            about.setBenevolence(benevolence[ra.nextInt(benevolence.length) + 0]);
+            about.setOther(other[ra.nextInt(other.length) + 0]);
+            about.setShoutSentence(shoutSentence[ra.nextInt(shoutSentence.length) + 0]);
+            about.setImagine(imagine[ra.nextInt(imagine.length) + 0]);
+            about.setWantToDo(wantToDo[ra.nextInt(wantToDo.length) + 0]);
+            about.setWantToGo(wantToGo[ra.nextInt(wantToGo.length) + 0]);
+            about.setAddTime(new Date());
+        } else {
+            about = epidemicSituationService.findESabout(userId);
+            if (about == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", situationAbout);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", about);
+    }
+
+    /***
+     * 随机中国经纬度
+     * @return
+     */
+    public static Map<String, String> randomLonLat(double MinLon, double MaxLon, double MinLat, double MaxLat) {
+        BigDecimal db = new BigDecimal(Math.random() * (MaxLon - MinLon) + MinLon);
+        String lon = db.setScale(6, BigDecimal.ROUND_HALF_UP).toString();// 小数后6位
+        db = new BigDecimal(Math.random() * (MaxLat - MinLat) + MinLat);
+        String lat = db.setScale(6, BigDecimal.ROUND_HALF_UP).toString();
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("J", lon);
+        map.put("W", lat);
+        return map;
+    }
+
+    /***
+     * 经纬度转换成详细地址
+     * @return
+     */
+    public static String getAdd(String lat, String lon) {
+        // log lat
+        // 参数解释: 纬度,经度 type 001 (100代表道路，010代表POI，001代表门址，111可以同时显示前三项)
+        String urlString = "http://gc.ditu.aliyun.com/regeocoding?l=" + lat + "," + lon + "&type=010";
+        String res = "";
+        try {
+            URL url = new URL(urlString);
+            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream(), "UTF-8"));
+            String line;
+            while ((line = in.readLine()) != null) {
+                res += line + "\n";
+            }
+            in.close();
+        } catch (Exception e) {
+            System.out.println("error in wapaction,and e is " + e.getMessage());
+        }
+        return res;
     }
 
     /***
