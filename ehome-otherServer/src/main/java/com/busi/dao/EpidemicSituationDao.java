@@ -349,8 +349,8 @@ public interface EpidemicSituationDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into HomeTrajectory(userId,time) " +
-            "values (#{userId},#{time})")
+    @Insert("insert into HomeTrajectory(userId,time,trajectory) " +
+            "values (#{userId},#{time},#{trajectory})")
     @Options(useGeneratedKeys = true)
     int addHtrajectory(HomeTrajectory selectionVote);
 }
