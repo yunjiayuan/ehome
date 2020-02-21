@@ -197,7 +197,7 @@ public interface EpidemicSituationDao {
      * @return
      */
     @Select("select * from CampaignAwardActivity where id = #{id} and userId=#{myId} and examineType=2")
-    CampaignAwardActivity findById(@Param("id") long id, @Param("myId") long myId);
+    CampaignAwardActivity findId(@Param("id") long id, @Param("myId") long myId);
 
     /***
      * 查询是否给该评选作品投过票

@@ -263,7 +263,7 @@ public class EpidemicSituationController extends BaseController implements Epide
      */
     @Override
     public ReturnData extractDraftMoney(@PathVariable long id, @PathVariable long userId) {
-        CampaignAwardActivity sa = epidemicSituationService.findById(id, userId);
+        CampaignAwardActivity sa = epidemicSituationService.findId(id, userId);
         if (sa == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询作品不满足抽取条件!", new JSONObject());
         }

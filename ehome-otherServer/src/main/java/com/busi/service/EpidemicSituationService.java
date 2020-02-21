@@ -183,8 +183,8 @@ public class EpidemicSituationService {
      * @param id
      * @return
      */
-    public CampaignAwardActivity findById(long id, long myId) {
-        return epidemicSituationDao.findById(id, myId);
+    public CampaignAwardActivity findId(long id, long myId) {
+        return epidemicSituationDao.findId(id, myId);
     }
 
     /***
