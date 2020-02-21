@@ -14,14 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
-
-import static javax.crypto.Cipher.SECRET_KEY;
-import static sun.security.x509.X509CertInfo.KEY;
 
 /***
  * 疫情相关接口
@@ -188,10 +186,7 @@ public class EpidemicSituationController extends BaseController implements Epide
             about.setUserId(userId);
             about.setLat(lat);
             about.setLon(lon);
-            Map<String, Object> map = getLocation(lon + "", lat + "");
-            if (map != null && map.size() > 0) {
-                about.setAddress("" + map.get("province") + map.get("district") + map.get("city") + map.get("street") + map.get("street_number"));
-            }
+            about.setAddress(getAdd(lon + "", lat + ""));
             about.setWhatAmIdoing(whatAmIdoing[ra.nextInt(whatAmIdoing.length) + 0]);
             about.setDonateMoney(donateMoney[ra.nextInt(donateMoney.length) + 0]);
             about.setBenevolence(benevolence[ra.nextInt(benevolence.length) + 0]);
@@ -229,44 +224,30 @@ public class EpidemicSituationController extends BaseController implements Epide
      * 经纬度转换成详细地址
      * @return
      */
-    public static Map<String, Object> getLocation(String lng, String lat) {
-        Map<String, Object> resultMap = new HashMap<>();
-
-        // 参数解释：lng：经度，lat：维度。KEY：腾讯地图key，get_poi：返回状态。1返回，0不返回
-        String urlString = "https://apis.map.qq.com/ws/geocoder/v1?key=" + KEY + "&location=" + lat + "," + lng + "&sig=" + getTxMapSig(lng, lat);
-        String result = "";
+    public static String getAdd(String lng, String lat) {
+        String urlString = "http://api.map.baidu.com/geocoder/v2/?ak=pWNVQZQIhhhtdXhgxdBKtoMxhMFNhWPC&callback=renderReverse&location=" + lat + "," + lng;
+        String res = "";
+        BufferedReader in = null;
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
-            // 腾讯地图使用GET
-            conn.setRequestMethod("GET");
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-            String line;
-            // 获取地址解析结果
+            conn.setRequestMethod("POST");
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            String line = null;
             while ((line = in.readLine()) != null) {
-                result += line + "\n";
+                res += line + "\n";
             }
-            in.close();
         } catch (Exception e) {
-            e.getMessage();
+            e.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        // 转JSON格式
-        JSONObject jsonObject = JSONObject.fromObject(result).getJSONObject("result");
-        // 获取地址（行政区划信息） 包含有国籍，省份，城市
-        JSONObject adInfo = jsonObject.getJSONObject("ad_info");
-        resultMap.put("nation", adInfo.get("nation"));
-        resultMap.put("nationCode", adInfo.get("nation_code"));
-        resultMap.put("province", adInfo.get("province"));
-        resultMap.put("provinceCode", adInfo.get("adcode"));
-        resultMap.put("city", adInfo.get("city"));
-        resultMap.put("cityCode", adInfo.get("city_code"));
-        return resultMap;
-    }
-
-    private static String getTxMapSig(String lng, String lat) {
-        return MD5.encryptByMD5("/ws/geocoder/v1?key=BRXBZ-HSUCF-K6QJI-NTWJY-2HDXZ-FJFYH&location=" + lat + "," + lng + SECRET_KEY);
+        return res;
     }
 
     /***
