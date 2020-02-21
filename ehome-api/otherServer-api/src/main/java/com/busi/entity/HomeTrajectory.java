@@ -21,6 +21,8 @@ public class HomeTrajectory {
     @Min(value = 1, message = "userId参数有误，超出指定范围")
     private long userId;                   //用户ID
 
+    private String trajectory;                   //轨迹(逗号分隔)
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;                     //新增时间
 }
