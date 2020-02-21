@@ -176,15 +176,15 @@ public class EpidemicSituationController extends BaseController implements Epide
             Random ra = new Random();
             selectionActivities.setUserId(ra.nextInt(40000) + 13870);//随机13870-53870
             selectionActivities.setVotesCounts(ra.nextInt(1000) + 200);
-            double rs2 = ra.nextInt(3) ;
+            double rs2 = ra.nextInt(3);
             double moneyNew = 0;
-            if(rs2==2){
-                if(ra.nextInt(3)==1){
+            if (rs2 == 2) {
+                if (ra.nextInt(3) == 1) {
                     moneyNew = 50;
                 }
-            }else if(rs2==1){
+            } else if (rs2 == 1) {
                 moneyNew = 20;
-            }else{
+            } else {
                 moneyNew = 10;
             }
             selectionActivities.setDraftMoney(moneyNew);
@@ -233,7 +233,7 @@ public class EpidemicSituationController extends BaseController implements Epide
     /***
      * 审核活动作品
      * @param id  作品ID
-     * @param examineType  0 待审核 1已审核无稿费 2已审核有稿费
+     * @param examineType  1已审核无稿费 2已审核有稿费
      * @param draftMoney  稿费
      * @return
      */
@@ -250,9 +250,46 @@ public class EpidemicSituationController extends BaseController implements Epide
         if (examineType == 2) {
             sa.setDraftMoney(draftMoney);
         }
+        sa.setAuditor(myId);
         sa.setExamineType(examineType);
         epidemicSituationService.updateExamine(sa);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 抽取稿费
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData extractDraftMoney(@PathVariable long id, @PathVariable long userId) {
+        CampaignAwardActivity sa = epidemicSituationService.findById(id, userId);
+        if (sa == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询作品不满足抽取条件!", new JSONObject());
+        }
+        sa.setExamineType(3);
+        epidemicSituationService.updateExamine(sa);
+        //更新钱包
+        mqUtils.addRewardLog(userId, 7, 0, sa.getDraftMoney(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 分页查询审核作品列表
+     * @param findType   查询类型： 0待审核（时间倒叙&票数最高），1已审核的  2我审核的
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findExamineList(@PathVariable int findType, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        PageBean<CampaignAwardActivity> pageBean = null;
+        pageBean = epidemicSituationService.findExamineList(CommonUtils.getMyId(), findType, page, count);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 
     /***

@@ -124,6 +124,7 @@ public interface EpidemicSituationDao {
      */
     @Update("<script>" +
             "update CampaignAwardActivity set" +
+            " auditor=#{auditor}," +
             " examineType=#{examineType}," +
             "<if test=\"draftMoney > 0\">" +
             " draftMoney=#{draftMoney}" +
@@ -191,6 +192,14 @@ public interface EpidemicSituationDao {
     CampaignAwardActivity findById(@Param("id") long id);
 
     /***
+     * 根据ID查询参加评选作品的详细信息
+     * @param id
+     * @return
+     */
+    @Select("select * from CampaignAwardActivity where id = #{id} and userId=#{myId} and examineType=2")
+    CampaignAwardActivity findById(@Param("id") long id, @Param("myId") long myId);
+
+    /***
      * 查询是否给该评选作品投过票
      * @param campaignAwardId
      * @return
@@ -225,6 +234,29 @@ public interface EpidemicSituationDao {
             "</if>" +
             "</script>")
     List<CampaignAwardActivity> findsSelectionList(@Param("userId") long userId, @Param("findType") int findType);
+
+    /***
+     * 分页查询审核作品列表
+     * @param findType   查询类型： 0待审核（时间倒叙&票数最高），1已审核的  2我审核的
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CampaignAwardActivity" +
+            " where 1=1" +
+            " and status = 0" +
+            " <if test=\"findType==0\">" +
+            " and examineType =0" +
+            "</if>" +
+            " <if test=\"findType==1\">" +
+            " and examineType >0" +
+            "</if>" +
+            " <if test=\"findType==2\">" +
+            " and auditor =#{userId}" +
+            " and examineType >0" +
+            "</if>" +
+            " order by votesCounts desc,time desc" +
+            "</script>")
+    List<CampaignAwardActivity> findExamineList(@Param("userId") long userId, @Param("findType") int findType);
 
     /***
      * 删除轨迹

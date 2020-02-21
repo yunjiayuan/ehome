@@ -43,7 +43,9 @@ public class CampaignAwardActivity {
 
     private int status;//状态  0正常 1删除
 
-    private int examineType;//0 待审核 1已审核无稿费 2已审核有稿费
+    private long auditor;//审核人
+
+    private int examineType;//0 待审核 1已审核无稿费 2已审核未抽取稿费 3已审核已抽取稿费
 
     private double draftMoney; //稿费
 

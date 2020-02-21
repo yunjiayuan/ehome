@@ -100,7 +100,25 @@ public interface EpidemicSituationApiController {
      * @return
      */
     @GetMapping("examineWorks/{id}/{examineType}/{draftMoney}")
-    ReturnData examineWorks(@PathVariable long id,@PathVariable int examineType,@PathVariable double draftMoney);
+    ReturnData examineWorks(@PathVariable long id, @PathVariable int examineType, @PathVariable double draftMoney);
+
+    /***
+     * 抽取稿费
+     * @param id
+     * @return
+     */
+    @GetMapping("extractDraftMoney/{id}/{userId}")
+    ReturnData extractDraftMoney(@PathVariable long id, @PathVariable long userId);
+
+    /***
+     * 分页查询审核作品列表
+     * @param findType   查询类型： 0待审核（时间倒叙&票数最高），1已审核的  2我审核的
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findExamineList/{findType}/{page}/{count}")
+    ReturnData findExamineList(@PathVariable int findType, @PathVariable int page, @PathVariable int count);
 
     /***
      * 查询活动的详细信息

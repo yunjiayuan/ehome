@@ -179,6 +179,29 @@ public class EpidemicSituationService {
     }
 
     /***
+     * 根据ID查询评选作品的详细信息
+     * @param id
+     * @return
+     */
+    public CampaignAwardActivity findById(long id, long myId) {
+        return epidemicSituationDao.findById(id, myId);
+    }
+
+    /***
+     * 分页查询审核作品列表
+     * @param findType   查询类型： 0待审核（时间倒叙&票数最高），1已审核的  2我审核的
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<CampaignAwardActivity> findExamineList(long userId, int findType, int page, int count) {
+        List<CampaignAwardActivity> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findExamineList(userId, findType);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 查询是否给该作品投过票
      * @return
      */
