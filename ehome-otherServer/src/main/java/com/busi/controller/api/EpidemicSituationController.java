@@ -279,6 +279,7 @@ public class EpidemicSituationController extends BaseController implements Epide
                 moneyNew = 10;
             }
             selectionActivities.setDraftMoney(moneyNew);
+            selectionActivities.setExamineType(3);
         }
         epidemicSituationService.addSelection(selectionActivities);
         Map<String,Long> map = new HashMap<>();
