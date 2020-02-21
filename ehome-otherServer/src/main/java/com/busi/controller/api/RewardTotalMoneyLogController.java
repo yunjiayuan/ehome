@@ -63,14 +63,14 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
         if(rtml==null){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您当前没有奖励可以转入钱包", rewardTotalMoneyLog);
         }
-        if(rtml.getRewardTotalMoney()<50){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您当前奖励金额不满50元，暂时无法转入钱包", rewardTotalMoneyLog);
+        if(rtml.getRewardTotalMoney()<100){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您当前奖励金额不满100元，暂时无法转入钱包", rewardTotalMoneyLog);
         }
         if(rewardTotalMoneyLog.getRewardTotalMoney()>rtml.getRewardTotalMoney()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您要转入钱包的金额大于您的奖励余额，无法转入钱包", rewardTotalMoneyLog);
         }
-        if(rewardTotalMoneyLog.getRewardTotalMoney()<50){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您要转入钱包的金额小于50元，暂时无法转入钱包", rewardTotalMoneyLog);
+        if(rewardTotalMoneyLog.getRewardTotalMoney()<100){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您要转入钱包的金额小于100元，暂时无法转入钱包", rewardTotalMoneyLog);
         }
         //开始转入
         //更新奖励系统余额
