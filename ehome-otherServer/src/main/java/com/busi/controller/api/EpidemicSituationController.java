@@ -253,7 +253,9 @@ public class EpidemicSituationController extends BaseController implements Epide
             selectionActivities.setDraftMoney(moneyNew);
         }
         epidemicSituationService.addSelection(selectionActivities);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        Map<String,Long> map = new HashMap<>();
+        map.put("userId",selectionActivities.getUserId());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success",map);
     }
 
     /**

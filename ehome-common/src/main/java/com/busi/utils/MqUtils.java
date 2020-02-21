@@ -113,7 +113,9 @@ public class MqUtils {
      * 发送短信
      * @param phone     将要发送短信的手机号
      * @param phoneCode 短信验证码
-     * @param phoneType 短信类型 0表示注册 1表示支付密码找回短信验证
+     * @param phoneType 短信类型 0注册验证码  1找回支付密码验证码 2安全中心绑定手机验证码 3安全中心解绑手机验证码
+     *                            4手机短信找回登录密码验证码  5手机短信修改密码验证码 6短信邀请新用户注册 7开通家电个人信息验证
+     *                            8邀请好友参加抗击疫情评选活动投票
      */
     public void sendPhoneMessage(String phone,String phoneCode,int phoneType){
 

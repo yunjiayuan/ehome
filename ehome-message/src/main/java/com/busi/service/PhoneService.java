@@ -40,6 +40,8 @@ public class PhoneService implements MessageAdapter {
                 content = "云家园提醒您，您的朋友邀请您成为云家园新用户，邀请码为：" + phoneCode + ",最新云家园官方下载地址为：http://ephone.lichengwang.com/downLoad/index.html?shareCode=\"+code+\"，感谢您对历程网的关注与支持!";
         }else if(phoneType==7){//开通家电个人信息验证
             content = "云家园提醒您，您正在进行个人信息认证，验证码为：" + phoneCode + ",请您在10分钟之内使用，感谢您对云家园的关注与支持!";
+        }else if(phoneType==8){//邀请好友参加抗击疫情评选活动投票
+            content = "云家园提醒您，您的好友：[ " + phoneCode + " ]正在参加抗击疫情评选活,邀请您为他投票,最新云家园官方下载地址为：http://ephone.lichengwang.com/downLoad/index.html，感谢您对历程网的关注与支持!";
         }else{
             //预留
         }
