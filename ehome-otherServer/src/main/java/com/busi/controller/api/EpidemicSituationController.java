@@ -173,9 +173,9 @@ public class EpidemicSituationController extends BaseController implements Epide
             //随机经纬度
             Map<String, String> jw = randomLonLat(85, 122, 29, 116);
             //纬度
-            double lon = Double.parseDouble(jw.get("J"));
+            double lon = Double.parseDouble(jw.get("W"));
             //经度
-            double lat = Double.parseDouble(jw.get("W"));
+            double lat = Double.parseDouble(jw.get("J"));
             //组合实体
             Random ra = new Random();
             about.setUserId(userId);
