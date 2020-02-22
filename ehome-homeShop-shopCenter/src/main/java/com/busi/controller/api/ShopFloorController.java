@@ -6,7 +6,6 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.ShopFloorService;
 import com.busi.utils.*;
-import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,24 +96,25 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     @Override
     public ReturnData updShopFloorStatus(@Valid @RequestBody ShopFloor homeShopCenter, BindingResult bindingResult) {
         //验证参数格式是否正确
-        if (bindingResult.hasErrors()) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
-        }
-        //判断该用户是否实名
-        UserAccountSecurity userAccountSecurity = null;
-        userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(homeShopCenter.getUserId());
-        if (CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
-            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
-        }
-        //查询是否缴费
-        ShopFloor dishes = shopCenterService.findByUserId(CommonUtils.getMyId(), homeShopCenter.getVillageOnly());
-        if (dishes == null || dishes.getPayState() != 1) {
-            return returnData(StatusCode.CODE_BOND_NOT_AC.CODE_VALUE, "未缴纳保证金", new JSONObject());
-        }
-        shopCenterService.updateBusiness(homeShopCenter);
-        //清除缓存
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId() + "_" + homeShopCenter.getVillageOnly(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+//        if (bindingResult.hasErrors()) {
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+//        }
+//        //判断该用户是否实名
+//        UserAccountSecurity userAccountSecurity = null;
+//        userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(homeShopCenter.getUserId());
+//        if (CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
+//            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+//        }
+//        //查询是否缴费
+//        ShopFloor dishes = shopCenterService.findByUserId(CommonUtils.getMyId(), homeShopCenter.getVillageOnly());
+//        if (dishes == null || dishes.getPayState() != 1) {
+//            return returnData(StatusCode.CODE_BOND_NOT_AC.CODE_VALUE, "未缴纳保证金", new JSONObject());
+//        }
+//        shopCenterService.updateBusiness(homeShopCenter);
+//        //清除缓存
+//        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId() + "_" + homeShopCenter.getVillageOnly(), 0);
+//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "恭喜您，已经抢开到楼店，在疫情过后，平台将会统一配货。", new JSONObject());
     }
 
     /***

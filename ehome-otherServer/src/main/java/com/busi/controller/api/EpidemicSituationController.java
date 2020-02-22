@@ -13,12 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
 
 /***
@@ -186,7 +181,7 @@ public class EpidemicSituationController extends BaseController implements Epide
             about.setUserId(userId);
             about.setLat(lat);
             about.setLon(lon);
-            about.setAddress(getAdd(lon + "", lat + ""));
+//            about.setAddress(getAdd(lon + "", lat + ""));
             about.setWhatAmIdoing(whatAmIdoing[ra.nextInt(whatAmIdoing.length) + 0]);
             about.setDonateMoney(donateMoney[ra.nextInt(donateMoney.length) + 0]);
             about.setBenevolence(benevolence[ra.nextInt(benevolence.length) + 0]);
@@ -224,31 +219,31 @@ public class EpidemicSituationController extends BaseController implements Epide
      * 经纬度转换成详细地址
      * @return
      */
-    public static String getAdd(String lng, String lat) {
-        String urlString = "http://api.map.baidu.com/geocoder/v2/?ak=pWNVQZQIhhhtdXhgxdBKtoMxhMFNhWPC&callback=renderReverse&location=" + lat + "," + lng;
-        String res = "";
-        BufferedReader in = null;
-        try {
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-            String line = null;
-            while ((line = in.readLine()) != null) {
-                res += line + "\n";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return res;
-    }
+//    public static String getAdd(String lng, String lat) {
+//        String urlString = "http://api.map.baidu.com/geocoder/v2/?ak=pWNVQZQIhhhtdXhgxdBKtoMxhMFNhWPC&callback=renderReverse&location=" + lat + "," + lng;
+//        String res = "";
+//        BufferedReader in = null;
+//        try {
+//            URL url = new URL(urlString);
+//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//            conn.setDoOutput(true);
+//            conn.setRequestMethod("POST");
+//            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//            String line = null;
+//            while ((line = in.readLine()) != null) {
+//                res += line + "\n";
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                in.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return res;
+//    }
 
     /***
      * 新增评选作品
@@ -282,9 +277,9 @@ public class EpidemicSituationController extends BaseController implements Epide
             selectionActivities.setExamineType(3);
         }
         epidemicSituationService.addSelection(selectionActivities);
-        Map<String,Long> map = new HashMap<>();
-        map.put("userId",selectionActivities.getUserId());
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success",map);
+        Map<String, Long> map = new HashMap<>();
+        map.put("userId", selectionActivities.getUserId());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /**
@@ -383,7 +378,27 @@ public class EpidemicSituationController extends BaseController implements Epide
         }
         PageBean<CampaignAwardActivity> pageBean = null;
         pageBean = epidemicSituationService.findExamineList(CommonUtils.getMyId(), findType, page, count);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = pageBean.getList();
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            CampaignAwardActivity sa = (CampaignAwardActivity) list.get(i);
+            if (sa != null) {
+                UserInfo userInfo = null;
+                userInfo = userInfoUtils.getUserInfo(sa.getUserId());
+                if (userInfo != null) {
+                    sa.setName(userInfo.getName());
+                    sa.setHead(userInfo.getHead());
+                    sa.setProTypeId(userInfo.getProType());
+                    sa.setHouseNumber(userInfo.getHouseNumber());
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
     /***
