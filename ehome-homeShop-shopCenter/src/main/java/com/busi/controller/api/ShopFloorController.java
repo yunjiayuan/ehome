@@ -100,7 +100,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         if (homeShopCenter.getShopState() == 1) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "恭喜您，已经抢开到楼店，在疫情过后，平台将会统一配货。", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "恭喜您，已成功抢开到楼店。疫情过后，平台将会择时统一配货。感谢您的加入！", new JSONObject());
         }
         //判断该用户是否实名
         UserAccountSecurity userAccountSecurity = null;
