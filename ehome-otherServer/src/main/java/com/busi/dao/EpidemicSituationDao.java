@@ -127,8 +127,9 @@ public interface EpidemicSituationDao {
             " auditor=#{auditor}," +
             " examineType=#{examineType}," +
             "<if test=\"draftMoney > 0\">" +
-            " draftMoney=#{draftMoney}" +
+            " draftMoney=#{draftMoney}," +
             "</if>" +
+            " userId=#{userId}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateExamine(CampaignAwardActivity kitchen);

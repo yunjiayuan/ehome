@@ -39,7 +39,7 @@ public class ShopFloor {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;            //新增时间
 
-    private int shopState;        //店铺状态  0未开店  1已开店（正常营业） 2暂停营业
+    private int shopState;        //店铺状态  0未开店  1开店（正常营业） 2暂停营业
 
     private int payState;        //缴费状态  0未缴费  1已缴费
 
