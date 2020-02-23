@@ -263,7 +263,7 @@ public class EpidemicSituationController extends BaseController implements Epide
             selectionActivities.setUserId(ra.nextInt(40000) + 13870);//随机13870-53870
             selectionActivities.setVotesCounts(ra.nextInt(1000) + 200);
             double rs2 = ra.nextInt(3);
-            double moneyNew = 0;
+            double moneyNew = 10;
             if (rs2 == 2) {
                 if (ra.nextInt(3) == 1) {
                     moneyNew = 50;
