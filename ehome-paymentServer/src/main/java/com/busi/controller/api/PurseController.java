@@ -183,8 +183,8 @@ public class PurseController extends BaseController implements PurseApiControlle
                 return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
             }
         }else{//家币兑换家点
-            long homePoint = Long.parseLong(purseMap.get("homePoint").toString());
-            if(homePoint<money){
+            long homeCoin = Long.parseLong(purseMap.get("homeCoin").toString());
+            if(homeCoin<money){
                 return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
             }
         }
