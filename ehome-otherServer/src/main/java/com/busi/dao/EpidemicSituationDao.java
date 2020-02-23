@@ -331,7 +331,7 @@ public interface EpidemicSituationDao {
      * @param id
      * @return
      */
-    @Select("select * from HomeTrajectory where id = #{id}")
+    @Select("select * from HomeTrajectory where userId = #{id}")
     HomeTrajectory findHtrajectory(@Param("id") long id);
 
     /***
