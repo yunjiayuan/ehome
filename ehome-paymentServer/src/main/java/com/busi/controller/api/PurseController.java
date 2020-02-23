@@ -116,11 +116,11 @@ public class PurseController extends BaseController implements PurseApiControlle
                     userIdPurse.setHomeCoin(random.nextInt(101)+100);
                     userIdPurse.setHomePoint(random.nextInt(100001)+10000);
                 }
+                //更新数据库
+                purseInfoService.addPurseInfo(userIdPurse);
             }else{
                 userIdPurse.setRedisStatus(1);//数据库中已有对应记录
             }
-            //更新数据库
-            purseInfoService.addPurseInfo(userIdPurse);
             //更新缓存
             userIdPurseMap = CommonUtils.objectToMap(userIdPurse);
             redisUtils.hmset(Constants.REDIS_KEY_PAYMENT_PURSEINFO+userId,userIdPurseMap,Constants.USER_TIME_OUT);
