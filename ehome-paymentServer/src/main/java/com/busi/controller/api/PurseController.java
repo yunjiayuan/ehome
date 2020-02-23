@@ -118,6 +118,7 @@ public class PurseController extends BaseController implements PurseApiControlle
                 }
                 //更新数据库
                 purseInfoService.addPurseInfo(userIdPurse);
+                userIdPurse.setRedisStatus(1);
             }else{
                 userIdPurse.setRedisStatus(1);//数据库中已有对应记录
             }
