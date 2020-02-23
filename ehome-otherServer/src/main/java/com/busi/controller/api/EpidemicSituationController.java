@@ -171,7 +171,7 @@ public class EpidemicSituationController extends BaseController implements Epide
             String[] wantToGo = {"湖北", "武汉", "那也不想去", "想去哪去哪", "管得着吗", "不告诉你", "天涯海角", "旅游胜地", "哪里也想去但没钱", "你给钱呀", "有人报销吗", "缺个伴儿", "太空", "女儿国", "没去过的地方", "国外", "没有", "很多", "说不清楚"};
 
             //随机经纬度
-            Map<String, String> jw = randomLonLat(85, 122, 29, 116);
+            Map<String, String> jw = randomLonLat(3, 53, 73, 135);
             //纬度
             double lon = Double.parseDouble(jw.get("W"));
             //经度
