@@ -63,8 +63,8 @@ public class EpidemicSituationService {
      * 查询真实用户战役作品
      * @return
      */
-    public List<EpidemicSituation> getCampaignAward() {
-        List<EpidemicSituation> list = null;
+    public List<CampaignAwardActivity> getCampaignAward() {
+        List<CampaignAwardActivity> list = null;
         list = epidemicSituationDao.getCampaignAward();
         return list;
     }

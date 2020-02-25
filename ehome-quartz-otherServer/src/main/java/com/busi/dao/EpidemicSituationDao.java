@@ -60,7 +60,7 @@ public interface EpidemicSituationDao {
      * @return
      */
     @Select("select * from CampaignAwardActivity where (userId<13870 or userId>53870) and status=0")
-    List<EpidemicSituation> getCampaignAward();
+    List<CampaignAwardActivity> getCampaignAward();
 
     /***
      * 更新评选作品投票数
