@@ -86,7 +86,7 @@ public class RewardLogController extends BaseController implements RewardLogApiC
             isNewRewardLog = 1;//未读 新的
             RewardLog rewardLog = list.get(0);
             if(rewardLog!=null){
-                rewardMoneyType = rewardLog.getRewardMoneyType();
+                rewardMoneyType = rewardLog.getRewardType();
                 rewardMoney = rewardLog.getRewardMoney();
             }
         }
