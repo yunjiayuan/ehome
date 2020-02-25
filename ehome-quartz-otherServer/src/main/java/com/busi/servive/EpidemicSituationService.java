@@ -1,13 +1,9 @@
 package com.busi.servive;
 
 import com.busi.dao.EpidemicSituationDao;
+import com.busi.entity.CampaignAwardActivity;
 import com.busi.entity.EpidemicSituation;
-import com.busi.entity.EpidemicSituationAbout;
 import com.busi.entity.EpidemicSituationTianqi;
-import com.busi.entity.PageBean;
-import com.busi.utils.PageUtils;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,4 +58,25 @@ public class EpidemicSituationService {
     public EpidemicSituationTianqi findEStianQi(String modifyTime) {
         return epidemicSituationDao.findEStianQi(modifyTime);
     }
+
+    /***
+     * 查询真实用户战役作品
+     * @return
+     */
+    public List<EpidemicSituation> getCampaignAward() {
+        List<EpidemicSituation> list = null;
+        list = epidemicSituationDao.getCampaignAward();
+        return list;
+    }
+
+    /***
+     * 更新投票数
+     * @param selectionActivities
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateNumber(CampaignAwardActivity selectionActivities) {
+        return epidemicSituationDao.updateNumber(selectionActivities);
+    }
+
 }
