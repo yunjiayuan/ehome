@@ -99,9 +99,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        if (homeShopCenter.getShopState() == 1) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "恭喜您，已成功抢开到楼店。疫情过后，平台将会择时统一配货。感谢您的加入！", new JSONObject());
-        }
+//        if (homeShopCenter.getShopState() == 1) {
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "恭喜您，已成功抢开到楼店。疫情过后，平台将会择时统一配货。感谢您的加入！", new JSONObject());
+//        }
         //判断该用户是否实名
         UserAccountSecurity userAccountSecurity = null;
         userAccountSecurity = userAccountSecurityUtils.getUserAccountSecurity(homeShopCenter.getUserId());
@@ -192,7 +192,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         String noTime = String.valueOf(time);
         String random = CommonUtils.getRandom(6, 1);
         String noRandom = CommonUtils.strToMD5(noTime + CommonUtils.getMyId() + random, 16);
-        shopFloorBondOrders.setMoney(0.01);//初始30000
+        shopFloorBondOrders.setMoney(30000);
         shopFloorBondOrders.setOrderNumber(noRandom);
         shopFloorBondOrders.setTime(new Date());
         shopFloorBondOrders.setUserId(CommonUtils.getMyId());

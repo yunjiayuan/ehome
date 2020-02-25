@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.CampaignAwardActivity;
 import com.busi.entity.EpidemicSituation;
 import com.busi.entity.EpidemicSituationTianqi;
 import org.apache.ibatis.annotations.*;
@@ -53,4 +54,24 @@ public interface EpidemicSituationDao {
      */
     @Select("select * from EpidemicSituationTianqi where date=#{modifyTime}")
     EpidemicSituationTianqi findEStianQi(@Param("modifyTime") String modifyTime);
+
+    /***
+     * 查询真实用户战役作品
+     * @return
+     */
+    @Select("select * from CampaignAwardActivity where (userId<13870 or userId>53870) and status=0")
+    List<CampaignAwardActivity> getCampaignAward();
+
+    /***
+     * 更新评选作品投票数
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update CampaignAwardActivity set" +
+            " votesCounts=#{votesCounts}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateNumber(CampaignAwardActivity selectionActivities);
+
 }
