@@ -37,17 +37,15 @@ public class CampaignAwardTimerController {
                 CampaignAwardActivity activity = (CampaignAwardActivity) list.get(i);
                 if (activity != null) {
                     long time = activity.getTime().getTime();//发布时间
-                    //票数小于10 发布时间大于1小时小于三小时 随机20-50内
-                    if (activity.getVotesCounts() <= 10 && now - millisecond > time && now - millisecond * 3 < time) {
-                        activity.setVotesCounts(ra.nextInt(30) + 20);
-                        epidemicSituationService.updateNumber(activity);
-                    } else if (activity.getVotesCounts() > 10 && now - millisecond * 3 > time && now - millisecond * 10 < time) {//票数大于10  时间上大于3个小时小于十小时 随机100-200内
-                        activity.setVotesCounts(ra.nextInt(100) + 100);
-                        epidemicSituationService.updateNumber(activity);
-                    } else if (activity.getVotesCounts() > 10 && now - millisecond * 10 > time) { //票数大于10  时间上大于10个小时 随机加50-100内
-                        activity.setVotesCounts(ra.nextInt(50) + 50 + activity.getVotesCounts());
-                        epidemicSituationService.updateNumber(activity);
+                    //票数小于10 发布时间小于1小时 随机20-50内
+                    if (activity.getVotesCounts() < 10 && now - millisecond < time) {
+                        activity.setVotesCounts(ra.nextInt(30) + 20 + activity.getVotesCounts());
+                    } else if (activity.getVotesCounts() > 60 && now - millisecond > time && now - millisecond * 3 < time) {//票数大于60  时间上大于1个小时小于3小时 随机60-100内
+                        activity.setVotesCounts(ra.nextInt(40) + 60 + activity.getVotesCounts());
+                    } else if (activity.getVotesCounts() > 100 && now - millisecond * 10 > time) { //票数大于100  时间上大于10个小时 随机加100-200内
+                        activity.setVotesCounts(ra.nextInt(100) + 100 + activity.getVotesCounts());
                     }
+                    epidemicSituationService.updateNumber(activity);
                 }
             }
             log.info("更新战役评奖作品票数成功...");
