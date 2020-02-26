@@ -40,9 +40,9 @@ public class CampaignAwardTimerController {
                     //票数小于10 发布时间小于1小时 随机20-50内
                     if (activity.getVotesCounts() < 10 && now - millisecond < time) {
                         activity.setVotesCounts(ra.nextInt(30) + 20 + activity.getVotesCounts());
-                    } else if (activity.getVotesCounts() > 60 && now - millisecond > time && now - millisecond * 3 < time) {//票数大于60  时间上大于1个小时小于3小时 随机60-100内
+                    } else if (activity.getVotesCounts() < 60 && now - millisecond > time && now - millisecond * 3 < time) {//票数小于60  时间上大于1个小时小于3小时 随机60-100内
                         activity.setVotesCounts(ra.nextInt(40) + 60 + activity.getVotesCounts());
-                    } else if (activity.getVotesCounts() > 100 && now - millisecond * 10 > time) { //票数大于100  时间上大于10个小时 随机加100-200内
+                    } else if (activity.getVotesCounts() < 100 && now - millisecond * 10 > time) { //票数小于100  时间上大于10个小时 随机加100-200内
                         activity.setVotesCounts(ra.nextInt(100) + 100 + activity.getVotesCounts());
                     }
                     epidemicSituationService.updateNumber(activity);
