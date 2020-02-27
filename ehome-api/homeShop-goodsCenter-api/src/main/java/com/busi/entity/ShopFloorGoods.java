@@ -73,6 +73,8 @@ public class ShopFloorGoods {
 
     private int sellType;                //商品买卖状态 : 0已上架，1已下架，2已卖出
 
+    private long commentNumber;       //评论数
+
     // 与数据库无关字段
     private String name;                //用户名
 
