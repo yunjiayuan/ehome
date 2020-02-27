@@ -60,7 +60,6 @@ public class ShopFloorCommentController extends BaseController implements ShopFl
         }
         shopFloorComment.setTime(new Date());
         shopFloorCommentService.addComment(shopFloorComment);
-
         if (shopFloorComment.getReplyType() == 0) {//新增评论
             //放入缓存(七天失效)
             redisUtils.addListLeft(Constants.REDIS_KEY_SHOPFLOOR_COMMENT + shopFloorComment.getGoodsId(), shopFloorComment, Constants.USER_TIME_OUT);
@@ -89,10 +88,11 @@ public class ShopFloorCommentController extends BaseController implements ShopFl
                 }
             }
             //更新回复数
-            long num = 0;
-            num = shopFloorCommentService.getReplayCount(shopFloorComment.getFatherId());
-            shopFloorComment.setReplyNumber(num + 1);
-            shopFloorCommentService.updateCommentNum(shopFloorComment);
+            ShopFloorComment num = shopFloorCommentService.findById(shopFloorComment.getFatherId());
+            if (num != null) {
+                shopFloorComment.setReplyNumber(num.getReplyNumber() + 1);
+                shopFloorCommentService.updateCommentNum(shopFloorComment);
+            }
         }
         //更新评论数
         posts.setCommentNumber(posts.getCommentNumber() + 1);
@@ -195,13 +195,11 @@ public class ShopFloorCommentController extends BaseController implements ShopFl
                 }
             }
             //更新回复数
-            long num1 = 0;
-            num1 = shopFloorCommentService.getReplayCount(comment.getFatherId());
-            comment.setReplyNumber(num1 + 1);
+            comment.setReplyNumber(comment.getReplyNumber() - 1);
             shopFloorCommentService.updateCommentNum(comment);
         }
         //更新评论数
-        posts.setCommentNumber(posts.getCommentNumber() + 1);
+        posts.setCommentNumber(posts.getCommentNumber() - 1);
         shopFloorCommentService.updateBlogCounts(posts);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
