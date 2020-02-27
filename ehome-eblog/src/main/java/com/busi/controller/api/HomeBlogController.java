@@ -115,6 +115,30 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setUserId(ra.nextInt(40000)+13870);//随机13870-53870
                 homeBlog.setLikeCount(ra2.nextInt(30000)+10000);
                 homeBlog.setLookCount(ra3.nextInt(30000)+30000);
+                //设置稿费
+                if(homeBlog.getUserId()%2==0){
+                    Random random = new Random();
+                    double moneyNew = 10;
+                    int remunerationStatus = random.nextInt(4)+1;
+                    if(remunerationStatus==1){
+                        moneyNew = 10;
+                    }else if(remunerationStatus==2){//20 50 100元
+                        double rs2 = random.nextInt(3) ;
+                        if(rs2==2){
+                            moneyNew = 20;
+                        }else if(rs2==1){
+                            moneyNew = 50;
+                        }else{
+                            moneyNew = 10;
+                        }
+                    }else if(remunerationStatus==3){
+                        moneyNew = 10;
+                    }else if(remunerationStatus==4){
+                        moneyNew = 20;
+                    }
+                    homeBlog.setRemunerationStatus(remunerationStatus);
+                    homeBlog.setRemunerationMoney(moneyNew);
+                }
                 UserHeadNotes userHeadNotes = new UserHeadNotes();
                 userHeadNotes.setWelcomeVideoPath(homeBlog.getVideoUrl());
                 userHeadNotes.setWelcomeVideoCoverPath(homeBlog.getVideoCoverUrl());
@@ -522,6 +546,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     }
                     homeBlog.setRemunerationStatus(remunerationStatus);
                     homeBlog.setRemunerationMoney(moneyNew);
+                    homeBlogService.updateGradeBlog(homeBlog);
                 }
             }
         }
@@ -854,6 +879,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     }
                     homeBlog.setRemunerationStatus(remunerationStatus);
                     homeBlog.setRemunerationMoney(moneyNew);
+                    homeBlogService.updateGradeBlog(homeBlog);
                 }
             }
         }
@@ -919,6 +945,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     }
                     homeBlog.setRemunerationStatus(remunerationStatus);
                     homeBlog.setRemunerationMoney(moneyNew);
+                    homeBlogService.updateGradeBlog(homeBlog);
                 }
                 list.add(homeBlog);
             }
