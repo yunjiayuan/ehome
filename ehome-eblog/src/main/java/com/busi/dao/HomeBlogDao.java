@@ -94,7 +94,7 @@ public interface HomeBlogDao {
     /***
      * 查询朋友圈列表
      * @param firendUserIds  好友用户ID组合
-     * @param searchType     博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈
+     * @param searchType     博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈 4只看医生圈 5只看律师圈
      * @param timeType       查询时间类型：0不限制 1只看今天发布视频
      * @param userIds        处理过的登录者用户ID 用于判断可见范围
      * @return
@@ -128,6 +128,16 @@ public interface HomeBlogDao {
                 " and sendType = 2" +
                 " and blogType != 1" +
                 " and tag = 39" +
+            "</if>" +
+            "<if test=\"searchType == 4\">" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            " and tag = 41" +
+            "</if>" +
+            "<if test=\"searchType == 5\">" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            " and tag = 42" +
             "</if>" +
             "<if test=\"timeType == 1\">" +
             " and to_days(time) = to_days(now())" +
@@ -208,7 +218,7 @@ public interface HomeBlogDao {
     /***
      * 根据指定用户ID查询列表
      * @param searchType 博文类型：0查自己 1查别人
-     * @param sendType   博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈
+     * @param sendType   博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈 4只看医生圈 5只看律师圈
      * @param userId     被查询用户ID
      * @param userIds    处理过的登录者用户ID 用于判断可见范围
      * @return
@@ -239,6 +249,16 @@ public interface HomeBlogDao {
                 " and blogType != 1" +
                 " and tag = 39" +
             "</if>" +
+            "<if test=\"sendType == 4\">" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            " and tag = 41" +
+            "</if>" +
+            "<if test=\"sendType == 5\">" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            " and tag = 42" +
+            "</if>" +
             " and userId = #{userId}" +
             " and blogStatus = 0" +
             " order by time desc" +
@@ -249,7 +269,7 @@ public interface HomeBlogDao {
      * 根据城市ID查询 同城生活秀
      * @param cityId 博文类型：0查自己 1查别人
      * @param userId 当前用户ID
-     * @param searchType     查询类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈
+     * @param searchType     查询类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈  4只看医生圈 5只看律师圈
      * @return
      */
     @Select("<script>" +
@@ -277,6 +297,16 @@ public interface HomeBlogDao {
                 " and sendType = 2" +
                 " and blogType != 1" +
                 " and tag = 39" +
+            "</if>" +
+            "<if test=\"searchType == 4\">" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            " and tag = 41" +
+            "</if>" +
+            "<if test=\"searchType == 5\">" +
+            " and sendType = 2" +
+            " and blogType != 1" +
+            " and tag = 42" +
             "</if>" +
             " and blogStatus = 0" +
             " order by time desc" +
