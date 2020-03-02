@@ -21,8 +21,8 @@ public interface ShopFloorCommentDao {
      * @param homeBlogComment
      * @return
      */
-    @Insert("insert into ShopFloorComment(userId,goodsId,replayId,content,time,replyType,replyStatus,fatherId) " +
-            "values (#{userId},#{goodsId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId})")
+    @Insert("insert into ShopFloorComment(userId,goodsId,replayId,content,time,replyType,replyStatus,fatherId,secondFatherId) " +
+            "values (#{userId},#{goodsId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId})")
     @Options(useGeneratedKeys = true)
     int addComment(ShopFloorComment homeBlogComment);
 

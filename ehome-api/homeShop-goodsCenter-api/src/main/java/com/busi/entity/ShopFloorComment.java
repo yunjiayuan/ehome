@@ -34,6 +34,8 @@ public class ShopFloorComment {
 
     private long fatherId;              //评论根父级ID
 
+    private long secondFatherId;         //评论次父级ID
+
     private long replyNumber;       //回复数
 
     //与数据库无关字段
