@@ -160,7 +160,7 @@ public class HomeHospitalRecordController extends BaseController implements Home
                                 }
                             }
                             UserInfo sendInfoCache = null;
-                            sendInfoCache = userInfoUtils.getUserInfo(fc.getUserId());
+                            sendInfoCache = userInfoUtils.getUserInfo(fc.getDoctorId());
                             if (sendInfoCache != null) {
                                 fc.setProTypeId(sendInfoCache.getProType());
                                 fc.setHouseNumber(sendInfoCache.getHouseNumber());
