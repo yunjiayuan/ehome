@@ -164,8 +164,9 @@ public class HomeHospitalRecordController extends BaseController implements Home
                             if (sendInfoCache != null) {
                                 fc.setProTypeId(sendInfoCache.getProType());
                                 fc.setHouseNumber(sendInfoCache.getHouseNumber());
+                                fc.setHead(sendInfoCache.getHead());
                             }
-                            fc.setHead(hospital.getHeadCover());
+//                            fc.setHead(hospital.getHeadCover());//因假数据没有头像缘故暂注
                             fc.setName(hospital.getPhysicianName());
                         }
                     }
