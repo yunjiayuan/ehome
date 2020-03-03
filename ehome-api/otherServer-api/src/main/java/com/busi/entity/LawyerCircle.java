@@ -85,7 +85,7 @@ public class LawyerCircle {
 
     private String beGoodAt;        // 擅长案件描述
 
-    private String LawFirm;        // 所在律所名称
+    private String lawFirm;        // 所在律所名称
 
     private long helpNumber; 	// 帮助人数
 

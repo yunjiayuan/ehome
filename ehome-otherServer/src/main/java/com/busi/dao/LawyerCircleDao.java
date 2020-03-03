@@ -20,9 +20,9 @@ public interface LawyerCircleDao {
      * @param lawyerCircle
      * @return
      */
-    @Insert("insert into LawyerCircle(userId,businessStatus,auditType,title,lvshiName,LawFirm,cityId,addTime,imgUrl,headCover,content,jobStatus,province,city,district," +
+    @Insert("insert into LawyerCircle(userId,businessStatus,auditType,title,lvshiName,lawFirm,cityId,addTime,imgUrl,headCover,content,jobStatus,province,city,district," +
             "videoUrl,videoCoverUrl,beGoodAt,lvshiNumber,longitude,latitude,lvshiType)" +
-            "values (#{userId},#{businessStatus},#{auditType},#{title},#{lvshiName},#{LawFirm},#{cityId},#{addTime},#{imgUrl},#{headCover},#{content},#{jobStatus},#{province},#{city},#{district}" +
+            "values (#{userId},#{businessStatus},#{auditType},#{title},#{lvshiName},#{lawFirm},#{cityId},#{addTime},#{imgUrl},#{headCover},#{content},#{jobStatus},#{province},#{city},#{district}" +
             ",#{videoUrl},#{videoCoverUrl},#{beGoodAt},#{lvshiNumber},#{longitude},#{latitude},#{lvshiType})")
     @Options(useGeneratedKeys = true)
     int add(LawyerCircle lawyerCircle);
@@ -43,7 +43,7 @@ public interface LawyerCircleDao {
             " lvshiName=#{lvshiName}," +
             " imgUrl=#{imgUrl}," +
             " content=#{content}," +
-            " LawFirm=#{LawFirm}," +
+            " lawFirm=#{lawFirm}," +
             " videoUrl=#{videoUrl}," +
             " province=#{province}," +
             " district=#{district}," +
@@ -113,7 +113,7 @@ public interface LawyerCircleDao {
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             " and (lvshiName LIKE CONCAT('%',#{search},'%')" +
-            " or LawFirm LIKE CONCAT('%',#{search},'%')" +
+            " or lawFirm LIKE CONCAT('%',#{search},'%')" +
             " or lvshiType LIKE CONCAT('%',#{search},'%'))" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
