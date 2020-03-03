@@ -87,6 +87,7 @@ public class HomeHospitalService {
 
     /***
      * 查询列表
+     * @param cityId     默认-1 百度地图中的城市ID，用于同城搜索
      * @param department  科室
      * @param search    模糊搜索（可以是：症状、疾病、医院、科室、医生名字）
      * @param province     省
@@ -96,29 +97,33 @@ public class HomeHospitalService {
      * @param count    条数
      * @return
      */
-    public PageBean<HomeHospital> findList(int watchVideos, long userId, int department, String search, int province, int city, int district, int page, int count) {
+    public PageBean<HomeHospital> findList(int cityId, int watchVideos, long userId, int department, String search, int province, int city, int district, int page, int count) {
 
         List<HomeHospital> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        if (department >= 0) {//按科室
-            list = homeHospitalDao.findList(watchVideos,userId, department);
+        if (cityId > -1) {
+            list = homeHospitalDao.findList4(cityId, userId);
         } else {
-            String departId = "";
-            if (!CommonUtils.checkFull(search)) {
-                String[] name = Constants.department;//科室
-                //匹配科室
-                for (int i = 0; i < name.length; i++) {
-                    if (name[i].indexOf(search) >= 0) {
-                        if (i < name.length - 1) {
-                            departId += i + ",";
-                        } else {
-                            departId += i;
+            if (department >= 0) {//按科室
+                list = homeHospitalDao.findList(watchVideos, userId, department);
+            } else {
+                String departId = "";
+                if (!CommonUtils.checkFull(search)) {
+                    String[] name = Constants.department;//科室
+                    //匹配科室
+                    for (int i = 0; i < name.length; i++) {
+                        if (name[i].indexOf(search) >= 0) {
+                            if (i < name.length - 1) {
+                                departId += i + ",";
+                            } else {
+                                departId += i;
+                            }
                         }
                     }
+                    list = homeHospitalDao.findList2(watchVideos, userId, departId.split(","), search, province, city, district);
+                } else {
+                    list = homeHospitalDao.findList3(watchVideos, userId, province, city, district);
                 }
-                list = homeHospitalDao.findList2(watchVideos,userId, departId.split(","), search, province, city, district);
-            } else {
-                list = homeHospitalDao.findList3(watchVideos,userId, province, city, district);
             }
         }
         return PageUtils.getPageBean(p, list);

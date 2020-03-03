@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -82,6 +83,14 @@ public class HomeHospital {
     private String videoUrl;        //视频地址
 
     private String videoCoverUrl;     //视频封面地址
+
+    @Digits(integer = 3, fraction = 6, message = "longitude参数格式有误")
+    private double longitude;//东经
+
+    @Digits(integer = 3, fraction = 6, message = "latitude参数格式有误")
+    private double latitude;//北纬
+
+    private int cityId;//百度地图中的城市ID，用于同城搜索
 
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔

@@ -21,9 +21,9 @@ public interface HomeHospitalDao {
      * @return
      */
     @Insert("insert into HomeHospital(userId,businessStatus,department,auditType,title,physicianName,hospital,major,addTime,imgUrl,headCover,content,jobStatus,province,city,district," +
-            "videoUrl,videoCoverUrl,helpNumber,practiceNumber)" +
+            "videoUrl,videoCoverUrl,helpNumber,practiceNumber,longitude,latitude,cityId)" +
             "values (#{userId},#{businessStatus},#{department},#{auditType},#{title},#{physicianName},#{hospital},#{major},#{addTime},#{imgUrl},#{headCover},#{content},#{jobStatus},#{province},#{city},#{district}" +
-            ",#{videoUrl},#{videoCoverUrl},#{helpNumber},#{practiceNumber})")
+            ",#{videoUrl},#{videoCoverUrl},#{helpNumber},#{practiceNumber},#{longitude},#{latitude},#{cityId})")
     @Options(useGeneratedKeys = true)
     int add(HomeHospital kitchen);
 
@@ -34,6 +34,9 @@ public interface HomeHospitalDao {
      */
     @Update("<script>" +
             "update HomeHospital set" +
+            " longitude=#{longitude}," +
+            " latitude=#{latitude}," +
+            " cityId=#{cityId}," +
             " city=#{city}," +
             " major=#{major}," +
             " title=#{title}," +
@@ -96,7 +99,7 @@ public interface HomeHospitalDao {
     @Select("select * from HomeHospital where userId=#{userId}")
     HomeHospital findByUserId(@Param("userId") long userId);
 
-     /***
+    /***
      * 查询列表
      * @param search    模糊搜索（可以是：症状、疾病、医院、科室、医生名字）
      * @param province     省
@@ -109,7 +112,7 @@ public interface HomeHospitalDao {
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             "<if test=\"departId != null and departId != '' \">" +
-            " and (department in"+
+            " and (department in" +
             "<foreach collection='departId' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
@@ -136,7 +139,7 @@ public interface HomeHospitalDao {
             "</if>" +
             " order by helpNumber desc" +
             "</script>")
-    List<HomeHospital> findList2( @Param("watchVideos") int watchVideos,@Param("userId") long userId, @Param("departId") String[] departId, @Param("search") String search, @Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<HomeHospital> findList2(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("departId") String[] departId, @Param("search") String search, @Param("province") int province, @Param("city") int city, @Param("district") int district);
 
     /***
      * 查询列表
@@ -163,7 +166,7 @@ public interface HomeHospitalDao {
             "</if>" +
             " order by helpNumber desc" +
             "</script>")
-    List<HomeHospital> findList3( @Param("watchVideos") int watchVideos,@Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<HomeHospital> findList3(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district);
 
     /***
      * 查询列表
@@ -179,7 +182,20 @@ public interface HomeHospitalDao {
             " and videoUrl != ''" +
             "</if>" +
             "</script>")
-    List<HomeHospital> findList( @Param("watchVideos") int watchVideos,@Param("userId") long userId, @Param("department") int department);
+    List<HomeHospital> findList(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("department") int department);
+
+    /***
+     * 查询列表
+     * @param userId
+     * @param userId
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeHospital" +
+            " where businessStatus=0 and deleteType = 0 and auditType=1 " +
+            " and userId != #{userId} and cityId = #{cityId}" +
+            "</script>")
+    List<HomeHospital> findList4(@Param("cityId") int cityId, @Param("userId") long userId);
 
     /***
      * 按用户查询列表
