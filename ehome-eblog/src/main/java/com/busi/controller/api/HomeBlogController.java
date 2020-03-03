@@ -554,11 +554,12 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     }
 
     /***
-     * 条件查询生活秀、今日现场、娱乐圈接口（只查询视频内容）
+     * 条件查询生活秀、今日现场、娱乐圈接口、医生圈、律师圈接口（只查询视频内容）
      * @param userId     被查询用户ID 默认0查询所有
      * @param searchType 查询类型 0查询首页推荐 1查同城 2查看朋友 3查询关注 4查询兴趣标签 5查询指定用户 6查询附近的生活秀（家门口的生活圈）
      *                   7查询今日现场首页 8查询今日现场同城 9查询今日现场关注  10查询娱乐圈首页  11查询娱乐圈关注 12今日现场查询指定用户
-     *                   13娱乐圈查询指定用户  14查询待稿费审核视频列表
+     *                   13娱乐圈查询指定用户  14查询待稿费审核视频列表 15查询稿费已审核视频 16查询医生圈主页 17查询医生圈关注 18查询医生圈指定用户
+     *                   19查询律师圈主页 20查询律师圈关注 21查询律师圈指定用户
      * @param tags       被查询兴趣标签ID组合，逗号分隔例如：1,2,3  仅当searchType=4 时有效 默认传null
      * @param cityId     城市ID 当searchType=1时有效 默认传0
      * @param lat        纬度 小数点后6位 当searchType=6时有效
@@ -573,7 +574,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                                         @PathVariable double lat,@PathVariable double lon,
                                         @PathVariable int page,@PathVariable int count) {
         //验证参数
-        if(searchType<0||searchType>15){
+        if(searchType<0||searchType>21){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"searchType参数有误",new JSONObject());
         }
         if(page<1){
@@ -819,6 +820,66 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     tagArray2 = tags.split(",");
                 }
                 pageBean = homeBlogService.findBlogListByTags2(tagArray2,0,userId,page,count);
+                break;
+            case 16://16查询医生圈首页
+                pageBean = homeBlogService.findBlogListByTags(new String[]{"41"},1,CommonUtils.getMyId(),page,count);
+                break;
+            case 17://17查询医生圈关注
+                //获取我关注的人的列表
+                String[] followArray3 = null;
+                String followUserIds3 = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
+                //将自己加入查询列表中 关注暂时不查自己的
+//                followUserIds = followUserIds+","+CommonUtils.getMyId();
+                if(!CommonUtils.checkFull(followUserIds3)){
+                    followArray3 = followUserIds3.split(",");
+                }
+                if(followArray3==null||followArray3.length<=0){//无关注列表存在 直接返回
+                    pageBean = new PageBean<HomeBlog>();
+                    pageBean.setList(new ArrayList<>());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
+                }
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray3,4,0,page,count);
+                break;
+            case 18://18查询医生圈指定用户
+                if(userId<0){
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+                }
+                //判断是不是查自己的信息
+                int type3 = 0;
+                if(userId!=CommonUtils.getMyId()){
+                    type3 = 1;
+                }
+                pageBean = homeBlogService.findBlogListByUserId(userId,type3,4,page,count);
+                break;
+            case 19://19查询律师圈首页
+                pageBean = homeBlogService.findBlogListByTags(new String[]{"42"},1,CommonUtils.getMyId(),page,count);
+                break;
+            case 20://20查询律师圈关注
+                //获取我关注的人的列表
+                String[] followArray4 = null;
+                String followUserIds4 = followInfoUtils.getFollowInfo(CommonUtils.getMyId());
+                //将自己加入查询列表中 关注暂时不查自己的
+//                followUserIds = followUserIds+","+CommonUtils.getMyId();
+                if(!CommonUtils.checkFull(followUserIds4)){
+                    followArray4 = followUserIds4.split(",");
+                }
+                if(followArray4==null||followArray4.length<=0){//无关注列表存在 直接返回
+                    pageBean = new PageBean<HomeBlog>();
+                    pageBean.setList(new ArrayList<>());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",pageBean);
+                }
+                pageBean = homeBlogService.findBlogListByFirend(CommonUtils.getMyId(),followArray4,5,0,page,count);
+                break;
+            case 21://21查询律师圈指定用户
+                if(userId<0){
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误",new JSONObject());
+                }
+                //判断是不是查自己的信息
+                int type4 = 0;
+                if(userId!=CommonUtils.getMyId()){
+                    type4 = 1;
+                }
+                pageBean = homeBlogService.findBlogListByUserId(userId,type4,5,page,count);
                 break;
         }
         if(pageBean==null){
