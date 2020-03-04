@@ -261,7 +261,7 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
         }
         homeHospital.setAddTime(new Date());
         homeHospital.setRefreshTime(new Date());
-        lawyerCircleService.add(homeHospital);
+        lawyerCircleService.addRecord(homeHospital);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -276,7 +276,7 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
     public ReturnData changeLRecord(@Valid @RequestBody LawyerCircleRecord homeHospital, BindingResult bindingResult) {
         homeHospital.setState(1);
         homeHospital.setRefreshTime(new Date());
-        lawyerCircleService.update(homeHospital);
+        lawyerCircleService.updateRecord(homeHospital);
         //更新医师帮助人数
         LawyerCircle ho = lawyerCircleService.findByUserId(homeHospital.getLvshiId());
         if (ho != null) {
@@ -301,7 +301,7 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<LawyerCircleRecord> pageBean = null;
-        pageBean = lawyerCircleService.findList(CommonUtils.getMyId(), haveDoctor, identity, page, count);
+        pageBean = lawyerCircleService.findRecordList(CommonUtils.getMyId(), haveDoctor, identity, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -405,7 +405,7 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
      */
     @Override
     public ReturnData delLRecord(@PathVariable long id) {
-        lawyerCircleService.del(id, CommonUtils.getMyId());
+        lawyerCircleService.delRecord(id, CommonUtils.getMyId());
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

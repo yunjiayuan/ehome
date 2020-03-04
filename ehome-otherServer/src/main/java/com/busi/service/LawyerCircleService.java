@@ -135,8 +135,8 @@ public class LawyerCircleService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int add(LawyerCircleRecord lawyerCircle) {
-        return lawyerCircleDao.add(lawyerCircle);
+    public int addRecord(LawyerCircleRecord lawyerCircle) {
+        return lawyerCircleDao.addRecord(lawyerCircle);
     }
 
     /***
@@ -145,8 +145,8 @@ public class LawyerCircleService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int update(LawyerCircleRecord lawyerCircle) {
-        return lawyerCircleDao.update(lawyerCircle);
+    public int updateRecord(LawyerCircleRecord lawyerCircle) {
+        return lawyerCircleDao.updateRecord(lawyerCircle);
     }
 
     /***
@@ -155,8 +155,8 @@ public class LawyerCircleService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int del(long id, long userId) {
-        return lawyerCircleDao.del(id, userId);
+    public int delRecord(long id, long userId) {
+        return lawyerCircleDao.delRecord(id, userId);
     }
 
     /***
@@ -167,10 +167,10 @@ public class LawyerCircleService {
      * @param count    条数
      * @return
      */
-    public PageBean<LawyerCircleRecord> findList(long userId, int haveDoctor, int identity, int page, int count) {
+    public PageBean<LawyerCircleRecord> findRecordList(long userId, int haveDoctor, int identity, int page, int count) {
         List<LawyerCircleRecord> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = lawyerCircleDao.findList(userId, haveDoctor, identity);
+        list = lawyerCircleDao.findRecordList(userId, haveDoctor, identity);
         return PageUtils.getPageBean(p, list);
     }
 }

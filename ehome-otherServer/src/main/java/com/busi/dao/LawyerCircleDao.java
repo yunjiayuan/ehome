@@ -210,7 +210,7 @@ public interface LawyerCircleDao {
     @Insert("insert into LawyerCircleRecord(userId,lvshiId,prescribed,content,addTime,refreshTime)" +
             "values (#{userId},#{lvshiId},#{prescribed},#{content},#{addTime},#{refreshTime})")
     @Options(useGeneratedKeys = true)
-    int add(LawyerCircleRecord lawyerCircle);
+    int addRecord(LawyerCircleRecord lawyerCircle);
 
     /***
      * 更新
@@ -224,7 +224,7 @@ public interface LawyerCircleDao {
             " prescribed=#{prescribed}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
-    int update(LawyerCircleRecord lawyerCircle);
+    int updateRecord(LawyerCircleRecord lawyerCircle);
 
     /***
      * 更新删除状态
@@ -237,7 +237,7 @@ public interface LawyerCircleDao {
             " where id = #{id}" +
             " and (userId=#{userId} or lvshiId=#{userId})" +
             "</script>")
-    int del(@Param("id") long id, @Param("userId") long userId);
+    int delRecord(@Param("id") long id, @Param("userId") long userId);
 
     /***
      * 查询列表
@@ -259,5 +259,5 @@ public interface LawyerCircleDao {
             "</if>" +
             " order by refreshTime desc" +
             "</script>")
-    List<LawyerCircleRecord> findList(@Param("userId") long userId, @Param("haveDoctor") int haveDoctor, @Param("identity") int identity);
+    List<LawyerCircleRecord> findRecordList(@Param("userId") long userId, @Param("haveDoctor") int haveDoctor, @Param("identity") int identity);
 }
