@@ -50,6 +50,7 @@ public class MembershipExpiresTimerController {
                         if (regularExpireTime <= nowTime) {
                             membership.setMemberShipStatus(0);
                             membership.setRegularMembershipLevel(0);
+                            membership.setRedisStatus(1);//数据库中已有对应记录
                             //更新数据库
                             userMembershipService.update2(membership);
                             usedList.add(membership);
@@ -75,6 +76,7 @@ public class MembershipExpiresTimerController {
                                 membership.setMemberShipStatus(0);
                                 membership.setVipMembershipLevel(0);
                             }
+                            membership.setRedisStatus(1);//数据库中已有对应记录
                             //更新缓存
                             Map<String, Object> userMembershipMap = CommonUtils.objectToMap(membership);
                             redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP + membership.getUserId(), userMembershipMap, Constants.USER_TIME_OUT);
