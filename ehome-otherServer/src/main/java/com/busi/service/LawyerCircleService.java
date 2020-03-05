@@ -105,7 +105,7 @@ public class LawyerCircleService {
             list = lawyerCircleDao.findList4(cityId, userId);
         } else {
             if (department >= 0) {//按律师类型
-                list = lawyerCircleDao.findList(watchVideos, userId, department);
+                list = lawyerCircleDao.findList(watchVideos, userId, department, province, city, district);
             } else {
                 if (!CommonUtils.checkFull(search)) {
                     list = lawyerCircleDao.findList2(watchVideos, userId, search, province, city, district);

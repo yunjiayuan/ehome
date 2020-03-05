@@ -181,8 +181,17 @@ public interface HomeHospitalDao {
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
+            "<if test=\"district >= 0\">" +
+            " and district = #{district}" +
+            "</if>" +
+            "<if test=\"city >= 0\">" +
+            " and city = #{city}" +
+            "</if>" +
+            "<if test=\"province >= 0\">" +
+            " and province = #{province}" +
+            "</if>" +
             "</script>")
-    List<HomeHospital> findList(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("department") int department);
+    List<HomeHospital> findList(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("department") int department, @Param("province") int province, @Param("city") int city, @Param("district") int district);
 
     /***
      * 查询列表

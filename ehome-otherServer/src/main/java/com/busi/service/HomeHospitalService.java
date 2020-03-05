@@ -105,7 +105,7 @@ public class HomeHospitalService {
             list = homeHospitalDao.findList4(cityId, userId);
         } else {
             if (department >= 0) {//按科室
-                list = homeHospitalDao.findList(watchVideos, userId, department);
+                list = homeHospitalDao.findList(watchVideos, userId, department, province, city, district);
             } else {
                 String departId = "";
                 if (!CommonUtils.checkFull(search)) {
