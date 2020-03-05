@@ -52,8 +52,8 @@ public class LawyerCircle {
     private String content;                //简介
 
     @Min(value = 0, message = "jobStatus参数有误，数值超出指定范围")
-    @Max(value = 1, message = "jobStatus参数有误，数值超出指定范围")
-    private int jobStatus;                //在职状态：  0正常 1退休
+    @Max(value = 2, message = "jobStatus参数有误，数值超出指定范围")
+    private int jobStatus;                //在职状态：  0正常 1退休 2其他
 
     @Min(value = 0, message = "province参数有误，超出指定范围")
     private int province; // 省
