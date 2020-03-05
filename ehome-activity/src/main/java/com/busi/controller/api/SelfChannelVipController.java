@@ -51,6 +51,25 @@ public class SelfChannelVipController extends BaseController implements SelfChan
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //验证是否是自频道会员
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_SELFCHANNELVIP + CommonUtils.getMyId());
+        if (map == null || map.size() <= 0) {
+            SelfChannelVip vip = selfChannelVipService.findDetails(CommonUtils.getMyId());
+            if (vip != null) {
+                //放入缓存
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(vip);
+                redisUtils.hmset(Constants.REDIS_KEY_SELFCHANNELVIP + CommonUtils.getMyId(), ordersMap, Constants.USER_TIME_OUT);
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已经是会员了", new JSONObject());
+            }
+        } else {
+            SelfChannelVip vip = (SelfChannelVip) CommonUtils.mapToObject(map, SelfChannelVip.class);
+            if (vip != null) {
+                if (vip.getExpiretTime().getTime() > new Date().getTime()) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已经是会员了", new JSONObject());
+                }
+            }
+        }
         long time = new Date().getTime();
         String noTime = String.valueOf(time);
         String random = CommonUtils.getRandom(6, 1);
