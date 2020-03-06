@@ -35,6 +35,7 @@ public interface HomeHospitalDao {
     @Update("<script>" +
             "update HomeHospital set" +
             " longitude=#{longitude}," +
+            " physicianName=#{physicianName}," +
             " age=#{age}," +
             " sex=#{sex}," +
             " latitude=#{latitude}," +
