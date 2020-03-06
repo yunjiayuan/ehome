@@ -116,6 +116,7 @@ public interface LawyerCircleDao {
             " and userId != #{userId}" +
             " and (lvshiName LIKE CONCAT('%',#{search},'%')" +
             " or lawFirm LIKE CONCAT('%',#{search},'%')" +
+            " or beGoodAt LIKE CONCAT('%',#{search},'%')" +
             " or lvshiType LIKE CONCAT('%',#{search},'%'))" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
