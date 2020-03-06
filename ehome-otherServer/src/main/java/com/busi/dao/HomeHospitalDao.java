@@ -114,20 +114,9 @@ public interface HomeHospitalDao {
             "select * from HomeHospital" +
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
-            "<if test=\"departId != null and departId != '' \">" +
-            " and (department in" +
-            "<foreach collection='departId' index='index' item='item' open='(' separator=',' close=')'>" +
-            " #{item}" +
-            "</foreach>" +
-            " or (physicianName LIKE CONCAT('%',#{search},'%')" +
-            " or hospital LIKE CONCAT('%',#{search},'%')" +
-            " or major LIKE CONCAT('%',#{search},'%')))" +
-            "</if>" +
-            "<if test=\"departId == null or departId == '' \">" +
             " and (physicianName LIKE CONCAT('%',#{search},'%')" +
             " or hospital LIKE CONCAT('%',#{search},'%')" +
             " or major LIKE CONCAT('%',#{search},'%'))" +
-            "</if>" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
             "</if>" +
@@ -142,7 +131,7 @@ public interface HomeHospitalDao {
             "</if>" +
             " order by helpNumber desc" +
             "</script>")
-    List<HomeHospital> findList2(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("departId") String[] departId, @Param("search") String search, @Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<HomeHospital> findList2(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("search") String search, @Param("province") int province, @Param("city") int city, @Param("district") int district);
 
     /***
      * 查询列表

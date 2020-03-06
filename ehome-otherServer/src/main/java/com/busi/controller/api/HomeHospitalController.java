@@ -137,46 +137,41 @@ public class HomeHospitalController extends BaseController implements HomeHospit
      */
     @Override
     public ReturnData findHospital(@PathVariable long userId) {
-        //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOMEHOSPITAL + userId);
-        if (kitchenMap == null || kitchenMap.size() <= 0) {
-            HomeHospital kitchen = homeHospitalService.findByUserId(userId);
-            if (kitchen == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-            }
-            UserInfo sendInfoCache = null;
-            sendInfoCache = userInfoUtils.getUserInfo(userId);
+        UserInfo sendInfoCache = null;
+        HomeHospital kitchen = null;
+        Map<String, Object> kitchenMap = null;
+        //匹配机器人数据
+        if (userId >= 13870 && userId <= 53870) {
+            Random ra = new Random();
+            kitchen = homeHospitalService.findByUserId(ra.nextInt(37) + 1);
+            sendInfoCache = userInfoUtils.getUserInfo(kitchen.getUserId());
             if (sendInfoCache != null) {
-//                if (userId == CommonUtils.getMyId()) {//查看自己店铺时返回的是实名信息
-//                    //检测是否实名
-//                    Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId);
-//                    if (map == null || map.size() <= 0) {
-//                        UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(userId);
-//                        if (userAccountSecurity != null) {
-//                            userAccountSecurity.setRedisStatus(1);//数据库中已有记录
-//                            //放到缓存中
-//                            map = CommonUtils.objectToMap(userAccountSecurity);
-//                            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId, map, Constants.USER_TIME_OUT);
-//                        }
-//                    }
-//                    if (map != null || map.size() > 0) {
-//                        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
-//                        if (userAccountSecurity != null) {
-//                            if (!CommonUtils.checkFull(userAccountSecurity.getRealName()) || !CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
-//                                kitchen.setSex(CommonUtils.getSexByIdCard(userAccountSecurity.getIdCard()));
-//                                kitchen.setAge(CommonUtils.getAgeByIdCard(userAccountSecurity.getIdCard()));
-//                            }
-//                        }
-//                    }
-//                }
                 if (CommonUtils.checkFull(kitchen.getHeadCover())) {
                     kitchen.setHeadCover(sendInfoCache.getHead());
                 }
                 kitchen.setProTypeId(sendInfoCache.getProType());
                 kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
             }
-            //放入缓存
             kitchenMap = CommonUtils.objectToMap(kitchen);
+        } else {
+            //查询缓存 缓存中不存在 查询数据库
+            kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOMEHOSPITAL + userId);
+            if (kitchenMap == null || kitchenMap.size() <= 0) {
+                kitchen = homeHospitalService.findByUserId(userId);
+                if (kitchen == null) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                }
+                sendInfoCache = userInfoUtils.getUserInfo(userId);
+                if (sendInfoCache != null) {
+                    if (CommonUtils.checkFull(kitchen.getHeadCover())) {
+                        kitchen.setHeadCover(sendInfoCache.getHead());
+                    }
+                    kitchen.setProTypeId(sendInfoCache.getProType());
+                    kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
+                }
+                kitchenMap = CommonUtils.objectToMap(kitchen);
+            }
+            //放入缓存
             redisUtils.hmset(Constants.REDIS_KEY_HOMEHOSPITAL + userId, kitchenMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);

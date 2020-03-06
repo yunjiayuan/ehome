@@ -107,20 +107,20 @@ public class HomeHospitalService {
             if (department >= 0) {//按科室
                 list = homeHospitalDao.findList(watchVideos, userId, department, province, city, district);
             } else {
-                String departId = "";
+//                String departId = "";
                 if (!CommonUtils.checkFull(search)) {
-                    String[] name = Constants.department;//科室
+//                    String[] name = Constants.department;//科室
                     //匹配科室
-                    for (int i = 0; i < name.length; i++) {
-                        if (name[i].indexOf(search) >= 0) {
-                            if (i < name.length - 1) {
-                                departId += i + ",";
-                            } else {
-                                departId += i;
-                            }
-                        }
-                    }
-                    list = homeHospitalDao.findList2(watchVideos, userId, departId.split(","), search, province, city, district);
+//                    for (int i = 0; i < name.length; i++) {
+//                        if (name[i].indexOf(search) >= 0) {
+//                            if (i < name.length - 1) {
+//                                departId += i + ",";
+//                            } else {
+//                                departId += i;
+//                            }
+//                        }
+//                    }
+                    list = homeHospitalDao.findList2(watchVideos, userId, search, province, city, district);
                 } else {
                     list = homeHospitalDao.findList3(watchVideos, userId, province, city, district);
                 }

@@ -139,16 +139,32 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
      */
     @Override
     public ReturnData findLvshi(@PathVariable long userId) {
-        //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_LVSHI + userId);
-        if (kitchenMap == null || kitchenMap.size() <= 0) {
-            LawyerCircle kitchen = lawyerCircleService.findByUserId(userId);
-            if (kitchen == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-            }
-            UserInfo sendInfoCache = null;
-            sendInfoCache = userInfoUtils.getUserInfo(userId);
+        UserInfo sendInfoCache = null;
+        LawyerCircle kitchen = null;
+        Map<String, Object> kitchenMap = null;
+        //匹配机器人数据
+        if (userId >= 13870 && userId <= 53870) {
+            Random ra = new Random();
+            kitchen = lawyerCircleService.findByUserId(ra.nextInt(19) + 1);
+            sendInfoCache = userInfoUtils.getUserInfo(kitchen.getUserId());
             if (sendInfoCache != null) {
+                if (CommonUtils.checkFull(kitchen.getHeadCover())) {
+                    kitchen.setHeadCover(sendInfoCache.getHead());
+                }
+                kitchen.setProTypeId(sendInfoCache.getProType());
+                kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
+            }
+            kitchenMap = CommonUtils.objectToMap(kitchen);
+        } else {
+            //查询缓存 缓存中不存在 查询数据库
+            kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_LVSHI + userId);
+            if (kitchenMap == null || kitchenMap.size() <= 0) {
+                kitchen = lawyerCircleService.findByUserId(userId);
+                if (kitchen == null) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                }
+                sendInfoCache = userInfoUtils.getUserInfo(userId);
+                if (sendInfoCache != null) {
 //                if (userId == CommonUtils.getMyId()) {//查看自己时返回的是实名信息
 //                    //检测是否实名
 //                    Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId);
@@ -171,14 +187,15 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
 //                        }
 //                    }
 //                }
-                if (CommonUtils.checkFull(kitchen.getHeadCover())) {
-                    kitchen.setHeadCover(sendInfoCache.getHead());
+                    if (CommonUtils.checkFull(kitchen.getHeadCover())) {
+                        kitchen.setHeadCover(sendInfoCache.getHead());
+                    }
+                    kitchen.setProTypeId(sendInfoCache.getProType());
+                    kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
                 }
-                kitchen.setProTypeId(sendInfoCache.getProType());
-                kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
+                kitchenMap = CommonUtils.objectToMap(kitchen);
             }
             //放入缓存
-            kitchenMap = CommonUtils.objectToMap(kitchen);
             redisUtils.hmset(Constants.REDIS_KEY_LVSHI + userId, kitchenMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
@@ -198,7 +215,9 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
      * @return
      */
     @Override
-    public ReturnData findLvshiList(@PathVariable int cityId, @PathVariable int watchVideos, @PathVariable int department, @PathVariable String search, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findLvshiList(@PathVariable int cityId, @PathVariable int watchVideos,
+                                    @PathVariable int department, @PathVariable String search, @PathVariable int province, @PathVariable int city,
+                                    @PathVariable int district, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -273,7 +292,8 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
      * @return
      */
     @Override
-    public ReturnData changeLRecord(@Valid @RequestBody LawyerCircleRecord homeHospital, BindingResult bindingResult) {
+    public ReturnData changeLRecord(@Valid @RequestBody LawyerCircleRecord homeHospital, BindingResult
+            bindingResult) {
         homeHospital.setState(1);
         homeHospital.setRefreshTime(new Date());
         lawyerCircleService.updateRecord(homeHospital);
@@ -295,7 +315,8 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
      * @return
      */
     @Override
-    public ReturnData findLRecordList(@PathVariable int haveDoctor, @PathVariable int identity, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findLRecordList(@PathVariable int haveDoctor, @PathVariable int identity,
+                                      @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
