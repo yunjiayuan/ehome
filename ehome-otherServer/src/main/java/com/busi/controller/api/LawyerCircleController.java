@@ -144,17 +144,23 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
         Map<String, Object> kitchenMap = null;
         //匹配机器人数据
         if (userId >= 13870 && userId <= 53870) {
-            Random ra = new Random();
-            kitchen = lawyerCircleService.findByUserId(ra.nextInt(19) + 1);
+            LawyerCircle hospital = new LawyerCircle();
+//            Random ra = new Random();
+//            kitchen = lawyerCircleService.findByUserId(ra.nextInt(19) + 1);
             sendInfoCache = userInfoUtils.getUserInfo(kitchen.getUserId());
             if (sendInfoCache != null) {
-                if (CommonUtils.checkFull(kitchen.getHeadCover())) {
-                    kitchen.setHeadCover(sendInfoCache.getHead());
-                }
-                kitchen.setProTypeId(sendInfoCache.getProType());
-                kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
+                hospital.setUserId(userId);
+                hospital.setLvshiName(sendInfoCache.getName());
+                hospital.setSex(sendInfoCache.getSex());
+                hospital.setAge(sendInfoCache.getBirthday());
+                hospital.setProvince(sendInfoCache.getProvince());
+                hospital.setCity(sendInfoCache.getCity());
+                hospital.setDistrict(sendInfoCache.getDistrict());
+                hospital.setHeadCover(sendInfoCache.getHead());
+                hospital.setProTypeId(sendInfoCache.getProType());
+                hospital.setHouseNumber(sendInfoCache.getHouseNumber());
             }
-            kitchenMap = CommonUtils.objectToMap(kitchen);
+            kitchenMap = CommonUtils.objectToMap(hospital);
         } else {
             //查询缓存 缓存中不存在 查询数据库
             kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_LVSHI + userId);

@@ -142,17 +142,23 @@ public class HomeHospitalController extends BaseController implements HomeHospit
         Map<String, Object> kitchenMap = null;
         //匹配机器人数据
         if (userId >= 13870 && userId <= 53870) {
-            Random ra = new Random();
-            kitchen = homeHospitalService.findByUserId(ra.nextInt(37) + 1);
-            sendInfoCache = userInfoUtils.getUserInfo(kitchen.getUserId());
+            HomeHospital hospital = new HomeHospital();
+//            Random ra = new Random();
+//            kitchen = homeHospitalService.findByUserId(ra.nextInt(37) + 1);
+            sendInfoCache = userInfoUtils.getUserInfo(userId);
             if (sendInfoCache != null) {
-                if (CommonUtils.checkFull(kitchen.getHeadCover())) {
-                    kitchen.setHeadCover(sendInfoCache.getHead());
-                }
-                kitchen.setProTypeId(sendInfoCache.getProType());
-                kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
+                hospital.setUserId(userId);
+                hospital.setPhysicianName(sendInfoCache.getName());
+                hospital.setSex(sendInfoCache.getSex());
+                hospital.setAge(sendInfoCache.getBirthday());
+                hospital.setProvince(sendInfoCache.getProvince());
+                hospital.setCity(sendInfoCache.getCity());
+                hospital.setDistrict(sendInfoCache.getDistrict());
+                hospital.setHeadCover(sendInfoCache.getHead());
+                hospital.setProTypeId(sendInfoCache.getProType());
+                hospital.setHouseNumber(sendInfoCache.getHouseNumber());
             }
-            kitchenMap = CommonUtils.objectToMap(kitchen);
+            kitchenMap = CommonUtils.objectToMap(hospital);
         } else {
             //查询缓存 缓存中不存在 查询数据库
             kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOMEHOSPITAL + userId);
