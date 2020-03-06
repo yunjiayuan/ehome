@@ -143,11 +143,13 @@ public class HomeHospitalController extends BaseController implements HomeHospit
         //匹配机器人数据
         if (userId >= 13870 && userId <= 53870) {
             HomeHospital hospital = new HomeHospital();
-//            Random ra = new Random();
+            Random ra = new Random();
 //            kitchen = homeHospitalService.findByUserId(ra.nextInt(37) + 1);
             sendInfoCache = userInfoUtils.getUserInfo(userId);
             if (sendInfoCache != null) {
                 hospital.setUserId(userId);
+                String num = ra.nextLong() + "";
+                hospital.setPracticeNumber(Long.parseLong(num.substring(num.length() - 17)));
                 hospital.setPhysicianName(sendInfoCache.getName());
                 hospital.setSex(sendInfoCache.getSex());
                 hospital.setAge(sendInfoCache.getBirthday());
