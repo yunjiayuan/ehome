@@ -21,9 +21,9 @@ public interface HomeHospitalDao {
      * @return
      */
     @Insert("insert into HomeHospital(userId,businessStatus,department,auditType,title,physicianName,hospital,major,addTime,imgUrl,headCover,content,jobStatus,province,city,district," +
-            "videoUrl,videoCoverUrl,helpNumber,practiceNumber,longitude,latitude,cityId)" +
+            "videoUrl,videoCoverUrl,helpNumber,practiceNumber,longitude,latitude,cityId,age,sex)" +
             "values (#{userId},#{businessStatus},#{department},#{auditType},#{title},#{physicianName},#{hospital},#{major},#{addTime},#{imgUrl},#{headCover},#{content},#{jobStatus},#{province},#{city},#{district}" +
-            ",#{videoUrl},#{videoCoverUrl},#{helpNumber},#{practiceNumber},#{longitude},#{latitude},#{cityId})")
+            ",#{videoUrl},#{videoCoverUrl},#{helpNumber},#{practiceNumber},#{longitude},#{latitude},#{cityId},#{age},#{sex})")
     @Options(useGeneratedKeys = true)
     int add(HomeHospital kitchen);
 
@@ -35,6 +35,8 @@ public interface HomeHospitalDao {
     @Update("<script>" +
             "update HomeHospital set" +
             " longitude=#{longitude}," +
+            " age=#{age}," +
+            " sex=#{sex}," +
             " latitude=#{latitude}," +
             " cityId=#{cityId}," +
             " city=#{city}," +

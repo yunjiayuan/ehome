@@ -149,28 +149,28 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
             UserInfo sendInfoCache = null;
             sendInfoCache = userInfoUtils.getUserInfo(userId);
             if (sendInfoCache != null) {
-                if (userId == CommonUtils.getMyId()) {//查看自己时返回的是实名信息
-                    //检测是否实名
-                    Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId);
-                    if (map == null || map.size() <= 0) {
-                        UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(userId);
-                        if (userAccountSecurity != null) {
-                            userAccountSecurity.setRedisStatus(1);//数据库中已有记录
-                            //放到缓存中
-                            map = CommonUtils.objectToMap(userAccountSecurity);
-                            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId, map, Constants.USER_TIME_OUT);
-                        }
-                    }
-                    if (map != null || map.size() > 0) {
-                        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
-                        if (userAccountSecurity != null) {
-                            if (!CommonUtils.checkFull(userAccountSecurity.getRealName()) || !CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
-                                kitchen.setSex(CommonUtils.getSexByIdCard(userAccountSecurity.getIdCard()));
-                                kitchen.setAge(CommonUtils.getAgeByIdCard(userAccountSecurity.getIdCard()));
-                            }
-                        }
-                    }
-                }
+//                if (userId == CommonUtils.getMyId()) {//查看自己时返回的是实名信息
+//                    //检测是否实名
+//                    Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId);
+//                    if (map == null || map.size() <= 0) {
+//                        UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(userId);
+//                        if (userAccountSecurity != null) {
+//                            userAccountSecurity.setRedisStatus(1);//数据库中已有记录
+//                            //放到缓存中
+//                            map = CommonUtils.objectToMap(userAccountSecurity);
+//                            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + userId, map, Constants.USER_TIME_OUT);
+//                        }
+//                    }
+//                    if (map != null || map.size() > 0) {
+//                        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
+//                        if (userAccountSecurity != null) {
+//                            if (!CommonUtils.checkFull(userAccountSecurity.getRealName()) || !CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
+//                                kitchen.setSex(CommonUtils.getSexByIdCard(userAccountSecurity.getIdCard()));
+//                                kitchen.setAge(CommonUtils.getAgeByIdCard(userAccountSecurity.getIdCard()));
+//                            }
+//                        }
+//                    }
+//                }
                 if (CommonUtils.checkFull(kitchen.getHeadCover())) {
                     kitchen.setHeadCover(sendInfoCache.getHead());
                 }

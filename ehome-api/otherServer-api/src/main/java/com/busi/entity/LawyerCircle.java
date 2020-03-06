@@ -89,11 +89,12 @@ public class LawyerCircle {
 
     private long helpNumber; 	// 帮助人数
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date age;         //年龄
+
+    private int sex;        // 性别:1男,2女
+
     //与数据库无关字段
-    private int age;         //年龄
-
-    private int sex;        // 性别:0男,1女
-
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
     private String name; 			    //用户名	查询后从内存获取最新

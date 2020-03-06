@@ -21,9 +21,9 @@ public interface LawyerCircleDao {
      * @return
      */
     @Insert("insert into LawyerCircle(userId,businessStatus,auditType,title,lvshiName,lawFirm,cityId,addTime,imgUrl,headCover,content,jobStatus,province,city,district," +
-            "videoUrl,videoCoverUrl,beGoodAt,lvshiNumber,longitude,latitude,lvshiType)" +
+            "videoUrl,videoCoverUrl,beGoodAt,lvshiNumber,longitude,latitude,lvshiType,age,sex)" +
             "values (#{userId},#{businessStatus},#{auditType},#{title},#{lvshiName},#{lawFirm},#{cityId},#{addTime},#{imgUrl},#{headCover},#{content},#{jobStatus},#{province},#{city},#{district}" +
-            ",#{videoUrl},#{videoCoverUrl},#{beGoodAt},#{lvshiNumber},#{longitude},#{latitude},#{lvshiType})")
+            ",#{videoUrl},#{videoCoverUrl},#{beGoodAt},#{lvshiNumber},#{longitude},#{latitude},#{lvshiType},#{age},#{sex})")
     @Options(useGeneratedKeys = true)
     int add(LawyerCircle lawyerCircle);
 
@@ -34,6 +34,8 @@ public interface LawyerCircleDao {
      */
     @Update("<script>" +
             "update LawyerCircle set" +
+            " age=#{age}," +
+            " sex=#{sex}," +
             " longitude=#{longitude}," +
             " latitude=#{latitude}," +
             " cityId=#{cityId}," +
