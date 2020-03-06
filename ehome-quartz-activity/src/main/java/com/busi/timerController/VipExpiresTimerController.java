@@ -40,7 +40,7 @@ public class VipExpiresTimerController {
             for (int j = 0; j < selfList.size(); j++) {
                 SelfChannelVip vip = (SelfChannelVip) selfList.get(j);
                 if (vip != null) {
-                    if (nowTime <= vip.getExpiretTime().getTime()) {
+                    if (nowTime >= vip.getExpiretTime().getTime()) {
                         vip.setMemberShipStatus(1);
                         selfChannelVipService.update(vip);
                         //更新缓存

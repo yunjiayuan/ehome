@@ -22,7 +22,7 @@ public interface SelfChannelVipDao {
      * 查询会员信息
      * @return
      */
-    @Select("select * from SelfChannelVip where memberShipStatus = 0 and TO_DAYS(expiretTime)>TO_DAYS(NOW())")
+    @Select("select * from SelfChannelVip where memberShipStatus = 0 and TO_DAYS(TO_DAYS(NOW()>= expiretTime))")
     List<SelfChannelVip> findMembershipList();
 
     /***
