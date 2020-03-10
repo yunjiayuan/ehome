@@ -58,6 +58,10 @@ public class ShopFloorOtherController extends BaseController implements ShopFloo
         collect.setImgUrl(posts.getImgUrl());
         collect.setPrice(posts.getPrice());
         collectService.addCollection(collect);
+
+        //更新收藏次数
+        posts.setCollectionCount(posts.getCollectionCount() + 1);
+        goodsCenterService.updateCollection(posts);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

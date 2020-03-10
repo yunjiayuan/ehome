@@ -191,4 +191,14 @@ public class ShopFloorGoodsService {
     public int updateSee(ShopFloorGoods homeShopGoods) {
         return goodsCenterDao.updateSee(homeShopGoods);
     }
+
+    /***
+     * 更新收藏数
+     * @param homeShopGoods
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateCollection(ShopFloorGoods homeShopGoods) {
+        return goodsCenterDao.updateCollection(homeShopGoods);
+    }
 }

@@ -363,4 +363,16 @@ public interface ShopFloorGoodsDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateSee(ShopFloorGoods kitchenDishes);
+
+    /***
+     * 更新收藏数
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorGoods set" +
+            " collectionCount=#{collectionCount}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateCollection(ShopFloorGoods kitchenDishes);
 }
