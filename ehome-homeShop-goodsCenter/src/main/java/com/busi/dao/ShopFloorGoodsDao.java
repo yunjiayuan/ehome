@@ -351,4 +351,16 @@ public interface ShopFloorGoodsDao {
      */
     @Select("select * from ShopFloorGoodsDescribe where id=#{id}")
     ShopFloorGoodsDescribe disheSdetails(@Param("id") long id);
+
+    /***
+     * 更新浏览数
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorGoods set" +
+            " lookCount=#{lookCount}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateSee(ShopFloorGoods kitchenDishes);
 }

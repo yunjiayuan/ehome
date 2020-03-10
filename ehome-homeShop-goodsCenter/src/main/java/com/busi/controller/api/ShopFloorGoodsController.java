@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.ShopFloorGoodsService;
+import com.busi.service.ShopFloorOtherService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -34,6 +35,9 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    ShopFloorOtherService collectService;
 
     @Autowired
     private ShopFloorGoodsService goodsCenterService;
@@ -176,6 +180,18 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
             posts.setProTypeId(userInfo.getProType());
             posts.setHouseNumber(userInfo.getHouseNumber());
         }
+        //新增浏览记录
+        ShopFloorGoodsLook look = new ShopFloorGoodsLook();
+        look.setTime(new Date());
+        look.setGoodsId(id);
+        look.setUserId(CommonUtils.getMyId());
+        look.setGoodsName(posts.getGoodsTitle());
+        look.setImgUrl(posts.getImgUrl());
+        look.setPrice(posts.getPrice());
+        collectService.addLook(look);
+
+        posts.setLookCount(posts.getLookCount() + 1);
+        goodsCenterService.updateSee(posts);
         Map<String, Object> map = CommonUtils.objectToMap(posts);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }

@@ -75,6 +75,10 @@ public class ShopFloorGoods {
 
     private long commentNumber;       //评论数
 
+    private long collectionCount;//收藏次数
+
+    private long lookCount;//浏览次数
+
     // 与数据库无关字段
     private String name;                //用户名
 
@@ -83,8 +87,6 @@ public class ShopFloorGoods {
     private int proTypeId;                //省简称ID
 
     private long houseNumber;            //门牌号
-
-//    private int sellingNumber;            //在卖宝贝数量
 
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 }
