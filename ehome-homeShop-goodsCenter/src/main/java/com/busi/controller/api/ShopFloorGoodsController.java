@@ -158,7 +158,6 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
         if (id <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
-        int num = 0;
         ShopFloorGoods posts = null;
         posts = goodsCenterService.findUserById(id);
         if (posts == null) {
@@ -172,8 +171,6 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
         }
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(posts.getUserId());
-//        num = goodsCenterService.findNum(userInfo.getUserId(), 1);//已上架
-//        posts.setSellingNumber(num);
         if (userInfo != null) {
             posts.setName(userInfo.getName());
             posts.setHead(userInfo.getHead());
@@ -192,7 +189,14 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
 
         posts.setLookCount(posts.getLookCount() + 1);
         goodsCenterService.updateSee(posts);
+        int collection = 0;//是否收藏过此商品  0没有  1已收藏
         Map<String, Object> map = CommonUtils.objectToMap(posts);
+        //验证是否收藏过
+        ShopFloorGoodsCollection flag = collectService.findUserId(CommonUtils.getMyId(), id);
+        if (flag != null) {
+            collection = 1;//1已收藏
+        }
+        map.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
