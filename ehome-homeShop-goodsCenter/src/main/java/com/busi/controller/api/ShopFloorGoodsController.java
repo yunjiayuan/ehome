@@ -192,7 +192,7 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
         int collection = 0;//是否收藏过此商品  0没有  1已收藏
         Map<String, Object> map = CommonUtils.objectToMap(posts);
         //验证是否收藏过
-        ShopFloorGoodsCollection flag = collectService.findUserId(CommonUtils.getMyId(), id);
+        ShopFloorGoodsCollection flag = collectService.findUserId(id, CommonUtils.getMyId());
         if (flag != null) {
             collection = 1;//1已收藏
         }
