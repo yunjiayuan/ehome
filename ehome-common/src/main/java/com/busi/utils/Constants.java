@@ -219,6 +219,8 @@ public class Constants {
     public static final String REDIS_KEY_CHAT_SQUARE = "chat_square_";//聊天室在线用户对照 省ID对应在线用户
     public static final String REDIS_KEY_SELFCHANNELVIP = "selfChannelVip_";//userId与自频道会员信息对象的关系对照
     public static final String REDIS_KEY_BONDORDER = "bondOrder_";//userId与楼店保证金订单的关系对照
+    public static final String REDIS_KEY_CONSULTATIONORDER = "consultationOrder_";//userId与医生或律师咨询订单的关系对照
+    public static final String REDIS_KEY_CONSULTATION = "consultation_";//医生或律师咨询付费信息关系对照
     public static final String REDIS_KEY_SELFCHANNELVIP_ORDER = "selfChannelVipOrder_";//userId与自频道会员订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER = "goodNumber_order_";//userId与靓号订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER_STATUS = "goodNumber_order_status_";//"省简称ID+门票号(格式0_1001518)"与靓号订单对象关系对照
