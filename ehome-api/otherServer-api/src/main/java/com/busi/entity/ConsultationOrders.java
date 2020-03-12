@@ -19,7 +19,9 @@ public class ConsultationOrders {
 
     private long userId;//用户ID
 
-    private long doctorId;    // 医师ID
+    private long peopleId;    // 医师或律师ID
+
+    private int occupation;          // 职业：0医生  1律师
 
     private String content;    //内容(主诉)
 

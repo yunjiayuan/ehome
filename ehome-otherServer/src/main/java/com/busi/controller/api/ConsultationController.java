@@ -68,13 +68,23 @@ public class ConsultationController extends BaseController implements Consultati
         Map<String, Object> ordersMap = CommonUtils.objectToMap(consultationOrders);
         redisUtils.hmset(Constants.REDIS_KEY_CONSULTATIONORDER + CommonUtils.getMyId() + "_" + consultationOrders.getOrderNumber(), ordersMap, Constants.TIME_OUT_MINUTE_5);
         //新增咨询主诉
-        HomeHospitalRecord homeHospital = new HomeHospitalRecord();
-        homeHospital.setContent(consultationOrders.getContent());
-        homeHospital.setDoctorId(consultationOrders.getDoctorId());
-        homeHospital.setAddTime(new Date());
-        homeHospital.setRefreshTime(new Date());
-        homeHospital.setUserId(CommonUtils.getMyId());
-        homeHospitalRecordService.add(homeHospital);
+        if (consultationOrders.getOccupation() == 0) {
+            HomeHospitalRecord homeHospital = new HomeHospitalRecord();
+            homeHospital.setContent(consultationOrders.getContent());
+            homeHospital.setDoctorId(consultationOrders.getPeopleId());
+            homeHospital.setAddTime(new Date());
+            homeHospital.setRefreshTime(new Date());
+            homeHospital.setUserId(CommonUtils.getMyId());
+            homeHospitalRecordService.add(homeHospital);
+        } else {
+            LawyerCircleRecord homeHospital = new LawyerCircleRecord();
+            homeHospital.setContent(consultationOrders.getContent());
+            homeHospital.setLvshiId(consultationOrders.getPeopleId());
+            homeHospital.setAddTime(new Date());
+            homeHospital.setRefreshTime(new Date());
+            homeHospital.setUserId(CommonUtils.getMyId());
+            lawyerCircleService.addRecord(homeHospital);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", noRandom);
     }
 
