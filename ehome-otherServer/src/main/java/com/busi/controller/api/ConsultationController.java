@@ -14,6 +14,8 @@ import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -52,7 +54,7 @@ public class ConsultationController extends BaseController implements Consultati
      * @return
      */
     @Override
-    public ReturnData addConsultOrder(@Valid ConsultationOrders consultationOrders, BindingResult bindingResult) {
+    public ReturnData addConsultOrder(@Valid @RequestBody ConsultationOrders consultationOrders, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -96,7 +98,7 @@ public class ConsultationController extends BaseController implements Consultati
      * @return
      */
     @Override
-    public ReturnData findConsultList(int occupation, int type, long userId) {
+    public ReturnData findConsultList(@PathVariable int occupation, @PathVariable int type, @PathVariable long userId) {
         int title = 0;// 职称：（occupation=0时 0副主任 主任 专家  1其他）  （occupation=1时 0初级律师 1中级律师  2高级律师）
         List<ConsultationFee> list = null;
         if (occupation == 0) {//医生
