@@ -59,6 +59,40 @@ public class ConsultationController extends BaseController implements Consultati
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        List<ConsultationFee> list = null;
+        if (consultationOrders.getOccupation() == 0) {//医生
+            //查询缓存 缓存中不存在 查询数据库
+            list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), 0, -1);
+            if (list == null || list.size() <= 0) {
+                list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), consultationOrders.getType());
+                //放入缓存
+                if (list != null && list.size() > 0) {
+                    redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), list, Constants.USER_TIME_OUT);
+                }
+            }
+        } else {//律师
+            //查询缓存 缓存中不存在 查询数据库
+            list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), 0, -1);
+            if (list == null || list.size() <= 0) {
+                list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), consultationOrders.getType());
+                //放入缓存
+                if (list != null && list.size() > 0) {
+                    redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), list, Constants.USER_TIME_OUT);
+                }
+            }
+        }
+        int duration[] = {5, 15, 30, 60};
+        int times = duration[consultationOrders.getDuration()];
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                ConsultationFee consultationFee = list.get(i);
+                if (consultationFee.getDuration() == times) {
+                    consultationOrders.setDuration(times);
+                    consultationOrders.setMoney(consultationFee.getCost());
+                    break;
+                }
+            }
+        }
         long time = new Date().getTime();
         String noTime = String.valueOf(time);
         String random = CommonUtils.getRandom(6, 1);
