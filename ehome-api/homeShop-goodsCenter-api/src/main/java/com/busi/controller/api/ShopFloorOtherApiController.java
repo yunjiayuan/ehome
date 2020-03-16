@@ -39,7 +39,7 @@ public interface ShopFloorOtherApiController {
     @GetMapping("findCollect/{page}/{count}")
     ReturnData findCollect(@PathVariable int page, @PathVariable int count);
 
-    /**
+    /***
      * @Description: 删除我的浏览记录
      * @return:
      */
@@ -54,4 +54,11 @@ public interface ShopFloorOtherApiController {
      */
     @GetMapping("findLook/{page}/{count}")
     ReturnData findLook(@PathVariable int page, @PathVariable int count);
+
+    /***
+     * 统计收藏、浏览次数
+     * @return
+     */
+    @GetMapping("getCLnumber")
+    ReturnData getCLnumber();
 }
