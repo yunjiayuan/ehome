@@ -98,9 +98,23 @@ public interface ShopFloorOtherDao {
     List<ShopFloorGoodsCollection> findCollectionList(@Param("myId") long myId);
 
     /***
-     * 根据用户&公告主键ID查询
+     * 根据用户&主键ID查询
      * @param id
      */
     @Select("select * from ShopFloorGoodsCollection where goodsId=#{id} and userId=#{myId}")
     ShopFloorGoodsCollection findUserId(@Param("id") long id, @Param("myId") long myId);
+
+    /***
+     * 根据Id统计收藏数量
+     * @param userId
+     */
+    @Select("select COUNT(id) from ShopFloorGoodsCollection where userId=#{userId}")
+    int findUserCollect(@Param("userId") long userId);
+
+    /***
+     * 根据Id统计浏览数量
+     * @param userId
+     */
+    @Select("select COUNT(id) from ShopFloorGoodsLook where userId=#{userId}")
+    int findUserLook(@Param("userId") long userId);
 }

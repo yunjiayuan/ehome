@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 楼店商品收藏浏览相关接口
@@ -142,5 +144,26 @@ public class ShopFloorOtherController extends BaseController implements ShopFloo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+    }
+
+    /***
+     * 统计我的收藏、浏览数量
+     * @return
+     */
+    @Override
+    public ReturnData getCLnumber() {
+        long userId = CommonUtils.getMyId();
+        // 统计收藏量
+        int collect = 0;
+        collect = collectService.findUserCollect(userId);
+        // 统计浏览量
+        int look = 0;
+        look = collectService.findUserLook(userId);
+
+        Map<String, Integer> numMap = new HashMap<>();
+        numMap.put("look", look);
+        numMap.put("count", collect);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", numMap);
     }
 }

@@ -29,8 +29,8 @@ public class ShopFloorOtherService {
      * @param look
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int addLook( ShopFloorGoodsLook look){
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addLook(ShopFloorGoodsLook look) {
         return shopFloorOtherDao.addLook(look);
     }
 
@@ -40,9 +40,9 @@ public class ShopFloorOtherService {
      * @param userId
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int delLook(String[] ids ,long userId){
-        return shopFloorOtherDao.delLook(ids,userId);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delLook(String[] ids, long userId) {
+        return shopFloorOtherDao.delLook(ids, userId);
     }
 
     /***
@@ -55,11 +55,12 @@ public class ShopFloorOtherService {
     public PageBean<ShopFloorGoodsLook> findLookList(long myId, int page, int count) {
 
         List<ShopFloorGoodsLook> list;
-        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = shopFloorOtherDao.findLookList(myId);
 
-        return PageUtils.getPageBean(p,list);
+        return PageUtils.getPageBean(p, list);
     }
+
     /***
      * 新增
      * @param collect
@@ -105,5 +106,23 @@ public class ShopFloorOtherService {
         list = shopFloorOtherDao.findCollectionList(myId);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 统计收藏数量
+     * @param userId
+     * @return
+     */
+    public int findUserCollect(long userId) {
+        return shopFloorOtherDao.findUserCollect(userId);
+    }
+
+    /***
+     * 统计浏览次数
+     * @param userId
+     * @return
+     */
+    public int findUserLook(long userId) {
+        return shopFloorOtherDao.findUserLook(userId);
     }
 }
