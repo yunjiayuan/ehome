@@ -162,7 +162,7 @@ public class ShopFloorOtherController extends BaseController implements ShopFloo
 
         Map<String, Integer> numMap = new HashMap<>();
         numMap.put("look", look);
-        numMap.put("count", collect);
+        numMap.put("collect", collect);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", numMap);
     }
