@@ -68,6 +68,12 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             if (shippingAddress == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "下单失败！收货地址不存在！", new JSONObject());
             }
+            shopFloorOrders.setAddress(shippingAddress.getAddress());
+            shopFloorOrders.setAddressName(shippingAddress.getContactsName());
+            shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
+            shopFloorOrders.setAddressCity(shippingAddress.getCity());
+            shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
+            shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
         }
         String goods = ""; //商品信息
         String goodsTitle = ""; //商品标题
@@ -121,12 +127,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         shopFloorOrders.setGoods(goods);//商品ID,标题,数量,价格，图片,规格;
         shopFloorOrders.setMoney(money);//总价
         shopFloorOrders.setOrdersType(0);
-        shopFloorOrders.setAddress(shippingAddress.getAddress());
-        shopFloorOrders.setAddressName(shippingAddress.getContactsName());
-        shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
-        shopFloorOrders.setAddressCity(shippingAddress.getCity());
-        shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
-        shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
         shopFloorOrdersService.addOrders(shopFloorOrders);
 
         //移除购物车当前商品
