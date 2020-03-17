@@ -20,8 +20,8 @@ public interface ShopFloorOtherDao {
      * @param look
      * @return
      */
-    @Insert("insert into ShopFloorGoodsLook(userId,goodsName,goodsId,price,time,imgUrl) " +
-            "values (#{userId},#{goodsName},#{goodsId},#{price},#{time},#{imgUrl})")
+    @Insert("insert into ShopFloorGoodsLook(userId,goodsName,goodsId,price,time,imgUrl,specs,basicDescribe) " +
+            "values (#{userId},#{goodsName},#{goodsId},#{price},#{time},#{imgUrl},#{specs},#{basicDescribe})")
     @Options(useGeneratedKeys = true)
     int addLook(ShopFloorGoodsLook look);
 
@@ -61,8 +61,8 @@ public interface ShopFloorOtherDao {
      * @param collect
      * @return
      */
-    @Insert("insert into ShopFloorGoodsCollection(userId,goodsName,goodsId,price,time,imgUrl) " +
-            "values (#{userId},#{goodsName},#{goodsId},#{price},#{time},#{imgUrl})")
+    @Insert("insert into ShopFloorGoodsCollection(userId,goodsName,goodsId,price,time,imgUrl,specs,basicDescribe) " +
+            "values (#{userId},#{goodsName},#{goodsId},#{price},#{time},#{imgUrl},#{specs},#{basicDescribe})")
     @Options(useGeneratedKeys = true)
     int addCollection(ShopFloorGoodsCollection collect);
 

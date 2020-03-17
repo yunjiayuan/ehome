@@ -183,10 +183,23 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
         look.setGoodsId(id);
         look.setUserId(CommonUtils.getMyId());
         look.setGoodsName(posts.getGoodsTitle());
-        look.setImgUrl(posts.getImgUrl());
-        look.setPrice(posts.getPrice());
+        String imgUrl = "";   //图片
+        if (CommonUtils.checkFull(posts.getGoodsCoverUrl())) {
+            String[] img = posts.getImgUrl().split(",");
+            imgUrl = img[0];//用第一张图做封面
+        } else {
+            imgUrl = posts.getGoodsCoverUrl();//图片
+        }
+        look.setImgUrl(imgUrl);
+        //判断是否有折扣
+        double cost = 0.00; //商品价格
+        if (posts.getDiscountPrice() > 0) {
+            cost = posts.getDiscountPrice();//折扣价
+        } else {
+            cost = posts.getPrice();//原价
+        }
+        look.setPrice(cost);
         collectService.addLook(look);
-
         posts.setLookCount(posts.getLookCount() + 1);
         goodsCenterService.updateSee(posts);
         int collection = 0;//是否收藏过此商品  0没有  1已收藏

@@ -57,8 +57,22 @@ public class ShopFloorOtherController extends BaseController implements ShopFloo
         }
         collect.setTime(new Date());
         collect.setGoodsName(posts.getGoodsTitle());
-        collect.setImgUrl(posts.getImgUrl());
-        collect.setPrice(posts.getPrice());
+        String imgUrl = "";   //图片
+        if (CommonUtils.checkFull(posts.getGoodsCoverUrl())) {
+            String[] img = posts.getImgUrl().split(",");
+            imgUrl = img[0];//用第一张图做封面
+        } else {
+            imgUrl = posts.getGoodsCoverUrl();//图片
+        }
+        collect.setImgUrl(imgUrl);
+        //判断是否有折扣
+        double cost = 0.00; //商品价格
+        if (posts.getDiscountPrice() > 0) {
+            cost = posts.getDiscountPrice();//折扣价
+        } else {
+            cost = posts.getPrice();//原价
+        }
+        collect.setPrice(cost);
         collectService.addCollection(collect);
 
         //更新收藏次数

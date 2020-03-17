@@ -30,6 +30,10 @@ public class ShopFloorGoodsCollection {
 
     private String imgUrl;      //图片
 
+    private String specs;         //规格
+
+    private String basicDescribe;   //基本描述
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;        //收藏时间
 }
