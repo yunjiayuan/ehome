@@ -29,7 +29,7 @@ public interface ShopFloorOrdersApiController {
      * @param bindingResult
      * @return
      */
-    @PostMapping("upSFreceiveState")
+    @PutMapping("upSFreceiveState")
     ReturnData upSFreceiveState(@Valid @RequestBody ShopFloorOrders shopFloorOrders, BindingResult bindingResult);
 
     /***
