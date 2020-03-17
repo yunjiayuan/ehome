@@ -62,9 +62,12 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        ShippingAddress shippingAddress = addressUtils.findAddress(shopFloorOrders.getAddressId());
-        if (shippingAddress == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "下单失败！收货地址不存在！", new JSONObject());
+        ShippingAddress shippingAddress = null;
+        if (shopFloorOrders.getType() == 0) {//礼尚往来下单时不需要地址
+            shippingAddress = addressUtils.findAddress(shopFloorOrders.getAddressId());
+            if (shippingAddress == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "下单失败！收货地址不存在！", new JSONObject());
+            }
         }
         String goods = ""; //商品信息
         String goodsTitle = ""; //商品标题
@@ -142,6 +145,36 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
     }
 
     /***
+     * 更新礼尚往来订单
+     * @param shopFloorOrders
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData upSFreceiveState(@Valid ShopFloorOrders shopFloorOrders, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        ShippingAddress shippingAddress = null;
+        shippingAddress = addressUtils.findAddress(shopFloorOrders.getAddressId());
+        if (shippingAddress == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "领取失败！收货地址不存在！", new JSONObject());
+        }
+        shopFloorOrders.setReceiveState(1);
+        shopFloorOrders.setAddress(shippingAddress.getAddress());
+        shopFloorOrders.setAddressName(shippingAddress.getContactsName());
+        shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
+        shopFloorOrders.setAddressCity(shippingAddress.getCity());
+        shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
+        shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
+        shopFloorOrdersService.upSFreceiveState(shopFloorOrders);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + shopFloorOrders.getBuyerId() + "_" + shopFloorOrders.getNo(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 删除订单
      * @param id 订单ID
      * @return
@@ -215,6 +248,16 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更改领取状态
+     * @param id  订单Id
+     * @return
+     */
+    @Override
+    public ReturnData changeSFreceiveState(long id) {
+        return null;
     }
 
     /***

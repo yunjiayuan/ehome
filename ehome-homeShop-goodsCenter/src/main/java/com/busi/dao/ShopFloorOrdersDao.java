@@ -17,19 +17,37 @@ import java.util.List;
 public interface ShopFloorOrdersDao {
 
     /***
-     * 新增厨房订座订单
+     * 新增订单
      * @param kitchenBookedOrders
      * @return
      */
     @Insert("insert into ShopFloorOrders(buyerId,shopId,goods,money,addTime,paymentTime,deliveryTime,receivingTime,no,ordersState,ordersType," +
-            "addressId,distributioMode,shopName,remarks,address,addressName,addressPhone,addressProvince,addressCity,addressDistrict)" +
+            "addressId,distributioMode,shopName,remarks,address,addressName,addressPhone,addressProvince,addressCity,addressDistrict,type,recipientId)" +
             "values (#{buyerId},#{shopId},#{goods},#{money},#{addTime},#{paymentTime},#{deliveryTime},#{receivingTime},#{no},#{ordersState},#{ordersType}" +
-            ",#{addressId},#{distributioMode},#{shopName},#{remarks},#{address},#{addressName},#{addressPhone},#{addressProvince},#{addressCity},#{addressDistrict})")
+            ",#{addressId},#{distributioMode},#{shopName},#{remarks},#{address},#{addressName},#{addressPhone},#{addressProvince},#{addressCity},#{addressDistrict},#{type},#{recipientId})")
     @Options(useGeneratedKeys = true)
     int addOrders(ShopFloorOrders kitchenBookedOrders);
 
     /***
-     * 根据用户ID查询订单
+     * 更新
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorOrders set" +
+            " addressCity=#{addressCity}," +
+            " addressDistrict=#{addressDistrict}," +
+            " addressProvince=#{addressProvince}," +
+            " addressPhone=#{addressPhone}," +
+            " addressName=#{addressName}," +
+            " receiveState=#{receiveState}," +
+            " address=#{address}" +
+            " where id=#{id} and recipientId=#{recipientId}" +
+            "</script>")
+    int upSFreceiveState(ShopFloorOrders kitchen);
+
+    /***
+     * 根据ID查询订单
      * @param id
      * @param type  查询场景 0删除 1由未发货改为已发货 2由未收货改为已收货 3取消订单
      * @return
@@ -66,7 +84,7 @@ public interface ShopFloorOrdersDao {
 
     /***
      *  更新楼店订单状态
-     *  updateCategory 更新类别  0删除状态  1由未发货改为已发货 2由未收货改为已收货 3取消订单 4更新支付状态
+     *  updateCategory 更新类别  0删除状态  1由未发货改为已发货 2由未收货改为已收货 3取消订单 4更新支付状态  5更新礼尚往来领取状态
      * @param orders
      * @return
      */
@@ -90,6 +108,9 @@ public interface ShopFloorOrdersDao {
             " paymentTime =#{paymentTime}," +
             " ordersType =#{ordersType}," +
             "</if>" +
+            "<if test=\"updateCategory == 5\">" +
+            " receiveState =#{receiveState}," +
+            "</if>" +
             " id=#{id} " +
             " where id=#{id} and ordersState=0" +
             "</script>")
@@ -97,7 +118,7 @@ public interface ShopFloorOrdersDao {
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单  6礼尚往来
      * @return
      */
     @Select("<script>" +
@@ -109,8 +130,11 @@ public interface ShopFloorOrdersDao {
             "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
             " and ordersType = #{ordersType}" +
             "</if>" +
-            "<if test=\"ordersType >= 5\">" +
-            " and ordersType > 4" +
+            "<if test=\"ordersType >= 5 and ordersType &lt; 8\">" +
+            " and ordersType > 4 and ordersType &lt; 8" +
+            "</if>" +
+            "<if test=\"ordersType == 6\">" +
+            " and type =1" +
             "</if>" +
             " order by addTime desc" +
             "</script>")

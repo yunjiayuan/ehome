@@ -25,13 +25,23 @@ public class ShopFloorOrdersService {
     private ShopFloorOrdersDao shopFloorOrdersDao;
 
     /***
-     * 新增楼店订座订单
+     * 新增楼店订单
      * @param kitchenBookedOrders
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int addOrders(ShopFloorOrders kitchenBookedOrders) {
         return shopFloorOrdersDao.addOrders(kitchenBookedOrders);
+    }
+
+    /***
+     * 更新
+     * @param hourlyWorker
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upSFreceiveState(ShopFloorOrders hourlyWorker) {
+        return shopFloorOrdersDao.upSFreceiveState(hourlyWorker);
     }
 
     /***

@@ -24,6 +24,15 @@ public interface ShopFloorOrdersApiController {
     ReturnData addSForders(@Valid @RequestBody ShopFloorOrders shopFloorOrders, BindingResult bindingResult);
 
     /***
+     * 更新订单领取状态
+     * @param shopFloorOrders
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("upSFreceiveState")
+    ReturnData upSFreceiveState(@Valid @RequestBody ShopFloorOrders shopFloorOrders, BindingResult bindingResult);
+
+    /***
      * 删除订单
      * @param id 订单ID
      * @return
@@ -48,6 +57,14 @@ public interface ShopFloorOrdersApiController {
      */
     @GetMapping("changeSFreceipt/{id}")
     ReturnData changeSFreceipt(@PathVariable long id);
+
+    /***
+     * 更改领取状态
+     * @param id  订单Id
+     * @return
+     */
+    @GetMapping("changeSFreceiveState/{id}")
+    ReturnData changeSFreceiveState(@PathVariable long id);
 
     /***
      * 分页查询订单列表

@@ -8,7 +8,7 @@ import java.util.Date;
 
 /**
  * @program: ehome
- * @description: 楼店订单实体
+ * @description: 楼店用户订单实体
  * @author: ZHaoJiaJie
  * @create: 2019-12-17 13:34
  */
@@ -28,8 +28,6 @@ public class ShopFloorOrders {
 
     private double money;            // 商品总金额
 
-//    private int freight;             //运费
-
     private int distributioMode;    //  配送方式
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -43,8 +41,6 @@ public class ShopFloorOrders {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date receivingTime;            // 收货时间
-
-//    private String expectTime;            // 期望时间
 
     private String no;            //订单编号
 
@@ -67,6 +63,12 @@ public class ShopFloorOrders {
     private int addressDistrict;      // 地区或县
 
     private String remarks;            //买家留言
+
+    private int type;            //订单类型：0普通  1礼尚往来
+
+    private int receiveState;            //礼尚往来领取状态：0未领取  1已领取
+
+    private long recipientId;            //礼尚往来接收者
 
     //与数据库无关字段
     private String name;                //用户名
