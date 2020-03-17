@@ -151,7 +151,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
      * @return
      */
     @Override
-    public ReturnData upSFreceiveState(@Valid ShopFloorOrders shopFloorOrders, BindingResult bindingResult) {
+    public ReturnData upSFreceiveState(@Valid @RequestBody ShopFloorOrders shopFloorOrders, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
