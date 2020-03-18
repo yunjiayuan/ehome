@@ -47,7 +47,7 @@ public class Community {
     private String cover;            // 封面
 
     @NotEmpty(message = "证件照不能为空")
-    private String iDPhoto;            // 证件照
+    private String photo;            // 证件照
 
     private String content;            // 简介
 

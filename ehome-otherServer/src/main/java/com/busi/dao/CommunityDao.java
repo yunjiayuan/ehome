@@ -35,8 +35,8 @@ public interface CommunityDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into Community(userId,name,province,city,district,lat,lon,address,cover,iDPhoto,content,notice,time,review) " +
-            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{iDPhoto},#{content},#{notice},#{time},#{review})")
+    @Insert("insert into Community(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review) " +
+            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review})")
     @Options(useGeneratedKeys = true)
     int addCommunity(Community selectionVote);
 
@@ -47,16 +47,19 @@ public interface CommunityDao {
      */
     @Update("<script>" +
             "update Community set" +
-            " departTime=#{departTime}," +
-            " placeOfDeparture=#{placeOfDeparture}," +
-            " setOutLat=#{setOutLat}," +
-            " setOutLon=#{setOutLon}," +
-            " arriveTime=#{arriveTime}," +
-            " destination=#{destination}," +
-            " arriveLat=#{arriveLat}," +
-            " arriveLon=#{arriveLon}," +
-            " vehicle=#{vehicle}," +
-            " trainNumber=#{trainNumber}" +
+            " name=#{name}," +
+            " province=#{province}," +
+            " city=#{city}," +
+            " district=#{district}," +
+            " lat=#{lat}," +
+            " lon=#{lon}," +
+            " address=#{address}," +
+            " cover=#{cover}," +
+            " photo=#{photo}," +
+            "<if test=\"notice != null and notice != '' \">" +
+            " notice=#{notice}," +
+            "</if>" +
+            " content=#{content}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int changeCommunity(Community selectionActivities);
@@ -71,11 +74,11 @@ public interface CommunityDao {
 
     /***
      * 查询是否已加入居委会
-     * @param id
+     * @param userId
      * @return
      */
-    @Select("select * from CommunityResident where id = #{id}")
-    CommunityResident findJoin(@Param("id") long id);
+    @Select("select * from CommunityResident where userId = #{userId}")
+    CommunityResident findJoin(@Param("userId") long userId);
 
     /***
      * 查询居委会列表
