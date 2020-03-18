@@ -96,7 +96,7 @@ public class CommunityHouseController extends BaseController implements Communit
     public ReturnData findHouse(@PathVariable long id) {
         CommunityHouse communityHouse = communityHouseService.findCommunityHouse(id);
         if (communityHouse == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "success", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", communityHouse);
     }

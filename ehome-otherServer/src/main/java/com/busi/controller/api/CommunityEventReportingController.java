@@ -118,7 +118,7 @@ public class CommunityEventReportingController extends BaseController implements
     public ReturnData findCommunityEventReportin(@PathVariable long id) {
         CommunityEventReporting communityEventReporting = communityEventReportingService.findCommunityEventReporting(id);
         if (communityEventReporting == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "success", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", communityEventReporting);
     }
