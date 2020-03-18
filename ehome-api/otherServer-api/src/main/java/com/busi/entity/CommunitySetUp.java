@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 设置居委会人员
+ * 居委会人员设置
  * author ZJJ
  * Create time 2020-03-18 10:46:33
  */

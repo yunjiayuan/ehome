@@ -1,10 +1,15 @@
 package com.busi.entity;
 
 import com.busi.validator.IdCardConstraint;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.util.Date;
 
 /**
  * 房屋信息
@@ -17,14 +22,20 @@ public class CommunityHouse {
 
     private long id;                //主键ID
 
+    @Min(value = 1, message = "communityId参数有误")
+
     private long communityId;    //居委会ID
 
+    @Min(value = 1, message = "userId参数有误")
     private long userId;            //用户ID
 
+    @NotEmpty(message = "小区名称不能为空")
     private String villageName;       // 小区名称
 
+    @Digits(integer = 3, fraction = 6, message = "lat参数格式有误")
     private double lat;                    //纬度
 
+    @Digits(integer = 3, fraction = 6, message = "lon参数格式有误")
     private double lon;                    //经度
 
     private String address;            // 详细地址
@@ -51,4 +62,7 @@ public class CommunityHouse {
     private String phone;//业主电话
 
     private int review;            // 0审核中 1已审核
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date time;            // 新增时间
 }

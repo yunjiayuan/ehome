@@ -1,7 +1,12 @@
 package com.busi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.util.Date;
 
 /**
  * 居民
@@ -14,15 +19,22 @@ public class CommunityResident {
 
     private long id;                //主键ID
 
+    @Min(value = 1, message = "communityId参数有误")
     private long communityId;    //居委会ID
 
-    private long userId;            //用户ID
+    @Min(value = 1, message = "userId参数有误")
+    private long userId;            //居民ID
 
+    @Min(value = 0, message = "identity参数有误，数值超出指定范围")
+    @Max(value = 2, message = "identity参数有误，数值超出指定范围")
     private int identity;            //身份:0普通 1管理员 2创建者
 
     private int review;            // 0审核中 1已审核
 
-    private int type;            // 加入方式：0正常加入  1被邀请加入
+    private int type;            // 加入方式：0主动加入  1被邀请加入
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date time;            // 加入时间
 
     //与数据库无关字段
     private String name; //用户名
