@@ -49,17 +49,17 @@ public class CommunityEventReportingController extends BaseController implements
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证身份证与姓名是否相符
-        List<RealNameInfo> list = null;
-        //查本地库中是否存在该实名信息
-        list = realNameInfoService.findRealNameInfo(communityEventReporting.getRealName(), communityEventReporting.getIdCard());
-        RealNameInfo rni = null;
-        if (list == null ||list.size() <= 0) {//本地不存在
-            //本地中不存在 远程调用第三方平台认证
-            rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),communityEventReporting.getRealName(), communityEventReporting.getIdCard());
-            if (rni == null) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的身份证与姓名不符，请重新输入", new JSONObject());
-            }
-        }
+//        List<RealNameInfo> list = null;
+//        //查本地库中是否存在该实名信息
+//        list = realNameInfoService.findRealNameInfo(communityEventReporting.getRealName(), communityEventReporting.getIdCard());
+//        RealNameInfo rni = null;
+//        if (list == null ||list.size() <= 0) {//本地不存在
+//            //本地中不存在 远程调用第三方平台认证
+//            rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),communityEventReporting.getRealName(), communityEventReporting.getIdCard());
+//            if (rni == null) {
+//                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的身份证与姓名不符，请重新输入", new JSONObject());
+//            }
+//        }
         communityEventReporting.setReview(0);
         communityEventReporting.setTime(new Date());
         communityEventReportingService.addCommunityEventReporting(communityEventReporting);
@@ -78,17 +78,17 @@ public class CommunityEventReportingController extends BaseController implements
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证身份证与姓名是否相符
-        List<RealNameInfo> list = null;
-        //查本地库中是否存在该实名信息
-        list = realNameInfoService.findRealNameInfo(communityEventReporting.getRealName(), communityEventReporting.getIdCard());
-        RealNameInfo rni = null;
-        if (list == null ||list.size() <= 0) {//本地不存在
-            //本地中不存在 远程调用第三方平台认证
-            rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),communityEventReporting.getRealName(), communityEventReporting.getIdCard());
-            if (rni == null) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的身份证与姓名不符，请重新输入", new JSONObject());
-            }
-        }
+//        List<RealNameInfo> list = null;
+//        //查本地库中是否存在该实名信息
+//        list = realNameInfoService.findRealNameInfo(communityEventReporting.getRealName(), communityEventReporting.getIdCard());
+//        RealNameInfo rni = null;
+//        if (list == null ||list.size() <= 0) {//本地不存在
+//            //本地中不存在 远程调用第三方平台认证
+//            rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),communityEventReporting.getRealName(), communityEventReporting.getIdCard());
+//            if (rni == null) {
+//                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的身份证与姓名不符，请重新输入", new JSONObject());
+//            }
+//        }
         communityEventReportingService.changeCommunityEventReporting(communityEventReporting);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
