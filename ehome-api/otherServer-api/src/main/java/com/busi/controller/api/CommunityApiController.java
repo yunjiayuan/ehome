@@ -50,12 +50,15 @@ public interface CommunityApiController {
      * @param lon     经度
      * @param lat     纬度
      * @param string    模糊搜索
+     * @param province     省
+     * @param city      市
+     * @param district    区
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findCommunityList/{lon}/{lat}/{string}/{page}/{count}")
-    ReturnData findCommunityList(@PathVariable double lon,@PathVariable double lat,@PathVariable String string,@PathVariable int page, @PathVariable int count);
+    @GetMapping("findCommunityList/{lon}/{lat}/{string}/{province}/{city}/{district}/{page}/{count}")
+    ReturnData findCommunityList(@PathVariable double lon, @PathVariable double lat, @PathVariable String string, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count);
 
     /***
      * 新增居民

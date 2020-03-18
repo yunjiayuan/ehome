@@ -106,22 +106,25 @@ public class CommunityController extends BaseController implements CommunityApiC
     }
 
     /***
-     * 查询居委会列表
-     * @param lon     经度
-     * @param lat     纬度
-     * @param string    模糊搜索
+     * 查询列表
+     * @param cityId     默认-1 百度地图中的城市ID，用于同城搜索
+     * @param department  科室
+     * @param search    模糊搜索（可以是：症状、疾病、医院、科室、医生名字）
+     * @param province     省
+     * @param city      市
+     * @param district    区
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findCommunityList(@PathVariable double lon, @PathVariable double lat, @PathVariable String string, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findCommunityList(@PathVariable double lon, @PathVariable double lat, @PathVariable String string, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<Community> pageBean = null;
-        pageBean = communityService.findCommunityList(lon, lat, string, page, count);
+        pageBean = communityService.findCommunityList(lon, lat, string, province, city, district, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

@@ -82,10 +82,10 @@ public class CommunityService {
      * @param count    条数
      * @return
      */
-    public PageBean<Community> findCommunityList(double lon, double lat, String string, int page, int count) {
+    public PageBean<Community> findCommunityList(double lon, double lat, String string, int province, int city, int district, int page, int count) {
         List<Community> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = epidemicSituationDao.findCommunityList(lon, lat, string);
+        list = epidemicSituationDao.findCommunityList(lon, lat, string, province, city, district);
         return PageUtils.getPageBean(p, list);
     }
 

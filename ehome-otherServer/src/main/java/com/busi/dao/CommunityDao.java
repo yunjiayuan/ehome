@@ -78,22 +78,34 @@ public interface CommunityDao {
      * 查询居委会列表
      * @param lon     经度
      * @param lat     纬度
+     * @param province     省
+     * @param city      市
+     * @param district    区
      * @param string    模糊搜索
      * @return
      */
     @Select("<script>" +
             "select * from Community" +
             " where 1=1" +
-            "<if test=\"string != null and string != '' \">" +
-            " and name LIKE CONCAT('%',#{string},'%')" +
-            " ORDER BY time desc" +
+            "<if test=\"district >= 0\">" +
+            " and district = #{district}" +
+            "</if>" +
+            "<if test=\"city >= 0\">" +
+            " and city = #{city}" +
+            "</if>" +
+            "<if test=\"province >= 0\">" +
+            " and province = #{province}" +
             "</if>" +
             "<if test=\"string == null or string == '' \">" +
             " and lat > #{lat}-0.09009" +  //只对于经度和纬度大于或小于该用户10公里（1度111公里)范围内的居委会进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
             " and lat &lt; #{lat}+0.09009 and lon > #{lon}-0.09009" +
             " and lon &lt; #{lon}+0.09009 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</if>" +
+            "<if test=\"string != null and string != '' \">" +
+            " and name LIKE CONCAT('%',#{string},'%')" +
+            "</if>" +
+            " ORDER BY time desc" +
             "</script>")
-    List<Community> findCommunityList(@Param("lon") double lon, @Param("lat") double lat, @Param("string") String string);
+    List<Community> findCommunityList(@Param("lon") double lon, @Param("lat") double lat, @Param("string") String string, @Param("province") int province, @Param("city") int city, @Param("district") int district);
 
 }
