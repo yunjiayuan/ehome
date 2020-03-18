@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CommunityHouseService;
+import com.busi.service.RealNameInfoService;
 import com.busi.utils.CommonUtils;
+import com.busi.utils.RealNameUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -25,6 +27,10 @@ public class CommunityHouseController extends BaseController implements Communit
 
     @Autowired
     CommunityHouseService communityHouseService;
+
+    @Autowired
+    RealNameInfoService realNameInfoService;
+
     /***
      * 新增房屋
      * @param communityHouse
@@ -35,6 +41,18 @@ public class CommunityHouseController extends BaseController implements Communit
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //验证身份证与姓名是否相符
+        List<RealNameInfo> list = null;
+        //查本地库中是否存在该实名信息
+        list = realNameInfoService.findRealNameInfo(communityHouse.getRealName(), communityHouse.getIdCard());
+        RealNameInfo rni = null;
+        if (list == null ||list.size() <= 0) {//本地不存在
+            //本地中不存在 远程调用第三方平台认证
+            rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),communityHouse.getRealName(), communityHouse.getIdCard());
+            if (rni == null) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的身份证与姓名不符，请重新输入", new JSONObject());
+            }
         }
         communityHouse.setReview(1);
         communityHouse.setTime(new Date());
@@ -52,6 +70,18 @@ public class CommunityHouseController extends BaseController implements Communit
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //验证身份证与姓名是否相符
+        List<RealNameInfo> list = null;
+        //查本地库中是否存在该实名信息
+        list = realNameInfoService.findRealNameInfo(communityHouse.getRealName(), communityHouse.getIdCard());
+        RealNameInfo rni = null;
+        if (list == null ||list.size() <= 0) {//本地不存在
+            //本地中不存在 远程调用第三方平台认证
+            rni = RealNameUtils.checkRealName(CommonUtils.getMyId(),communityHouse.getRealName(), communityHouse.getIdCard());
+            if (rni == null) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的身份证与姓名不符，请重新输入", new JSONObject());
+            }
         }
         communityHouseService.changeCommunityHouse(communityHouse);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

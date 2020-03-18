@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @program: ehome
  * @description: 居委会
- * @author: ZHaoJiaJie
+ * @author: suntj
  * @create: 2020-03-18 11:32:23
  */
 @Mapper

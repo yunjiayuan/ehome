@@ -13,7 +13,7 @@ import java.util.Date;
 
 /**
  * 房屋信息
- * author ZJJ
+ * author suntj
  * Create time 2020-02-15 16:02:25
  */
 @Setter
