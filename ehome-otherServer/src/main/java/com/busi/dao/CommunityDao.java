@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.Community;
 import com.busi.entity.CommunityResident;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ import java.util.List;
  * @author: ZHaoJiaJie
  * @create: 2020-03-18 11:32:23
  */
+@Mapper
+@Repository
 public interface CommunityDao {
     /***
      * 删除居民
@@ -32,8 +35,8 @@ public interface CommunityDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into Community(userId,departTime,placeOfDeparture,setOutLat,setOutLon,arriveTime,destination,arriveLat,arriveLon,vehicle,trainNumber,time) " +
-            "values (#{userId},#{departTime},#{placeOfDeparture},#{setOutLat},#{setOutLon},#{arriveTime},#{destination},#{arriveLat},#{arriveLon},#{vehicle},#{trainNumber},#{time})")
+    @Insert("insert into Community(userId,name,province,city,district,lat,lon,address,cover,iDPhoto,content,notice,time,review) " +
+            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{iDPhoto},#{content},#{notice},#{time},#{review})")
     @Options(useGeneratedKeys = true)
     int addCommunity(Community selectionVote);
 
