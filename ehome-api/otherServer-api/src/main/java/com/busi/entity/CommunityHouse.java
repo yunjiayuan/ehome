@@ -40,28 +40,28 @@ public class CommunityHouse {
 
     private String address;            // 详细地址
 
-    private int houseNumber;          //楼栋编号
+    private String houseNumber;          //楼栋编号
 
-    private int houseCompany;         //单位：0号楼、1栋、2幢、3座
+    private int houseCompany;         //单位：0号楼、1栋、2幢、3座 4无
 
-    private int unitNumber;             //单元编号
+    private String unitNumber;             //单元编号
 
     private int unitCompany;           //单位：0单元、1无单元
 
-    private int roomNumber;             //室
+    private String roomNumber;             //室
 
     private int roomState;             //房屋状态：0自住 1出租
 
     @IdCardConstraint(message = "身份证格式有误")
     private String idCard;//业主身份证
 
-    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{2,30}", message = "名字格式有误，长度为2-10，并且不能包含非法字符")
+//    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{2,30}", message = "名字格式有误，长度为2-10，并且不能包含非法字符")
     private String realName;//业主姓名
 
     @Pattern(regexp = "^\\s*$|^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号格式有误，请输入正确的手机号")
     private String phone;//业主电话
 
-    private int review;            // 0审核中 1已审核
+    private int review;   // 0审核中 1已审核 2审核不通过
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;            // 新增时间
