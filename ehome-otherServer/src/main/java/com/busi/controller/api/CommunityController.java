@@ -58,9 +58,16 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-//        homeHospital.setReview(2);
         homeHospital.setTime(new Date());
         communityService.addCommunity(homeHospital);
+
+        //新增居民
+        CommunityResident resident = new CommunityResident();
+        resident.setTime(new Date());
+        resident.setCommunityId(homeHospital.getId());
+        resident.setUserId(homeHospital.getUserId());
+        resident.setIdentity(2);
+        communityService.addResident(resident);
 
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", homeHospital.getId());
@@ -94,14 +101,6 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
         }
-//        UserInfo userInfo = null;
-//        userInfo = userInfoUtils.getUserInfo(sa.getUserId());
-//        if (userInfo != null) {
-//            sa.setName(userInfo.getName());
-//            sa.setHead(userInfo.getHead());
-//            sa.setProTypeId(userInfo.getProType());
-//            sa.setHouseNumber(userInfo.getHouseNumber());
-//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", sa);
     }
 
@@ -160,52 +159,90 @@ public class CommunityController extends BaseController implements CommunityApiC
                 return -1;
             }
         });
-//        for (int i = 0; i < list.size(); i++) {
-//            Community sa = (Community) list.get(i);
-//            if (sa != null) {
-//                UserInfo userInfo = null;
-//                userInfo = userInfoUtils.getUserInfo(sa.getUserId());
-//                if (userInfo != null) {
-//                    sa.setName(userInfo.getName());
-//                    sa.setHead(userInfo.getHead());
-//                    sa.setProTypeId(userInfo.getProType());
-//                    sa.setHouseNumber(userInfo.getHouseNumber());
-//                }
-//            }
-//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
     /***
-     * 新增居民
+     * 加入居委会
      * @param homeHospital
      * @param bindingResult
      * @return
      */
     @Override
     public ReturnData addResident(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult) {
-        return null;
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        if (homeHospital.getType() == 0) {//主动加入
+            homeHospital.setTime(new Date());
+            communityService.addResident(homeHospital);
+        } else {
+            //判断邀请者权限
+            CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getMasterId());
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            //判断是否已经加入了
+            List list = communityService.findIsList(homeHospital.getCommunityId(), homeHospital.getUserIds());
+            if (list != null && list.size() > 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "已经邀请过了", new JSONArray());
+            }
+            String[] userId = homeHospital.getUserIds().split(",");
+            for (int i = 0; i < userId.length; i++) {
+                CommunityResident resident = new CommunityResident();
+                resident.setIdentity(0);
+                resident.setType(1);
+                resident.setTime(new Date());
+                resident.setCommunityId(homeHospital.getId());
+                resident.setMasterId(homeHospital.getMasterId());
+                resident.setUserId(Long.parseLong(userId[i]));
+                communityService.addResident(resident);
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
     }
 
     /***
-     * 更新居民
+     * 更新居民权限
      * @param homeHospital
      * @param bindingResult
      * @return
      */
     @Override
     public ReturnData changeResident(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult) {
-        return null;
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //判断权限
+        CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), CommonUtils.getMyId());
+        if (sa == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+        }
+        if (sa.getIdentity() > 1) {
+            communityService.changeResident(homeHospital);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /***
-     * 删除居民
+    /**
      * @param ids
+     * @param communityId
+     * @Description: 删除居民
      * @return:
      */
     @Override
-    public ReturnData delResident(@PathVariable String ids) {
-        return null;
+    public ReturnData delResident(@PathVariable String ids, @PathVariable long communityId) {
+        Community sa = communityService.findCommunity(communityId);
+        if (sa == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
+        }
+        if (sa.getUserId() != CommonUtils.getMyId()) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "没有权限!", new JSONObject());
+        }
+        communityService.delResident(ids.split(","));
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
@@ -216,63 +253,34 @@ public class CommunityController extends BaseController implements CommunityApiC
      * @return
      */
     @Override
-    public ReturnData findResidentList(@PathVariable int communityId, @PathVariable int page, @PathVariable int count) {
-        return null;
-    }
-
-    /***
-     * 新增房屋
-     * @param homeHospital
-     * @param bindingResult
-     * @return
-     */
-    @Override
-    public ReturnData addHouse(@Valid @RequestBody CommunityHouse homeHospital, BindingResult bindingResult) {
-        return null;
-    }
-
-    /***
-     * 更新房屋
-     * @param homeHospital
-     * @param bindingResult
-     * @return
-     */
-    @Override
-    public ReturnData changeHouse(@Valid @RequestBody CommunityHouse homeHospital, BindingResult bindingResult) {
-        return null;
-    }
-
-    /***
-     * 查询房屋详情
-     * @param id
-     * @return
-     */
-    @Override
-    public ReturnData findHouse(@PathVariable long id) {
-        return null;
-    }
-
-    /**
-     * @param ids
-     * @Description: 删除房屋
-     * @return:
-     */
-    @Override
-    public ReturnData delHouse(@PathVariable String ids) {
-        return null;
-    }
-
-    /***
-     * 查询房屋列表
-     * @param communityId    居委会ID
-     * @param userId    房主ID
-     * @param page     页码
-     * @param count    条数
-     * @return
-     */
-    @Override
-    public ReturnData findHouseList(@PathVariable int communityId, @PathVariable long userId, @PathVariable int page, @PathVariable int count) {
-        return null;
+    public ReturnData findResidentList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        PageBean<CommunityResident> pageBean = null;
+        pageBean = communityService.findResidentList(communityId, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = pageBean.getList();
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            CommunityResident sa = (CommunityResident) list.get(i);
+            if (sa != null) {
+                UserInfo userInfo = null;
+                userInfo = userInfoUtils.getUserInfo(sa.getUserId());
+                if (userInfo != null) {
+                    sa.setName(userInfo.getName());
+                    sa.setHead(userInfo.getHead());
+                    sa.setProTypeId(userInfo.getProType());
+                    sa.setHouseNumber(userInfo.getHouseNumber());
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
     /***
@@ -322,50 +330,6 @@ public class CommunityController extends BaseController implements CommunityApiC
     }
 
     /***
-     * 添加事件报备
-     * @param shopFloorComment
-     * @param bindingResult
-     * @return
-     */
-    @Override
-    public ReturnData addEventReporting(@Valid @RequestBody CommunityEventReporting shopFloorComment, BindingResult bindingResult) {
-        return null;
-    }
-
-    /***
-     * 更新事件报备
-     * @param homeHospital
-     * @param bindingResult
-     * @return
-     */
-    @Override
-    public ReturnData changeEventReporting(@Valid @RequestBody CommunityEventReporting homeHospital, BindingResult bindingResult) {
-        return null;
-    }
-
-    /***
-     * 查询事件报备详情
-     * @param id
-     * @return
-     */
-    @Override
-    public ReturnData findEventReporting(@PathVariable long id) {
-        return null;
-    }
-
-    /***
-     * 查询事件报备列表
-     * @param roomId     房屋ID
-     * @param page       页码 第几页 起始值1
-     * @param count      每页条数
-     * @return
-     */
-    @Override
-    public ReturnData findEventReportingList(@PathVariable long roomId, @PathVariable int page, @PathVariable int count) {
-        return null;
-    }
-
-    /***
      * 新增居委会人员设置
      * @param homeHospital
      * @param bindingResult
@@ -405,7 +369,7 @@ public class CommunityController extends BaseController implements CommunityApiC
      * @return
      */
     @Override
-    public ReturnData findSetUpList(@PathVariable int communityId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findSetUpList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
         return null;
     }
 }

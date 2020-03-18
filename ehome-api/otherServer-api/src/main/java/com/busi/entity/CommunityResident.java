@@ -22,7 +22,9 @@ public class CommunityResident {
     @Min(value = 1, message = "communityId参数有误")
     private long communityId;    //居委会ID
 
-    @Min(value = 1, message = "userId参数有误")
+    private long masterId;    //邀请者ID
+
+    @Min(value = 1, message = "communityId参数有误")
     private long userId;            //居民ID
 
     @Min(value = 0, message = "identity参数有误，数值超出指定范围")
@@ -37,6 +39,8 @@ public class CommunityResident {
     private Date time;            // 加入时间
 
     //与数据库无关字段
+    private String userIds;     //被邀请加入时多个居民逗号分隔
+
     private String name; //用户名
 
     private String head; //头像

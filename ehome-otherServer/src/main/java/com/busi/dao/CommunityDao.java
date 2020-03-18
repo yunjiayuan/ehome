@@ -16,19 +16,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface CommunityDao {
-    /***
-     * 删除居民
-     * @param ids
-     * @return
-     */
-    @Delete("<script>" +
-            "delete from CommunityResident" +
-            " where id in" +
-            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
-            " #{item}" +
-            "</foreach>" +
-            "</script>")
-    int delResident(@Param("ids") String[] ids);
 
     /***
      * 新增居委会
@@ -113,5 +100,79 @@ public interface CommunityDao {
             " ORDER BY time desc" +
             "</script>")
     List<Community> findCommunityList(@Param("lon") double lon, @Param("lat") double lat, @Param("string") String string, @Param("province") int province, @Param("city") int city, @Param("district") int district);
+
+    /***
+     * 加入居委会
+     * @param selectionVote
+     * @return
+     */
+    @Insert("insert into CommunityResident(userId,communityId,masterId,identity,type,time) " +
+            "values (#{userId},#{communityId},#{masterId},#{identity},#{type},#{time})")
+    @Options(useGeneratedKeys = true)
+    int addResident(CommunityResident selectionVote);
+
+    /***
+     * 更新居民权限
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update CommunityResident set" +
+            " identity=#{identity}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int changeResident(CommunityResident selectionActivities);
+
+    /***
+     * 查询居民
+     * @param userId
+     * @return
+     */
+    @Select("select * from CommunityResident where userId = #{userId} and communityId=#{communityId}")
+    CommunityResident findResident(@Param("communityId") long communityId, @Param("userId") long userId);
+
+    /***
+     * 删除居民
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from CommunityResident" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int delResident(@Param("ids") String[] ids);
+
+    /***
+     * 查询居民列表
+     * @param communityId    居委会
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CommunityResident" +
+            " where 1=1" +
+            " and communityId = #{communityId}" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<CommunityResident> findResidentList(@Param("communityId") long communityId);
+
+    /***
+     * 查询指定居民列表
+     * @param communityId    居委会
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CommunityResident" +
+            " where 1=1" +
+            " and communityId = #{communityId}" +
+            " and userId in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<CommunityResident> findIsList(@Param("communityId") long communityId, @Param("ids") String[] ids);
 
 }

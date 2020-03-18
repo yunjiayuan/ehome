@@ -80,8 +80,8 @@ public interface CommunityApiController {
      * @Description: 删除居民
      * @return:
      */
-    @DeleteMapping("delResident/{ids}")
-    ReturnData delResident(@PathVariable String ids);
+    @DeleteMapping("delResident/{ids}/{communityId}")
+    ReturnData delResident(@PathVariable String ids, @PathVariable long communityId);
 
     /***
      * 查询居民列表
@@ -91,49 +91,7 @@ public interface CommunityApiController {
      * @return
      */
     @GetMapping("findResidentList/{communityId}/{page}/{count}")
-    ReturnData findResidentList(@PathVariable int communityId, @PathVariable int page, @PathVariable int count);
-
-    /***
-     * 新增房屋
-     * @param homeHospital
-     * @return
-     */
-    @PostMapping("addHouse")
-    ReturnData addHouse(@Valid @RequestBody CommunityHouse homeHospital, BindingResult bindingResult);
-
-    /***
-     * 更新房屋
-     * @param homeHospital
-     * @return
-     */
-    @PutMapping("changeHouse")
-    ReturnData changeHouse(@Valid @RequestBody CommunityHouse homeHospital, BindingResult bindingResult);
-
-    /***
-     * 查询房屋详情
-     * @param id
-     * @return
-     */
-    @GetMapping("findHouse/{id}")
-    ReturnData findHouse(@PathVariable long id);
-
-    /**
-     * @Description: 删除房屋
-     * @return:
-     */
-    @DeleteMapping("delHouse/{ids}")
-    ReturnData delHouse(@PathVariable String ids);
-
-    /***
-     * 查询房屋列表
-     * @param communityId    居委会ID
-     * @param userId    房主ID
-     * @param page     页码
-     * @param count    条数
-     * @return
-     */
-    @GetMapping("findHouseList/{communityId}/{userId}/{page}/{count}")
-    ReturnData findHouseList(@PathVariable int communityId, @PathVariable long userId, @PathVariable int page, @PathVariable int count);
+    ReturnData findResidentList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count);
 
     /***
      * 添加留言板
@@ -173,40 +131,6 @@ public interface CommunityApiController {
     ReturnData findMessageBoardReplyList(@PathVariable long contentId, @PathVariable int page, @PathVariable int count);
 
     /***
-     * 添加事件报备
-     * @param shopFloorComment
-     * @return
-     */
-    @PostMapping("addEventReporting")
-    ReturnData addEventReporting(@Valid @RequestBody CommunityEventReporting shopFloorComment, BindingResult bindingResult);
-
-    /***
-     * 更新事件报备
-     * @param homeHospital
-     * @return
-     */
-    @PutMapping("changeEventReporting")
-    ReturnData changeEventReporting(@Valid @RequestBody CommunityEventReporting homeHospital, BindingResult bindingResult);
-
-    /***
-     * 查询事件报备详情
-     * @param id
-     * @return
-     */
-    @GetMapping("findEventReporting/{id}")
-    ReturnData findEventReporting(@PathVariable long id);
-
-    /***
-     * 查询事件报备列表
-     * @param roomId     房屋ID
-     * @param page       页码 第几页 起始值1
-     * @param count      每页条数
-     * @return
-     */
-    @GetMapping("findEventReportingList/{roomId}/{page}/{count}")
-    ReturnData findEventReportingList(@PathVariable long roomId, @PathVariable int page, @PathVariable int count);
-
-    /***
      * 新增居委会人员设置
      * @param homeHospital
      * @return
@@ -237,5 +161,5 @@ public interface CommunityApiController {
      * @return
      */
     @GetMapping("findSetUpList/{communityId}/{page}/{count}")
-    ReturnData findSetUpList(@PathVariable int communityId, @PathVariable int page, @PathVariable int count);
+    ReturnData findSetUpList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count);
 }

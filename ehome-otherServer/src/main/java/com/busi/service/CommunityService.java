@@ -26,25 +26,6 @@ public class CommunityService {
     private CommunityDao epidemicSituationDao;
 
     /***
-     * 查询是否已加入居委会
-     * @param userId
-     * @return
-     */
-    public CommunityResident findJoin(long userId) {
-        return epidemicSituationDao.findJoin(userId);
-    }
-
-    /***
-     * 删除居民
-     * @param ids
-     * @return
-     */
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int delResident(String[] ids) {
-        return epidemicSituationDao.delResident(ids);
-    }
-
-    /***
      * 更新居委会
      * @param selectionVote
      * @return
@@ -89,4 +70,77 @@ public class CommunityService {
         return PageUtils.getPageBean(p, list);
     }
 
+    /***
+     * 查询居民
+     * @param userId
+     * @return
+     */
+    public CommunityResident findResident(long communityId, long userId) {
+        return epidemicSituationDao.findResident(communityId, userId);
+    }
+
+    /***
+     * 查询是否已加入居委会
+     * @param userId
+     * @return
+     */
+    public CommunityResident findJoin(long userId) {
+        return epidemicSituationDao.findJoin(userId);
+    }
+
+    /***
+     * 删除居民
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delResident(String[] ids) {
+        return epidemicSituationDao.delResident(ids);
+    }
+
+    /***
+     * 更新居民
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeResident(CommunityResident selectionVote) {
+        return epidemicSituationDao.changeResident(selectionVote);
+    }
+
+    /***
+     * 加入居委会
+     * @param selectionActivities
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addResident(CommunityResident selectionActivities) {
+        return epidemicSituationDao.addResident(selectionActivities);
+    }
+
+    /***
+     * 查询居民列表
+     * @param communityId    居委会
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<CommunityResident> findResidentList(long communityId, int page, int count) {
+        List<CommunityResident> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findResidentList(communityId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询指定居民列表
+     * @param userIds    用户
+     * @param communityId    居委会
+     * @return
+     */
+    public List<CommunityResident> findIsList(long communityId, String userIds) {
+        List<CommunityResident> list = null;
+        list = epidemicSituationDao.findIsList(communityId, userIds.split(","));
+        return list;
+    }
 }
