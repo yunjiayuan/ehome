@@ -70,6 +70,22 @@ public interface CommunityDao {
     List<CommunityResident> findJoin(@Param("userId") long userId);
 
     /***
+     * 查询指定居委会
+     * @param ids    居委会Ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Community" +
+            " where 1=1" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<Community> findCommunityList3(@Param("ids") String[] ids);
+
+    /***
      * 查询居委会列表
      * @param lon     经度
      * @param lat     纬度

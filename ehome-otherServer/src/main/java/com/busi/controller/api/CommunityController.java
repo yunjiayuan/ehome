@@ -132,7 +132,25 @@ public class CommunityController extends BaseController implements CommunityApiC
         }
         List list = null;
         if (userId > 0) {
+            String ids = "";
             list = communityService.findJoin(userId);
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            for (int i = 0; i < list.size(); i++) {
+                CommunityResident resident = (CommunityResident) list.get(i);
+                if (resident != null) {
+                    if (i == 0) {
+                        ids = resident.getCommunityId() + "";//居委会ID
+                    } else {
+                        ids += "," + resident.getCommunityId();
+                    }
+                }
+            }
+            list = null;
+            if (!CommonUtils.checkFull(ids)) {
+                list = communityService.findCommunityList2(ids);
+            }
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
         }
         PageBean<Community> pageBean = null;

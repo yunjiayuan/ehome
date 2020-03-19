@@ -94,6 +94,17 @@ public class CommunityService {
     }
 
     /***
+     * 查询指定居委会
+     * @param ids
+     * @return
+     */
+    public List<Community> findCommunityList2(String ids) {
+        List<Community> list = null;
+        list = epidemicSituationDao.findCommunityList3(ids.split(","));
+        return list;
+    }
+
+    /***
      * 删除居民
      * @param ids
      * @return
