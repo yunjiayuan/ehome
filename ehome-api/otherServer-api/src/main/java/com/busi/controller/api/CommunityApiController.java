@@ -47,6 +47,7 @@ public interface CommunityApiController {
 
     /***
      * 查询居委会列表
+     * @param userId    用户ID
      * @param lon     经度
      * @param lat     纬度
      * @param string    模糊搜索
@@ -57,8 +58,8 @@ public interface CommunityApiController {
      * @param count    条数
      * @return
      */
-    @GetMapping("findCommunityList/{lon}/{lat}/{string}/{province}/{city}/{district}/{page}/{count}")
-    ReturnData findCommunityList(@PathVariable double lon, @PathVariable double lat, @PathVariable String string, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findCommunityList/{userId}/{lon}/{lat}/{string}/{province}/{city}/{district}/{page}/{count}")
+    ReturnData findCommunityList(@PathVariable long userId, @PathVariable double lon, @PathVariable double lat, @PathVariable String string, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count);
 
     /***
      * 新增居民
