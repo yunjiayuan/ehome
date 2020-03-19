@@ -315,8 +315,8 @@ public interface CommunityDao {
      * @param communityHouse
      * @return
      */
-    @Insert("insert into CommunitySetUp(communityId,post,head) " +
-            "values (#{communityId},#{post},#{head})")
+    @Insert("insert into CommunitySetUp(communityId,post,head,name) " +
+            "values (#{communityId},#{post},#{head},#{name})")
     @Options(useGeneratedKeys = true)
     int addSetUp(CommunitySetUp communityHouse);
 
@@ -328,7 +328,8 @@ public interface CommunityDao {
     @Update("<script>" +
             "update CommunitySetUp set" +
             " post=#{post}," +
-            " head=#{head}" +
+            " head=#{head}," +
+            " name=#{name}" +
             " where id=#{id}" +
             "</script>")
     int changeSetUp(CommunitySetUp communityHouse);

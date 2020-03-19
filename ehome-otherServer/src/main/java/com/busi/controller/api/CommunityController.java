@@ -178,6 +178,11 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //判断是否已经加入了
+        List list = communityService.findIsList(homeHospital.getCommunityId(), homeHospital.getUserId() + "");
+        if (list != null && list.size() > 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "已经加入了", new JSONArray());
+        }
         if (homeHospital.getType() == 0) {//主动加入
             homeHospital.setTime(new Date());
             communityService.addResident(homeHospital);
@@ -186,11 +191,6 @@ public class CommunityController extends BaseController implements CommunityApiC
             CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getMasterId());
             if (sa == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-            }
-            //判断是否已经加入了
-            List list = communityService.findIsList(homeHospital.getCommunityId(), homeHospital.getUserIds());
-            if (list != null && list.size() > 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "已经邀请过了", new JSONArray());
             }
             String[] userId = homeHospital.getUserIds().split(",");
             for (int i = 0; i < userId.length; i++) {

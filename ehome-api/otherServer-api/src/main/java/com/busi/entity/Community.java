@@ -57,7 +57,7 @@ public class Community {
     private Date time;            // 创建时间
 
     @Min(value = 0, message = "deleteType参数有误，数值超出指定范围")
-    @Max(value = 1, message = "deleteType参数有误，数值超出指定范围")
+    @Max(value = 2, message = "deleteType参数有误，数值超出指定范围")
     private int review;            // 审核: 0审核中 1已审核
 
     private long commentNumber;       //评论数
