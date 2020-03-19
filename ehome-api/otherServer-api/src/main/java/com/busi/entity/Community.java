@@ -60,6 +60,8 @@ public class Community {
     @Max(value = 1, message = "deleteType参数有误，数值超出指定范围")
     private int review;            // 审核: 0审核中 1已审核
 
+    private long commentNumber;       //评论数
+
     // 与数据库无关字段
     private int distance;            //距离
 }

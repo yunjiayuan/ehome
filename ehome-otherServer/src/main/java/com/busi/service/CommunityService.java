@@ -1,9 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.CommunityDao;
-import com.busi.entity.Community;
-import com.busi.entity.CommunityResident;
-import com.busi.entity.PageBean;
+import com.busi.entity.*;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -142,5 +140,155 @@ public class CommunityService {
         List<CommunityResident> list = null;
         list = epidemicSituationDao.findIsList(communityId, userIds.split(","));
         return list;
+    }
+
+    /***
+     * 新增评论
+     * @param homeBlogComment
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addComment(CommunityMessageBoard homeBlogComment) {
+        return epidemicSituationDao.addComment(homeBlogComment);
+    }
+
+    /***
+     * 查询指定评论
+     * @return
+     */
+    public CommunityMessageBoard findById(long id) {
+        return epidemicSituationDao.find(id);
+    }
+
+    /***
+     * 更新评论回复数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateCommentNum(CommunityMessageBoard homeBlogAccess) {
+        return epidemicSituationDao.updateCommentNum(homeBlogAccess);
+    }
+
+    /***
+     * 更新评论数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateBlogCounts(Community homeBlogAccess) {
+        return epidemicSituationDao.updateBlogCounts(homeBlogAccess);
+    }
+
+
+    /***
+     * 更新评论删除状态
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update(CommunityMessageBoard homeBlogAccess) {
+        return epidemicSituationDao.update(homeBlogAccess);
+    }
+
+    /***
+     * 查询评论列表
+     * @param goodsId  商品ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<CommunityMessageBoard> findList(long goodsId, int page, int count) {
+
+        List<CommunityMessageBoard> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findList(goodsId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param contentId  评论ID
+     * @return
+     */
+    public PageBean<CommunityMessageBoard> findReplyList(long contentId, int page, int count) {
+        List<CommunityMessageBoard> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findReplyList(contentId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param commentId  评论ID
+     * @return
+     */
+    public List<CommunityMessageBoard> findMessList(long commentId) {
+
+        List<CommunityMessageBoard> list;
+        list = epidemicSituationDao.findReplyList(commentId);
+        return list;
+    }
+
+    /***
+     * 更新回复删除状态
+     * @param ids
+     * @return
+     */
+    public int updateReplyState(String[] ids) {
+        return epidemicSituationDao.updateReplyState(ids);
+    }
+
+    /***
+     * 统计该评论下回复数量
+     * @param commentId  评论ID
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public long getReplayCount(long commentId) {
+        return epidemicSituationDao.getReplayCount(commentId);
+    }
+
+    /***
+     * 删除居委会人员设置
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delSetUp(String[] ids) {
+        return epidemicSituationDao.delSetUp(ids);
+    }
+
+    /***
+     * 更新居委会人员设置
+     * @param communityHouse
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeSetUp(CommunitySetUp communityHouse) {
+        return epidemicSituationDao.changeSetUp(communityHouse);
+    }
+
+    /***
+     * 新增居委会人员设置
+     * @param communityHouse
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addSetUp(CommunitySetUp communityHouse) {
+        return epidemicSituationDao.addSetUp(communityHouse);
+    }
+
+    /***
+     * 查询居委会人员设置列表
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<CommunitySetUp> findSetUpList(long communityId, int page, int count) {
+        List<CommunitySetUp> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findSetUpList(communityId);
+        return PageUtils.getPageBean(p, list);
     }
 }
