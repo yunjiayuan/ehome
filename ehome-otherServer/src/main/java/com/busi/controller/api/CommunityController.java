@@ -40,11 +40,17 @@ public class CommunityController extends BaseController implements CommunityApiC
      */
     @Override
     public ReturnData findJoinCommunity(@PathVariable long userId) {
-        CommunityResident situationAbout = communityService.findJoin(userId);
-        if (situationAbout == null) {
+        List list = null;
+        CommunityResident resident = null;
+        list = communityService.findJoin(userId);
+        if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", situationAbout);
+        resident = (CommunityResident) list.get(0);
+        if (resident == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", resident);
     }
 
     /***
@@ -106,7 +112,8 @@ public class CommunityController extends BaseController implements CommunityApiC
     }
 
     /***
-     * 查询列表
+     * 查询居委会列表
+     * @param userId    用户ID(默认0，大于0时查询此用户加入的所有居委会)
      * @param lon     经度
      * @param lat  纬度
      * @param string    模糊搜索 (居委会名字)
@@ -118,17 +125,22 @@ public class CommunityController extends BaseController implements CommunityApiC
      * @return
      */
     @Override
-    public ReturnData findCommunityList(@PathVariable double lon, @PathVariable double lat, @PathVariable String string, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findCommunityList(@PathVariable long userId, @PathVariable double lon, @PathVariable double lat, @PathVariable String string, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        List list = null;
+        if (userId > 0) {
+            list = communityService.findJoin(userId);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
         }
         PageBean<Community> pageBean = null;
         pageBean = communityService.findCommunityList(lon, lat, string, province, city, district, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        List list = pageBean.getList();
+        list = pageBean.getList();
         if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

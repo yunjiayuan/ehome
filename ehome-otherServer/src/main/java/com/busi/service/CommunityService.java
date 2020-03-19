@@ -83,12 +83,14 @@ public class CommunityService {
     }
 
     /***
-     * 查询是否已加入居委会
+     * 查询已加入的居委会
      * @param userId
      * @return
      */
-    public CommunityResident findJoin(long userId) {
-        return epidemicSituationDao.findJoin(userId);
+    public List<CommunityResident> findJoin(long userId) {
+        List<CommunityResident> list = null;
+        list = epidemicSituationDao.findJoin(userId);
+        return list;
     }
 
     /***

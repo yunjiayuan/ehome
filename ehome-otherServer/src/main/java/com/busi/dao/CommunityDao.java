@@ -62,12 +62,12 @@ public interface CommunityDao {
     Community findCommunity(@Param("id") long id);
 
     /***
-     * 查询是否已加入居委会
+     * 查询已加入的居委会
      * @param userId
      * @return
      */
-    @Select("select * from CommunityResident where userId = #{userId}")
-    CommunityResident findJoin(@Param("userId") long userId);
+    @Select("select * from CommunityResident where userId = #{userId} ORDER BY time desc")
+    List<CommunityResident> findJoin(@Param("userId") long userId);
 
     /***
      * 查询居委会列表
