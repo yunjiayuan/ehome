@@ -91,10 +91,11 @@ public class Constants {
     /** 七牛云存储配置 结束**/
 
     /** 实名制认证配置 开始**/
-    public static final String CHECK_REALNAME_URL="https://v.apistore.cn/api/a1";//实名认证地址
-    public static final String CHECK_BANKCARD_URL="https://v.apistore.cn/api/v4/verifybankcard4";//银行卡四元素认证地址
-    public static final String REALNAME_KEY="381b395c0c9dfa8e06335ef948ffcba3";//实名认证key
-    public static final String BANKCARD_KEY="e56266e81c79dd76edb09e8c111d3ced";////银行卡四元素认证key
+    public static final String CHECK_REALNAME_URL="http://op.juhe.cn/idcard/query";//实名认证地址
+    public static final String REALNAME_KEY="78fff9fb99509e96a66110c92de4a5bf";//实名认证key
+
+    public static final String CHECK_BANKCARD_URL="http://v.juhe.cn/verifybankcard4/query";//银行卡四元素认证地址
+    public static final String BANKCARD_KEY="63f2e2ae034552ab1fb7a2ed4e1efb4b";////银行卡四元素认证key
     /** 实名制认证配置 结束**/
 
     /** 图灵机器人配置 开始**/
