@@ -132,6 +132,9 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
+        if (!CommonUtils.checkFull(string)) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        }
         for (int i = 0; i < list.size(); i++) {
             Community ik = (Community) list.get(i);
             double userlon = ik.getLon();
@@ -195,7 +198,7 @@ public class CommunityController extends BaseController implements CommunityApiC
                 resident.setIdentity(0);
                 resident.setType(1);
                 resident.setTime(new Date());
-                resident.setCommunityId(homeHospital.getId());
+                resident.setCommunityId(homeHospital.getCommunityId());
                 resident.setMasterId(homeHospital.getMasterId());
                 resident.setUserId(Long.parseLong(userId[i]));
                 communityService.addResident(resident);
@@ -663,7 +666,7 @@ public class CommunityController extends BaseController implements CommunityApiC
      */
     @Override
     public ReturnData delSetUp(@PathVariable String ids) {
-        if(CommonUtils.checkFull(ids)){
+        if (CommonUtils.checkFull(ids)) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "删除参数ids不能为空", new JSONObject());
         }
         communityService.delSetUp(ids.split(","));

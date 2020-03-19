@@ -2,6 +2,7 @@ package com.busi.service;
 
 import com.busi.dao.CommunityDao;
 import com.busi.entity.*;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -64,7 +65,11 @@ public class CommunityService {
     public PageBean<Community> findCommunityList(double lon, double lat, String string, int province, int city, int district, int page, int count) {
         List<Community> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = epidemicSituationDao.findCommunityList(lon, lat, string, province, city, district);
+        if (CommonUtils.checkFull(string)) {
+            list = epidemicSituationDao.findCommunityList2(lon, lat, province, city, district);
+        } else {
+            list = epidemicSituationDao.findCommunityList(lon, lat, string, province, city, district);
+        }
         return PageUtils.getPageBean(p, list);
     }
 
