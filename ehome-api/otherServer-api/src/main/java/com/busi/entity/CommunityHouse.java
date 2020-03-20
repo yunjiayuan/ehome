@@ -52,8 +52,8 @@ public class CommunityHouse {
 
     private int roomState;             //房屋状态：0自住 1出租
 
-    @IdCardConstraint(message = "身份证格式有误")
-    private String idCard;//业主身份证
+//    @IdCardConstraint(message = "身份证格式有误")
+    private String idCard;//业主身份证 房产证号
 
 //    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{2,30}", message = "名字格式有误，长度为2-10，并且不能包含非法字符")
     private String realName;//业主姓名
