@@ -372,8 +372,8 @@ public class CommunityController extends BaseController implements CommunityApiC
             //更新回复数
             CommunityMessageBoard num = communityService.findById(shopFloorComment.getFatherId());
             if (num != null) {
-                shopFloorComment.setReplyNumber(num.getReplyNumber() + 1);
-                communityService.updateCommentNum(shopFloorComment);
+                num.setReplyNumber(num.getReplyNumber() + 1);
+                communityService.updateCommentNum(num);
             }
         }
         //更新评论数
