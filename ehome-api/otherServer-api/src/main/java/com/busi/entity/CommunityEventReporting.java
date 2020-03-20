@@ -71,4 +71,6 @@ public class CommunityEventReporting {
 
     private String remarks;        // 备注
 
+    private String message; // 居委会反馈：请及时留意居委会信息反馈
+
 }
