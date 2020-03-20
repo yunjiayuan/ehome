@@ -75,7 +75,8 @@ public interface CommunityEventReportingDao {
      */
     @Update("<script>" +
             "update CommunityEventReporting set" +
-            " review=#{review}" +
+            " review=#{review}," +
+            " message=#{message}" +
             " where id=#{id}" +
             "</script>")
     int toExamineCommunityEventReporting(CommunityEventReporting communityEventReporting);

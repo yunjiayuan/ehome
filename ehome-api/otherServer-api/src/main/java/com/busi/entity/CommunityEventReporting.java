@@ -66,7 +66,6 @@ public class CommunityEventReporting {
 
     private String trainNumber;            // 车次/航班号
 
-
     private int contactHistory;        // 是否有湖北武汉接触史:0没有  1有
 
     private String remarks;        // 备注
