@@ -62,12 +62,28 @@ public interface CommunityDao {
     Community findCommunity(@Param("id") long id);
 
     /***
-     * 查询是否已加入居委会
+     * 查询已加入的居委会
      * @param userId
      * @return
      */
-    @Select("select * from CommunityResident where userId = #{userId}")
-    CommunityResident findJoin(@Param("userId") long userId);
+    @Select("select * from CommunityResident where userId = #{userId} ORDER BY time desc")
+    List<CommunityResident> findJoin(@Param("userId") long userId);
+
+    /***
+     * 查询指定居委会
+     * @param ids    居委会Ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Community" +
+            " where 1=1" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<Community> findCommunityList3(@Param("ids") String[] ids);
 
     /***
      * 查询居委会列表
@@ -315,8 +331,8 @@ public interface CommunityDao {
      * @param communityHouse
      * @return
      */
-    @Insert("insert into CommunitySetUp(communityId,post,head) " +
-            "values (#{communityId},#{post},#{head})")
+    @Insert("insert into CommunitySetUp(communityId,post,head,name) " +
+            "values (#{communityId},#{post},#{head},#{name})")
     @Options(useGeneratedKeys = true)
     int addSetUp(CommunitySetUp communityHouse);
 
@@ -328,7 +344,8 @@ public interface CommunityDao {
     @Update("<script>" +
             "update CommunitySetUp set" +
             " post=#{post}," +
-            " head=#{head}" +
+            " head=#{head}," +
+            " name=#{name}" +
             " where id=#{id}" +
             "</script>")
     int changeSetUp(CommunitySetUp communityHouse);
