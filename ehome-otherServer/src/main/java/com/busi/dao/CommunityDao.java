@@ -117,12 +117,12 @@ public interface CommunityDao {
             " where 1=1" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
+            "</if>" +
             "<if test=\"city >= 0\">" +
             " and city = #{city}" +
             "</if>" +
             "<if test=\"province >= 0\">" +
             " and province = #{province}" +
-            "</if>" +
             "</if>" +
             "<if test=\"province == -1\">" +
             " and lat > #{lat}-0.09009" +  //只对于经度和纬度大于或小于该用户10公里（1度111公里)范围内的居委会进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
