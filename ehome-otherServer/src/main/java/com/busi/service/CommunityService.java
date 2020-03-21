@@ -68,7 +68,7 @@ public class CommunityService {
         if (CommonUtils.checkFull(string)) {
             list = epidemicSituationDao.findCommunityList2(lon, lat, province, city, district);
         } else {
-            list = epidemicSituationDao.findCommunityList(lon, lat, string, province, city, district);
+            list = epidemicSituationDao.findCommunityList(string, province, city, district);
         }
         return PageUtils.getPageBean(p, list);
     }
