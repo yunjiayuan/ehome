@@ -150,7 +150,7 @@ public interface CommunityDao {
     @Update("<script>" +
             "update CommunityResident set" +
             " identity=#{identity}" +
-            " where id=#{id} and userId=#{userId}" +
+            " where communityId=#{communityId} and userId=#{userId}" +
             "</script>")
     int changeResident(CommunityResident selectionActivities);
 
@@ -211,8 +211,8 @@ public interface CommunityDao {
      * @param homeBlogComment
      * @return
      */
-    @Insert("insert into CommunityMessageBoard(userId,communityId,replayId,content,time,replyType,replyStatus,fatherId,secondFatherId) " +
-            "values (#{userId},#{communityId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId})")
+    @Insert("insert into CommunityMessageBoard(userId,communityId,replayId,content,time,replyType,replyStatus,fatherId,secondFatherId,type) " +
+            "values (#{userId},#{communityId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId},#{type})")
     @Options(useGeneratedKeys = true)
     int addComment(CommunityMessageBoard homeBlogComment);
 
@@ -267,10 +267,10 @@ public interface CommunityDao {
     @Select("<script>" +
             "select * from CommunityMessageBoard" +
             " where 1=1" +
-            " and communityId=#{communityId} and replyStatus=0 and replyType = 0" +
+            " and communityId=#{communityId} and replyStatus=0 and replyType = 0 and type=#{type}" +
             " order by time desc" +
             "</script>")
-    List<CommunityMessageBoard> findList(@Param("communityId") long communityId);
+    List<CommunityMessageBoard> findList(@Param("type") int type, @Param("communityId") long communityId);
 
     /***
      * 查询回复列表(只查回复replyType = 1)

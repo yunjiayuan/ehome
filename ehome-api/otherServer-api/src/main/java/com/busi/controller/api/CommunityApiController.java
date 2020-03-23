@@ -118,8 +118,8 @@ public interface CommunityApiController {
      * @param count      每页条数
      * @return
      */
-    @GetMapping("findMessageBoardList/{communityId}/{page}/{count}")
-    ReturnData findMessageBoardList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findMessageBoardList/{type}/{communityId}/{page}/{count}")
+    ReturnData findMessageBoardList(@PathVariable int type, @PathVariable long communityId, @PathVariable int page, @PathVariable int count);
 
     /***
      * 查询留言板指定评论下的回复记录接口

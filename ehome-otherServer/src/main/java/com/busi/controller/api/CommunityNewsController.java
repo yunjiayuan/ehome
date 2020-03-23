@@ -2,11 +2,13 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.Community;
 import com.busi.entity.CommunityNews;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.service.CommunityNewsService;
 import com.busi.utils.CommonUtils;
+import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @program: ehome
@@ -82,6 +85,8 @@ public class CommunityNewsController extends BaseController implements Community
         }
         todayNews.setRefreshTime(new Date());
         todayNewsService.editNews(todayNews);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_NEWS + todayNews.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -92,13 +97,15 @@ public class CommunityNewsController extends BaseController implements Community
     @Override
     public ReturnData delNews(@PathVariable long id) {
         todayNewsService.del(id);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_NEWS + id, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 查询新闻列表
-     * @param communityId 居委会ID
-     * @param newsType 发布新闻类型0人物  1企业  2新闻
+     * @param communityId newsType=0时为居委会ID  newsType=1时为物业ID
+     * @param newsType 类型： 0居委会  1物业
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
@@ -130,7 +137,17 @@ public class CommunityNewsController extends BaseController implements Community
         if (infoId <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "infoId参数有误", new JSONObject());
         }
-        CommunityNews tn = todayNewsService.findInfo(infoId);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", tn);
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_COMMUNITY_NEWS + infoId);
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            CommunityNews sa = todayNewsService.findInfo(infoId);
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询资讯不存在!", new JSONObject());
+            }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(sa);
+            redisUtils.hmset(Constants.REDIS_KEY_COMMUNITY_NEWS + infoId, kitchenMap, Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
 }

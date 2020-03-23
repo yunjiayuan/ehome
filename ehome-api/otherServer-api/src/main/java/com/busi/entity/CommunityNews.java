@@ -23,7 +23,7 @@ public class CommunityNews {
     private long userId;                      //用户ID
 
     @Min(value = 1, message = "communityId参数有误")
-    private long communityId;    //居委会ID
+    private long communityId;    //newsType=0时居委会ID  newsType=1时物业ID
 
     @Length(max = 100, message = "标题最多可输入100个字")
     private String title;                     //标题
@@ -37,7 +37,7 @@ public class CommunityNews {
 
     private String coverUrl;                  //视频封面图
 
-    private int newsType;                     //资讯类别   0人物  1企业  2新闻
+    private int newsType;                     //资讯类别   0居委会  1物业
 
     private int newsFormat;                   //发布类型  0纯文  1一图  2多图  3视频
 
