@@ -54,7 +54,7 @@ public class CommunityEventReporting {
     @Pattern(regexp = "^\\s*$|^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号格式有误，请输入正确的手机号")
     private String phone;//手机
 
-//    private int review;            // 0审核中 1已审核 2审核不通过
+    private int review;            // 0审核中 1已审核 2审核不通过
 //
 //    private String departTime;             //出发时间和出院时间
 
