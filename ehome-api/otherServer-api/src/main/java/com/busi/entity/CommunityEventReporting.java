@@ -56,15 +56,15 @@ public class CommunityEventReporting {
 
     private int review;            // 0审核中 1已审核 2审核不通过
 //
-//    private String departTime;             //出发时间和出院时间
+    private String departTime;             //出发时间和出院时间（已停用）
 
     private String placeOfDeparture;       //出发地和所住医院名称  改为：路线数据存储 格式：出发时间,出发地,到达时间,到达地,交通工具类型,具体交通工具;出发时间,出发地,到达时间,到达地,交通工具类型,具体交通工具
 
-//    private String arriveTime;             //到达时间
-//
-//    private int vehicle;                   //交通工具：0火车 1飞机 2地铁 3客车 4公交 5出租车 6轮船 7自驾 8其他
-//
-//    private String trainNumber;            // 车次/航班号
+    private String arriveTime;             //到达时间（已停用）
+
+    private int vehicle;                   //交通工具：0火车 1飞机 2地铁 3客车 4公交 5出租车 6轮船 7自驾 8其他（已停用）
+
+    private String trainNumber;            // 车次/航班号（已停用）
 
     private int contactHistory;        // 是否有湖北武汉接触史:0没有  1有
 
