@@ -190,6 +190,19 @@ public interface CommunityDao {
     List<CommunityResident> findResidentList(@Param("communityId") long communityId);
 
     /***
+     * 查询管理员列表
+     * @param communityId    居委会
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CommunityResident" +
+            " where 1=1" +
+            " and communityId = #{communityId} and identity>0" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<CommunityResident> findWardenList(@Param("communityId") long communityId);
+
+    /***
      * 查询指定居民列表
      * @param communityId    居委会
      * @return

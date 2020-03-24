@@ -161,6 +161,17 @@ public class CommunityService {
     }
 
     /***
+     * 查询管理员列表
+     * @param communityId    居委会
+     * @return
+     */
+    public List<CommunityResident> findWardenList(long communityId) {
+        List<CommunityResident> list = null;
+        list = epidemicSituationDao.findWardenList(communityId);
+        return list;
+    }
+
+    /***
      * 新增评论
      * @param homeBlogComment
      * @return
