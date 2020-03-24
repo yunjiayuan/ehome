@@ -68,7 +68,7 @@ public class CommunityService {
         if (CommonUtils.checkFull(string)) {
             list = epidemicSituationDao.findCommunityList2(lon, lat, province, city, district);
         } else {
-            list = epidemicSituationDao.findCommunityList(lon, lat, string, province, city, district);
+            list = epidemicSituationDao.findCommunityList(string, province, city, district);
         }
         return PageUtils.getPageBean(p, list);
     }
@@ -211,16 +211,16 @@ public class CommunityService {
 
     /***
      * 查询评论列表
-     * @param goodsId  商品ID
+     * @param communityId  ID
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<CommunityMessageBoard> findList(long goodsId, int page, int count) {
+    public PageBean<CommunityMessageBoard> findList(int type, long communityId, int page, int count) {
 
         List<CommunityMessageBoard> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = epidemicSituationDao.findList(goodsId);
+        list = epidemicSituationDao.findList(type, communityId);
         return PageUtils.getPageBean(p, list);
     }
 

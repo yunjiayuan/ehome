@@ -87,8 +87,6 @@ public interface CommunityDao {
 
     /***
      * 查询居委会列表
-     * @param lon     经度
-     * @param lat     纬度
      * @param province     省
      * @param city      市
      * @param district    区
@@ -112,7 +110,7 @@ public interface CommunityDao {
             "</if>" +
             " ORDER BY time desc" +
             "</script>")
-    List<Community> findCommunityList(@Param("lon") double lon, @Param("lat") double lat, @Param("string") String string, @Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<Community> findCommunityList(@Param("string") String string, @Param("province") int province, @Param("city") int city, @Param("district") int district);
 
     @Select("<script>" +
             "select * from Community" +
@@ -126,9 +124,11 @@ public interface CommunityDao {
             "<if test=\"province >= 0\">" +
             " and province = #{province}" +
             "</if>" +
+            "<if test=\"province == -1\">" +
             " and lat > #{lat}-0.09009" +  //只对于经度和纬度大于或小于该用户10公里（1度111公里)范围内的居委会进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
             " and lat &lt; #{lat}+0.09009 and lon > #{lon}-0.09009" +
             " and lon &lt; #{lon}+0.09009 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+            "</if>" +
             "</script>")
     List<Community> findCommunityList2(@Param("lon") double lon, @Param("lat") double lat, @Param("province") int province, @Param("city") int city, @Param("district") int district);
 
@@ -150,7 +150,7 @@ public interface CommunityDao {
     @Update("<script>" +
             "update CommunityResident set" +
             " identity=#{identity}" +
-            " where id=#{id} and userId=#{userId}" +
+            " where communityId=#{communityId} and userId=#{userId}" +
             "</script>")
     int changeResident(CommunityResident selectionActivities);
 
@@ -211,8 +211,8 @@ public interface CommunityDao {
      * @param homeBlogComment
      * @return
      */
-    @Insert("insert into CommunityMessageBoard(userId,communityId,replayId,content,time,replyType,replyStatus,fatherId,secondFatherId) " +
-            "values (#{userId},#{communityId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId})")
+    @Insert("insert into CommunityMessageBoard(userId,communityId,replayId,content,time,replyType,replyStatus,fatherId,secondFatherId,type) " +
+            "values (#{userId},#{communityId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId},#{type})")
     @Options(useGeneratedKeys = true)
     int addComment(CommunityMessageBoard homeBlogComment);
 
@@ -267,10 +267,10 @@ public interface CommunityDao {
     @Select("<script>" +
             "select * from CommunityMessageBoard" +
             " where 1=1" +
-            " and communityId=#{communityId} and replyStatus=0 and replyType = 0" +
+            " and communityId=#{communityId} and replyStatus=0 and replyType = 0 and type=#{type}" +
             " order by time desc" +
             "</script>")
-    List<CommunityMessageBoard> findList(@Param("communityId") long communityId);
+    List<CommunityMessageBoard> findList(@Param("type") int type, @Param("communityId") long communityId);
 
     /***
      * 查询回复列表(只查回复replyType = 1)

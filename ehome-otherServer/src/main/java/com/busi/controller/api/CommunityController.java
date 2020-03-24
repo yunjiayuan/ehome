@@ -94,6 +94,8 @@ public class CommunityController extends BaseController implements CommunityApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         communityService.changeCommunity(homeHospital);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -104,11 +106,18 @@ public class CommunityController extends BaseController implements CommunityApiC
      */
     @Override
     public ReturnData findCommunity(@PathVariable long id) {
-        Community sa = communityService.findCommunity(id);
-        if (sa == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_COMMUNITY + id);
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            Community sa = communityService.findCommunity(id);
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
+            }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(sa);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + id, kitchenMap, Constants.USER_TIME_OUT);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", sa);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
 
     /***
@@ -251,12 +260,10 @@ public class CommunityController extends BaseController implements CommunityApiC
         }
         //判断权限
         CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), CommonUtils.getMyId());
-        if (sa == null) {
+        if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
-        if (sa.getIdentity() > 1) {
-            communityService.changeResident(homeHospital);
-        }
+        communityService.changeResident(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -344,7 +351,7 @@ public class CommunityController extends BaseController implements CommunityApiC
         communityService.addComment(shopFloorComment);
         if (shopFloorComment.getReplyType() == 0) {//新增评论
             //放入缓存(七天失效)
-            redisUtils.addListLeft(Constants.REDIS_KEY_COMMUNITY_COMMENT + shopFloorComment.getCommunityId(), shopFloorComment, Constants.USER_TIME_OUT);
+            redisUtils.addListLeft(Constants.REDIS_KEY_COMMUNITY_COMMENT + shopFloorComment.getCommunityId() + "_" + shopFloorComment.getType(), shopFloorComment, Constants.USER_TIME_OUT);
         } else {//新增回复
             List list = null;
             //先添加到缓存集合(七天失效)
@@ -372,8 +379,8 @@ public class CommunityController extends BaseController implements CommunityApiC
             //更新回复数
             CommunityMessageBoard num = communityService.findById(shopFloorComment.getFatherId());
             if (num != null) {
-                shopFloorComment.setReplyNumber(num.getReplyNumber() + 1);
-                communityService.updateCommentNum(shopFloorComment);
+                num.setReplyNumber(num.getReplyNumber() + 1);
+                communityService.updateCommentNum(num);
             }
         }
         //更新评论数
@@ -403,7 +410,7 @@ public class CommunityController extends BaseController implements CommunityApiC
         Community posts = null;
         posts = communityService.findCommunity(communityId);
         if (posts == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "居委会不存在", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "不存在", new JSONObject());
         }
         //判断操作人权限
         long userId = comment.getUserId();//评论者ID
@@ -433,13 +440,13 @@ public class CommunityController extends BaseController implements CommunityApiC
         communityService.updateBlogCounts(posts);
         if (comment.getReplyType() == 0) {
             //获取缓存中评论列表
-            list = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId, 0, -1);
+            list = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + comment.getType(), 0, -1);
             if (list != null && list.size() > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     CommunityMessageBoard comment2 = (CommunityMessageBoard) list.get(i);
                     if (comment2.getId() == id) {
                         //更新评论缓存
-                        redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId, 1, comment2);
+                        redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + comment.getType(), 1, comment2);
                         //更新此评论下的回复缓存
                         redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), 0);
                         break;
@@ -488,13 +495,14 @@ public class CommunityController extends BaseController implements CommunityApiC
 
     /***
      * 查询留言板记录
-     * @param communityId     居委会ID
+     * @param communityId   newsType=0时为居委会ID  newsType=1时为物业ID
+     * @param type          类型： 0居委会  1物业
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
      * @return
      */
     @Override
-    public ReturnData findMessageBoardList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findMessageBoardList(@PathVariable int type, @PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -506,17 +514,17 @@ public class CommunityController extends BaseController implements CommunityApiC
         List commentList2 = null;
         List<CommunityMessageBoard> messageArrayList = new ArrayList<>();
         PageBean<CommunityMessageBoard> pageBean = null;
-        long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId);
+        long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type);
         int pageCount = page * count;
         if (pageCount > countTotal) {
             pageCount = -1;
         } else {
             pageCount = pageCount - 1;
         }
-        commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId, (page - 1) * count, pageCount);
+        commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, (page - 1) * count, pageCount);
         //获取数据库中评论列表
         if (commentList == null || commentList.size() < count) {
-            pageBean = communityService.findList(communityId, page, count);
+            pageBean = communityService.findList(type, communityId, page, count);
             commentList2 = pageBean.getList();
             if (commentList2 != null && commentList2.size() > 0) {
                 for (int i = 0; i < commentList2.size(); i++) {
@@ -528,16 +536,16 @@ public class CommunityController extends BaseController implements CommunityApiC
                             comment2 = (CommunityMessageBoard) commentList.get(j);
                             if (comment2 != null) {
                                 if (comment.getId() == comment2.getId()) {
-                                    redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId, 1, comment2);
+                                    redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, 1, comment2);
                                 }
                             }
                         }
                     }
                 }
                 //更新缓存
-                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId, commentList2, Constants.USER_TIME_OUT);
+                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, commentList2, Constants.USER_TIME_OUT);
                 //获取最新缓存
-                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId, (page - 1) * count, page * count);
+                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, (page - 1) * count, page * count);
             }
         }
         if (commentList == null) {

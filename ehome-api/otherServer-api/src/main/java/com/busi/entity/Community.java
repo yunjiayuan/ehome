@@ -49,9 +49,9 @@ public class Community {
     @NotEmpty(message = "证件照不能为空")
     private String photo;            // 证件照
 
-    private String content;            // 简介
+    private String content;            // 居委会职责
 
-    private String notice;            // 公告
+    private String notice;            // 其他介绍
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;            // 创建时间
