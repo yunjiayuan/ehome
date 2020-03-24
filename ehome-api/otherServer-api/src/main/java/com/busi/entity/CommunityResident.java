@@ -24,7 +24,6 @@ public class CommunityResident {
 
     private long masterId;    //邀请者ID
 
-    @Min(value = 1, message = "communityId参数有误")
     private long userId;            //居民ID
 
     @Min(value = 0, message = "identity参数有误，数值超出指定范围")

@@ -495,7 +495,7 @@ public class CommunityController extends BaseController implements CommunityApiC
 
     /***
      * 查询留言板记录
-     * @param communityId   newsType=0时为居委会ID  newsType=1时为物业ID
+     * @param communityId   type=0时为居委会ID  type=1时为物业ID
      * @param type          类型： 0居委会  1物业
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
