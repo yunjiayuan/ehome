@@ -89,6 +89,7 @@ public class CommunityEventReportingController extends BaseController implements
 //                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您输入的身份证与姓名不符，请重新输入", new JSONObject());
 //            }
 //        }
+        communityEventReporting.setReview(0);//改为未报备
         communityEventReportingService.changeCommunityEventReporting(communityEventReporting);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
