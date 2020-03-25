@@ -271,14 +271,13 @@ public class CommunityController extends BaseController implements CommunityApiC
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /**
-     * @param ids
-     * @param communityId
-     * @Description: 删除居民
+    /***
+     * 删除居民
+     * @param type 0删除居民  1删除管理员
      * @return:
      */
     @Override
-    public ReturnData delResident(@PathVariable String ids, @PathVariable long communityId) {
+    public ReturnData delResident(@PathVariable int type, @PathVariable String ids, @PathVariable long communityId) {
         Community sa = communityService.findCommunity(communityId);
         if (sa == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
@@ -286,25 +285,26 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa.getUserId() != CommonUtils.getMyId()) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "没有权限!", new JSONObject());
         }
-        communityService.delResident(ids.split(","));
+        communityService.delResident(type, ids.split(","));
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 查询居民列表
+     * @param type    0所有人  1管理员
      * @param communityId    居委会ID
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findResidentList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findResidentList(@PathVariable int type, @PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<CommunityResident> pageBean = null;
-        pageBean = communityService.findResidentList(communityId, page, count);
+        pageBean = communityService.findResidentList(type, communityId, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

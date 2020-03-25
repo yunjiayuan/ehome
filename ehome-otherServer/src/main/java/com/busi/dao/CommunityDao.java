@@ -168,13 +168,23 @@ public interface CommunityDao {
      * @return
      */
     @Delete("<script>" +
+            "<if test=\"type == 1\">" +
+            "update CommunityResident set" +
+            " identity=0" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</if>" +
+            "<if test=\"type == 0\">" +
             "delete from CommunityResident" +
             " where id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
+            "</if>" +
             "</script>")
-    int delResident(@Param("ids") String[] ids);
+    int delResident(@Param("type") int type, @Param("ids") String[] ids);
 
     /***
      * 查询居民列表
@@ -184,10 +194,13 @@ public interface CommunityDao {
     @Select("<script>" +
             "select * from CommunityResident" +
             " where 1=1" +
+            "<if test=\"type == 1\">" +
+            " and identity > 0" +
+            "</if>" +
             " and communityId = #{communityId}" +
             " ORDER BY time desc" +
             "</script>")
-    List<CommunityResident> findResidentList(@Param("communityId") long communityId);
+    List<CommunityResident> findResidentList(@Param("type") int type, @Param("communityId") long communityId);
 
     /***
      * 查询管理员列表
