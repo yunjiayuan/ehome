@@ -568,7 +568,7 @@ public class CommunityController extends BaseController implements CommunityApiC
         } else {
             pageCount = pageCount - 1;
         }
-        commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, (page - 1) * count, pageCount);
+        commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, (page - 1) * count, pageCount);
         //获取数据库中评论列表
         if (commentList == null || commentList.size() < count) {
             pageBean = communityService.findList(type, communityId, page, count);
@@ -583,16 +583,16 @@ public class CommunityController extends BaseController implements CommunityApiC
                             comment2 = (CommunityMessageBoard) commentList.get(j);
                             if (comment2 != null) {
                                 if (comment.getId() == comment2.getId()) {
-                                    redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, 1, comment2);
+                                    redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, 1, comment2);
                                 }
                             }
                         }
                     }
                 }
                 //更新缓存
-                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, commentList2, Constants.USER_TIME_OUT);
+                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, commentList2, Constants.USER_TIME_OUT);
                 //获取最新缓存
-                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, (page - 1) * count, page * count);
+                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT  + communityId + "_" + type, (page - 1) * count, page * count);
             }
         }
         if (commentList == null) {
