@@ -77,22 +77,24 @@ public interface CommunityApiController {
     @PutMapping("changeResident")
     ReturnData changeResident(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult);
 
-    /**
-     * @Description: 删除居民
+    /***
+     * 删除居民
+     * @param type 0删除居民  1删除管理员
      * @return:
      */
-    @DeleteMapping("delResident/{ids}/{communityId}")
-    ReturnData delResident(@PathVariable String ids, @PathVariable long communityId);
+    @DeleteMapping("delResident/{type}/{ids}/{communityId}")
+    ReturnData delResident(@PathVariable int type, @PathVariable String ids, @PathVariable long communityId);
 
     /***
      * 查询居民列表
+     * @param type    0所有人  1管理员
      * @param communityId    居委会ID
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findResidentList/{communityId}/{page}/{count}")
-    ReturnData findResidentList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findResidentList/{type}/{communityId}/{page}/{count}")
+    ReturnData findResidentList(@PathVariable int type, @PathVariable long communityId, @PathVariable int page, @PathVariable int count);
 
     /***
      * 添加留言板

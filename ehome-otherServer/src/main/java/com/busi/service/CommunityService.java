@@ -110,8 +110,8 @@ public class CommunityService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int delResident(String[] ids) {
-        return epidemicSituationDao.delResident(ids);
+    public int delResident(int type, String[] ids) {
+        return epidemicSituationDao.delResident(type, ids);
     }
 
     /***
@@ -141,10 +141,10 @@ public class CommunityService {
      * @param count    条数
      * @return
      */
-    public PageBean<CommunityResident> findResidentList(long communityId, int page, int count) {
+    public PageBean<CommunityResident> findResidentList(int type, long communityId, int page, int count) {
         List<CommunityResident> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = epidemicSituationDao.findResidentList(communityId);
+        list = epidemicSituationDao.findResidentList(type, communityId);
         return PageUtils.getPageBean(p, list);
     }
 
@@ -157,6 +157,17 @@ public class CommunityService {
     public List<CommunityResident> findIsList(long communityId, String userIds) {
         List<CommunityResident> list = null;
         list = epidemicSituationDao.findIsList(communityId, userIds.split(","));
+        return list;
+    }
+
+    /***
+     * 查询管理员列表
+     * @param communityId    居委会
+     * @return
+     */
+    public List<CommunityResident> findWardenList(long communityId) {
+        List<CommunityResident> list = null;
+        list = epidemicSituationDao.findWardenList(communityId);
         return list;
     }
 

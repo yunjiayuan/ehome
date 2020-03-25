@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.CommunityMessageService;
 import com.busi.service.CommunityService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class CommunityController extends BaseController implements CommunityApiC
 
     @Autowired
     CommunityService communityService;
+
+    @Autowired
+    private CommunityMessageService communityMessageService;
 
     /***
      * 查询是否已加入居委会
@@ -263,18 +267,21 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
+        if (homeHospital.getIdentity() == 2 && sa.getIdentity() == 2) {
+            sa.setIdentity(1);
+            communityService.changeResident(sa);
+        }
         communityService.changeResident(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /**
-     * @param ids
-     * @param communityId
-     * @Description: 删除居民
+    /***
+     * 删除居民
+     * @param type 0删除居民  1删除管理员
      * @return:
      */
     @Override
-    public ReturnData delResident(@PathVariable String ids, @PathVariable long communityId) {
+    public ReturnData delResident(@PathVariable int type, @PathVariable String ids, @PathVariable long communityId) {
         Community sa = communityService.findCommunity(communityId);
         if (sa == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
@@ -282,25 +289,26 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa.getUserId() != CommonUtils.getMyId()) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "没有权限!", new JSONObject());
         }
-        communityService.delResident(ids.split(","));
+        communityService.delResident(type, ids.split(","));
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 查询居民列表
+     * @param type    0所有人  1管理员
      * @param communityId    居委会ID
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findResidentList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findResidentList(@PathVariable int type, @PathVariable long communityId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<CommunityResident> pageBean = null;
-        pageBean = communityService.findResidentList(communityId, page, count);
+        pageBean = communityService.findResidentList(type, communityId, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -332,12 +340,6 @@ public class CommunityController extends BaseController implements CommunityApiC
      */
     @Override
     public ReturnData addMessageBoard(@Valid @RequestBody CommunityMessageBoard shopFloorComment, BindingResult bindingResult) {
-        //查询居委会信息
-        Community posts = null;
-        posts = communityService.findCommunity(shopFloorComment.getCommunityId());
-        if (posts == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-        }
         //处理特殊字符
         String content = shopFloorComment.getContent();
         if (!CommonUtils.checkFull(content)) {
@@ -346,6 +348,53 @@ public class CommunityController extends BaseController implements CommunityApiC
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "评论内容不能为空并且不能包含非法字符！", new JSONArray());
             }
             shopFloorComment.setContent(filteringContent);
+        }
+        if (shopFloorComment.getType() == 0) { //留言类别   0居委会
+            Community posts = null;
+            posts = communityService.findCommunity(shopFloorComment.getCommunityId());
+            if (posts == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            //更新评论数
+            posts.setCommentNumber(posts.getCommentNumber() + 1);
+            communityService.updateBlogCounts(posts);
+            long myId = shopFloorComment.getUserId();
+            long userId = shopFloorComment.getReplayId();
+            int ate = shopFloorComment.getReplyType();
+            //新增消息
+            if (ate == 0) {//评论时给所有管理员新增消息
+                List wardenList = communityService.findWardenList(shopFloorComment.getCommunityId());
+                if (wardenList != null && wardenList.size() > 0) {
+                    for (int i = 0; i < wardenList.size(); i++) {
+                        CommunityResident resident = (CommunityResident) wardenList.get(i);
+                        CommunityMessage comment = new CommunityMessage();
+                        comment.setNewsState(1);
+                        comment.setTime(new Date());
+                        comment.setNewsType(ate);
+                        comment.setType(shopFloorComment.getType());
+                        comment.setUserId(myId);
+                        comment.setReplayId(resident.getUserId());
+                        comment.setContent(shopFloorComment.getContent());
+                        comment.setCommentId(shopFloorComment.getId());
+                        comment.setCommunityId(shopFloorComment.getCommunityId());
+                        communityMessageService.addMessage(comment);
+                    }
+                }
+            } else {
+                CommunityMessage comment = new CommunityMessage();
+                comment.setNewsState(1);
+                comment.setTime(new Date());
+                comment.setNewsType(ate);
+                comment.setType(shopFloorComment.getType());
+                comment.setUserId(myId);
+                comment.setReplayId(userId);
+                comment.setContent(shopFloorComment.getContent());
+                comment.setCommentId(shopFloorComment.getId());
+                comment.setCommunityId(shopFloorComment.getCommunityId());
+                communityMessageService.addMessage(comment);
+            }
+        } else if (shopFloorComment.getType() == 1) {//留言类别  1物业
+
         }
         shopFloorComment.setTime(new Date());
         communityService.addComment(shopFloorComment);
@@ -383,17 +432,13 @@ public class CommunityController extends BaseController implements CommunityApiC
                 communityService.updateCommentNum(num);
             }
         }
-        //更新评论数
-        posts.setCommentNumber(posts.getCommentNumber() + 1);
-        communityService.updateBlogCounts(posts);
-
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 删除留言板
      * @param id 评论ID
-     * @param communityId 居委会ID
+     * @param communityId 居委会或物业ID
      * @return
      */
     @Override
@@ -405,12 +450,6 @@ public class CommunityController extends BaseController implements CommunityApiC
         CommunityMessageBoard comment = communityService.findById(id);
         if (comment == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "评论不存在", new JSONArray());
-        }
-        //查询该居委会信息
-        Community posts = null;
-        posts = communityService.findCommunity(communityId);
-        if (posts == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "不存在", new JSONObject());
         }
         //判断操作人权限
         long userId = comment.getUserId();//评论者ID
@@ -434,10 +473,21 @@ public class CommunityController extends BaseController implements CommunityApiC
             //更新回复删除状态
             communityService.updateReplyState(ids.split(","));
         }
-        //更新商品评论数
         int num = messList.size();
-        posts.setCommentNumber(posts.getCommentNumber() - num);
-        communityService.updateBlogCounts(posts);
+        if (comment.getType() == 0) { //留言类别   0居委会
+            //查询该居委会信息
+            Community posts = null;
+            posts = communityService.findCommunity(communityId);
+            if (posts == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "不存在", new JSONObject());
+            }
+            //更新评论数
+            posts.setCommentNumber(posts.getCommentNumber() - num - 1);
+            communityService.updateBlogCounts(posts);
+        }
+        if (comment.getType() == 1) {//留言类别  1物业
+
+        }
         if (comment.getReplyType() == 0) {
             //获取缓存中评论列表
             list = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + comment.getType(), 0, -1);
@@ -487,15 +537,12 @@ public class CommunityController extends BaseController implements CommunityApiC
             comment.setReplyNumber(comment.getReplyNumber() - 1);
             communityService.updateCommentNum(comment);
         }
-        //更新评论数
-        posts.setCommentNumber(posts.getCommentNumber() - 1);
-        communityService.updateBlogCounts(posts);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 查询留言板记录
-     * @param communityId   newsType=0时为居委会ID  newsType=1时为物业ID
+     * @param communityId   type=0时为居委会ID  type=1时为物业ID
      * @param type          类型： 0居委会  1物业
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
@@ -521,7 +568,7 @@ public class CommunityController extends BaseController implements CommunityApiC
         } else {
             pageCount = pageCount - 1;
         }
-        commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, (page - 1) * count, pageCount);
+        commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, (page - 1) * count, pageCount);
         //获取数据库中评论列表
         if (commentList == null || commentList.size() < count) {
             pageBean = communityService.findList(type, communityId, page, count);
@@ -536,16 +583,16 @@ public class CommunityController extends BaseController implements CommunityApiC
                             comment2 = (CommunityMessageBoard) commentList.get(j);
                             if (comment2 != null) {
                                 if (comment.getId() == comment2.getId()) {
-                                    redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, 1, comment2);
+                                    redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, 1, comment2);
                                 }
                             }
                         }
                     }
                 }
                 //更新缓存
-                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, commentList2, Constants.USER_TIME_OUT);
+                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, commentList2, Constants.USER_TIME_OUT);
                 //获取最新缓存
-                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + communityId + "_" + type, (page - 1) * count, page * count);
+                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT  + communityId + "_" + type, (page - 1) * count, page * count);
             }
         }
         if (commentList == null) {
