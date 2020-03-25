@@ -267,6 +267,10 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
+        if (homeHospital.getIdentity() == 2 && sa.getIdentity() == 2) {
+            sa.setIdentity(1);
+            communityService.changeResident(sa);
+        }
         communityService.changeResident(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -389,8 +393,7 @@ public class CommunityController extends BaseController implements CommunityApiC
                 comment.setCommunityId(shopFloorComment.getCommunityId());
                 communityMessageService.addMessage(comment);
             }
-        }
-        if (shopFloorComment.getType() == 1) {//留言类别  1物业
+        } else if (shopFloorComment.getType() == 1) {//留言类别  1物业
 
         }
         shopFloorComment.setTime(new Date());

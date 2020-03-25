@@ -46,7 +46,7 @@ public interface CommunityNoticeDao {
      * @return
      */
     @Update("<script>" +
-            "delete from CommunityResident" +
+            "delete from CommunityNotice" +
             " where id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
