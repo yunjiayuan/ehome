@@ -54,8 +54,8 @@ public interface CommunityMessageDao {
      */
     @Select("<script>" +
             "select count(id) from CommunityMessage" +
-            " and communityType=#{communityType} and communityId=#{communityId}" +
             " where replayId=#{userId} and status=0 and newsState=1" +
+            " and communityType=#{communityType} and communityId=#{communityId}" +
             "</script>")
     int getCount(@Param("communityType") int communityType, @Param("communityId") long communityId, @Param("userId") long userId);
 
