@@ -76,7 +76,9 @@ public interface CommunityHouseDao {
     @Select("<script>" +
             "select * from CommunityHouse" +
             " where 1=1" +
-            " and userId = #{userId}" +
+            "<if test=\"userId > 0\">" +
+                " and userId=#{userId}" +
+            "</if>" +
             " and communityId = #{communityId}" +
             " ORDER BY time desc" +
             "</script>")
