@@ -149,8 +149,8 @@ public interface CommunityDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into CommunityResident(userId,communityId,masterId,identity,type,time) " +
-            "values (#{userId},#{communityId},#{masterId},#{identity},#{type},#{time})")
+    @Insert("insert into CommunityResident(userId,communityId,masterId,identity,type,time,refreshTime) " +
+            "values (#{userId},#{communityId},#{masterId},#{identity},#{type},#{time},#{refreshTime})")
     @Options(useGeneratedKeys = true)
     int addResident(CommunityResident selectionVote);
 

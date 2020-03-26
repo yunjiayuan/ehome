@@ -282,29 +282,15 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa != null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        if (homeHospital.getType() == 0) {//主动加入
-            homeHospital.setTime(new Date());
-            homeHospital.setRefreshTime(new Date());
-            communityService.addResident(homeHospital);
-        } else {
-            //判断邀请者权限
+        if (homeHospital.getType() == 1) { //判断邀请者权限
             CommunityResident resident1 = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getMasterId());
             if (resident1 == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
             }
-            String[] userId = homeHospital.getUserIds().split(",");
-            for (int i = 0; i < userId.length; i++) {
-                CommunityResident resident = new CommunityResident();
-                resident.setIdentity(0);
-                resident.setType(1);
-                resident.setTime(new Date());
-                resident.setRefreshTime(new Date());
-                resident.setCommunityId(homeHospital.getCommunityId());
-                resident.setMasterId(homeHospital.getMasterId());
-                resident.setUserId(Long.parseLong(userId[i]));
-                communityService.addResident(resident);
-            }
         }
+        homeHospital.setTime(new Date());
+        homeHospital.setRefreshTime(new Date());
+        communityService.addResident(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
     }
 
