@@ -19,7 +19,6 @@ public class CommunityResident {
 
     private long id;                //主键ID
 
-    @Min(value = 1, message = "communityId参数有误")
     private long communityId;    //居委会ID
 
     private long masterId;    //邀请者ID

@@ -24,8 +24,8 @@ public interface CommunityDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into Community(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review,refreshTime) " +
-            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review},#{refreshTime})")
+    @Insert("insert into Community(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review) " +
+            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review})")
     @Options(useGeneratedKeys = true)
     int addCommunity(Community selectionVote);
 
