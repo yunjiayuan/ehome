@@ -41,7 +41,7 @@ public interface CommunityMessageDao {
             "<if test=\"type == 2\">" +
             " and newsState=0" +
             "</if>" +
-            " and communityType=#{communityType} and communityId=#{communityId}" +
+            " and type=#{communityType} and communityId=#{communityId}" +
             " and replayId=#{userId} and status=0" +
             " order by time desc" +
             "</script>")
@@ -55,9 +55,9 @@ public interface CommunityMessageDao {
     @Select("<script>" +
             "select count(id) from CommunityMessage" +
             " where replayId=#{userId} and status=0 and newsState=1" +
-            " and communityType=#{communityType} and communityId=#{communityId}" +
+            " and type=#{type} and communityId=#{communityId}" +
             "</script>")
-    int getCount(@Param("communityType") int communityType, @Param("communityId") long communityId, @Param("userId") long userId);
+    int getCount(@Param("type") int type, @Param("communityId") long communityId, @Param("userId") long userId);
 
     /***
      * 更新未读状态
@@ -68,13 +68,13 @@ public interface CommunityMessageDao {
             "update CommunityMessage set" +
             " newsState=0" +
             " where newsState=1 and replayId=#{userId}" +
-            " and communityType=#{communityType} and communityId=#{communityId}" +
+            " and type=#{type} and communityId=#{communityId}" +
             " and id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</script>")
-    int updateState(@Param("communityType") int communityType, @Param("communityId") long communityId, @Param("userId") long userId, @Param("ids") String[] ids);
+    int updateState(@Param("type") int type, @Param("communityId") long communityId, @Param("userId") long userId, @Param("ids") String[] ids);
 
     /***
      * 更新未读状态
@@ -85,11 +85,11 @@ public interface CommunityMessageDao {
             "update CommunityMessage set" +
             " newsState=0" +
             " where newsState=1" +
-            " and communityType=#{communityType} and communityId=#{communityId}" +
+            " and type=#{type} and communityId=#{communityId}" +
             " and replayId in" +
             "<foreach collection='users' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</script>")
-    int updateState2(@Param("communityType") int communityType, @Param("communityId") long communityId, @Param("users") String[] users);
+    int updateState2(@Param("type") int type, @Param("communityId") long communityId, @Param("users") String[] users);
 }

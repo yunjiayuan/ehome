@@ -54,14 +54,14 @@ public class CommunityMessageService {
 
     /***
      * 获取未读消息
-     * @param communityType     类别   0居委会  1物业
+     * @param type     类别   0居委会  1物业
      * @param communityId     type=0时为居委会ID  type=1时为物业ID
      * @param userId     查询用户ID
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public long getCount(int communityType, long communityId, long userId) {
-        return homeBlogCommentDao.getCount(communityType, communityId, userId);
+    public long getCount(int type, long communityId, long userId) {
+        return homeBlogCommentDao.getCount(type, communityId, userId);
     }
 
     /***
