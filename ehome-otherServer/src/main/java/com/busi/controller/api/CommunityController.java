@@ -230,40 +230,41 @@ public class CommunityController extends BaseController implements CommunityApiC
         }
         List list2 = null;
         if (!CommonUtils.checkFull(ids)) {
-            list2 = communityService.findIsList2(ids, CommonUtils.getMyId());//查询我的居委会
-            if (list2 == null || list2.size() <= 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-            }
-            for (int i = 0; i < list.size(); i++) {
-                Community community = (Community) list.get(i);
-                for (int j = 0; j < list2.size(); j++) {
-                    CommunityResident resident = (CommunityResident) list2.get(j);
-                    if (resident.getUserId() == CommonUtils.getMyId() && community.getId() == resident.getCommunityId()) {
-                        community.setIdentity(resident.getIdentity());
-                        list2.remove(j);
+            list2 = communityService.findIsList2(ids, CommonUtils.getMyId());//查询是否有我加入的居委会
+            if (list2 != null && list2.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    Community community = (Community) list.get(i);
+                    for (int j = 0; j < list2.size(); j++) {
+                        CommunityResident resident = (CommunityResident) list2.get(j);
+                        if (resident.getUserId() == CommonUtils.getMyId() && community.getId() == resident.getCommunityId()) {
+                            community.setIdentity(resident.getIdentity());
+                            list2.remove(j);
+                        }
                     }
                 }
             }
         }
-        Collections.sort(list, new Comparator<Community>() {
-            /*
-             * int compare(Person o1, Person o2) 返回一个基本类型的整型，
-             * 返回负数表示：o1 小于o2，
-             * 返回0 表示：o1和p2相等，
-             * 返回正数表示：o1大于o2
-             */
-            @Override
-            public int compare(Community o1, Community o2) {
-                // 按照距离进行正序排列
-                if (o1.getDistance() > o2.getDistance()) {
-                    return 1;
+        if (CommonUtils.checkFull(string)) {
+            Collections.sort(list, new Comparator<Community>() {
+                /*
+                 * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+                 * 返回负数表示：o1 小于o2，
+                 * 返回0 表示：o1和p2相等，
+                 * 返回正数表示：o1大于o2
+                 */
+                @Override
+                public int compare(Community o1, Community o2) {
+                    // 按照距离进行正序排列
+                    if (o1.getDistance() > o2.getDistance()) {
+                        return 1;
+                    }
+                    if (o1.getDistance() == o2.getDistance()) {
+                        return 0;
+                    }
+                    return -1;
                 }
-                if (o1.getDistance() == o2.getDistance()) {
-                    return 0;
-                }
-                return -1;
-            }
-        });
+            });
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
