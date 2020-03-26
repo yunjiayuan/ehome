@@ -1,10 +1,8 @@
 package com.busi.entity;
 
-import com.busi.validator.IdCardConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -12,7 +10,7 @@ import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
- * 房屋信息
+ * 房屋信息和人员报备
  * author suntj
  * Create time 2020-02-15 16:02:25
  */
@@ -48,7 +46,7 @@ public class CommunityHouse {
 
     private int unitCompany;           //单位：0单元、1无单元
 
-    private String roomNumber;             //室
+    private String roomNumber;             //室 具体房间号
 
     private int roomState;             //房屋状态：0自住 1出租
 
@@ -65,4 +63,15 @@ public class CommunityHouse {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;            // 新增时间
+
+    private int residence;//户型 几居室
+
+    private int livingRoom;//户型 几厅
+
+    private int toilet;//户型 几卫
+
+    private String housingArea;//户型面积
+
+    private String household;//房屋居住人员信息组合 格式：姓名,身份证号,电话;姓名,身份证号,电话
+
 }

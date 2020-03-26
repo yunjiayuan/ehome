@@ -35,8 +35,8 @@ public interface CommunityHouseDao {
      * @param communityHouse
      * @return
      */
-    @Insert("insert into CommunityHouse(communityId,userId,villageName,lat,lon,address,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time) " +
-            "values (#{communityId},#{userId},#{villageName},#{lat},#{lon},#{address},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time})")
+    @Insert("insert into CommunityHouse(communityId,userId,villageName,lat,lon,address,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time,residence,livingRoom,toilet,housingArea,household) " +
+            "values (#{communityId},#{userId},#{villageName},#{lat},#{lon},#{address},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time},#{residence},#{livingRoom},#{toilet},#{housingArea},#{household})")
     @Options(useGeneratedKeys = true)
     int addCommunityHouse(CommunityHouse communityHouse);
 
@@ -59,6 +59,11 @@ public interface CommunityHouseDao {
             " address=#{address}," +
             " idCard=#{idCard}," +
             " realName=#{realName}," +
+            " residence=#{residence}," +
+            " livingRoom=#{livingRoom}," +
+            " toilet=#{toilet}," +
+            " housingArea=#{housingArea}," +
+            " household=#{household}," +
             " phone=#{phone}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
