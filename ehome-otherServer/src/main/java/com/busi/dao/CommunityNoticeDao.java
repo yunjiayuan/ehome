@@ -52,7 +52,7 @@ public interface CommunityNoticeDao {
             " #{item}" +
             "</foreach>" +
             "</script>")
-    int del(@Param("ids") String ids);
+    int del(@Param("ids") String[] ids);
 
     /***
      * 分页查询

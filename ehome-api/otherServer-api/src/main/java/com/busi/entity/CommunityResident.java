@@ -37,6 +37,9 @@ public class CommunityResident {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;            // 加入时间
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date refreshTime;                 //刷新时间
+
     //与数据库无关字段
     private String userIds;     //被邀请加入时多个居民逗号分隔
 

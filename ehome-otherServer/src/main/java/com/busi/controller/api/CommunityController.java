@@ -70,11 +70,13 @@ public class CommunityController extends BaseController implements CommunityApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         homeHospital.setTime(new Date());
+        homeHospital.setRefreshTime(new Date());
         communityService.addCommunity(homeHospital);
 
         //新增居民
         CommunityResident resident = new CommunityResident();
         resident.setTime(new Date());
+        resident.setRefreshTime(new Date());
         resident.setCommunityId(homeHospital.getId());
         resident.setUserId(homeHospital.getUserId());
         resident.setIdentity(2);
@@ -98,6 +100,25 @@ public class CommunityController extends BaseController implements CommunityApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         communityService.changeCommunity(homeHospital);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新居委会刷新时间
+     * @param homeHospital
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData changeCommunityTime(@Valid @RequestBody Community homeHospital, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        homeHospital.setRefreshTime(new Date());
+        communityService.changeCommunityTime(homeHospital);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -144,8 +165,8 @@ public class CommunityController extends BaseController implements CommunityApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         List list = null;
+        String ids = "";
         if (userId > 0) {
-            String ids = "";
             list = communityService.findJoin(userId);
             if (list == null || list.size() <= 0) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
@@ -160,11 +181,24 @@ public class CommunityController extends BaseController implements CommunityApiC
                     }
                 }
             }
-            list = null;
+            List list2 = null;
             if (!CommonUtils.checkFull(ids)) {
-                list = communityService.findCommunityList2(ids);
+                list2 = communityService.findCommunityList2(ids);
+                if (list2 == null || list2.size() <= 0) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+                }
+                for (int i = 0; i < list2.size(); i++) {
+                    Community community = (Community) list2.get(i);
+                    for (int j = 0; j < list.size(); j++) {
+                        CommunityResident resident = (CommunityResident) list.get(j);
+                        if (community.getId() == resident.getCommunityId()) {
+                            community.setIdentity(resident.getIdentity());
+                            list.remove(j);
+                        }
+                    }
+                }
             }
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list2);
         }
         PageBean<Community> pageBean = null;
         pageBean = communityService.findCommunityList(lon, lat, string, province, city, district, page, count);
@@ -186,6 +220,28 @@ public class CommunityController extends BaseController implements CommunityApiC
             int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
 
             ik.setDistance(distance);//距离/m
+            if (i == 0) {
+                ids = ik.getId() + "";//居委会ID
+            } else {
+                ids += "," + ik.getId();
+            }
+        }
+        List list2 = null;
+        if (!CommonUtils.checkFull(ids)) {
+            list2 = communityService.findIsList2(ids, CommonUtils.getMyId());//查询指定居委会人员
+            if (list2 == null || list2.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            for (int i = 0; i < list.size(); i++) {
+                Community community = (Community) list.get(i);
+                for (int j = 0; j < list2.size(); j++) {
+                    CommunityResident resident = (CommunityResident) list2.get(j);
+                    if (community.getId() == resident.getCommunityId()) {
+                        community.setIdentity(resident.getIdentity());
+                        list2.remove(j);
+                    }
+                }
+            }
         }
         Collections.sort(list, new Comparator<Community>() {
             /*
@@ -592,7 +648,7 @@ public class CommunityController extends BaseController implements CommunityApiC
                 //更新缓存
                 redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, commentList2, Constants.USER_TIME_OUT);
                 //获取最新缓存
-                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT  + communityId + "_" + type, (page - 1) * count, page * count);
+                commentList = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + type, (page - 1) * count, page * count);
             }
         }
         if (commentList == null) {

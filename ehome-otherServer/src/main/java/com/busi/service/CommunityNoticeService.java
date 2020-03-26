@@ -50,7 +50,7 @@ public class CommunityNoticeService {
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int del(String ids) {
-        return todayNoticeDao.del(ids);
+        return todayNoticeDao.del(ids.split(","));
     }
 
     /***

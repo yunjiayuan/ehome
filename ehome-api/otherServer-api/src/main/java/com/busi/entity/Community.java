@@ -56,6 +56,9 @@ public class Community {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;            // 创建时间
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date refreshTime;                 //刷新时间
+
     @Min(value = 0, message = "deleteType参数有误，数值超出指定范围")
     @Max(value = 2, message = "deleteType参数有误，数值超出指定范围")
     private int review;            // 审核: 0审核中 1已审核
@@ -64,4 +67,6 @@ public class Community {
 
     // 与数据库无关字段
     private int distance;            //距离
+
+    private int identity;            //身份:0普通 1管理员 2创建者
 }

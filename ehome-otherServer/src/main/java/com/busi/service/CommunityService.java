@@ -35,6 +35,16 @@ public class CommunityService {
     }
 
     /***
+     * 更新居委会
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeCommunityTime(Community selectionVote) {
+        return epidemicSituationDao.changeCommunityTime(selectionVote);
+    }
+
+    /***
      * 新增居委会
      * @param selectionActivities
      * @return
@@ -157,6 +167,17 @@ public class CommunityService {
     public List<CommunityResident> findIsList(long communityId, String userIds) {
         List<CommunityResident> list = null;
         list = epidemicSituationDao.findIsList(communityId, userIds.split(","));
+        return list;
+    }
+
+    /***
+     * 查询指定居委会居民列表
+     * @param ids    居委会ID
+     * @return
+     */
+    public List<CommunityResident> findIsList2(String ids, long userId) {
+        List<CommunityResident> list = null;
+        list = epidemicSituationDao.findIsList2(ids.split(","), userId);
         return list;
     }
 

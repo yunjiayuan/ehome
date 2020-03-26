@@ -38,6 +38,14 @@ public interface CommunityApiController {
     ReturnData changeCommunity(@Valid @RequestBody Community homeHospital, BindingResult bindingResult);
 
     /***
+     * 更新居委会刷新时间
+     * @param homeHospital
+     * @return
+     */
+    @PutMapping("changeCommunityTime")
+    ReturnData changeCommunityTime(@Valid @RequestBody Community homeHospital, BindingResult bindingResult);
+
+    /***
      * 查询居委会详情
      * @param id
      * @return

@@ -24,8 +24,8 @@ public interface CommunityDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into Community(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review) " +
-            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review})")
+    @Insert("insert into Community(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review,refreshTime) " +
+            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review},#{refreshTime})")
     @Options(useGeneratedKeys = true)
     int addCommunity(Community selectionVote);
 
@@ -54,6 +54,18 @@ public interface CommunityDao {
     int changeCommunity(Community selectionActivities);
 
     /***
+     * 更新居委会
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update Community set" +
+            " refreshTime=#{refreshTime}" +
+            " where id=#{id}" +
+            "</script>")
+    int changeCommunityTime(Community selectionActivities);
+
+    /***
      * 根据ID查询居委会
      * @param id
      * @return
@@ -66,7 +78,7 @@ public interface CommunityDao {
      * @param userId
      * @return
      */
-    @Select("select * from CommunityResident where userId = #{userId} ORDER BY time desc")
+    @Select("select * from CommunityResident where userId = #{userId} ORDER BY refreshTime desc")
     List<CommunityResident> findJoin(@Param("userId") long userId);
 
     /***
@@ -198,7 +210,7 @@ public interface CommunityDao {
             " and identity > 0" +
             "</if>" +
             " and communityId = #{communityId}" +
-            " ORDER BY time desc" +
+            " ORDER BY identity desc" +
             "</script>")
     List<CommunityResident> findResidentList(@Param("type") int type, @Param("communityId") long communityId);
 
@@ -231,6 +243,23 @@ public interface CommunityDao {
             " ORDER BY time desc" +
             "</script>")
     List<CommunityResident> findIsList(@Param("communityId") long communityId, @Param("ids") String[] ids);
+
+    /***
+     * 查询指定居委会居民列表
+     * @param ids    居委会
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CommunityResident" +
+            " where 1=1" +
+            " and userId = #{userId}" +
+            " and communityId in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<CommunityResident> findIsList2(@Param("ids") String[] ids, @Param("userId") long userId);
 
     /***
      * 新增评论
