@@ -208,17 +208,19 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        if (!CommonUtils.checkFull(string)) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
-        }
+//        if (!CommonUtils.checkFull(string)) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+//        }
         for (int i = 0; i < list.size(); i++) {
             Community ik = (Community) list.get(i);
-            double userlon = ik.getLon();
-            double userlat = ik.getLat();
+            if (CommonUtils.checkFull(string)) {
+                double userlon = ik.getLon();
+                double userlat = ik.getLat();
 
-            int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
+                int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
 
-            ik.setDistance(distance);//距离/m
+                ik.setDistance(distance);//距离/m
+            }
             if (i == 0) {
                 ids = ik.getId() + "";//居委会ID
             } else {
