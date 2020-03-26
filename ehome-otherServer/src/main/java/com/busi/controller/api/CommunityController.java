@@ -58,6 +58,25 @@ public class CommunityController extends BaseController implements CommunityApiC
     }
 
     /***
+     * 刷新居委会时间
+     * @param homeHospital
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData changeCommunityTime(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        homeHospital.setRefreshTime(new Date());
+        communityService.changeCommunityTime(homeHospital);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 新增居委会
      * @param homeHospital
      * @param bindingResult
@@ -70,7 +89,6 @@ public class CommunityController extends BaseController implements CommunityApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         homeHospital.setTime(new Date());
-        homeHospital.setRefreshTime(new Date());
         communityService.addCommunity(homeHospital);
 
         //新增居民
@@ -100,25 +118,6 @@ public class CommunityController extends BaseController implements CommunityApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         communityService.changeCommunity(homeHospital);
-        //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-    }
-
-    /***
-     * 更新居委会刷新时间
-     * @param homeHospital
-     * @param bindingResult
-     * @return
-     */
-    @Override
-    public ReturnData changeCommunityTime(@Valid @RequestBody Community homeHospital, BindingResult bindingResult) {
-        //验证参数格式是否正确
-        if (bindingResult.hasErrors()) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
-        }
-        homeHospital.setRefreshTime(new Date());
-        communityService.changeCommunityTime(homeHospital);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

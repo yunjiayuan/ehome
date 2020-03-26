@@ -59,11 +59,11 @@ public interface CommunityDao {
      * @return
      */
     @Update("<script>" +
-            "update Community set" +
+            "update CommunityResident set" +
             " refreshTime=#{refreshTime}" +
             " where id=#{id}" +
             "</script>")
-    int changeCommunityTime(Community selectionActivities);
+    int changeCommunityTime(CommunityResident selectionActivities);
 
     /***
      * 根据ID查询居委会

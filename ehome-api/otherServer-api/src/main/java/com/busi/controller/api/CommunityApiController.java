@@ -43,7 +43,7 @@ public interface CommunityApiController {
      * @return
      */
     @PutMapping("changeCommunityTime")
-    ReturnData changeCommunityTime(@Valid @RequestBody Community homeHospital, BindingResult bindingResult);
+    ReturnData changeCommunityTime(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult);
 
     /***
      * 查询居委会详情

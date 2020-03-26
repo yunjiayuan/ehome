@@ -35,12 +35,12 @@ public class CommunityService {
     }
 
     /***
-     * 更新居委会
+     * 刷新居委会时间
      * @param selectionVote
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int changeCommunityTime(Community selectionVote) {
+    public int changeCommunityTime(CommunityResident selectionVote) {
         return epidemicSituationDao.changeCommunityTime(selectionVote);
     }
 
