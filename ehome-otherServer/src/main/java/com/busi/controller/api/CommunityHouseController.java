@@ -166,6 +166,7 @@ public class CommunityHouseController extends BaseController implements Communit
         if(userId>0){
             //对结果集进行处理 判断是业主查询 还是住户查询 并设置标识 方便客户端显示
             List list = pageBean.getList();
+            List<CommunityHouse> listNew = new ArrayList();
             if(list!=null&&list.size()>0){
                 for (int i = 0; i <list.size() ; i++) {
                     CommunityHouse communityHouse = (CommunityHouse)list.get(i);
@@ -173,7 +174,8 @@ public class CommunityHouseController extends BaseController implements Communit
                         continue;
                     }
                     if(communityHouse.getUserId()==CommonUtils.getMyId()){//业主查询直接返回所以数据 无需处理
-                        break;
+                        listNew.add(communityHouse);
+                        continue;
                     }
                     //住户查询 只显示自己的一条数据
                     String household = communityHouse.getHousehold();
@@ -185,12 +187,17 @@ public class CommunityHouseController extends BaseController implements Communit
                             if(CommonUtils.getMyId()==householdUserId){
                                 communityHouse.setHouseholdUserIds(householdUserIds);
                                 communityHouse.setHouseholdType(1);//住户标识 只能显示自己的信息
+                                communityHouse.setRealName("");
+                                communityHouse.setPhone("");
+                                communityHouse.setIdCard("");
+                                listNew.add(communityHouse);
                                 break;
                             }
                         }
                     }
                 }
             }
+            pageBean.setList(listNew);
         }
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
