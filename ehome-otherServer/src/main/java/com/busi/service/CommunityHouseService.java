@@ -70,7 +70,7 @@ public class CommunityHouseService {
      * @param count    条数
      * @return
      */
-    public PageBean<CommunityHouse> findCommunityHouseList(long communityId,long userId,int page, int count) {
+    public PageBean<CommunityHouse> findCommunityHouseList(long communityId,String userId,int page, int count) {
         List<CommunityHouse> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = communityHouseDao.findCommunityHouseList(communityId,userId);
