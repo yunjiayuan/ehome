@@ -158,7 +158,11 @@ public class CommunityHouseController extends BaseController implements Communit
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<CommunityHouse> pageBean = null;
-        pageBean = communityHouseService.findCommunityHouseList(communityId, "#"+userId+"#", page, count);
+        String uId = "";
+        if(userId > 0){
+            uId = "#"+userId+"#";
+        }
+        pageBean = communityHouseService.findCommunityHouseList(communityId, uId, page, count);
         if(userId>0){
             //对结果集进行处理 判断是业主查询 还是住户查询 并设置标识 方便客户端显示
             List list = pageBean.getList();
