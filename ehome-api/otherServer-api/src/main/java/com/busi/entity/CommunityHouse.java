@@ -72,6 +72,10 @@ public class CommunityHouse {
 
     private String housingArea;//户型面积
 
-    private String household;//房屋居住人员信息组合 格式：姓名,身份证号,电话;姓名,身份证号,电话
+    private String household;//房屋居住人员信息组合 格式：用户ID,姓名,身份证号,电话;用户ID,姓名,身份证号,电话
+
+    private String householdUserIds;//特殊字段 存储房屋居住人员的用户ID，格式：业主ID,住户ID,住户ID,住户ID,住户ID
+
+    private int householdType;//此参数与数据库无关  0标识当前用户为业主 1标识当前用户为住户
 
 }

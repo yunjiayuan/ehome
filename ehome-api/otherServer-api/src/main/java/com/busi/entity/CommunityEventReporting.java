@@ -22,8 +22,12 @@ public class CommunityEventReporting {
 
     private long communityId;    //居委会ID
 
+    private long communityHouseId;    //房屋ID
+
+    private long communityHouseUserId;    //业主用户ID
+
     @Min(value = 1, message = "userId参数有误，超出指定范围")
-    private long userId;//用户ID
+    private long userId;//报备者用户ID 可能是业主 也可能是住户
 
     private int eventReportingType;//事件报备类型  0普通人员  1疑似人员  2病毒感染者
 

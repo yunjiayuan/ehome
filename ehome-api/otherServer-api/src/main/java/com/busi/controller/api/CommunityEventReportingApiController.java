@@ -55,13 +55,14 @@ public interface CommunityEventReportingApiController {
     /***
      * 查询新冠状病毒报备列表
      * @param communityId    居委会ID
-     * @param userId   用户ID 大于0时 为查询指定用户的报备信息
+     * @param userId   业主的用户ID
+     * @param communityHouseId   房屋ID 大于0时 为查询指定用户的报备信息
      * @param type     -1表示查询所有 0表示查询未审核 1表示查询已审核 2表示查询审核失败
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findCommunityEventReportinList/{communityId}/{userId}/{type}/{page}/{count}")
-    ReturnData findHouseList(@PathVariable int communityId, @PathVariable long userId,@PathVariable int type, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findCommunityEventReportinList/{communityId}/{userId}/{communityHouseId}/{type}/{page}/{count}")
+    ReturnData findHouseList(@PathVariable long communityId, @PathVariable long userId,@PathVariable long communityHouseId,@PathVariable int type, @PathVariable int page, @PathVariable int count);
 
 }

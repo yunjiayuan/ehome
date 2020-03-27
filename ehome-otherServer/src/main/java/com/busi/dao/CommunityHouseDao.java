@@ -35,8 +35,8 @@ public interface CommunityHouseDao {
      * @param communityHouse
      * @return
      */
-    @Insert("insert into CommunityHouse(communityId,userId,villageName,lat,lon,address,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time,residence,livingRoom,toilet,housingArea,household) " +
-            "values (#{communityId},#{userId},#{villageName},#{lat},#{lon},#{address},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time},#{residence},#{livingRoom},#{toilet},#{housingArea},#{household})")
+    @Insert("insert into CommunityHouse(communityId,userId,villageName,lat,lon,address,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time,residence,livingRoom,toilet,housingArea,household,householdUserIds) " +
+            "values (#{communityId},#{userId},#{villageName},#{lat},#{lon},#{address},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time},#{residence},#{livingRoom},#{toilet},#{housingArea},#{household},#{householdUserIds})")
     @Options(useGeneratedKeys = true)
     int addCommunityHouse(CommunityHouse communityHouse);
 
@@ -64,6 +64,7 @@ public interface CommunityHouseDao {
             " toilet=#{toilet}," +
             " housingArea=#{housingArea}," +
             " household=#{household}," +
+            " householdUserIds=#{householdUserIds}," +
             " phone=#{phone}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -76,13 +77,13 @@ public interface CommunityHouseDao {
     @Select("<script>" +
             "select * from CommunityHouse" +
             " where 1=1" +
-            "<if test=\"userId > 0\">" +
-                " and userId=#{userId}" +
+            "<if test=\"userId != null and userId !=''\">" +
+                " and householdUserIds LIKE CONCAT('%',#{userId},'%')" +
             "</if>" +
             " and communityId = #{communityId}" +
             " ORDER BY time desc" +
             "</script>")
-    List<CommunityHouse> findCommunityHouseList(@Param("communityId") long communityId,@Param("userId") long userId);
+    List<CommunityHouse> findCommunityHouseList(@Param("communityId") long communityId,@Param("userId") String userId);
 
     /***
      * 根据ID查询房屋信息
