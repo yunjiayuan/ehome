@@ -181,11 +181,10 @@ public class CommunityHouseController extends BaseController implements Communit
                     String household = communityHouse.getHousehold();
                     if(!CommonUtils.checkFull(household)){
                         String[] hhd = household.split(";");
-                        String householdUserIds = "";
                         for(int j = 0;j<hhd.length;j++){
                             long householdUserId = Long.parseLong(hhd[j].split(",")[0]);
                             if(CommonUtils.getMyId()==householdUserId){
-                                communityHouse.setHouseholdUserIds(householdUserIds);
+                                communityHouse.setHousehold(hhd[j]);
                                 communityHouse.setHouseholdType(1);//住户标识 只能显示自己的信息
                                 communityHouse.setRealName("");
                                 communityHouse.setPhone("");
