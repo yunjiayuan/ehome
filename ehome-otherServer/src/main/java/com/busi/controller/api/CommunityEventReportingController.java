@@ -140,20 +140,27 @@ public class CommunityEventReportingController extends BaseController implements
     /***
      * 查询新冠状病毒报备列表
      * @param communityId    居委会ID
-     * @param userId   用户ID 大于0时 为查询指定用户的报备信息
+     * @param userId   业主的用户ID  上一个界面中房屋数据中userId   管理员查询传0
+     * @param communityHouseId  房屋ID 大于0时 为查询指定房屋的报备信息 管理员查询传0
      * @param type     -1表示查询所有 0表示查询未审核 1表示查询已审核 2表示查询审核失败
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findHouseList(@PathVariable int communityId,@PathVariable  long userId,@PathVariable  int type,@PathVariable  int page,@PathVariable  int count) {
+    public ReturnData findHouseList(@PathVariable long communityId,@PathVariable  long userId,@PathVariable  long communityHouseId,@PathVariable  int type,@PathVariable  int page,@PathVariable  int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
+        long houseUserId = 0;// 0表示为业主或者管理员  具体的值表示住户查询
+        if(CommonUtils.getMyId()==userId){//查询者是业主
+            houseUserId = 0;
+        }else{
+            houseUserId = userId;
+        }
         PageBean<CommunityEventReporting> pageBean = null;
-        pageBean = communityEventReportingService.findCommunityEventReportingList(communityId, userId,type, page, count);
+        pageBean = communityEventReportingService.findCommunityEventReportingList(communityId,houseUserId,communityHouseId,type, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

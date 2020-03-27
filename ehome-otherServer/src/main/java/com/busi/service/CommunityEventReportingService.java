@@ -80,10 +80,10 @@ public class CommunityEventReportingService {
      * @param count    条数
      * @return
      */
-    public PageBean<CommunityEventReporting> findCommunityEventReportingList(long communityId,long userId,int type,int page, int count) {
+    public PageBean<CommunityEventReporting> findCommunityEventReportingList(long communityId,long houseUserId,long communityHouseId,int type,int page, int count) {
         List<CommunityEventReporting> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = communityEventReportingDao.findCommunityEventReportingList(communityId,userId,type);
+        list = communityEventReportingDao.findCommunityEventReportingList(communityId,houseUserId,communityHouseId,type);
         return PageUtils.getPageBean(p, list);
     }
 

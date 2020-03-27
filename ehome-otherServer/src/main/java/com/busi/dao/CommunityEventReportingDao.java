@@ -25,7 +25,7 @@ public interface CommunityEventReportingDao {
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
-            " and userId = #{userId}" +
+            " and ( userId = #{userId} or communityHouseUserId = #{userId})" +
             "</script>")
     int delCommunityEventReporting(@Param("ids") String[] ids, @Param("userId") long userId);
 
@@ -34,8 +34,8 @@ public interface CommunityEventReportingDao {
      * @param communityEventReporting
      * @return
      */
-    @Insert("insert into CommunityEventReporting(communityId,userId,eventReportingType,villageName,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time,departTime,placeOfDeparture,arriveTime,vehicle,trainNumber,contactHistory,remarks) " +
-            "values (#{communityId},#{userId},#{eventReportingType},#{villageName},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time},#{departTime},#{placeOfDeparture},#{arriveTime},#{vehicle},#{trainNumber},#{contactHistory},#{remarks})")
+    @Insert("insert into CommunityEventReporting(communityId,communityHouseId,communityHouseUserId,userId,eventReportingType,villageName,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time,departTime,placeOfDeparture,arriveTime,vehicle,trainNumber,contactHistory,remarks) " +
+            "values (#{communityId},#{communityHouseId},#{communityHouseUserId},#{userId},#{eventReportingType},#{villageName},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time},#{departTime},#{placeOfDeparture},#{arriveTime},#{vehicle},#{trainNumber},#{contactHistory},#{remarks})")
 @Options(useGeneratedKeys = true)
     int addCommunityEventReporting(CommunityEventReporting communityEventReporting);
 
@@ -63,6 +63,8 @@ public interface CommunityEventReportingDao {
             " trainNumber=#{trainNumber}," +
             " contactHistory=#{contactHistory}," +
             " remarks=#{remarks}," +
+            " communityHouseId=#{communityHouseId}," +
+            " communityHouseUserId=#{communityHouseUserId}," +
             " phone=#{phone}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -84,15 +86,19 @@ public interface CommunityEventReportingDao {
     /***
      * 查询冠状病毒报备列表
      * @param communityId  居委会ID
-     * @param userId       大于0时 查询指定用户
+     * @param userId  业主ID 0表示为业主或者管理员  具体的值表示住户查询
+     * @param communityHouseId       大于0时 查询指定房屋下的报备信息
      * @param review         -1表示查询所有 0表示查询未审核 1表示查询已审核 2表示查询审核失败
      * @return
      */
     @Select("<script>" +
             "select * from CommunityEventReporting" +
             " where 1=1" +
+            "<if test=\"communityHouseId > 0\">" +
+                " and communityHouseId=#{communityHouseId}" +
+            "</if>" +
             "<if test=\"userId > 0\">" +
-            " and userId=#{userId}" +
+                " and userId=#{userId}" +
             "</if>" +
             "<if test=\"review != -1\">" +
             " and review=#{review}" +
@@ -100,7 +106,7 @@ public interface CommunityEventReportingDao {
             " and communityId = #{communityId}" +
             " ORDER BY time desc" +
             "</script>")
-    List<CommunityEventReporting> findCommunityEventReportingList(@Param("communityId") long communityId, @Param("userId") long userId, @Param("review") int review);
+    List<CommunityEventReporting> findCommunityEventReportingList(@Param("communityId") long communityId,@Param("userId") long userId, @Param("communityHouseId") long communityHouseId, @Param("review") int review);
 
     /***
      * 根据ID查询冠状病毒报备
