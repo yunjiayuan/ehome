@@ -157,7 +157,7 @@ public class CommunityEventReportingController extends BaseController implements
         if(CommonUtils.getMyId()==userId){//查询者是业主
             houseUserId = 0;
         }else{
-            houseUserId = userId;
+            houseUserId = CommonUtils.getMyId();
         }
         PageBean<CommunityEventReporting> pageBean = null;
         pageBean = communityEventReportingService.findCommunityEventReportingList(communityId,houseUserId,communityHouseId,type, page, count);
