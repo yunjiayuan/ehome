@@ -61,7 +61,7 @@ public interface CommunityDao {
     @Update("<script>" +
             "update CommunityResident set" +
             " refreshTime=#{refreshTime}" +
-            " where id=#{id}" +
+            " where communityId=#{communityId} and userId=#{userId}" +
             "</script>")
     int changeCommunityTime(CommunityResident selectionActivities);
 
