@@ -65,8 +65,9 @@ public class CommunityHouseController extends BaseController implements Communit
                 String userId = "#"+hhd[i].split(",")[0]+"#";
                 if(i==hhd.length-1){
                     householdUserIds += userId;
+                }else {
+                    householdUserIds += userId+",";
                 }
-                householdUserIds += userId+",";
             }
             communityHouse.setHouseholdUserIds("#"+communityHouse.getUserId()+"#,"+householdUserIds);
         }
