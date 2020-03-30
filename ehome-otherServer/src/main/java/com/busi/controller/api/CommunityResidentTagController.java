@@ -105,7 +105,7 @@ public class CommunityResidentTagController extends BaseController implements Co
      * @return:
      */
     @Override
-    public ReturnData delTags(String ids) {
+    public ReturnData delTags(@PathVariable String ids) {
         residentTagService.delTags(ids.split(","));
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

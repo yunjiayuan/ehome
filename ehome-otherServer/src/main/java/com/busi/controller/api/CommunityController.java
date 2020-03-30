@@ -345,7 +345,7 @@ public class CommunityController extends BaseController implements CommunityApiC
      * @return
      */
     @Override
-    public ReturnData changeResidentTag(@Valid CommunityResident homeHospital, BindingResult bindingResult) {
+    public ReturnData changeResidentTag(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -384,7 +384,7 @@ public class CommunityController extends BaseController implements CommunityApiC
      * @return
      */
     @Override
-    public ReturnData findResiden(long communityId, long userId) {
+    public ReturnData findResiden(@PathVariable long communityId, @PathVariable long userId) {
         CommunityResident sa = communityService.findResident(communityId, userId);
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(userId);
