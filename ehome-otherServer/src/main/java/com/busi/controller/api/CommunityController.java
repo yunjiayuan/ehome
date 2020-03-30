@@ -389,6 +389,10 @@ public class CommunityController extends BaseController implements CommunityApiC
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(userId);
         if (userInfo != null) {
+            if (sa == null) {
+                sa = new CommunityResident();
+                sa.setUserId(userId);
+            }
             sa.setName(userInfo.getName());
             sa.setHead(userInfo.getHead());
             sa.setProTypeId(userInfo.getProType());
