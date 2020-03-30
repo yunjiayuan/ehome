@@ -70,6 +70,8 @@ public class CommunityHouseController extends BaseController implements Communit
                 }
             }
             communityHouse.setHouseholdUserIds("#"+communityHouse.getUserId()+"#,"+householdUserIds);
+        }else{
+            communityHouse.setHouseholdUserIds("#"+communityHouse.getUserId()+"#");
         }
         communityHouseService.addCommunityHouse(communityHouse);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
