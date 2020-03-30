@@ -135,6 +135,16 @@ public class CommunityService {
     }
 
     /***
+     * 更新居民标签
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeResidentTag(CommunityResident selectionVote) {
+        return epidemicSituationDao.changeResidentTag(selectionVote);
+    }
+
+    /***
      * 加入居委会
      * @param selectionActivities
      * @return

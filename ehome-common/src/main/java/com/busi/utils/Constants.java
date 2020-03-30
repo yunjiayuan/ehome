@@ -282,6 +282,7 @@ public class Constants {
     public static final String REDIS_KEY_COMMUNITY_REPLY = "community_reply_list_";//居委会留言回复关系对照
     public static final String REDIS_KEY_COMMUNITY_NEWS = "community_news_";//居委会资讯关系对照
     public static final String REDIS_KEY_COMMUNITY = "community_";//居委会与主键Id关系对照
+    public static final String REDIS_KEY_COMMUNITY_TAG = "community_tag";//居委会标签
 
 
 
