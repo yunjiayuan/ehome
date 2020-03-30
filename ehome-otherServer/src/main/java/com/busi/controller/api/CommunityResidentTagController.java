@@ -2,12 +2,10 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.Community;
 import com.busi.entity.CommunityResidentTag;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.service.CommunityResidentTagService;
-import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
@@ -37,7 +35,7 @@ public class CommunityResidentTagController extends BaseController implements Co
     private CommunityResidentTagService residentTagService;
 
     /**
-     * @Description: 新增兴趣标签
+     * @Description: 新增标签
      * @Param: residentTag
      * @return:
      */
@@ -53,7 +51,7 @@ public class CommunityResidentTagController extends BaseController implements Co
     }
 
     /**
-     * @Description: 更新兴趣标签
+     * @Description: 更新标签
      * @Param: residentTag
      * @return:
      */
@@ -69,7 +67,7 @@ public class CommunityResidentTagController extends BaseController implements Co
     }
 
     /***
-     * 查询兴趣标签列表
+     * 查询标签列表
      * @return
      */
     @Override
