@@ -1,12 +1,11 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.Community;
-import com.busi.entity.CommunityNews;
-import com.busi.entity.PageBean;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import com.busi.service.CommunityNewsService;
+import com.busi.service.CommunityService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
@@ -35,6 +34,10 @@ public class CommunityNewsController extends BaseController implements Community
 
     @Autowired
     CommunityNewsService todayNewsService;
+
+    @Autowired
+    CommunityService communityService;
+
 
     /***
      * 新增
@@ -148,6 +151,37 @@ public class CommunityNewsController extends BaseController implements Community
             kitchenMap = CommonUtils.objectToMap(sa);
             redisUtils.hmset(Constants.REDIS_KEY_COMMUNITY_NEWS + infoId, kitchenMap, Constants.USER_TIME_OUT);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+        if (kitchenMap != null && kitchenMap.size() > 0) {
+            CommunityNews communityNews = (CommunityNews) CommonUtils.mapToObject(kitchenMap, CommunityNews.class);
+            if (communityNews.getNewsType() < 2) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+            }
+            //居委会通告
+            if (CommonUtils.checkFull(communityNews.getIdentity())) {//判断是否设置查看权限
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+            }
+            //判断是否是管理员
+            CommunityResident sa = communityService.findResident(communityNews.getCommunityId(), CommonUtils.getMyId());
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+            }
+            if (sa.getIdentity() > 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+            } else {
+                if (CommonUtils.checkFull(sa.getTags())) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                }
+                String[] num = communityNews.getIdentity().split(",");
+                String[] num1 = sa.getTags().split(",");
+                for (int i = 0; i < num.length; i++) {
+                    for (int j = 0; j < num1.length; j++) {
+                        if (num[i].equals(num1[j])) {
+                            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+                        }
+                    }
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
     }
 }

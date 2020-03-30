@@ -37,7 +37,7 @@ public class CommunityNews {
 
     private String coverUrl;                  //视频封面图
 
-    private int newsType;                     //资讯类别   0居委会  1物业
+    private int newsType;                     //资讯类别   0居委会  1物业   2居委会通告
 
     private int newsFormat;                   //发布类型  0纯文  1一图  2多图  3视频
 
@@ -50,4 +50,6 @@ public class CommunityNews {
     private long commentCount;                //评论数
 
     private int newsState;                    //资讯状态 0正常 1删除
+
+    private String identity;            //可查看通告身份  只在newsType=2时有效
 }
