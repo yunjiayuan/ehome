@@ -40,7 +40,7 @@ public interface CommunityResidentTagDao {
     /***
      * 查询标签列表
      */
-    @Select("select * from CommunityResidentTag and communityId=#{id} ORDER BY id ASC")
+    @Select("select * from CommunityResidentTag where communityId=#{id} ORDER BY id ASC")
     List<CommunityResidentTag> findList(@Param("id") long id);
 
     /***
