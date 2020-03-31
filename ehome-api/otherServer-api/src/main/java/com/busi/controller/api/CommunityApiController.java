@@ -107,8 +107,8 @@ public interface CommunityApiController {
      * @param communityId
      * @return
      */
-    @GetMapping("findResiden/{communityId}/{userId}")
-    ReturnData findResiden(@PathVariable long communityId,@PathVariable long userId);
+    @GetMapping("findResiden/{communityId}/{homeNumber}")
+    ReturnData findResiden(@PathVariable long communityId, @PathVariable String homeNumber);
 
     /***
      * 查询居民列表

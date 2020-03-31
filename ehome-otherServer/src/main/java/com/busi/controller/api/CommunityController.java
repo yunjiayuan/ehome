@@ -380,25 +380,30 @@ public class CommunityController extends BaseController implements CommunityApiC
     /***
      * 查询居民详情
      * @param communityId
-     * @param userId
+     * @param homeNumber
      * @return
      */
     @Override
-    public ReturnData findResiden(@PathVariable long communityId, @PathVariable long userId) {
-        CommunityResident sa = communityService.findResident(communityId, userId);
-        UserInfo userInfo = null;
-        userInfo = userInfoUtils.getUserInfo(userId);
-        if (userInfo != null) {
-            if (sa == null) {
-                sa = new CommunityResident();
-                sa.setUserId(userId);
-            }
-            sa.setName(userInfo.getName());
-            sa.setHead(userInfo.getHead());
-            sa.setProTypeId(userInfo.getProType());
-            sa.setHouseNumber(userInfo.getHouseNumber());
+    public ReturnData findResiden(@PathVariable long communityId, @PathVariable String homeNumber) {
+        CommunityResident sa = communityService.findResident(communityId, CommonUtils.getMyId());
+        if (sa == null || sa.getIdentity() < 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", sa);
+        UserInfo userInfo = null;
+        userInfo = userInfoUtils.getUserInfo(homeNumber);
+        if (userInfo == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        CommunityResident resident = communityService.findResident(communityId, userInfo.getUserId());
+        if (resident == null) {
+            resident = new CommunityResident();
+            resident.setUserId(userInfo.getUserId());
+        }
+        resident.setName(userInfo.getName());
+        resident.setHead(userInfo.getHead());
+        resident.setProTypeId(userInfo.getProType());
+        resident.setHouseNumber(userInfo.getHouseNumber());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", resident);
     }
 
     /***
