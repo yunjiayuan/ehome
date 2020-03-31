@@ -46,7 +46,7 @@ public class CommunityResidentTagController extends BaseController implements Co
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         residentTagService.add(residentTag);
-        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_TAG, 0);
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_TAG + residentTag.getCommunityId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -62,7 +62,7 @@ public class CommunityResidentTagController extends BaseController implements Co
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         residentTagService.update(residentTag);
-        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_TAG, 0);
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_TAG + residentTag.getCommunityId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -74,7 +74,7 @@ public class CommunityResidentTagController extends BaseController implements Co
     public ReturnData findTaglist(@PathVariable long id) {
         //从缓存中获取
         List list = null;
-        list = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_TAG, 0, -1);
+        list = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_TAG + id, 0, -1);
         PageBean<CommunityResidentTag> pageBean = null;
         if (list == null || list.size() <= 0) {//缓存中不存在 查询数据库
             pageBean = residentTagService.findList(id, 0, 100);
@@ -85,7 +85,7 @@ public class CommunityResidentTagController extends BaseController implements Co
             }
             if (pageBean.getList() != null) {
                 //放入缓存中
-                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_TAG, pageBean.getList(), 0);
+                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_TAG + id, pageBean.getList(), 0);
             }
         } else {
             pageBean = new PageBean<>();
@@ -103,8 +103,9 @@ public class CommunityResidentTagController extends BaseController implements Co
      * @return:
      */
     @Override
-    public ReturnData delTags(@PathVariable String ids) {
+    public ReturnData delTags(@PathVariable long communityId, @PathVariable String ids) {
         residentTagService.delTags(ids.split(","));
+        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_TAG + communityId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

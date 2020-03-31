@@ -42,6 +42,6 @@ public interface CommunityResidentTagApiController {
      * @Description: 删除标签
      * @return:
      */
-    @DeleteMapping("delTags/{ids}")
-    ReturnData delTags(@PathVariable String ids);
+    @DeleteMapping("delTags/{communityId}/{ids}")
+    ReturnData delTags(@PathVariable long communityId, @PathVariable String ids);
 }
