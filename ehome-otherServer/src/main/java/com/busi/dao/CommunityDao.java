@@ -149,8 +149,8 @@ public interface CommunityDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into CommunityResident(userId,communityId,masterId,identity,type,time,refreshTime) " +
-            "values (#{userId},#{communityId},#{masterId},#{identity},#{type},#{time},#{refreshTime})")
+    @Insert("insert into CommunityResident(userId,communityId,masterId,identity,type,time,refreshTime,tags) " +
+            "values (#{userId},#{communityId},#{masterId},#{identity},#{type},#{time},#{refreshTime},#{tags})")
     @Options(useGeneratedKeys = true)
     int addResident(CommunityResident selectionVote);
 
@@ -165,6 +165,18 @@ public interface CommunityDao {
             " where communityId=#{communityId} and userId=#{userId}" +
             "</script>")
     int changeResident(CommunityResident selectionActivities);
+
+    /***
+     * 更新居民标签
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update CommunityResident set" +
+            " tags=#{tags}" +
+            " where id=#{id}" +
+            "</script>")
+    int changeResidentTag(CommunityResident selectionActivities);
 
     /***
      * 查询居民

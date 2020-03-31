@@ -78,12 +78,20 @@ public interface CommunityApiController {
     ReturnData addResident(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult);
 
     /***
-     * 更新居民
+     * 更新居民权限
      * @param homeHospital
      * @return
      */
     @PutMapping("changeResident")
     ReturnData changeResident(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult);
+
+    /***
+     * 更新居民标签
+     * @param homeHospital
+     * @return
+     */
+    @PutMapping("changeResidentTag")
+    ReturnData changeResidentTag(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult);
 
     /***
      * 删除居民
@@ -92,6 +100,15 @@ public interface CommunityApiController {
      */
     @DeleteMapping("delResident/{type}/{ids}/{communityId}")
     ReturnData delResident(@PathVariable int type, @PathVariable String ids, @PathVariable long communityId);
+
+
+    /***
+     * 查询居民详情
+     * @param communityId
+     * @return
+     */
+    @GetMapping("findResiden/{communityId}/{userId}")
+    ReturnData findResiden(@PathVariable long communityId,@PathVariable long userId);
 
     /***
      * 查询居民列表

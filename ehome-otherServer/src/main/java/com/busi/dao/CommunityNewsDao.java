@@ -20,8 +20,8 @@ public interface CommunityNewsDao {
      * @param todayNews
      * @return
      */
-    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState) " +
-            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState})")
+    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState,identity) " +
+            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState},#{identity})")
     @Options(useGeneratedKeys = true)
     int add(CommunityNews todayNews);
 
@@ -48,6 +48,7 @@ public interface CommunityNewsDao {
             " coverUrl=#{coverUrl}," +
             "</if>" +
             " newsType=#{newsType}," +
+            " identity=#{identity}," +
             " newsFormat=#{newsFormat}," +
             " refreshTime=#{refreshTime}" +
             " where id=#{id} and userId=#{userId}" +

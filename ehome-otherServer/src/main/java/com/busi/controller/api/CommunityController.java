@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CommunityMessageService;
+import com.busi.service.CommunityResidentTagService;
 import com.busi.service.CommunityService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class CommunityController extends BaseController implements CommunityApiC
 
     @Autowired
     CommunityService communityService;
+
+    @Autowired
+    CommunityResidentTagService residentTagService;
 
     @Autowired
     private CommunityMessageService communityMessageService;
@@ -100,6 +104,14 @@ public class CommunityController extends BaseController implements CommunityApiC
         resident.setIdentity(2);
         communityService.addResident(resident);
 
+        //新增默认居委会标签
+        String[] string = {"普通居民", "小区长", "楼栋长", "单元长/联户长", "消防员", "社区民警", "建档立卡贫困户", "低保户", "特困户", "五保户", "兜底户", "残疾户"};
+        for (int i = 0; i < string.length; i++) {
+            CommunityResidentTag tag = new CommunityResidentTag();
+            tag.setTagName(string[i]);
+            tag.setCommunityId(homeHospital.getId());
+            residentTagService.add(tag);
+        }
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", homeHospital.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
@@ -283,6 +295,10 @@ public class CommunityController extends BaseController implements CommunityApiC
         //判断是否已经加入了
         CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getUserId());
         if (sa != null) {
+            //更新居民标签
+            if (!CommonUtils.checkFull(homeHospital.getTags())) {
+                communityService.changeResidentTag(homeHospital);
+            }
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         if (homeHospital.getType() == 1) { //判断邀请者权限
@@ -323,6 +339,27 @@ public class CommunityController extends BaseController implements CommunityApiC
     }
 
     /***
+     * 更新居民标签
+     * @param homeHospital
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData changeResidentTag(@Valid @RequestBody CommunityResident homeHospital, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //判断权限
+        CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), CommonUtils.getMyId());
+        if (sa == null || sa.getIdentity() < 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+        }
+        communityService.changeResidentTag(homeHospital);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 删除居民
      * @param type 0删除居民  1删除管理员
      * @return:
@@ -338,6 +375,30 @@ public class CommunityController extends BaseController implements CommunityApiC
         }
         communityService.delResident(type, ids.split(","));
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询居民详情
+     * @param communityId
+     * @param userId
+     * @return
+     */
+    @Override
+    public ReturnData findResiden(@PathVariable long communityId, @PathVariable long userId) {
+        CommunityResident sa = communityService.findResident(communityId, userId);
+        UserInfo userInfo = null;
+        userInfo = userInfoUtils.getUserInfo(userId);
+        if (userInfo != null) {
+            if (sa == null) {
+                sa = new CommunityResident();
+                sa.setUserId(userId);
+            }
+            sa.setName(userInfo.getName());
+            sa.setHead(userInfo.getHead());
+            sa.setProTypeId(userInfo.getProType());
+            sa.setHouseNumber(userInfo.getHouseNumber());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", sa);
     }
 
     /***
