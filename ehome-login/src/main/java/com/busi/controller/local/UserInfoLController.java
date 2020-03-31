@@ -64,6 +64,23 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
     }
 
     /***
+     * 查询用户信息
+     * @param houseNumber 0_1001518
+     * @return
+     */
+    @Override
+    public UserInfo getUserInfo(@PathVariable(value = "houseNumber") String houseNumber) {
+        Object obj = redisUtils.hget(Constants.REDIS_KEY_HOUSENUMBER, houseNumber);
+        UserInfo userInfo = null;
+        if (obj == null || CommonUtils.checkFull(String.valueOf(obj.toString()))) {
+            userInfo = userInfoService.findUserByHouseNumber(Integer.parseInt(houseNumber.split("_")[0]), houseNumber.split("_")[1]);
+        }else{
+            userInfo = (UserInfo) obj;
+        }
+        return userInfo;
+    }
+
+    /***
      * 更新用户新人标识
      * @param userInfo
      * @return

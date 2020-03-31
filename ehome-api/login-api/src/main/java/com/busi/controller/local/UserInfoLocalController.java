@@ -21,11 +21,19 @@ public interface UserInfoLocalController {
 
     /***
      * 查询用户信息
-     * @param userId
+     * @param userId   根据用户ID组合查询
      * @return
      */
     @GetMapping("getUserInfo/{userId}")
     UserInfo getUserInfo(@PathVariable(value="userId") long userId);
+
+    /***
+     * 查询用户信息
+     * @param houseNumber 根据门牌号组合查询
+     * @return
+     */
+    @GetMapping("getUserInfo/{houseNumber}")
+    UserInfo getUserInfo(@PathVariable(value = "houseNumber") String houseNumber);
 
     /***
      * 更新用户新人标识

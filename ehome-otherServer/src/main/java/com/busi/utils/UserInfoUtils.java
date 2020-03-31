@@ -35,4 +35,20 @@ public class UserInfoUtils {
         }
         return userInfo;
     }
+
+    /***
+     * 根据用户门牌号查询用户信息
+     * @param houseNumber 0_1001518
+     * @return
+     */
+    public UserInfo getUserInfo(String houseNumber){
+        Object obj = redisUtils.hget(Constants.REDIS_KEY_HOUSENUMBER, houseNumber);
+        UserInfo userInfo = null;
+        if (obj == null || CommonUtils.checkFull(String.valueOf(obj.toString()))) {
+            userInfo = userInfoLocalControllerFegin.getUserInfo(houseNumber);
+        }else{
+            userInfo = (UserInfo) obj;
+        }
+        return userInfo;
+    }
 }
