@@ -32,8 +32,8 @@ public interface UserInfoLocalController {
      * @param houseNumber 根据门牌号组合查询
      * @return
      */
-    @GetMapping("getUserInfo/{houseNumber}")
-    UserInfo getUserInfo(@PathVariable(value = "houseNumber") String houseNumber);
+    @GetMapping("getUserInfoByHouseNumber/{houseNumber}")
+    UserInfo getUserInfoByHouseNumber(@PathVariable(value = "houseNumber") String houseNumber);
 
     /***
      * 更新用户新人标识
