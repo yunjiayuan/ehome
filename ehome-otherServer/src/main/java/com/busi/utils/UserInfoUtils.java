@@ -45,9 +45,15 @@ public class UserInfoUtils {
         Object obj = redisUtils.hget(Constants.REDIS_KEY_HOUSENUMBER, houseNumber);
         UserInfo userInfo = null;
         if (obj == null || CommonUtils.checkFull(String.valueOf(obj.toString()))) {
-            userInfo = userInfoLocalControllerFegin.getUserInfo(houseNumber);
+            userInfo = userInfoLocalControllerFegin.getUserInfoByHouseNumber(houseNumber);
         }else{
-            userInfo = (UserInfo) obj;
+            long userId = Long.parseLong(obj.toString());
+            Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userId);
+            if (userMap != null && userMap.size() > 0) {
+                userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+            } else {
+                userInfo = userInfoLocalControllerFegin.getUserInfoByHouseNumber(houseNumber);
+            }
         }
         return userInfo;
     }

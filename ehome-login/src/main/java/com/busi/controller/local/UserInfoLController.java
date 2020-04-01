@@ -69,13 +69,19 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
      * @return
      */
     @Override
-    public UserInfo getUserInfo(@PathVariable(value = "houseNumber") String houseNumber) {
+    public UserInfo getUserInfoByHouseNumber(@PathVariable(value = "houseNumber") String houseNumber) {
         Object obj = redisUtils.hget(Constants.REDIS_KEY_HOUSENUMBER, houseNumber);
         UserInfo userInfo = null;
         if (obj == null || CommonUtils.checkFull(String.valueOf(obj.toString()))) {
             userInfo = userInfoService.findUserByHouseNumber(Integer.parseInt(houseNumber.split("_")[0]), houseNumber.split("_")[1]);
         }else{
-            userInfo = (UserInfo) obj;
+            long userId = Long.parseLong(obj.toString());
+            Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userId);
+            if (userMap != null && userMap.size() > 0) {
+                userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+            } else {
+                userInfo = userInfoService.findUserByHouseNumber(Integer.parseInt(houseNumber.split("_")[0]), houseNumber.split("_")[1]);
+            }
         }
         return userInfo;
     }
