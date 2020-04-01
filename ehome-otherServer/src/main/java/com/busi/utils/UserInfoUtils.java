@@ -47,7 +47,13 @@ public class UserInfoUtils {
         if (obj == null || CommonUtils.checkFull(String.valueOf(obj.toString()))) {
             userInfo = userInfoLocalControllerFegin.getUserInfo(houseNumber);
         }else{
-            userInfo = (UserInfo) obj;
+            long userId = Long.parseLong(obj.toString());
+            Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userId);
+            if (userMap != null && userMap.size() > 0) {
+                userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+            } else {
+                userInfo = userInfoLocalControllerFegin.getUserInfo(houseNumber);
+            }
         }
         return userInfo;
     }
