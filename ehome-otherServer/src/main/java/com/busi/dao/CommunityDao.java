@@ -274,6 +274,21 @@ public interface CommunityDao {
     List<CommunityResident> findIsList2(@Param("ids") String[] ids, @Param("userId") long userId);
 
     /***
+     * 查询指定居民列表
+     * @param ids    居委会
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CommunityResident" +
+            " where 1=1" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<CommunityResident> findIsList3(@Param("ids") String[] ids);
+
+    /***
      * 新增评论
      * @param homeBlogComment
      * @return

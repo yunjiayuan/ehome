@@ -47,7 +47,7 @@ public interface CommunityNewsApiController {
      * @return
      */
     @GetMapping("findNewsList/{communityId}/{newsType}/{page}/{count}")
-    ReturnData findNewsList(@PathVariable long communityId,@PathVariable int newsType, @PathVariable int page, @PathVariable int count);
+    ReturnData findNewsList(@PathVariable long communityId, @PathVariable int newsType, @PathVariable int page, @PathVariable int count);
 
     /***
      * 根据ID查询
@@ -56,4 +56,20 @@ public interface CommunityNewsApiController {
      */
     @GetMapping("findPress/{infoId}")
     ReturnData findPress(@PathVariable long infoId);
+
+    /**
+     * @Description: 删除浏览记录
+     * @return:
+     */
+    @DeleteMapping("delLook/{ids}")
+    ReturnData delLook(@PathVariable String ids);
+
+    /***
+     * 分页查询浏览记录接口
+     * @param page
+     * @param count
+     * @return
+     */
+    @GetMapping("findLook/{id}/{page}/{count}")
+    ReturnData findLook(@PathVariable long id, @PathVariable int page, @PathVariable int count);
 }

@@ -6,10 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CommunityNewsService;
 import com.busi.service.CommunityService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +29,9 @@ public class CommunityNewsController extends BaseController implements Community
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    UserInfoUtils userInfoUtils;
 
     @Autowired
     CommunityNewsService todayNewsService;
@@ -116,11 +117,17 @@ public class CommunityNewsController extends BaseController implements Community
     @Override
     public ReturnData findNewsList(@PathVariable long communityId, @PathVariable int newsType, @PathVariable int page, @PathVariable int count) {
         //验证参数
-        if (newsType < 0 || newsType > 2) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数taskType有误", new JSONObject());
+        if (newsType < 0 || newsType > 3) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数newsType有误", new JSONObject());
         }
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //判断是否是本居民
+        long userId = CommonUtils.getMyId();
+        CommunityResident sa = communityService.findResident(communityId, userId);
+        if (sa == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
         PageBean<CommunityNews> pageBean;
         pageBean = todayNewsService.findList(communityId, newsType, page, count);
@@ -156,6 +163,13 @@ public class CommunityNewsController extends BaseController implements Community
             if (communityNews.getNewsType() < 2) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
             }
+            //新增通告浏览记录
+            CommunityLook communityLook = new CommunityLook();
+            communityLook.setCommunityId(communityNews.getCommunityId());
+            communityLook.setInfoId(infoId);
+            communityLook.setTime(new Date());
+            communityLook.setTitle(communityNews.getTitle());
+            communityLook.setUserId(CommonUtils.getMyId());
             //居委会通告
             if (CommonUtils.checkFull(communityNews.getIdentity())) {//判断是否设置查看权限
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
@@ -166,6 +180,7 @@ public class CommunityNewsController extends BaseController implements Community
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
             }
             if (sa.getIdentity() > 0) {
+                todayNewsService.addLook(communityLook);
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
             } else {
                 if (CommonUtils.checkFull(sa.getTags())) {
@@ -176,6 +191,7 @@ public class CommunityNewsController extends BaseController implements Community
                 for (int i = 0; i < num.length; i++) {
                     for (int j = 0; j < num1.length; j++) {
                         if (num[i].equals(num1[j])) {
+                            todayNewsService.addLook(communityLook);
                             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
                         }
                     }
@@ -183,5 +199,67 @@ public class CommunityNewsController extends BaseController implements Community
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+    }
+
+    /**
+     * @param ids
+     * @Description: 删除浏览记录
+     * @return:
+     */
+    @Override
+    public ReturnData delLook(@PathVariable String ids) {
+        //验证参数
+        if (CommonUtils.checkFull(ids)) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "ids参数有误", new JSONObject());
+        }
+        //查询数据库
+        int look = todayNewsService.delLook(ids.split(","));
+        if (look <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "浏览记录[" + ids + "]不存在", new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 分页查询浏览记录接口
+     * @param id  通告ID
+     * @param page
+     * @param count
+     * @return
+     */
+    @Override
+    public ReturnData findLook(@PathVariable long id, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        if (id < 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<CommunityLook> pageBean;
+        pageBean = todayNewsService.findLook(id, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        CommunityLook t = null;
+        UserInfo userCache = null;
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                t = (CommunityLook) list.get(i);
+                if (t != null) {
+                    userCache = userInfoUtils.getUserInfo(t.getUserId());
+                    if (userCache != null) {
+                        t.setName(userCache.getName());
+                        t.setHead(userCache.getHead());
+                        t.setProTypeId(userCache.getProType());
+                        t.setHouseNumber(userCache.getHouseNumber());
+                    }
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 }

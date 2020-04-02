@@ -181,6 +181,17 @@ public class CommunityService {
     }
 
     /***
+     * 查询指定居民列表
+     * @param userIds    用户
+     * @return
+     */
+    public List<CommunityResident> findIsList3(String userIds) {
+        List<CommunityResident> list = null;
+        list = epidemicSituationDao.findIsList3(userIds.split(","));
+        return list;
+    }
+
+    /***
      * 查询指定居委会居民列表
      * @param ids    居委会ID
      * @return

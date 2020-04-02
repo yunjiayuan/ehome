@@ -292,19 +292,23 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        //判断是否已经加入了
-        CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getUserId());
-        if (sa != null) {
-            //更新居民标签
-            if (!CommonUtils.checkFull(homeHospital.getTags())) {
-                sa.setTags(homeHospital.getTags());
-                communityService.changeResidentTag(sa);
-            }
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-        }
+        CommunityResident resident1 = null;
         if (homeHospital.getType() == 1) { //判断邀请者权限
-            CommunityResident resident1 = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getMasterId());
+            resident1 = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getMasterId());
             if (resident1 == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+            }
+            //判断是否已经加入了
+            CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getUserId());
+            if (sa != null) {
+                //更新居民标签
+                if (!CommonUtils.checkFull(homeHospital.getTags())) {
+                    if (resident1.getIdentity() < 1) {
+                        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                    }
+                    sa.setTags(homeHospital.getTags());
+                    communityService.changeResidentTag(sa);
+                }
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
             }
         }
@@ -371,8 +375,20 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
         }
-        if (sa.getUserId() != CommonUtils.getMyId()) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "没有权限!", new JSONObject());
+        List resident = communityService.findIsList3(ids);
+        if (resident == null || resident.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        for (int i = 0; i < resident.size(); i++) {
+            CommunityResident communityResident = (CommunityResident) resident.get(i);
+            if (communityResident.getUserId() == CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+        }
+        if (type == 1) {
+            if (sa.getUserId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "没有权限!", new JSONObject());
+            }
         }
         communityService.delResident(type, ids.split(","));
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

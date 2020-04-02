@@ -1,6 +1,8 @@
 package com.busi.dao;
 
+import com.busi.entity.CommunityLook;
 import com.busi.entity.CommunityNews;
+import com.busi.entity.CommunitySetUp;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -84,5 +86,41 @@ public interface CommunityNewsDao {
             " order by refreshTime desc" +
             "</script>")
     List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType);
+
+    /***
+     * 查询列表
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CommunityLook" +
+            " where 1=1" +
+            " and infoId = #{id}" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<CommunityLook> findLook(@Param("id") long id);
+
+    /***
+     * 新增
+     * @param communityHouse
+     * @return
+     */
+    @Insert("insert into CommunityLook(communityId,title,infoId,time,userId) " +
+            "values (#{communityId},#{title},#{infoId},#{time},#{userId})")
+    @Options(useGeneratedKeys = true)
+    int addLook(CommunityLook communityHouse);
+
+    /***
+     * 删除
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from CommunityLook" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int delLook(@Param("ids") String[] ids);
 
 }

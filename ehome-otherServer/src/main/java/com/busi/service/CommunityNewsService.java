@@ -1,7 +1,9 @@
 package com.busi.service;
 
 import com.busi.dao.CommunityNewsDao;
+import com.busi.entity.CommunityLook;
 import com.busi.entity.CommunityNews;
+import com.busi.entity.CommunityResident;
 import com.busi.entity.PageBean;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -71,4 +73,37 @@ public class CommunityNewsService {
         return PageUtils.getPageBean(p, list);
     }
 
+    /***
+     * 新增
+     * @param look
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addLook(CommunityLook look) {
+        return todayNewsDao.addLook(look);
+    }
+
+    /***
+     * 删除
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delLook(String[] ids) {
+        return todayNewsDao.delLook(ids);
+    }
+
+    /***
+     * 查询列表
+     * @param id    居委会通告ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<CommunityLook> findLook(long id, int page, int count) {
+        List<CommunityLook> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = todayNewsDao.findLook(id);
+        return PageUtils.getPageBean(p, list);
+    }
 }
