@@ -85,9 +85,9 @@ public interface CommunityNewsDao {
             "select * from CommunityNews" +
             " where 1=1 " +
             "<if test=\"tags != null and newsType==3 \">" +
-                " and userId in" +
                 "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
                     " #{item}" +
+                    " and identity LIKE CONCAT(CONCAT('%',#{item}),'%')" +
                 "</foreach>" +
             "</if>" +
             "<if test=\"uId != null and uId !='' and newsType==3 \">" +

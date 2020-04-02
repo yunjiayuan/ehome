@@ -105,7 +105,7 @@ public class CommunityController extends BaseController implements CommunityApiC
         communityService.addResident(resident);
 
         //新增默认居委会标签
-        String[] string = {"普通居民", "小区长", "楼栋长", "单元长/联户长", "消防员", "社区民警", "建档立卡贫困户", "低保户", "特困户", "五保户", "兜底户", "残疾户"};
+        String[] string = {/*"普通居民",*/ "小区长", "楼栋长", "单元长/联户长", "消防员", "社区民警", "建档立卡贫困户", "低保户", "特困户", "五保户", "兜底户", "残疾户"};
         for (int i = 0; i < string.length; i++) {
             CommunityResidentTag tag = new CommunityResidentTag();
             tag.setTagName(string[i]);
