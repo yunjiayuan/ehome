@@ -297,7 +297,8 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa != null) {
             //更新居民标签
             if (!CommonUtils.checkFull(homeHospital.getTags())) {
-                communityService.changeResidentTag(homeHospital);
+                sa.setTags(homeHospital.getTags());
+                communityService.changeResidentTag(sa);
             }
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
