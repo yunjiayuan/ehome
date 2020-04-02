@@ -129,8 +129,13 @@ public class CommunityNewsController extends BaseController implements Community
         if (sa == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
+        String tag = sa.getTags();
+        String[] tagArray = null;
+        if(!CommonUtils.checkFull(tag)){
+            tagArray = tag.split(",");
+        }
         PageBean<CommunityNews> pageBean;
-        pageBean = todayNewsService.findList(communityId, newsType, page, count);
+        pageBean = todayNewsService.findList(communityId, newsType,userId,tagArray,page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }

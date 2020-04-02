@@ -65,10 +65,10 @@ public class CommunityNewsService {
     /***
      * 查询列表
      */
-    public PageBean<CommunityNews> findList(long communityId, int newsType, int page, int count) {
+    public PageBean<CommunityNews> findList(long communityId, int newsType,long userId, String[] tags,  int page, int count) {
         List<CommunityNews> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = todayNewsDao.findList(communityId, newsType);
+        list = todayNewsDao.findList(communityId, newsType,"#"+userId+"#",tags);
 
         return PageUtils.getPageBean(p, list);
     }

@@ -22,8 +22,8 @@ public interface CommunityNewsDao {
      * @param todayNews
      * @return
      */
-    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState,identity) " +
-            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState},#{identity})")
+    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState,identity,lookUserIds) " +
+            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState},#{identity},#{lookUserIds})")
     @Options(useGeneratedKeys = true)
     int add(CommunityNews todayNews);
 
@@ -52,6 +52,7 @@ public interface CommunityNewsDao {
             " newsType=#{newsType}," +
             " identity=#{identity}," +
             " newsFormat=#{newsFormat}," +
+            " lookUserIds=#{lookUserIds}," +
             " refreshTime=#{refreshTime}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -82,10 +83,22 @@ public interface CommunityNewsDao {
      */
     @Select("<script>" +
             "select * from CommunityNews" +
-            " where newsType=#{newsType} AND newsState=0 and communityId=#{communityId}" +
+            " where 1=1 " +
+            "<if test=\"tags != null and newsType==3 \">" +
+                " and userId in" +
+                "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
+                    " #{item}" +
+                "</foreach>" +
+            "</if>" +
+            "<if test=\"uId != null and uId !='' and newsType==3 \">" +
+                " and lookUserIds LIKE CONCAT('%',#{uId},'%')" +
+            "</if>" +
+            " and newsType=#{newsType} " +
+            " and newsState=0 " +
+            " and communityId=#{communityId}" +
             " order by refreshTime desc" +
             "</script>")
-    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType);
+    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType,@Param("uId") String uId,@Param("tags")  String[] tags);
 
     /***
      * 查询列表
