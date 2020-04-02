@@ -77,7 +77,7 @@ public interface CommunityNewsDao {
     CommunityNews findInfo(@Param("infoId") long infoId);
 
     /***
-     * 分页查询
+     * 普通用户分页查询
      * @param newsType
      * @return
      */
@@ -99,6 +99,21 @@ public interface CommunityNewsDao {
             " order by refreshTime desc" +
             "</script>")
     List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType,@Param("uId") String uId,@Param("tags")  String[] tags);
+
+    /***
+     * 管理员分页查询
+     * @param newsType
+     * @return
+     */
+    @Select("<script>" +
+            "select * from CommunityNews" +
+            " where 1=1 " +
+            " and newsType=#{newsType} " +
+            " and newsState=0 " +
+            " and communityId=#{communityId}" +
+            " order by refreshTime desc" +
+            "</script>")
+    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType);
 
     /***
      * 查询列表

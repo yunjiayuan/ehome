@@ -135,7 +135,11 @@ public class CommunityNewsController extends BaseController implements Community
             tagArray = tag.split(",");
         }
         PageBean<CommunityNews> pageBean;
-        pageBean = todayNewsService.findList(communityId, newsType,userId,tagArray,page, count);
+        if(sa.getIdentity()>0){
+            pageBean = todayNewsService.findListByAdmin(communityId, newsType,page, count);
+        }else{
+            pageBean = todayNewsService.findList(communityId, newsType,userId,tagArray,page, count);
+        }
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
