@@ -78,7 +78,7 @@ public class CommunityNewsService {
     public PageBean<CommunityNews> findListByAdmin(long communityId, int newsType,int page, int count) {
         List<CommunityNews> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = todayNewsDao.findList(communityId, newsType);
+        list = todayNewsDao.findListByadmin(communityId, newsType);
 
         return PageUtils.getPageBean(p, list);
     }

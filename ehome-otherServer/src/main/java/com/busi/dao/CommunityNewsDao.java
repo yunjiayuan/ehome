@@ -113,7 +113,7 @@ public interface CommunityNewsDao {
             " and communityId=#{communityId}" +
             " order by refreshTime desc" +
             "</script>")
-    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType);
+    List<CommunityNews> findListByadmin(@Param("communityId") long communityId, @Param("newsType") int newsType);
 
     /***
      * 查询列表
