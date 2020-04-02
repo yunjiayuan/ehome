@@ -83,23 +83,23 @@ public interface CommunityNewsDao {
      */
     @Select("<script>" +
             "select * from CommunityNews" +
-            " where 1=1 " +
+            " where " +
             "<if test=\"tags != null and newsType==3 \">" +
                 "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
-                    " #{item}" +
-                    " and identity LIKE CONCAT(CONCAT('%',#{item}),'%')" +
-//                    " and identity LIKE CONCAT('%',#{item},'%')" +
+//                    " #{item}" +
+//                    " and identity LIKE CONCAT(CONCAT('%',#{item}),'%')" +
+                    " identity LIKE CONCAT('%',#{item},'%')" +
                 "</foreach>" +
             "</if>" +
-            "<if test=\"uId != null and uId !='' and newsType==3 \">" +
-                " and lookUserIds LIKE CONCAT('%',#{uId},'%')" +
+            "<if test=\"usId != null and usId !='' and newsType==3 \">" +
+                " and lookUserIds LIKE CONCAT('%',#{usId},'%')" +
             "</if>" +
             " and newsType=#{newsType} " +
             " and newsState=0 " +
             " and communityId=#{communityId}" +
             " order by refreshTime desc" +
             "</script>")
-    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType,@Param("uId") String uId,@Param("tags")  String[] tags);
+    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType,@Param("usId") String usId,@Param("tags")  String[] tags);
 
     /***
      * 管理员分页查询
