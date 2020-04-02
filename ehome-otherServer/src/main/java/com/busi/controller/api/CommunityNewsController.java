@@ -132,7 +132,11 @@ public class CommunityNewsController extends BaseController implements Community
         String tag = sa.getTags();
         String[] tagArray = null;
         if(!CommonUtils.checkFull(tag)){
-            tagArray = tag.split(",");
+            String[] array = tag.split(",");
+            for (int i = 0; i <array.length ; i++) {
+                tagArray = new String[array.length];
+                tagArray[i] = "#"+array[i]+"#";
+            }
         }
         PageBean<CommunityNews> pageBean;
         if(sa.getIdentity()>0){

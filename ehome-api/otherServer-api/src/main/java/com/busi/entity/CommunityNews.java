@@ -51,7 +51,7 @@ public class CommunityNews {
 
     private int newsState;                    //资讯状态 0正常 1删除
 
-    private String identity;                 //可查看通告的身份标签 格式：身份标签ID,身份标签ID 如：1,2,3  只在newsType=3时有效
+    private String identity;                 //可查看通告的身份标签 格式：#身份标签ID#,#身份标签ID# 如：#1#,#2#,#3#  只在newsType=3时有效
 
     private String lookUserIds;              //可查看通告的用户ID组合 格式：#用户ID#,#用户ID# 如：#10076#,#9999#,#32358#  只在newsType=3时有效
 
