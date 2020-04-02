@@ -59,14 +59,6 @@ public interface ShopFloorOrdersApiController {
     ReturnData changeSFreceipt(@PathVariable long id);
 
     /***
-     * 更改领取状态
-     * @param id  订单Id
-     * @return
-     */
-    @GetMapping("changeSFreceiveState/{id}")
-    ReturnData changeSFreceiveState(@PathVariable long id);
-
-    /***
      * 分页查询订单列表
      * @param ordersType 订单类型: 0全部 1待付款,2待发货(已付款),3已发货（待收货）, 4已收货（待评价）  5已评价  6付款超时  7发货超时, 8取消订单
      * @param page     页码 第几页 起始值1

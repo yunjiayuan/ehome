@@ -41,6 +41,8 @@ public interface ShopFloorOrdersDao {
             " addressPhone=#{addressPhone}," +
             " addressName=#{addressName}," +
             " receiveState=#{receiveState}," +
+            " shopId=#{shopId}," +
+            " shopName=#{shopName}," +
             " address=#{address}" +
             " where id=#{id} and recipientId=#{recipientId}" +
             "</script>")

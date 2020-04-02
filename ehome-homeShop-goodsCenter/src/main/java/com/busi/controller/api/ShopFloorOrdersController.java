@@ -211,7 +211,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             shopFloorOrdersService.updateOrders(io);
 
             //清除缓存中的订单信息
-            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
             //订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
@@ -242,22 +242,12 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             //清除缓存中的商品信息
 
             //清除缓存中的订单信息
-            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
             //订单放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-    }
-
-    /***
-     * 更改领取状态
-     * @param id  订单Id
-     * @return
-     */
-    @Override
-    public ReturnData changeSFreceiveState(long id) {
-        return null;
     }
 
     /***
@@ -320,7 +310,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             mqUtils.sendPurseMQ(ko.getBuyerId(), 27, 0, ko.getMoney());
         }
         //清除缓存中的订单信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getNo(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getBuyerId() + "_" + ko.getNo(), 0);
         //放入缓存
         Map<String, Object> ordersMap = CommonUtils.objectToMap(ko);
         redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + ko.getBuyerId() + "_" + ko.getNo(), ordersMap, Constants.USER_TIME_OUT);
