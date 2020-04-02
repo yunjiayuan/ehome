@@ -65,6 +65,7 @@ public interface CommunityEventReportingDao {
             " remarks=#{remarks}," +
             " communityHouseId=#{communityHouseId}," +
             " communityHouseUserId=#{communityHouseUserId}," +
+            " review=#{review}," +
             " phone=#{phone}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
