@@ -131,18 +131,18 @@ public class CommunityNewsController extends BaseController implements Community
         }
         String tag = sa.getTags();
         String[] tagArray = null;
-        if(!CommonUtils.checkFull(tag)){
+        if (!CommonUtils.checkFull(tag)) {
             String[] array = tag.split(",");
-            for (int i = 0; i <array.length ; i++) {
+            for (int i = 0; i < array.length; i++) {
                 tagArray = new String[array.length];
-                tagArray[i] = "#"+array[i]+"#";
+                tagArray[i] = "#" + array[i] + "#";
             }
         }
         PageBean<CommunityNews> pageBean;
-        if(sa.getIdentity()>0){
-            pageBean = todayNewsService.findListByAdmin(communityId, newsType,page, count);
-        }else{
-            pageBean = todayNewsService.findList(communityId, newsType,userId,tagArray,page, count);
+        if (sa.getIdentity() > 0) {
+            pageBean = todayNewsService.findListByAdmin(communityId, newsType, page, count);
+        } else {
+            pageBean = todayNewsService.findList(communityId, newsType, userId, tagArray, page, count);
         }
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -203,7 +203,7 @@ public class CommunityNewsController extends BaseController implements Community
                 String[] num1 = sa.getTags().split(",");
                 for (int i = 0; i < num.length; i++) {
                     for (int j = 0; j < num1.length; j++) {
-                        if (num[i].equals(num1[j])) {
+                        if (num[i].equals("#" + num1[j] + "#")) {
                             todayNewsService.addLook(communityLook);
                             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
                         }

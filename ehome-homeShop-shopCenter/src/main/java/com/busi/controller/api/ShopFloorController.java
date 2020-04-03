@@ -109,9 +109,18 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
         }
         //查询是否缴费
-        ShopFloor dishes = shopCenterService.findByUserId(CommonUtils.getMyId(), homeShopCenter.getVillageOnly());
-        if (dishes == null || dishes.getPayState() != 1) {
-            return returnData(StatusCode.CODE_BOND_NOT_AC.CODE_VALUE, "未缴纳保证金", new JSONObject());
+//        ShopFloor dishes = shopCenterService.findByUserId(CommonUtils.getMyId(), homeShopCenter.getVillageOnly());
+//        if (dishes == null || dishes.getPayState() != 1) {
+//            return returnData(StatusCode.CODE_BOND_NOT_AC.CODE_VALUE, "未缴纳保证金", new JSONObject());
+//        }
+        //查询用户钱包信息
+        Map<String, Object> purseMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PURSEINFO + CommonUtils.getMyId());
+        if (purseMap == null || purseMap.size() <= 0) {
+            return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE, "账户余额不足!", new JSONObject());
+        }
+        double spareMoney = Double.parseDouble(purseMap.get("spareMoney").toString());
+        if (spareMoney < 30000) {
+            return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE, "账户余额不足!", new JSONObject());
         }
         shopCenterService.updateBusiness(homeShopCenter);
         //清除缓存
