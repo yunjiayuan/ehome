@@ -84,9 +84,9 @@ public interface CommunityNewsDao {
      */
     @Select("<script>" +
             "select * from CommunityNews" +
-            " where " +
+            " where 1 = 1" +
             "<if test=\"newsType==3 \">" +
-                " (" +
+                " and (" +
             "</if> " +
             "<if test=\"tags != null and newsType==3 \">" +
                 "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
