@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -94,22 +97,29 @@ public class GrabGiftsController extends BaseController implements GrabGiftsApiC
         if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0); // 控制时
-        calendar.set(Calendar.MINUTE, 0);       // 控制分
-        calendar.set(Calendar.SECOND, 0);       // 控制秒
-        long time1 = calendar.getTimeInMillis(); // 此处为00：00：00
-
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(Calendar.HOUR_OF_DAY, 23); // 控制时
-        calendar2.set(Calendar.MINUTE, 59);       // 控制分
-        calendar2.set(Calendar.SECOND, 59);       // 控制秒
-        long time2 = calendar2.getTimeInMillis(); // 此处为23：59：59
-
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY, 6); // 控制时
+//        calendar.set(Calendar.MINUTE, 0);       // 控制分
+//        calendar.set(Calendar.SECOND, 0);       // 控制秒
+//        long time1 = calendar.getTimeInMillis(); // 此处为00：00：00
+//
+//        Calendar calendar2 = Calendar.getInstance();
+//        calendar2.set(Calendar.HOUR_OF_DAY, 11); // 控制时
+//        calendar2.set(Calendar.MINUTE, 29);       // 控制分
+//        calendar2.set(Calendar.SECOND, 59);       // 控制秒
+//        long time2 = calendar2.getTimeInMillis(); // 此处为11：29：59
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String date = format.format(new Date());
+        Date date2 = null;
+        try {
+            date2 = format.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < list.size(); i++) {
             GrabMedium medium = (GrabMedium) list.get(i);
-            Date randomDate = randomDate(time1, time2);
-            medium.setTime(randomDate);
+//            Date randomDate = randomDate(time1, time2);
+            medium.setTime(date2);
             medium.setCost("华为Mate9");
             medium.setPrice(3100);
         }
