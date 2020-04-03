@@ -34,8 +34,8 @@ public interface GrabGiftsDrawDao {
      * @param prizesLuckyDraw
      * @return
      */
-    @Insert("insert into GrabMedium(userId, time, prize, winningState, cost) " +
-            "values (#{userId},#{time},#{prize},#{winningState},#{cost})")
+    @Insert("insert into GrabMedium(userId, time, price, winningState, cost) " +
+            "values (#{userId},#{time},#{price},#{winningState},#{cost})")
     @Options(useGeneratedKeys = true)
     int add(GrabMedium prizesLuckyDraw);
 
