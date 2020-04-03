@@ -26,4 +26,6 @@ public class GrabGifts {
 
     //与数据库无关字段
     private String music;    //音乐地址
+
+    private int num;    //剩余次数
 }
