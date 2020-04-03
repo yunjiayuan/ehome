@@ -66,4 +66,6 @@ public class Community {
     private int distance;            //距离
 
     private int identity;            //身份:0普通 1管理员 2创建者
+
+    private String tags;            //身份标签ID组  0,12,3
 }

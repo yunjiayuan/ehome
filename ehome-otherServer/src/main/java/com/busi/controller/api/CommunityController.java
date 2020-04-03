@@ -250,6 +250,7 @@ public class CommunityController extends BaseController implements CommunityApiC
                         CommunityResident resident = (CommunityResident) list2.get(j);
                         if (resident.getUserId() == CommonUtils.getMyId() && community.getId() == resident.getCommunityId()) {
                             community.setIdentity(resident.getIdentity());
+                            community.setTags(resident.getTags());
                             list2.remove(j);
                         }
                     }
