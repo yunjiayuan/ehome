@@ -122,6 +122,14 @@ public class GrabGiftsController extends BaseController implements GrabGiftsApiC
             medium.setTime(date2);
             medium.setCost("华为Mate9");
             medium.setPrice(3100);
+            UserInfo userInfo = null;
+            userInfo = userInfoUtils.getUserInfo(medium.getUserId());
+            if (userInfo != null) {
+                medium.setName(userInfo.getName());
+                medium.setProTypeId(userInfo.getProType());
+                medium.setHead(userInfo.getHead());
+                medium.setHouseNumber(userInfo.getHouseNumber());
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
