@@ -22,8 +22,8 @@ public interface CommunityNewsDao {
      * @param todayNews
      * @return
      */
-    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState,identity,lookUserIds) " +
-            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState},#{identity},#{lookUserIds})")
+    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState,identity,lookUserIds,lookUserIdNames) " +
+            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState},#{identity},#{lookUserIds},#{lookUserIdNames})")
     @Options(useGeneratedKeys = true)
     int add(CommunityNews todayNews);
 
@@ -53,6 +53,7 @@ public interface CommunityNewsDao {
             " identity=#{identity}," +
             " newsFormat=#{newsFormat}," +
             " lookUserIds=#{lookUserIds}," +
+            " lookUserIdNames=#{lookUserIdNames}," +
             " refreshTime=#{refreshTime}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")

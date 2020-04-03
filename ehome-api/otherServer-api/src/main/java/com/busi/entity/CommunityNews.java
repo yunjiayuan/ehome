@@ -55,4 +55,6 @@ public class CommunityNews {
 
     private String lookUserIds;              //可查看通告的用户ID组合 格式：#用户ID#,#用户ID# 如：#10076#,#9999#,#32358#  只在newsType=3时有效
 
+    private String lookUserIdNames;          //可查看通告的用户名字组合 格式：用户名,用户名 如：张三,李四,王五  只在newsType=3时有效
+
 }
