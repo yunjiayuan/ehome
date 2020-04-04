@@ -18,10 +18,7 @@ import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /***
  * 抢礼物相关接口
@@ -73,7 +70,9 @@ public class GrabGiftsController extends BaseController implements GrabGiftsApiC
         grabMedium.setTime(new Date());
         grabMedium.setUserId(CommonUtils.getMyId());
         grabGiftsService.add(grabMedium);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        Map<String, Object> map = new HashMap<>();
+        map.put("winningState", grabMedium.getWinningState());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
@@ -161,7 +160,8 @@ public class GrabGiftsController extends BaseController implements GrabGiftsApiC
         String[] music = {"audio/musicServer/qiang/Music (1).mp3", "audio/musicServer/qiang/Music (2).mp3", "audio/musicServer/qiang/Music (3).mp3", "audio/musicServer/qiang/Music (4).mp3", "audio/musicServer/qiang/Music (5).mp3", "audio/musicServer/qiang/Music (6).mp3", "audio/musicServer/qiang/Music (7).mp3", "audio/musicServer/qiang/Music (8).mp3", "audio/musicServer/qiang/Music (9).mp3", "audio/musicServer/qiang/Music (10).mp3", "audio/musicServer/qiang/Music (11).mp3", "audio/musicServer/qiang/Music (12).mp3", "audio/musicServer/qiang/Music (13).mp3", "audio/musicServer/qiang/Music (14).mp3", "audio/musicServer/qiang/Music (15).mp3", "audio/musicServer/qiang/Music (16).mp3", "audio/musicServer/qiang/Music (17).mp3", "audio/musicServer/qiang/Music (18).mp3", "audio/musicServer/qiang/Music (19).mp3", "audio/musicServer/qiang/Music (20).mp3", "audio/musicServer/qiang/Music (21).mp3", "audio/musicServer/qiang/Music (22).mp3", "audio/musicServer/qiang/Music (23).mp3", "audio/musicServer/qiang/Music (24).mp3", "audio/musicServer/qiang/Music (25).mp3", "audio/musicServer/qiang/Music (26).mp3", "audio/musicServer/qiang/Music (27).mp3", "audio/musicServer/qiang/Music (28).mp3", "audio/musicServer/qiang/Music (29).mp3", "audio/musicServer/qiang/Music (30).mp3", "audio/musicServer/qiang/Music (31).mp3", "audio/musicServer/qiang/Music (32).mp3", "audio/musicServer/qiang/Music (33).mp3", "audio/musicServer/qiang/Music (34).mp3", "audio/musicServer/qiang/Music (35).mp3", " audio/musicServer/qiang/Music (36).mp3", "audio/musicServer/qiang/Music (37).mp3", "audio/musicServer/qiang/Music (38).mp3", "audio/musicServer/qiang/Music (39).mp3", "audio/musicServer/qiang/Music (40).mp3", "audio/musicServer/qiang/Music (41).mp3", "audio/musicServer/qiang/Music (42).mp3", "audio/musicServer/qiang/Music (43).mp3"};
         GrabGifts gifts = grabGiftsService.findGifts();
         if (gifts != null) {
-            gifts.setNumber(rand.nextInt(19) + 1);
+//            gifts.setNumber(rand.nextInt(19) + 1);
+            gifts.setNumber(10);
             gifts.setMusic(music[rand.nextInt(music.length) + 0]);
             //查询当前用户当天剩余次数 以每天凌晨0点为准 每天每人只能抢三次
             int num = grabGiftsService.findNum(CommonUtils.getMyId());
