@@ -23,6 +23,7 @@ public class GrabGiftsTimerController {
     @Autowired
     GrabGiftsService grabGiftsService;
 
+    @Scheduled(cron = "0 0 0 * * ?") //0点执行一次
     @Scheduled(cron = "0 0 4/1 * * ?") //4点开始每1小时一次
     public void wheelPlantingTimer() throws Exception {
         log.info("开始执行抢礼物定时任务...");
