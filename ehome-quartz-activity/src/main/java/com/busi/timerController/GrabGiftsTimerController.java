@@ -23,12 +23,13 @@ public class GrabGiftsTimerController {
     @Autowired
     GrabGiftsService grabGiftsService;
 
-    @Scheduled(cron = "0 * */1 * * ?") //每一小时一次
+    @Scheduled(cron = "0 * */1 * * ?") //每1小时一次
     public void wheelPlantingTimer() throws Exception {
         log.info("开始执行抢礼物定时任务...");
         //查询奖品
         GrabGifts grabGifts = grabGiftsService.findGifts();
         if (grabGifts == null) {
+            log.info("奖品不存在...");
             return;
         }
         //判断当前时间是否是0点
@@ -39,7 +40,8 @@ public class GrabGiftsTimerController {
         long time = calendar.getTimeInMillis(); // 此处为今天的00：00：00
         long da = new Date().getTime();//当前时间毫秒数
         long curren = 300000;//五分钟毫秒数
-        if (da <= time + curren && time >= da) {
+        long curren2 = 3600000;//一小时毫秒数
+        if (da <= time + curren && da >= time) {
             //初始化奖品数量
             grabGifts.setNumber(20);
             grabGiftsService.update(grabGifts);
@@ -48,20 +50,23 @@ public class GrabGiftsTimerController {
         }
         //更新数据库奖品数量，同时新增一名中奖人员记录
         if (grabGifts.getNumber() == 0) {
+            log.info("奖品数量为0...");
             return;
         }
-        grabGifts.setNumber(grabGifts.getNumber() - 1);
-        grabGiftsService.update(grabGifts);
-        GrabMedium medium = new GrabMedium();
-        long timeCount = (long) (Math.random() * 2999999) + 1;//50分钟内随机
-        long time2 = da + timeCount;
-        long newUserId = (long) (Math.random() * 40000) + 13870;
-        medium.setUserId(newUserId);
-        medium.setPrice(12699);
-        medium.setCost("Apple iPhone 11 Pro Max");
-        medium.setTime(new Date(time2));
-        medium.setWinningState(1);
-        grabGiftsService.add(medium);
-        log.info("抢礼物定时任务执行完成...");
+        if (da >= time + curren2 * 4) {
+            grabGifts.setNumber(grabGifts.getNumber() - 1);
+            grabGiftsService.update(grabGifts);
+            GrabMedium medium = new GrabMedium();
+            long timeCount = (long) (Math.random() * 2999999) + 1;//50分钟内随机
+            long time2 = da + timeCount;
+            long newUserId = (long) (Math.random() * 40000) + 13870;
+            medium.setUserId(newUserId);
+            medium.setPrice(12699);
+            medium.setCost("Apple iPhone 11 Pro Max");
+            medium.setTime(new Date(time2));
+            medium.setWinningState(1);
+            grabGiftsService.add(medium);
+            log.info("抢礼物定时任务执行完成...");
+        }
     }
 }
