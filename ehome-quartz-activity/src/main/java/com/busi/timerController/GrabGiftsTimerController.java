@@ -62,5 +62,6 @@ public class GrabGiftsTimerController {
         medium.setTime(new Date(time2));
         medium.setWinningState(1);
         grabGiftsService.add(medium);
+        log.info("抢礼物定时任务执行完成...");
     }
 }
