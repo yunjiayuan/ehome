@@ -41,7 +41,7 @@ public class GrabGiftsTimerController {
         long curren = 300000;//五分钟毫秒数
         if (da <= time + curren && time >= da) {
             //初始化奖品数量
-            grabGifts.setNum(20);
+            grabGifts.setNumber(20);
             grabGiftsService.update(grabGifts);
             log.info("初始化奖品数量成功...");
             return;
@@ -50,7 +50,7 @@ public class GrabGiftsTimerController {
         if (grabGifts.getNumber() == 0) {
             return;
         }
-        grabGifts.setNum(grabGifts.getNumber() - 1);
+        grabGifts.setNumber(grabGifts.getNumber() - 1);
         grabGiftsService.update(grabGifts);
         GrabMedium medium = new GrabMedium();
         long timeCount = (long) (Math.random() * 2999999) + 1;//50分钟内随机
