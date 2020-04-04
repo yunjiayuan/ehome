@@ -84,7 +84,10 @@ public interface CommunityNewsDao {
      */
     @Select("<script>" +
             "select * from CommunityNews" +
-            " where (" +
+            " where 1 = 1" +
+            "<if test=\"newsType==3 \">" +
+                " and (" +
+            "</if> " +
             "<if test=\"tags != null and newsType==3 \">" +
                 "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
 //                    " #{item}" +
@@ -94,7 +97,10 @@ public interface CommunityNewsDao {
             "</if>" +
             "<if test=\"usId != null and usId !='' and newsType==3 \">" +
                 " or lookUserIds LIKE CONCAT('%',#{usId},'%')" +
-            "</if> )" +
+            "</if> " +
+            "<if test=\"newsType==3 \">" +
+                " )" +
+            "</if> " +
             " and newsType=#{newsType} " +
             " and newsState=0 " +
             " and communityId=#{communityId}" +
