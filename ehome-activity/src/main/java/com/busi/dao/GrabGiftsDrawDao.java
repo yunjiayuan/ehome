@@ -58,7 +58,7 @@ public interface GrabGiftsDrawDao {
     @Select("<script>" +
             "select * from GrabMedium" +
             " where winningState=1 " +
-            " and TO_DAYS(time)=TO_DAYS(NOW())" +
+//            " and TO_DAYS(time)=TO_DAYS(NOW())" +
             " order by time desc" +
             "</script>")
     List<GrabMedium> findList();

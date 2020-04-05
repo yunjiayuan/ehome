@@ -151,7 +151,6 @@ public class GrabGiftsController extends BaseController implements GrabGiftsApiC
         GrabGifts gifts = grabGiftsService.findGifts();
         if (gifts != null) {
 //            gifts.setNumber(rand.nextInt(19) + 1);
-            gifts.setNumber(20);
             gifts.setMusic(music[rand.nextInt(music.length) + 0]);
             //查询当前用户当天剩余次数 以每天凌晨0点为准 每天每人只能抢三次
             int num = grabGiftsService.findNum(CommonUtils.getMyId());
