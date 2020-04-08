@@ -40,6 +40,26 @@ public class HomeHospitalRecordService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upConsultationStatus(HomeHospitalRecord hourlyWorker) {
+        return homeHospitalDao.upConsultationStatus(hourlyWorker);
+    }
+
+    /***
+     * 更新
+     * @param hourlyWorker
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upActualDuration(HomeHospitalRecord hourlyWorker) {
+        return homeHospitalDao.upActualDuration(hourlyWorker);
+    }
+
+    /***
+     * 更新
+     * @param hourlyWorker
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int update(HomeHospitalRecord hourlyWorker) {
         return homeHospitalDao.update(hourlyWorker);
     }

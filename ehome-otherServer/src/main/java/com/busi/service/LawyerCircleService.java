@@ -184,4 +184,24 @@ public class LawyerCircleService {
         list = lawyerCircleDao.findRecordList(userId, haveDoctor, identity);
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * 更新
+     * @param hourlyWorker
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upConsultationStatus(LawyerCircleRecord hourlyWorker) {
+        return lawyerCircleDao.upConsultationStatus(hourlyWorker);
+    }
+
+    /***
+     * 更新
+     * @param hourlyWorker
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upActualDuration(LawyerCircleRecord hourlyWorker) {
+        return lawyerCircleDao.upActualDuration(hourlyWorker);
+    }
 }

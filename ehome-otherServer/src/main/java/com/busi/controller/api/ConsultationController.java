@@ -203,4 +203,47 @@ public class ConsultationController extends BaseController implements Consultati
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
+
+    /***
+     * 更新咨询状态
+     * @param occupation 职业：0医生  1律师
+     * @param id   咨询记录ID
+     * @return
+     */
+    @Override
+    public ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable long id) {
+        if (occupation == 0) {//职业：0医生
+            HomeHospitalRecord record = new HomeHospitalRecord();
+            record.setId(id);
+            homeHospitalRecordService.upConsultationStatus(record);
+        } else {//职业： 1律师
+            LawyerCircleRecord record = new LawyerCircleRecord();
+            record.setId(id);
+            lawyerCircleService.upConsultationStatus(record);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新咨询时长
+     * @param occupation 职业：0医生  1律师
+     * @param id   咨询记录ID
+     * @param duration   咨询时长
+     * @return
+     */
+    @Override
+    public ReturnData upActualDuration(@PathVariable int occupation, @PathVariable long id, @PathVariable int duration) {
+        if (occupation == 0) {//职业：0医生
+            HomeHospitalRecord record = new HomeHospitalRecord();
+            record.setId(id);
+            record.setActualDuration(duration);
+            homeHospitalRecordService.upActualDuration(record);
+        } else {//职业： 1律师
+            LawyerCircleRecord record = new LawyerCircleRecord();
+            record.setId(id);
+            record.setActualDuration(duration);
+            lawyerCircleService.upActualDuration(record);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
 }

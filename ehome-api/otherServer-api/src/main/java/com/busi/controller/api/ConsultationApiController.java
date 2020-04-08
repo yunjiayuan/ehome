@@ -35,4 +35,23 @@ public interface ConsultationApiController {
      */
     @GetMapping("findConsultList/{occupation}/{type}/{userId}")
     ReturnData findConsultList(@PathVariable int occupation, @PathVariable int type, @PathVariable long userId);
+
+    /***
+     * 更新咨询状态
+     * @param occupation 职业：0医生  1律师
+     * @param id   咨询记录ID
+     * @return
+     */
+    @GetMapping("upConsultationStatus/{occupation}/{id}")
+    ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable long id);
+
+    /***
+     * 更新咨询时长
+     * @param occupation 职业：0医生  1律师
+     * @param id   咨询记录ID
+     * @param duration   咨询时长
+     * @return
+     */
+    @GetMapping("upActualDuration/{occupation}/{id}/{duration}")
+    ReturnData upActualDuration(@PathVariable int occupation, @PathVariable long id, @PathVariable int duration);
 }

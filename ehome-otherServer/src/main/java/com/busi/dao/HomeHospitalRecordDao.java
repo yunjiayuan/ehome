@@ -22,8 +22,8 @@ public interface HomeHospitalRecordDao {
      * @param kitchen
      * @return
      */
-    @Insert("insert into HomeHospitalRecord(userId,doctorId,prescribed,content,addTime,refreshTime)" +
-            "values (#{userId},#{doctorId},#{prescribed},#{content},#{addTime},#{refreshTime})")
+    @Insert("insert into HomeHospitalRecord(userId,doctorId,prescribed,content,addTime,refreshTime,orderNumber,money,type,title,duration)" +
+            "values (#{userId},#{doctorId},#{prescribed},#{content},#{addTime},#{refreshTime},#{orderNumber},#{money},#{type},#{title},#{duration})")
     @Options(useGeneratedKeys = true)
     int add(HomeHospitalRecord kitchen);
 
@@ -41,6 +41,29 @@ public interface HomeHospitalRecordDao {
             "</script>")
     int update(HomeHospitalRecord kitchen);
 
+    /***
+     * 更新
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update HomeHospitalRecord set" +
+            " consultationStatus=1" +
+            " where id=#{id} and payState=1" +
+            "</script>")
+    int upConsultationStatus(HomeHospitalRecord kitchen);
+
+    /***
+     * 更新
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update HomeHospitalRecord set" +
+            " actualDuration=#{actualDuration}" +
+            " where id=#{id} and payState=1 and consultationStatus=1" +
+            "</script>")
+    int upActualDuration(HomeHospitalRecord kitchen);
 
     /***
      * 更新

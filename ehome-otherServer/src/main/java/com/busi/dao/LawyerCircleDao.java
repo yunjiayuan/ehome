@@ -233,8 +233,8 @@ public interface LawyerCircleDao {
      * @param lawyerCircle
      * @return
      */
-    @Insert("insert into LawyerCircleRecord(userId,lvshiId,prescribed,content,addTime,refreshTime)" +
-            "values (#{userId},#{lvshiId},#{prescribed},#{content},#{addTime},#{refreshTime})")
+    @Insert("insert into LawyerCircleRecord(userId,lvshiId,prescribed,content,addTime,refreshTime,orderNumber,money,type,title,duration)" +
+            "values (#{userId},#{lvshiId},#{prescribed},#{content},#{addTime},#{refreshTime},#{orderNumber},#{money},#{type},#{title},#{duration})")
     @Options(useGeneratedKeys = true)
     int addRecord(LawyerCircleRecord lawyerCircle);
 
@@ -286,4 +286,28 @@ public interface LawyerCircleDao {
             " order by refreshTime desc" +
             "</script>")
     List<LawyerCircleRecord> findRecordList(@Param("userId") long userId, @Param("haveDoctor") int haveDoctor, @Param("identity") int identity);
+
+    /***
+     * 更新
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update LawyerCircleRecord set" +
+            " consultationStatus=1" +
+            " where id=#{id} and payState=1" +
+            "</script>")
+    int upConsultationStatus(LawyerCircleRecord kitchen);
+
+    /***
+     * 更新
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update LawyerCircleRecord set" +
+            " actualDuration=#{actualDuration}" +
+            " where id=#{id} and payState=1 and consultationStatus=1" +
+            "</script>")
+    int upActualDuration(LawyerCircleRecord kitchen);
 }
