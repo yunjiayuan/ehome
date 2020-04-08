@@ -1,8 +1,6 @@
 package com.busi.controller.api;
 
-import com.busi.entity.PropertyResident;
-import com.busi.entity.Property;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +36,14 @@ public interface PropertyApiController {
      */
     @PutMapping("changeProperty")
     ReturnData changeProperty(@Valid @RequestBody Property homeHospital, BindingResult bindingResult);
+
+    /***
+     * 更新物业刷新时间
+     * @param homeHospital
+     * @return
+     */
+    @PutMapping("changePropertyTime")
+    ReturnData changePropertyTime(@Valid @RequestBody PropertyResident homeHospital, BindingResult bindingResult);
 
     /***
      * 查询物业详情
@@ -107,4 +113,36 @@ public interface PropertyApiController {
     @GetMapping("findPResidentList/{type}/{propertyId}/{page}/{count}")
     ReturnData findPResidentList(@PathVariable int type, @PathVariable long propertyId, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 新增物业人员设置
+     * @param homeHospital
+     * @return
+     */
+    @PostMapping("addPropertySetUp")
+    ReturnData addPropertySetUp(@Valid @RequestBody PropertySetUp homeHospital, BindingResult bindingResult);
+
+    /***
+     * 更新物业人员设置
+     * @param homeHospital
+     * @return
+     */
+    @PutMapping("changePropertySetUp")
+    ReturnData changePropertySetUp(@Valid @RequestBody PropertySetUp homeHospital, BindingResult bindingResult);
+
+    /**
+     * @Description: 删除物业人员设置
+     * @return:
+     */
+    @DeleteMapping("delPropertySetUp/{ids}")
+    ReturnData delPropertySetUp(@PathVariable String ids);
+
+    /***
+     * 查询物业人员设置列表（按职务正序）
+     * @param communityId    物业ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findPropertySetUpList/{communityId}/{page}/{count}")
+    ReturnData findPropertySetUpList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count);
 }

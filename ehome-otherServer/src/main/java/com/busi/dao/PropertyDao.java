@@ -1,5 +1,7 @@
 package com.busi.dao;
 
+import com.busi.entity.CommunityResident;
+import com.busi.entity.PropertySetUp;
 import com.busi.entity.Property;
 import com.busi.entity.PropertyResident;
 import org.apache.ibatis.annotations.*;
@@ -243,4 +245,66 @@ public interface PropertyDao {
             "</foreach>" +
             "</script>")
     List<PropertyResident> findIsList3(@Param("ids") String[] ids);
+
+    /***
+     * 删除物业人员设置
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from PropertySetUp" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int delSetUp(@Param("ids") String[] ids);
+
+    /***
+     * 新增物业人员设置
+     * @param communityHouse
+     * @return
+     */
+    @Insert("insert into PropertySetUp(propertyId,post,head,name) " +
+            "values (#{propertyId},#{post},#{head},#{name})")
+    @Options(useGeneratedKeys = true)
+    int addSetUp(PropertySetUp communityHouse);
+
+    /***
+     * 更新物业人员设置
+     * @param communityHouse
+     * @return
+     */
+    @Update("<script>" +
+            "update PropertySetUp set" +
+            " post=#{post}," +
+            " head=#{head}," +
+            " name=#{name}" +
+            " where id=#{id}" +
+            "</script>")
+    int changeSetUp(PropertySetUp communityHouse);
+
+    /***
+     * 查询物业人员设置列表
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PropertySetUp" +
+            " where 1=1" +
+            " and propertyId = #{propertyId}" +
+            " ORDER BY post asc" +
+            "</script>")
+    List<PropertySetUp> findSetUpList(@Param("propertyId") long propertyId);
+
+    /***
+     * 更新物业
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update PropertyResident set" +
+            " refreshTime=#{refreshTime}" +
+            " where propertyId=#{propertyId} and userId=#{userId}" +
+            "</script>")
+    int changeCommunityTime(PropertyResident selectionActivities);
 }

@@ -34,6 +34,16 @@ public class PropertyService {
     }
 
     /***
+     * 刷新物业时间
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeCommunityTime(PropertyResident selectionVote) {
+        return epidemicSituationDao.changeCommunityTime(selectionVote);
+    }
+
+    /***
      * 新增物业
      * @param selectionActivities
      * @return
@@ -177,5 +187,48 @@ public class PropertyService {
         List<PropertyResident> list = null;
         list = epidemicSituationDao.findIsList3(userIds.split(","));
         return list;
+    }
+
+    /***
+     * 删除居委会人员设置
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delSetUp(String[] ids) {
+        return epidemicSituationDao.delSetUp(ids);
+    }
+
+    /***
+     * 更新居委会人员设置
+     * @param communityHouse
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeSetUp(PropertySetUp communityHouse) {
+        return epidemicSituationDao.changeSetUp(communityHouse);
+    }
+
+    /***
+     * 新增居委会人员设置
+     * @param communityHouse
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addSetUp(PropertySetUp communityHouse) {
+        return epidemicSituationDao.addSetUp(communityHouse);
+    }
+
+    /***
+     * 查询居委会人员设置列表
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<PropertySetUp> findSetUpList(long propertyId, int page, int count) {
+        List<PropertySetUp> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = epidemicSituationDao.findSetUpList(propertyId);
+        return PageUtils.getPageBean(p, list);
     }
 }

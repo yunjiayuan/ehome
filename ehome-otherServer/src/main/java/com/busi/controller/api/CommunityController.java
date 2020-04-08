@@ -75,8 +75,6 @@ public class CommunityController extends BaseController implements CommunityApiC
         }
         homeHospital.setRefreshTime(new Date());
         communityService.changeCommunityTime(homeHospital);
-        //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -151,7 +149,7 @@ public class CommunityController extends BaseController implements CommunityApiC
             }
             //放入缓存
             kitchenMap = CommonUtils.objectToMap(sa);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + id, kitchenMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_COMMUNITY + id, kitchenMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }

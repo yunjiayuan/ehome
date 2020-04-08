@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.util.*;
 
 /**
- * 物业实体
+ * 物业相关接口
  * author ZJJ
  * Create time 2020-04-07 16:46:08
  */
@@ -102,7 +102,24 @@ public class PropertyController extends BaseController implements PropertyApiCon
         }
         communityService.changeProperty(homeHospital);
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_COMMUNITY + homeHospital.getId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_PROPERTY + homeHospital.getId(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新物业刷新时间
+     * @param homeHospital
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData changePropertyTime(@Valid PropertyResident homeHospital, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        homeHospital.setRefreshTime(new Date());
+        communityService.changeCommunityTime(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -114,7 +131,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
     @Override
     public ReturnData findProperty(@PathVariable long id) {
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_COMMUNITY + id);
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_PROPERTY + id);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             Property sa = communityService.findProperty(id);
             if (sa == null) {
@@ -122,7 +139,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
             }
             //放入缓存
             kitchenMap = CommonUtils.objectToMap(sa);
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + id, kitchenMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_PROPERTY + id, kitchenMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
@@ -411,6 +428,73 @@ public class PropertyController extends BaseController implements PropertyApiCon
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+    }
+
+    /***
+     * 新增物业人员设置
+     * @param homeHospital
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addPropertySetUp(@Valid PropertySetUp homeHospital, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        communityService.addSetUp(homeHospital);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新物业人员设置
+     * @param homeHospital
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData changePropertySetUp(@Valid PropertySetUp homeHospital, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        communityService.changeSetUp(homeHospital);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /**
+     * @param ids
+     * @Description: 删除物业人员设置
+     * @return:
+     */
+    @Override
+    public ReturnData delPropertySetUp(String ids) {
+        if (CommonUtils.checkFull(ids)) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "删除参数ids不能为空", new JSONObject());
+        }
+        communityService.delSetUp(ids.split(","));
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询物业人员设置列表（按职务正序）
+     * @param propertyId    物业ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findPropertySetUpList(long propertyId, int page, int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        PageBean<PropertySetUp> pageBean = null;
+        pageBean = communityService.findSetUpList(propertyId, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
 }
