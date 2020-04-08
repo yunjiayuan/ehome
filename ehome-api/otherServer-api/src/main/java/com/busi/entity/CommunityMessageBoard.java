@@ -15,9 +15,9 @@ import java.util.List;
 @Setter
 @Getter
 public class CommunityMessageBoard {
-    private long id;                //主建ID
+    private long id;                //主键ID
 
-    private long communityId;    //newsType=0时居委会ID  newsType=1时物业ID
+    private long communityId;    //type=0时居委会ID  type=1时物业ID
 
     private int type;         //留言类别   0居委会  1物业
 
