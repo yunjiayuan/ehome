@@ -3,11 +3,13 @@ package com.busi.service;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.fegin.ShopFloorBondLControllerFegin;
+import com.busi.fegin.HospitalOrdersLControllerFegin;
+import com.busi.fegin.LawyerCircleLControllerFegin;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +23,12 @@ public class ConsultationOrdersService extends BaseController implements PayBase
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private LawyerCircleLControllerFegin lawyerCircleLControllerFegin;
+
+    @Autowired
+    private HospitalOrdersLControllerFegin hospitalOrdersLControllerFegin;
 
     @Autowired
     private MqUtils mqUtils;
@@ -59,6 +67,20 @@ public class ConsultationOrdersService extends BaseController implements PayBase
         }
         //清除缓存中的订单记录
         redisUtils.expire(Constants.REDIS_KEY_CONSULTATIONORDER + pay.getUserId() + "_" + pay.getOrderNumber(), 0);
+        //回调业务
+        if(consultationOrders.getOccupation()==0){//医生
+            HomeHospitalRecord homeHospitalRecord =  new HomeHospitalRecord();
+            homeHospitalRecord.setOrderNumber(consultationOrders.getOrderNumber());
+            homeHospitalRecord.setPayState(1);
+            homeHospitalRecord.setTime(new Date());
+            hospitalOrdersLControllerFegin.updatePayStates(homeHospitalRecord);
+        }else{//律师
+            LawyerCircleRecord lawyerCircleRecord =  new LawyerCircleRecord();
+            lawyerCircleRecord.setPayState(1);
+            lawyerCircleRecord.setTime(new Date());
+            lawyerCircleRecord.setOrderNumber(consultationOrders.getOrderNumber());
+            lawyerCircleLControllerFegin.updatePayStates(lawyerCircleRecord);
+        }
         Map<String,Integer> map = new HashMap();
         map.put("duration",consultationOrders.getDuration());//返回咨询时长
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
