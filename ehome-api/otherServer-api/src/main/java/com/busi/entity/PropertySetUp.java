@@ -16,7 +16,7 @@ public class PropertySetUp {
 
     private long propertyId;    //物业ID
 
-    private int post;      //职务:0书记 1主任 2副主任 3助理 4文书 5干事 6计生员 7社保协管员 8低保协管员 9卫生员 10治安员 11其他
+    private int post;      //职位：董事长、副董事长、董事、总经理、副总经理、助理、部门经理、会计、出纳、文秘、主管、公关、前台、保安、水电维修、园林绿化、家政保洁、其他 （ 从0开始 董事长是0）
 
     private String head; //头像
 
