@@ -113,7 +113,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData changePropertyTime(@Valid PropertyResident homeHospital, BindingResult bindingResult) {
+    public ReturnData changePropertyTime(@Valid @RequestBody PropertyResident homeHospital, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -274,7 +274,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData addPResident(@Valid PropertyResident homeHospital, BindingResult bindingResult) {
+    public ReturnData addPResident(@Valid @RequestBody PropertyResident homeHospital, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -312,7 +312,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData changePResident(@Valid PropertyResident homeHospital, BindingResult bindingResult) {
+    public ReturnData changePResident(@Valid @RequestBody PropertyResident homeHospital, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -338,7 +338,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return:
      */
     @Override
-    public ReturnData delPResident(int type, String ids, long propertyId) {
+    public ReturnData delPResident(@PathVariable int type, @PathVariable String ids, @PathVariable long propertyId) {
         Property sa = communityService.findProperty(propertyId);
         if (sa == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询物业不存在!", new JSONObject());
@@ -369,7 +369,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData findPResiden(long propertyId, String homeNumber) {
+    public ReturnData findPResiden(@PathVariable long propertyId, @PathVariable String homeNumber) {
         PropertyResident sa = communityService.findResident(propertyId, CommonUtils.getMyId());
         if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
@@ -400,7 +400,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData findPResidentList(int type, long propertyId, int page, int count) {
+    public ReturnData findPResidentList(@PathVariable int type, @PathVariable long propertyId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -437,7 +437,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData addPropertySetUp(@Valid PropertySetUp homeHospital, BindingResult bindingResult) {
+    public ReturnData addPropertySetUp(@Valid @RequestBody PropertySetUp homeHospital, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -453,7 +453,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData changePropertySetUp(@Valid PropertySetUp homeHospital, BindingResult bindingResult) {
+    public ReturnData changePropertySetUp(@Valid @RequestBody PropertySetUp homeHospital, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -468,7 +468,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return:
      */
     @Override
-    public ReturnData delPropertySetUp(String ids) {
+    public ReturnData delPropertySetUp(@PathVariable String ids) {
         if (CommonUtils.checkFull(ids)) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "删除参数ids不能为空", new JSONObject());
         }
@@ -484,7 +484,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData findPropertySetUpList(long propertyId, int page, int count) {
+    public ReturnData findPropertySetUpList(@PathVariable long propertyId, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());

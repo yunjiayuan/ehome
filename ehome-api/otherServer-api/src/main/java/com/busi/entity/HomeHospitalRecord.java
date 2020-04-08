@@ -38,8 +38,6 @@ public class HomeHospitalRecord {
 
     private String prescribed;        //医嘱（建议）
 
-    @NotEmpty(message ="内容不能为空")
-    @Length(max = 300, message = "内容不能超过300字")
     private String content;                //内容(主诉)
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

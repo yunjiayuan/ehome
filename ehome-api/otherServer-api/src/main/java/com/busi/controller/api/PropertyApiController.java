@@ -138,11 +138,11 @@ public interface PropertyApiController {
 
     /***
      * 查询物业人员设置列表（按职务正序）
-     * @param communityId    物业ID
+     * @param propertyId    物业ID
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findPropertySetUpList/{communityId}/{page}/{count}")
-    ReturnData findPropertySetUpList(@PathVariable long communityId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findPropertySetUpList/{propertyId}/{page}/{count}")
+    ReturnData findPropertySetUpList(@PathVariable long propertyId, @PathVariable int page, @PathVariable int count);
 }
