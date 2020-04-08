@@ -35,8 +35,8 @@ public interface CommunityRepairDao {
      * @param communityHouse
      * @return
      */
-    @Insert("insert into CommunityRepair(communityId,post,head,name) " +
-            "values (#{communityId},#{post},#{head},#{name})")
+    @Insert("insert into CommunityRepair(communityId,type,userId,time,content,picture) " +
+            "values (#{communityId},#{type},#{userId},#{time},#{content},#{picture})")
     @Options(useGeneratedKeys = true)
     int addSetUp(CommunityRepair communityHouse);
 

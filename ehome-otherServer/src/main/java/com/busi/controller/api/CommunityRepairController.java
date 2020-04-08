@@ -3,12 +3,11 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.CommunityRepair;
-import com.busi.entity.PageBean;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import com.busi.service.CommunityRepairService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
+import com.busi.utils.UserInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @program: ehome
@@ -25,6 +26,9 @@ import javax.validation.Valid;
  */
 @RestController
 public class CommunityRepairController extends BaseController implements CommunityRepairApiController {
+
+    @Autowired
+    UserInfoUtils userInfoUtils;
 
     @Autowired
     CommunityRepairService communityService;
@@ -41,6 +45,7 @@ public class CommunityRepairController extends BaseController implements Communi
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        homeHospital.setTime(new Date());
         communityService.addSetUp(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -79,6 +84,23 @@ public class CommunityRepairController extends BaseController implements Communi
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        List list = pageBean.getList();
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            CommunityRepair sa = (CommunityRepair) list.get(i);
+            if (sa != null) {
+                UserInfo userInfo = null;
+                userInfo = userInfoUtils.getUserInfo(sa.getUserId());
+                if (userInfo != null) {
+                    sa.setName(userInfo.getName());
+                    sa.setHead(userInfo.getHead());
+                    sa.setProTypeId(userInfo.getProType());
+                    sa.setHouseNumber(userInfo.getHouseNumber());
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 }
