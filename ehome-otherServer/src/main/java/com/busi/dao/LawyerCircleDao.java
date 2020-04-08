@@ -80,7 +80,7 @@ public interface LawyerCircleDao {
             "update LawyerCircleRecord set" +
             " payState=#{payState}," +
             " time=#{time}" +
-            " where id=#{id}" +
+            " where orderNumber=#{orderNumber}" +
             "</script>")
     int updateOrders(LawyerCircleRecord kitchen);
 
