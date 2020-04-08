@@ -46,6 +46,25 @@ public class HomeHospitalRecord {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date refreshTime;            //刷新时间
 
+    private String orderNumber;//订单编号（程序生成）
+
+    private double money;//咨询金额
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date time;//支付时间
+
+    private int payState;//支付状态  0未支付   1已支付
+
+    private int type;           // 咨询类型：0语音、视频  1图文
+
+    private int consultationStatus;     // 咨询状态：0未咨询  1已咨询
+
+    private int title;            // 职称
+
+    private int duration;   //咨询时长：0：5分钟  1：15分钟 2：30分钟  3：60分钟
+
+    private int actualDuration;   //实际咨询时长
+
     //与数据库无关字段
     private int age;         //年龄
 

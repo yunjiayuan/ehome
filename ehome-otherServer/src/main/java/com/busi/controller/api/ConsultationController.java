@@ -110,6 +110,13 @@ public class ConsultationController extends BaseController implements Consultati
             homeHospital.setAddTime(new Date());
             homeHospital.setRefreshTime(new Date());
             homeHospital.setUserId(CommonUtils.getMyId());
+            homeHospital.setOrderNumber(noRandom);
+            homeHospital.setTime(new Date());
+            homeHospital.setDuration(consultationOrders.getDuration());
+            homeHospital.setMoney(consultationOrders.getMoney());
+            homeHospital.setType(consultationOrders.getType());
+            homeHospital.setConsultationStatus(1);
+            homeHospital.setTitle(consultationOrders.getTitle());
             homeHospitalRecordService.add(homeHospital);
         } else {
             LawyerCircleRecord homeHospital = new LawyerCircleRecord();
@@ -118,6 +125,13 @@ public class ConsultationController extends BaseController implements Consultati
             homeHospital.setAddTime(new Date());
             homeHospital.setRefreshTime(new Date());
             homeHospital.setUserId(CommonUtils.getMyId());
+            homeHospital.setOrderNumber(noRandom);
+            homeHospital.setTime(new Date());
+            homeHospital.setDuration(consultationOrders.getDuration());
+            homeHospital.setMoney(consultationOrders.getMoney());
+            homeHospital.setType(consultationOrders.getType());
+            homeHospital.setConsultationStatus(1);
+            homeHospital.setTitle(consultationOrders.getTitle());
             lawyerCircleService.addRecord(homeHospital);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", noRandom);

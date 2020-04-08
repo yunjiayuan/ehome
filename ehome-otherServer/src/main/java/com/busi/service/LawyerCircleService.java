@@ -1,6 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.LawyerCircleDao;
+import com.busi.entity.HomeHospitalRecord;
 import com.busi.entity.LawyerCircle;
 import com.busi.entity.LawyerCircleRecord;
 import com.busi.entity.PageBean;
@@ -33,6 +34,16 @@ public class LawyerCircleService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int add(LawyerCircle lawyerCircle) {
         return lawyerCircleDao.add(lawyerCircle);
+    }
+
+    /***
+     * 更新支付状态
+     * @param hourlyWorkerOrders
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateOrders(LawyerCircleRecord hourlyWorkerOrders) {
+        return lawyerCircleDao.updateOrders(hourlyWorkerOrders);
     }
 
     /***

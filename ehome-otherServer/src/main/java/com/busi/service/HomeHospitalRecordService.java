@@ -45,6 +45,16 @@ public class HomeHospitalRecordService {
     }
 
     /***
+     * 更新支付状态
+     * @param hourlyWorkerOrders
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateOrders(HomeHospitalRecord hourlyWorkerOrders) {
+        return homeHospitalDao.updateOrders(hourlyWorkerOrders);
+    }
+
+    /***
      * 更新删除状态
      * @param userId
      * @return

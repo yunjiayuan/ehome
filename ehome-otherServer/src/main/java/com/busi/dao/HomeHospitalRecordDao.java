@@ -4,6 +4,7 @@ package com.busi.dao;
 import com.busi.entity.HomeHospitalRecord;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,6 +40,20 @@ public interface HomeHospitalRecordDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int update(HomeHospitalRecord kitchen);
+
+
+    /***
+     * 更新
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update HomeHospitalRecord set" +
+            " payState=#{payState}," +
+            " time=#{time}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateOrders(HomeHospitalRecord kitchen);
 
     /***
      * 更新删除状态

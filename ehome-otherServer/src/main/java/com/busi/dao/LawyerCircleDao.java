@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.HomeHospitalRecord;
 import com.busi.entity.LawyerCircle;
 import com.busi.entity.LawyerCircleRecord;
 import org.apache.ibatis.annotations.*;
@@ -69,6 +70,19 @@ public interface LawyerCircleDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateDel(LawyerCircle lawyerCircle);
+
+    /***
+     * 更新
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update LawyerCircleRecord set" +
+            " payState=#{payState}," +
+            " time=#{time}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateOrders(LawyerCircleRecord kitchen);
 
     /***
      * 更新帮助人数
