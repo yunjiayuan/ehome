@@ -948,7 +948,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             Random random = new Random();
             String userIds = "";
             for(int i=0;i<100;i++){
-                long newUserId = random.nextInt(10000) + 1;
+                long newUserId = random.nextInt(40000) + 13870;
                 if(i==0){
                     userIds = newUserId+"";
                 }else{
