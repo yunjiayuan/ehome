@@ -74,7 +74,7 @@ public interface HomeHospitalRecordDao {
             "update HomeHospitalRecord set" +
             " payState=#{payState}," +
             " time=#{time}" +
-            " where id=#{id}" +
+            " where orderNumber=#{orderNumber}" +
             "</script>")
     int updateOrders(HomeHospitalRecord kitchen);
 
