@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CommunityNewsService;
 import com.busi.service.CommunityService;
+import com.busi.service.PropertyService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -38,6 +39,9 @@ public class CommunityNewsController extends BaseController implements Community
 
     @Autowired
     CommunityService communityService;
+
+    @Autowired
+    PropertyService propertyService;
 
 
     /***
@@ -123,23 +127,33 @@ public class CommunityNewsController extends BaseController implements Community
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        //判断是否是本居民
+        PageBean<CommunityNews> pageBean;
+        CommunityResident sa = null;
+        PropertyResident resident = null;
         long userId = CommonUtils.getMyId();
-        CommunityResident sa = communityService.findResident(communityId, userId);
-        if (sa == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
-        }
-        String tag = sa.getTags();
         String[] tagArray = null;
-        if (!CommonUtils.checkFull(tag)) {
-            String[] array = tag.split(",");
-            for (int i = 0; i < array.length; i++) {
-                tagArray = new String[array.length];
-                tagArray[i] = "#" + array[i] + "#";
+        //判断是否是本居民
+        if (newsType == 0) {//居委会
+            sa = communityService.findResident(communityId, userId);
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+            }
+            String tag = sa.getTags();
+            if (!CommonUtils.checkFull(tag)) {
+                String[] array = tag.split(",");
+                for (int i = 0; i < array.length; i++) {
+                    tagArray = new String[array.length];
+                    tagArray[i] = "#" + array[i] + "#";
+                }
             }
         }
-        PageBean<CommunityNews> pageBean;
-        if (sa.getIdentity() > 0) {
+        if (newsType == 1) { //物业
+            resident = propertyService.findResident(communityId, userId);
+            if (resident == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+            }
+        }
+        if (sa.getIdentity() > 0 || resident.getIdentity() > 0) {
             pageBean = todayNewsService.findListByAdmin(communityId, newsType, page, count);
         } else {
             pageBean = todayNewsService.findList(communityId, newsType, userId, tagArray, page, count);
