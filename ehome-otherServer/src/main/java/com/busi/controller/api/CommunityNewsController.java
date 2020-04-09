@@ -138,6 +138,10 @@ public class CommunityNewsController extends BaseController implements Community
             if (sa == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
             }
+            if (sa.getIdentity() > 0) {
+                pageBean = todayNewsService.findListByAdmin(communityId, newsType, page, count);
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
             String tag = sa.getTags();
             if (!CommonUtils.checkFull(tag)) {
                 String[] array = tag.split(",");
@@ -152,12 +156,12 @@ public class CommunityNewsController extends BaseController implements Community
             if (resident == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
             }
+            if (resident.getIdentity() > 0) {
+                pageBean = todayNewsService.findListByAdmin(communityId, newsType, page, count);
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
         }
-        if (sa.getIdentity() > 0 || resident.getIdentity() > 0) {
-            pageBean = todayNewsService.findListByAdmin(communityId, newsType, page, count);
-        } else {
-            pageBean = todayNewsService.findList(communityId, newsType, userId, tagArray, page, count);
-        }
+        pageBean = todayNewsService.findList(communityId, newsType, userId, tagArray, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
