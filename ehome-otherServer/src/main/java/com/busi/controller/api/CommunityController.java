@@ -7,6 +7,7 @@ import com.busi.entity.*;
 import com.busi.service.CommunityMessageService;
 import com.busi.service.CommunityResidentTagService;
 import com.busi.service.CommunityService;
+import com.busi.service.PropertyService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -34,6 +35,9 @@ public class CommunityController extends BaseController implements CommunityApiC
 
     @Autowired
     CommunityService communityService;
+
+    @Autowired
+    PropertyService propertyService;
 
     @Autowired
     CommunityResidentTagService residentTagService;
@@ -523,8 +527,51 @@ public class CommunityController extends BaseController implements CommunityApiC
                 comment.setCommunityId(shopFloorComment.getCommunityId());
                 communityMessageService.addMessage(comment);
             }
-        } else if (shopFloorComment.getType() == 1) {//留言类别  1物业
-
+        }
+        if (shopFloorComment.getType() == 1) {//留言类别  1物业
+            //查询该物业信息
+            Property posts = propertyService.findProperty(shopFloorComment.getCommunityId());
+            if (posts == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询物业不存在!", new JSONObject());
+            }
+            //更新评论数
+            posts.setCommentNumber(posts.getCommentNumber() + 1);
+            propertyService.updateBlogCounts(posts);
+            long myId = shopFloorComment.getUserId();
+            long userId = shopFloorComment.getReplayId();
+            int ate = shopFloorComment.getReplyType();
+            //新增消息
+            if (ate == 0) {//评论时给所有管理员新增消息
+                List wardenList = propertyService.findWardenList(shopFloorComment.getCommunityId());
+                if (wardenList != null && wardenList.size() > 0) {
+                    for (int i = 0; i < wardenList.size(); i++) {
+                        PropertyResident resident = (PropertyResident) wardenList.get(i);
+                        CommunityMessage comment = new CommunityMessage();
+                        comment.setNewsState(1);
+                        comment.setTime(new Date());
+                        comment.setNewsType(ate);
+                        comment.setType(shopFloorComment.getType());
+                        comment.setUserId(myId);
+                        comment.setReplayId(resident.getUserId());
+                        comment.setContent(shopFloorComment.getContent());
+                        comment.setCommentId(shopFloorComment.getId());
+                        comment.setCommunityId(shopFloorComment.getCommunityId());
+                        communityMessageService.addMessage(comment);
+                    }
+                }
+            } else {
+                CommunityMessage comment = new CommunityMessage();
+                comment.setNewsState(1);
+                comment.setTime(new Date());
+                comment.setNewsType(ate);
+                comment.setType(shopFloorComment.getType());
+                comment.setUserId(myId);
+                comment.setReplayId(userId);
+                comment.setContent(shopFloorComment.getContent());
+                comment.setCommentId(shopFloorComment.getId());
+                comment.setCommunityId(shopFloorComment.getCommunityId());
+                communityMessageService.addMessage(comment);
+            }
         }
         shopFloorComment.setTime(new Date());
         communityService.addComment(shopFloorComment);
@@ -616,7 +663,14 @@ public class CommunityController extends BaseController implements CommunityApiC
             communityService.updateBlogCounts(posts);
         }
         if (comment.getType() == 1) {//留言类别  1物业
-
+            //查询该物业信息
+            Property posts = propertyService.findProperty(communityId);
+            if (posts == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询物业不存在!", new JSONObject());
+            }
+            //更新评论数
+            posts.setCommentNumber(posts.getCommentNumber() - num - 1);
+            propertyService.updateBlogCounts(posts);
         }
         if (comment.getReplyType() == 0) {
             //获取缓存中评论列表

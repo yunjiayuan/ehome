@@ -1,9 +1,7 @@
 package com.busi.dao;
 
-import com.busi.entity.CommunityResident;
-import com.busi.entity.PropertySetUp;
+import com.busi.entity.*;
 import com.busi.entity.Property;
-import com.busi.entity.PropertyResident;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -307,4 +305,30 @@ public interface PropertyDao {
             " where propertyId=#{propertyId} and userId=#{userId}" +
             "</script>")
     int changeCommunityTime(PropertyResident selectionActivities);
+
+    /***
+     * 更新评论数
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update Property set" +
+            " commentNumber=#{commentNumber}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateBlogCounts(Property homeBlogComment);
+
+    /***
+     * 查询管理员列表
+     * @param communityId    物业
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PropertyResident" +
+            " where 1=1" +
+            " and propertyId = #{communityId} and identity>0" +
+            " ORDER BY time desc" +
+            "</script>")
+    List<PropertyResident> findWardenList(@Param("communityId") long communityId);
+
 }

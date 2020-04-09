@@ -231,4 +231,25 @@ public class PropertyService {
         list = epidemicSituationDao.findSetUpList(propertyId);
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * 更新评论数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateBlogCounts(Property homeBlogAccess) {
+        return epidemicSituationDao.updateBlogCounts(homeBlogAccess);
+    }
+
+    /***
+     * 查询管理员列表
+     * @param communityId    居委会
+     * @return
+     */
+    public List<PropertyResident> findWardenList(long communityId) {
+        List<PropertyResident> list = null;
+        list = epidemicSituationDao.findWardenList(communityId);
+        return list;
+    }
 }
