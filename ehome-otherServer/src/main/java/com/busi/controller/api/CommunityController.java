@@ -712,14 +712,14 @@ public class CommunityController extends BaseController implements CommunityApiC
                                 }
                                 redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), messageList, 0);
                             }
+                            //更新回复数
+                            comment.setReplyNumber(comment.getReplyNumber() - 1);
+                            communityService.updateCommentNum(comment);
                             break;
                         }
                     }
                 }
             }
-            //更新回复数
-            comment.setReplyNumber(comment.getReplyNumber() - 1);
-            communityService.updateCommentNum(comment);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
