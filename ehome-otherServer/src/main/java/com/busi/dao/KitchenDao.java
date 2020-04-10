@@ -21,9 +21,9 @@ public interface KitchenDao {
      * @return
      */
     @Insert("insert into kitchen(userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon," +
-            "address,videoUrl,videoCoverUrl,bookedState)" +
+            "address,videoUrl,videoCoverUrl,type)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{cuisine},#{goodFood},#{kitchenName},#{startingTime},#{addTime},#{healthyCard},#{kitchenCover},#{content},#{totalSales},#{totalScore},#{lat},#{lon}" +
-            ",#{address},#{videoUrl},#{videoCoverUrl},#{bookedState})")
+            ",#{address},#{videoUrl},#{videoCoverUrl},#{type})")
     @Options(useGeneratedKeys = true)
     int addKitchen(Kitchen kitchen);
 
@@ -34,6 +34,7 @@ public interface KitchenDao {
      */
     @Update("<script>" +
             "update kitchen set" +
+            " type=#{type}," +
             " lat=#{lat}," +
             " lon=#{lon}," +
             " cuisine=#{cuisine}," +
@@ -158,8 +159,11 @@ public interface KitchenDao {
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
+            "<if test=\"type > 0\">" +
+            " and type = #{type}" +
+            "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName);
+    List<Kitchen> findKitchenList(@Param("userId") long userId, @Param("type") int type, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName);
 
     /***
      * 条件查询厨房（距离最近）
@@ -188,17 +192,21 @@ public interface KitchenDao {
 //            " and videoUrl is not null" +
             " and videoUrl != ''" +
             "</if>" +
+            "<if test=\"type > 0\">" +
+            " and type = #{type}" +
+            "</if>" +
             " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
             " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
             " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</script>")
-    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon);
+    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("type") int type, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 条件查询厨房（条件搜索）
      * @param userId 用户ID
      * @param watchVideos 筛选视频：0否 1是
-     * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高
+     * @param sortType  排序类型：默认0综合排序(推荐)  1距离最近  2销量最高  3评分最高
+     * @param type        厨房类型： 0综合 1面点 2熟食 3桌菜
      * @return
      */
     @Select("<script>" +
@@ -207,6 +215,9 @@ public interface KitchenDao {
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
+            "</if>" +
+            "<if test=\"type > 0\">" +
+            " and type = #{type}" +
             "</if>" +
             "<if test=\"sortType == 0\">" +
             " order by totalSales desc,totalScore desc" +
@@ -218,7 +229,7 @@ public interface KitchenDao {
             " order by totalScore desc" +
             "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
+    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("type") int type, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
 
     /***
      * 验证用户是否收藏过
