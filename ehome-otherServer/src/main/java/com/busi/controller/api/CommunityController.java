@@ -689,37 +689,25 @@ public class CommunityController extends BaseController implements CommunityApiC
             }
         } else {
             List<CommunityMessageBoard> messageList = new ArrayList<>();
-            //获取缓存中回复列表
-            list3 = redisUtils.getList(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), 0, -1);
-            if (list3 != null && list3.size() > 0) {
-                for (int i = 0; i < list3.size(); i++) {
-                    CommunityMessageBoard comment1 = (CommunityMessageBoard) list3.get(i);
-                    if (comment1 != null) {
-                        if (comment1.getId() == id) {
-                            //清除缓存中的回复信息
-                            redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), 0);
-                            //数据库获取最新五条回复
-                            list2 = communityService.findMessList(comment.getFatherId());
-                            if (list2 != null && list2.size() > 0) {
-                                CommunityMessageBoard message = null;
-                                for (int j = 0; j < list2.size(); j++) {
-                                    if (j < 5) {
-                                        message = (CommunityMessageBoard) list2.get(j);
-                                        if (message != null) {
-                                            messageList.add(message);
-                                        }
-                                    }
-                                }
-                                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), messageList, 0);
-                            }
-                            //更新回复数
-                            comment.setReplyNumber(comment.getReplyNumber() - 1);
-                            communityService.updateCommentNum(comment);
-                            break;
+            //清除缓存中的回复信息
+            redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), 0);
+            //数据库获取最新五条回复
+            list2 = communityService.findMessList(comment.getFatherId());
+            if (list2 != null && list2.size() > 0) {
+                CommunityMessageBoard message = null;
+                for (int j = 0; j < list2.size(); j++) {
+                    if (j < 5) {
+                        message = (CommunityMessageBoard) list2.get(j);
+                        if (message != null) {
+                            messageList.add(message);
                         }
                     }
                 }
+                redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), messageList, 0);
             }
+            //更新回复数
+            comment.setReplyNumber(comment.getReplyNumber() - 1);
+            communityService.updateCommentNum(comment);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
