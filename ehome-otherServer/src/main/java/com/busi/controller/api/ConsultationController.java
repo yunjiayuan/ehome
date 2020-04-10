@@ -207,7 +207,7 @@ public class ConsultationController extends BaseController implements Consultati
     /***
      * 更新咨询状态
      * @param occupation 职业：0医生  1律师
-     * @param id   咨询记录ID
+     * @param id   订单编号
      * @return
      */
     @Override
@@ -227,7 +227,7 @@ public class ConsultationController extends BaseController implements Consultati
     /***
      * 更新咨询时长
      * @param occupation 职业：0医生  1律师
-     * @param id   咨询记录ID
+     * @param id   订单编号
      * @param duration   咨询时长
      * @return
      */
