@@ -691,6 +691,8 @@ public class CommunityController extends BaseController implements CommunityApiC
             List<CommunityMessageBoard> messageList = new ArrayList<>();
             //清除缓存中的回复信息
             redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_REPLY + comment.getFatherId(), 0);
+            //清除缓存中评论列表
+            redisUtils.expire(Constants.REDIS_KEY_COMMUNITY_COMMENT + communityId + "_" + comment.getType(), 0);
             //数据库获取最新五条回复
             list2 = communityService.findMessList(comment.getFatherId());
             if (list2 != null && list2.size() > 0) {
