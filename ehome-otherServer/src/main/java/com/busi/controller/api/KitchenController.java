@@ -224,7 +224,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
 
     /***
      * 条件查询厨房
-     * @param type        厨房类型： 0综合(全部) 1面点 2熟食 3桌菜
+     * @param type        厨房类型： 0综合(全部) 1面点 2熟食 3豆制品 4桌菜
      * @param watchVideos 筛选视频：0否 1是
      * @param sortType  排序类型：默认0综合排序(推荐)  1距离最近  2销量最高  3评分最高
      * @param kitchenName    厨房名称

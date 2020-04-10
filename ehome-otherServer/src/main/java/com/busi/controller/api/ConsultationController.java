@@ -211,14 +211,14 @@ public class ConsultationController extends BaseController implements Consultati
      * @return
      */
     @Override
-    public ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable long id) {
+    public ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable String id) {
         if (occupation == 0) {//职业：0医生
             HomeHospitalRecord record = new HomeHospitalRecord();
-            record.setId(id);
+            record.setOrderNumber(id);
             homeHospitalRecordService.upConsultationStatus(record);
         } else {//职业： 1律师
             LawyerCircleRecord record = new LawyerCircleRecord();
-            record.setId(id);
+            record.setOrderNumber(id);
             lawyerCircleService.upConsultationStatus(record);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -232,15 +232,15 @@ public class ConsultationController extends BaseController implements Consultati
      * @return
      */
     @Override
-    public ReturnData upActualDuration(@PathVariable int occupation, @PathVariable long id, @PathVariable int duration) {
+    public ReturnData upActualDuration(@PathVariable int occupation, @PathVariable String id, @PathVariable int duration) {
         if (occupation == 0) {//职业：0医生
             HomeHospitalRecord record = new HomeHospitalRecord();
-            record.setId(id);
+            record.setOrderNumber(id);
             record.setActualDuration(duration);
             homeHospitalRecordService.upActualDuration(record);
         } else {//职业： 1律师
             LawyerCircleRecord record = new LawyerCircleRecord();
-            record.setId(id);
+            record.setOrderNumber(id);
             record.setActualDuration(duration);
             lawyerCircleService.upActualDuration(record);
         }

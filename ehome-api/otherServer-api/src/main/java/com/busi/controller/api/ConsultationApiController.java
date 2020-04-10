@@ -43,7 +43,7 @@ public interface ConsultationApiController {
      * @return
      */
     @GetMapping("upConsultationStatus/{occupation}/{id}")
-    ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable long id);
+    ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable String id);
 
     /***
      * 更新咨询时长
@@ -53,5 +53,5 @@ public interface ConsultationApiController {
      * @return
      */
     @GetMapping("upActualDuration/{occupation}/{id}/{duration}")
-    ReturnData upActualDuration(@PathVariable int occupation, @PathVariable long id, @PathVariable int duration);
+    ReturnData upActualDuration(@PathVariable int occupation, @PathVariable String id, @PathVariable int duration);
 }

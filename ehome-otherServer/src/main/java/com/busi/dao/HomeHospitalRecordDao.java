@@ -49,7 +49,7 @@ public interface HomeHospitalRecordDao {
     @Update("<script>" +
             "update HomeHospitalRecord set" +
             " consultationStatus=1" +
-            " where id=#{id} and payState=1" +
+            " where orderNumber=#{orderNumber} and payState=1" +
             "</script>")
     int upConsultationStatus(HomeHospitalRecord kitchen);
 
@@ -61,7 +61,7 @@ public interface HomeHospitalRecordDao {
     @Update("<script>" +
             "update HomeHospitalRecord set" +
             " actualDuration=#{actualDuration}" +
-            " where id=#{id} and payState=1 and consultationStatus=1" +
+            " where orderNumber=#{orderNumber} and payState=1 and consultationStatus=1" +
             "</script>")
     int upActualDuration(HomeHospitalRecord kitchen);
 

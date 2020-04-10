@@ -206,7 +206,7 @@ public interface KitchenDao {
      * @param userId 用户ID
      * @param watchVideos 筛选视频：0否 1是
      * @param sortType  排序类型：默认0综合排序(推荐)  1距离最近  2销量最高  3评分最高
-     * @param type        厨房类型： 0综合 1面点 2熟食 3桌菜
+     * @param type        厨房类型： 0综合 1面点 2熟食 3豆制品 4桌菜
      * @return
      */
     @Select("<script>" +
