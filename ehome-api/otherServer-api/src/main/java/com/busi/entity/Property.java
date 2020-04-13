@@ -22,10 +22,8 @@ public class Property {
 
     private long communityId;    //居委会ID
 
-    @Min(value = 1, message = "userId参数有误")
     private long userId;                // 用户ID
 
-    @NotEmpty(message = "居委会名称不能为空")
     private String name;                // 物业名称
 
     @Min(value = 0, message = "province参数有误，超出指定范围")
@@ -45,10 +43,8 @@ public class Property {
 
     private String address;            // 物业地址
 
-    @NotEmpty(message = "封面不能为空")
     private String cover;            // 封面
 
-    @NotEmpty(message = "物业营业执照不能为空")
     private String photo;            // 物业营业执照
 
     private String content;            // 物业职责
