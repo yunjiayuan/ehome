@@ -63,6 +63,9 @@ public class PropertyController extends BaseController implements PropertyApiCon
             kitchenMap = CommonUtils.objectToMap(sa);
             redisUtils.hmset(Constants.REDIS_KEY_PROPERTY + resident.getPropertyId(), kitchenMap, Constants.USER_TIME_OUT);
         }
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
         Property property = (Property) CommonUtils.mapToObject(kitchenMap, Property.class);
         if (property != null) {
             resident.setCommunityId(property.getCommunityId());//返回所属居委会ID
