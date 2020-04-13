@@ -176,7 +176,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
         if (map == null || map.size() <= 0) {
             Community sa = findCommunity.findCommunity(property.getCommunityId());
             if (sa == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
             //放入缓存
             map = CommonUtils.objectToMap(sa);
