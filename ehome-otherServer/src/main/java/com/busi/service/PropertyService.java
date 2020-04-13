@@ -34,6 +34,16 @@ public class PropertyService {
     }
 
     /***
+     *  设置所属居委会
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int subordinateProperty(Property selectionVote) {
+        return epidemicSituationDao.subordinateProperty(selectionVote);
+    }
+
+    /***
      * 刷新物业时间
      * @param selectionVote
      * @return

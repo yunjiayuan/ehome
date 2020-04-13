@@ -38,6 +38,22 @@ public interface PropertyApiController {
     ReturnData changeProperty(@Valid @RequestBody Property homeHospital, BindingResult bindingResult);
 
     /***
+     * 设置所属居委会
+     * @param homeHospital
+     * @return
+     */
+    @PutMapping("subordinateProperty")
+    ReturnData subordinateProperty(@Valid @RequestBody Property homeHospital, BindingResult bindingResult);
+
+    /***
+     * 查询所属居委会
+     * @param id
+     * @return
+     */
+    @GetMapping("findSubordinate/{id}")
+    ReturnData findSubordinate(@PathVariable long id);
+
+    /***
      * 更新物业刷新时间
      * @param homeHospital
      * @return

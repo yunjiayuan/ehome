@@ -20,6 +20,8 @@ import java.util.Date;
 public class Property {
     private long id;//主键ID
 
+    private long communityId;    //居委会ID
+
     @Min(value = 1, message = "userId参数有误")
     private long userId;                // 用户ID
 

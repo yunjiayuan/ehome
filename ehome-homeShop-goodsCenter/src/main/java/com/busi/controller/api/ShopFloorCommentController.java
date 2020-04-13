@@ -147,7 +147,7 @@ public class ShopFloorCommentController extends BaseController implements ShopFl
         }
         //更新商品评论数
         int num = messList.size();
-        posts.setCommentNumber(posts.getCommentNumber() - num);
+        posts.setCommentNumber(posts.getCommentNumber() - num - 1);
         shopFloorCommentService.updateBlogCounts(posts);
         if (comment.getReplyType() == 0) {
             //获取缓存中评论列表
@@ -166,41 +166,31 @@ public class ShopFloorCommentController extends BaseController implements ShopFl
             }
         } else {
             List<ShopFloorComment> messageList = new ArrayList<>();
-            //获取缓存中回复列表
-            list3 = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_REPLY + comment.getFatherId(), 0, -1);
-            if (list3 != null && list3.size() > 0) {
-                for (int i = 0; i < list3.size(); i++) {
-                    ShopFloorComment comment1 = (ShopFloorComment) list3.get(i);
-                    if (comment1 != null) {
-                        if (comment1.getId() == id) {
-                            //清除缓存中的回复信息
-                            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_REPLY + comment.getFatherId(), 0);
-                            //数据库获取最新五条回复
-                            list2 = shopFloorCommentService.findMessList(comment.getFatherId());
-                            if (list2 != null && list2.size() > 0) {
-                                ShopFloorComment message = null;
-                                for (int j = 0; j < list2.size(); j++) {
-                                    if (j < 5) {
-                                        message = (ShopFloorComment) list2.get(j);
-                                        if (message != null) {
-                                            messageList.add(message);
-                                        }
-                                    }
-                                }
-                                redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_REPLY + comment.getFatherId(), messageList, 0);
-                            }
-                            break;
+            //清除缓存中的回复信息
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_REPLY + comment.getFatherId(), 0);
+            //清除缓存中评论列表
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_COMMENT + goodsId, 0);
+            //数据库获取最新五条回复
+            list2 = shopFloorCommentService.findMessList(comment.getFatherId());
+            if (list2 != null && list2.size() > 0) {
+                ShopFloorComment message = null;
+                for (int j = 0; j < list2.size(); j++) {
+                    if (j < 5) {
+                        message = (ShopFloorComment) list2.get(j);
+                        if (message != null) {
+                            messageList.add(message);
                         }
                     }
                 }
+                redisUtils.pushList(Constants.REDIS_KEY_SHOPFLOOR_REPLY + comment.getFatherId(), messageList, 0);
             }
             //更新回复数
-            comment.setReplyNumber(comment.getReplyNumber() - 1);
-            shopFloorCommentService.updateCommentNum(comment);
+            ShopFloorComment floorComment = shopFloorCommentService.findById(comment.getFatherId());
+            if (floorComment != null) {
+                floorComment.setReplyNumber(floorComment.getReplyNumber() - 1);
+                shopFloorCommentService.updateCommentNum(floorComment);
+            }
         }
-        //更新评论数
-        posts.setCommentNumber(posts.getCommentNumber() - 1);
-        shopFloorCommentService.updateBlogCounts(posts);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

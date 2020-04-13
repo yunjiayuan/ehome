@@ -325,7 +325,7 @@ public interface CommunityDao {
     @Update("<script>" +
             "update CommunityMessageBoard set" +
             " replyNumber=#{replyNumber}" +
-            " where id=#{fatherId}" +
+            " where id=#{id}" +
             "</script>")
     int updateCommentNum(CommunityMessageBoard homeBlogComment);
 

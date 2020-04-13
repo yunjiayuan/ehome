@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.CommunityService;
 import com.busi.service.PropertyService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class PropertyController extends BaseController implements PropertyApiCon
     @Autowired
     PropertyService communityService;
 
+    @Autowired
+    CommunityService findCommunity;
+
     /***
      * 查询是否已加入物业
      * @param userId
@@ -47,6 +51,21 @@ public class PropertyController extends BaseController implements PropertyApiCon
         resident = (PropertyResident) list.get(0);
         if (resident == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_PROPERTY + resident.getPropertyId());
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            Property sa = communityService.findProperty(resident.getPropertyId());
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询物业不存在!", new JSONObject());
+            }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(sa);
+            redisUtils.hmset(Constants.REDIS_KEY_PROPERTY + resident.getPropertyId(), kitchenMap, Constants.USER_TIME_OUT);
+        }
+        Property property = (Property) CommonUtils.mapToObject(kitchenMap, Property.class);
+        if (property != null) {
+            resident.setCommunityId(property.getCommunityId());//返回所属居委会ID
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", resident);
     }
@@ -104,6 +123,60 @@ public class PropertyController extends BaseController implements PropertyApiCon
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_PROPERTY + homeHospital.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 设置所属居委会
+     * @param homeHospital
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData subordinateProperty(@Valid @RequestBody Property homeHospital, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        communityService.subordinateProperty(homeHospital);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_PROPERTY + homeHospital.getId(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询所属居委会
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findSubordinate(long id) {
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_PROPERTY + id);
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            Property sa = communityService.findProperty(id);
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询物业不存在!", new JSONObject());
+            }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(sa);
+            redisUtils.hmset(Constants.REDIS_KEY_PROPERTY + id, kitchenMap, Constants.USER_TIME_OUT);
+        }
+        Property property = (Property) CommonUtils.mapToObject(kitchenMap, Property.class);
+        if (property == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_COMMUNITY + property.getCommunityId());
+        if (map == null || map.size() <= 0) {
+            Community sa = findCommunity.findCommunity(property.getCommunityId());
+            if (sa == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询居委会不存在!", new JSONObject());
+            }
+            //放入缓存
+            map = CommonUtils.objectToMap(sa);
+            redisUtils.hmset(Constants.REDIS_KEY_COMMUNITY + property.getCommunityId(), map, Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***

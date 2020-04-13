@@ -22,8 +22,8 @@ public interface PropertyDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into Property(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review) " +
-            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review})")
+    @Insert("insert into Property(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review,communityId) " +
+            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review},#{communityId})")
     @Options(useGeneratedKeys = true)
     int addProperty(Property selectionVote);
 
@@ -50,6 +50,18 @@ public interface PropertyDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int changeProperty(Property selectionActivities);
+
+    /***
+     * 设置所属居委会
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update Property set" +
+            " communityId=#{communityId}" +
+            " where id=#{id}" +
+            "</script>")
+    int subordinateProperty(Property selectionActivities);
 
     /***
      * 根据ID查询物业

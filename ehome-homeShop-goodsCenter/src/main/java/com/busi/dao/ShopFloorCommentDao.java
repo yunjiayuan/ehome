@@ -53,7 +53,7 @@ public interface ShopFloorCommentDao {
     @Update("<script>" +
             "update ShopFloorComment set" +
             " replyNumber=#{replyNumber}" +
-            " where id=#{fatherId}" +
+            " where id=#{id}" +
             "</script>")
     int updateCommentNum(ShopFloorComment homeBlogComment);
 

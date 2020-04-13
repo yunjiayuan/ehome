@@ -121,7 +121,7 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
         shopFloorOrders.setAddTime(date);
         shopFloorOrders.setGoods(goods);//分类ID,商品ID,标题,数量,价格,图片,规格,商品描述
         shopFloorOrders.setMoney(money);//总价
-        shopFloorOrders.setOrdersType(0);
+        shopFloorOrders.setOrdersType(1);//默认已付款
         shopFloorOrders.setAddress(shippingAddress.getAddress());
         shopFloorOrders.setAddressName(shippingAddress.getContactsName());
         shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
