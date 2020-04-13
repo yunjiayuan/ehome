@@ -149,7 +149,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
      * @return
      */
     @Override
-    public ReturnData findSubordinate(long id) {
+    public ReturnData findSubordinate(@PathVariable long id) {
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_PROPERTY + id);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
