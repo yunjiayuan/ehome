@@ -50,7 +50,7 @@ public class EpidemicSituationTimerController {
 //                log.info("查询&更新天气平台最新疫情数据成功...");
 //            }
 //        }
-        EpidemicSituation epidemicSituation = EpidemicSituationUtils.getEpidemicSituation();
+        EpidemicSituation epidemicSituation = EpidemicSituationUtils.getEpidemicSituationtianXing();
         if (epidemicSituation != null && epidemicSituation.getModifyTime() > 0) {
             EpidemicSituation situation = epidemicSituationService.findEpidemicSituation(epidemicSituation.getModifyTime());
             if (situation == null) {
