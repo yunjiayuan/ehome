@@ -58,25 +58,31 @@ public class ConsultationController extends BaseController implements Consultati
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        int type = consultationOrders.getType();
+        if (type < 2) {
+            type = 0;
+        } else {
+            type = 1;
+        }
         List<ConsultationFee> list = null;
         if (consultationOrders.getOccupation() == 0) {//医生
             //查询缓存 缓存中不存在 查询数据库
-            list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), 0, -1);
+            list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, 0, -1);
             if (list == null || list.size() <= 0) {
-                list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), consultationOrders.getType());
+                list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), type);
                 //放入缓存
                 if (list != null && list.size() > 0) {
-                    redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), list, Constants.USER_TIME_OUT);
+                    redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, list, Constants.USER_TIME_OUT);
                 }
             }
         } else {//律师
             //查询缓存 缓存中不存在 查询数据库
-            list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), 0, -1);
+            list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, 0, -1);
             if (list == null || list.size() <= 0) {
-                list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), consultationOrders.getType());
+                list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), type);
                 //放入缓存
                 if (list != null && list.size() > 0) {
-                    redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + consultationOrders.getType(), list, Constants.USER_TIME_OUT);
+                    redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, list, Constants.USER_TIME_OUT);
                 }
             }
         }
