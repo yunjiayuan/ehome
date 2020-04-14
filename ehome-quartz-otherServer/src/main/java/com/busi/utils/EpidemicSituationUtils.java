@@ -1,9 +1,11 @@
 package com.busi.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.entity.EpidemicSituation;
 import com.busi.entity.EpidemicSituationImage;
+import com.busi.entity.EpidemicSituationTianXing;
 import com.busi.entity.EpidemicSituationTianqi;
 import lombok.extern.slf4j.Slf4j;
 
@@ -161,6 +163,64 @@ public class EpidemicSituationUtils {
 			}
 		} catch (Exception e) {
 			log.info("解析第三方疫情平台数据异常,第三方平台数据返回异常！");
+			e.printStackTrace();
+			return null;
+		} finally {
+			if (httpURLConnection != null) {
+				httpURLConnection.disconnect();
+			}
+		}
+	}
+
+	/****
+	 * 调用第三方疫情接口主逻辑（天行数据）
+	 * @return
+	 */
+	public static EpidemicSituationTianXing getEpidemicSituationtianXing(){
+
+		String epidemicSituationUrl = Constants.EPIDEMIC_SITUATION_TIANXING_URL;
+		String returnStr = null; // 返回结果定义
+		URL url = null;
+		HttpURLConnection httpURLConnection = null;
+		try {
+			url = new URL(epidemicSituationUrl);
+			httpURLConnection = (HttpURLConnection) url.openConnection();
+			httpURLConnection.setRequestProperty("Accept-Charset", "utf-8");
+			httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			httpURLConnection.setDoOutput(true);
+			httpURLConnection.setDoInput(true);
+			httpURLConnection.setRequestMethod("GET");
+			httpURLConnection.connect();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
+			StringBuffer buffer = new StringBuffer();
+			String line = "";
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
+			}
+			reader.close();
+			returnStr = buffer.toString();
+			//解析json
+			JSONObject jsonObj = JSONObject.parseObject(returnStr);
+			if(jsonObj!=null){
+				int code = -1;
+				String reason = "";
+				code = jsonObj.getInteger("code");//状态码
+				if(code==200){//成功
+					JSONArray newslist = jsonObj.getJSONArray("newslist");
+					JSONObject jsonObject = (JSONObject) newslist.get(0);
+					JSONObject desc = jsonObject.getJSONObject("desc");
+					//获取数据概要对象
+					EpidemicSituationTianXing epidemicSituationTianXing = JSON.toJavaObject(desc,EpidemicSituationTianXing.class);
+					return epidemicSituationTianXing;
+				}else{//失败
+					//打印错误信息
+					return null;
+				}
+			}else{
+				//打印错误信息
+				return null;
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		} finally {
