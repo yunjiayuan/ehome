@@ -199,6 +199,8 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
             cost = posts.getPrice();//原价
         }
         look.setPrice(cost);
+        look.setBasicDescribe(posts.getBasicDescribe());
+        look.setSpecs(posts.getSpecs());
         collectService.addLook(look);
         posts.setLookCount(posts.getLookCount() + 1);
         goodsCenterService.updateSee(posts);
