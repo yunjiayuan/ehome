@@ -72,6 +72,8 @@ public class ShopFloorOtherController extends BaseController implements ShopFloo
         } else {
             cost = posts.getPrice();//原价
         }
+        collect.setBasicDescribe(posts.getBasicDescribe());
+        collect.setSpecs(posts.getSpecs());
         collect.setPrice(cost);
         collectService.addCollection(collect);
 
