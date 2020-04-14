@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.entity.EpidemicSituation;
 import com.busi.entity.EpidemicSituationImage;
-import com.busi.entity.EpidemicSituationTianXing;
 import com.busi.entity.EpidemicSituationTianqi;
 import lombok.extern.slf4j.Slf4j;
 
@@ -176,7 +175,7 @@ public class EpidemicSituationUtils {
 	 * 调用第三方疫情接口主逻辑（天行数据）
 	 * @return
 	 */
-	public static EpidemicSituationTianXing getEpidemicSituationtianXing(){
+	public static EpidemicSituation getEpidemicSituationtianXing(){
 
 		String epidemicSituationUrl = Constants.EPIDEMIC_SITUATION_TIANXING_URL;
 		String returnStr = null; // 返回结果定义
@@ -210,8 +209,8 @@ public class EpidemicSituationUtils {
 					JSONObject jsonObject = (JSONObject) newslist.get(0);
 					JSONObject desc = jsonObject.getJSONObject("desc");
 					//获取数据概要对象
-					EpidemicSituationTianXing epidemicSituationTianXing = JSON.toJavaObject(desc,EpidemicSituationTianXing.class);
-					return epidemicSituationTianXing;
+					EpidemicSituation epidemicSituation = JSON.toJavaObject(desc,EpidemicSituation.class);
+					return epidemicSituation;
 				}else{//失败
 					//打印错误信息
 					return null;

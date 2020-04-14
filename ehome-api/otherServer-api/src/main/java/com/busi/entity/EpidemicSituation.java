@@ -79,4 +79,18 @@ public class EpidemicSituation {
 
     private EpidemicSituationImage[] hbFeiHbTrendChart;//湖北/非湖北疫情趋势图 与数据库无关字段 只用于解析
 
+
+    //新增字段 suntj_20200114
+    private int suspectedIncr;//新增疑似人数
+
+    private int currentConfirmedIncr;//相比昨天现存确诊人数
+
+    private int confirmedIncr;//相比昨天累计确诊人数
+
+    private int curedIncr;//相比昨天新增治愈人数
+
+    private int deadIncr;//相比昨天新增死亡人数
+
+    private int seriousIncr;//相比昨天现存重症人数
+
 }
