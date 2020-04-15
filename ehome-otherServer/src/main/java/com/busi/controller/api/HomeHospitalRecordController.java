@@ -120,13 +120,14 @@ public class HomeHospitalRecordController extends BaseController implements Home
                 } else {
                     users += fc.getDoctorId();
                 }
-            } else {
-                if (i < len - 1) {
-                    users += fc.getUserId() + ",";
-                } else {
-                    users += fc.getUserId();
-                }
             }
+//            else {
+//                if (i < len - 1) {
+//                    users += fc.getUserId() + ",";
+//                } else {
+//                    users += fc.getUserId();
+//                }
+//            }
         }
         if (identity == 0) {//用户查记录
             arrylist = homeHospitalService.findUsersList(users.split(","));
