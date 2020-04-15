@@ -70,9 +70,13 @@ public class HomeHospitalRecord {
 
     private int sex;        // 性别:1男,2女
 
-    private String name;                //用户名	查询后从内存获取最新
+    private String name;                //患者用户名
 
-    private String head;                    //头像	查询后从内存获取最新
+    private String head;                    //患者头像
+
+    private String doctorName;                //医生用户名
+
+    private String doctorHead;                    //医生头像
 
     private int proTypeId;                //	省简称ID
 

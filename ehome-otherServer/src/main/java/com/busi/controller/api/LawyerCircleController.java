@@ -348,19 +348,20 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
             if (fc == null) {
                 continue;
             }
-            if (fc.getUserId() == CommonUtils.getMyId()) {
-                if (i < len - 1) {
-                    users += fc.getLvshiId() + ",";
-                } else {
-                    users += fc.getLvshiId();
-                }
+//            if (fc.getUserId() == CommonUtils.getMyId()) {
+            if (i < len - 1) {
+                users += fc.getLvshiId() + ",";
             } else {
-                if (i < len - 1) {
-                    users += fc.getUserId() + ",";
-                } else {
-                    users += fc.getUserId();
-                }
+                users += fc.getLvshiId();
             }
+//            }
+//            else {
+//                if (i < len - 1) {
+//                    users += fc.getUserId() + ",";
+//                } else {
+//                    users += fc.getUserId();
+//                }
+//            }
         }
         if (identity == 0) {//用户查记录
             arrylist = lawyerCircleService.findUsersList(users.split(","));
@@ -405,17 +406,24 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
                     }
                 }
             }
-        } else {//医师查记录
+        } else {//律师查记录
             for (int i = 0; i < len; i++) {
                 fc = (LawyerCircleRecord) list.get(i);
                 if (fc == null) {
                     continue;
                 }
+                UserInfo userInfo = null;
                 UserInfo sendInfoCache = null;
+                userInfo = userInfoUtils.getUserInfo(fc.getLvshiId());
+                if (userInfo == null) {
+                    continue;
+                }
                 sendInfoCache = userInfoUtils.getUserInfo(fc.getUserId());
                 if (sendInfoCache == null) {
                     continue;
                 }
+                fc.setDoctorHead(userInfo.getHead());
+                fc.setDoctorName(userInfo.getName());
                 fc.setProTypeId(sendInfoCache.getProType());
                 fc.setHouseNumber(sendInfoCache.getHouseNumber());
                 fc.setSex(sendInfoCache.getSex());

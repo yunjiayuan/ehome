@@ -114,13 +114,13 @@ public class HomeHospitalRecordController extends BaseController implements Home
             if (fc == null) {
                 continue;
             }
-            if (fc.getUserId() == CommonUtils.getMyId()) {
-                if (i < len - 1) {
-                    users += fc.getDoctorId() + ",";
-                } else {
-                    users += fc.getDoctorId();
-                }
+//            if (fc.getUserId() == CommonUtils.getMyId()) {
+            if (i < len - 1) {
+                users += fc.getDoctorId() + ",";
+            } else {
+                users += fc.getDoctorId();
             }
+//            }
 //            else {
 //                if (i < len - 1) {
 //                    users += fc.getUserId() + ",";
@@ -165,9 +165,12 @@ public class HomeHospitalRecordController extends BaseController implements Home
                             if (sendInfoCache != null) {
                                 fc.setProTypeId(sendInfoCache.getProType());
                                 fc.setHouseNumber(sendInfoCache.getHouseNumber());
-                                fc.setHead(sendInfoCache.getHead());
+                                if (!CommonUtils.checkFull(hospital.getHeadCover())) {
+                                    fc.setHead(hospital.getHeadCover());
+                                } else {
+                                    fc.setHead(sendInfoCache.getHead());
+                                }
                             }
-//                            fc.setHead(hospital.getHeadCover());//因假数据没有头像缘故暂注
                             fc.setName(hospital.getPhysicianName());
                         }
                     }
@@ -179,11 +182,18 @@ public class HomeHospitalRecordController extends BaseController implements Home
                 if (fc == null) {
                     continue;
                 }
+                UserInfo userInfo = null;
                 UserInfo sendInfoCache = null;
+                userInfo = userInfoUtils.getUserInfo(fc.getDoctorId());
+                if (userInfo == null) {
+                    continue;
+                }
                 sendInfoCache = userInfoUtils.getUserInfo(fc.getUserId());
                 if (sendInfoCache == null) {
                     continue;
                 }
+                fc.setDoctorHead(userInfo.getHead());
+                fc.setDoctorName(userInfo.getName());
                 fc.setProTypeId(sendInfoCache.getProType());
                 fc.setHouseNumber(sendInfoCache.getHouseNumber());
                 fc.setSex(sendInfoCache.getSex());

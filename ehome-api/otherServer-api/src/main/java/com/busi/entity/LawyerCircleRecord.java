@@ -70,11 +70,15 @@ public class LawyerCircleRecord {
 
     private int sex;        // 性别:1男,2女
 
-    private String name;                //用户名
+    private String name;                //咨询者用户名
 
-    private String head;                    //头像
+    private String head;                    //咨询者头像
 
-    private int proTypeId;                //	省简称ID
+    private String doctorName;                //律师用户名
+
+    private String doctorHead;                    //律师头像
+
+    private int proTypeId;                //省简称ID
 
     private long houseNumber;        // 门牌号
 }
