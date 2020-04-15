@@ -35,13 +35,13 @@ public class EpidemicSituation {
 
     private int confirmedCount;//累计确诊人数
 
-    private int suspectedCount;//现存疑似人数
+    private int suspectedCount;// 境外输入或现存疑似人数
 
     private int curedCount;//治愈人数
 
     private int deadCount;//死亡人数
 
-    private int seriousCount;//现存重症人数
+    private int seriousCount;//现存无症状或现存重症人数
 
     private String remark1;//易感人群：人群普遍易感。老年人及有基础疾病者感染后病情较重，儿童及婴幼儿也有发病,
 
@@ -81,7 +81,7 @@ public class EpidemicSituation {
 
 
     //新增字段 suntj_20200114
-    private int suspectedIncr;//新增疑似人数
+    private int suspectedIncr;//新增境外输入 或新增疑似人数
 
     private int currentConfirmedIncr;//相比昨天现存确诊人数
 
@@ -91,6 +91,6 @@ public class EpidemicSituation {
 
     private int deadIncr;//相比昨天新增死亡人数
 
-    private int seriousIncr;//相比昨天现存重症人数
+    private int seriousIncr;//相比昨天新增现存无症状或者新增现存重症人数
 
 }
