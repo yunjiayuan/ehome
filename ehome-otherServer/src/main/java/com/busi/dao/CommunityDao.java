@@ -107,7 +107,7 @@ public interface CommunityDao {
      */
     @Select("<script>" +
             "select * from Community" +
-            " where 1=1" +
+            " where 1=1 and review=1" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
             "</if>" +
@@ -126,7 +126,7 @@ public interface CommunityDao {
 
     @Select("<script>" +
             "select * from Community" +
-            " where 1=1" +
+            " where 1=1 and review=1" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
             "</if>" +
