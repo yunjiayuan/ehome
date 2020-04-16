@@ -22,8 +22,8 @@ public interface CommunityNewsDao {
      * @param todayNews
      * @return
      */
-    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState,identity,lookUserIds,lookUserIdNames) " +
-            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState},#{identity},#{lookUserIds},#{lookUserIdNames})")
+    @Insert("insert into CommunityNews(communityId,userId, title, content, imgUrls, videoUrl, coverUrl, newsType,newsFormat,addTime,refreshTime,commentCount,newsState,identity,lookUserIds,lookUserIdNames,noticeType) " +
+            "values (#{communityId},#{userId},#{title},#{content},#{imgUrls},#{videoUrl},#{coverUrl},#{newsType},#{newsFormat},#{addTime},#{refreshTime},#{commentCount},#{newsState},#{identity},#{lookUserIds},#{lookUserIdNames},#{noticeType})")
     @Options(useGeneratedKeys = true)
     int add(CommunityNews todayNews);
 
@@ -85,28 +85,29 @@ public interface CommunityNewsDao {
     @Select("<script>" +
             "select * from CommunityNews" +
             " where 1 = 1" +
-            "<if test=\"newsType==3 \">" +
-                " and (" +
+            "<if test=\"noticeType==1 \">" +
+            " and (" +
             "</if> " +
-            "<if test=\"tags != null and newsType==3 \">" +
-                "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
+            "<if test=\"tags != null and noticeType==1 \">" +
+            "<foreach collection='tags' index='index' item='item' open='(' separator=',' close=')'>" +
 //                    " #{item}" +
 //                    " and identity LIKE CONCAT(CONCAT('%',#{item}),'%')" +
-                    " identity LIKE CONCAT('%',#{item},'%')" +
-                "</foreach>" +
+            " identity LIKE CONCAT('%',#{item},'%')" +
+            "</foreach>" +
             "</if>" +
-            "<if test=\"usId != null and usId !='' and newsType==3 \">" +
-                " or lookUserIds LIKE CONCAT('%',#{usId},'%')" +
+            "<if test=\"usId != null and usId !='' and noticeType==1 \">" +
+            " or lookUserIds LIKE CONCAT('%',#{usId},'%')" +
             "</if> " +
-            "<if test=\"newsType==3 \">" +
-                " )" +
+            "<if test=\"noticeType==1 \">" +
+            " )" +
             "</if> " +
+            " and noticeType=#{noticeType} " +
             " and newsType=#{newsType} " +
             " and newsState=0 " +
             " and communityId=#{communityId}" +
             " order by refreshTime desc" +
             "</script>")
-    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType,@Param("usId") String usId,@Param("tags")  String[] tags);
+    List<CommunityNews> findList(@Param("communityId") long communityId, @Param("newsType") int newsType, @Param("noticeType") int noticeType, @Param("usId") String usId, @Param("tags") String[] tags);
 
     /***
      * 管理员分页查询
@@ -116,12 +117,13 @@ public interface CommunityNewsDao {
     @Select("<script>" +
             "select * from CommunityNews" +
             " where 1=1 " +
+            " and noticeType=#{noticeType} " +
             " and newsType=#{newsType} " +
             " and newsState=0 " +
             " and communityId=#{communityId}" +
             " order by refreshTime desc" +
             "</script>")
-    List<CommunityNews> findListByadmin(@Param("communityId") long communityId, @Param("newsType") int newsType);
+    List<CommunityNews> findListByadmin(@Param("communityId") long communityId, @Param("newsType") int newsType, @Param("noticeType") int noticeType);
 
     /***
      * 查询列表

@@ -39,15 +39,16 @@ public interface CommunityNewsApiController {
     ReturnData delNews(@PathVariable long id);
 
     /***
-     * 查询资讯列表
-     * @param communityId 居委会ID
-     * @param newsType 发布类型0人物  1企业  2新闻
+     * 查询新闻列表
+     * @param communityId newsType=0时为居委会ID  newsType=1时为物业ID
+     * @param newsType 社区： 0居委会  1物业
+     * @param noticeType 通告： 0资讯 1点对点通知通告（普通居民） 2内部人员通知
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
     @GetMapping("findNewsList/{communityId}/{newsType}/{page}/{count}")
-    ReturnData findNewsList(@PathVariable long communityId, @PathVariable int newsType, @PathVariable int page, @PathVariable int count);
+    ReturnData findNewsList(@PathVariable int noticeType, @PathVariable long communityId, @PathVariable int newsType, @PathVariable int page, @PathVariable int count);
 
     /***
      * 根据ID查询

@@ -37,7 +37,9 @@ public class CommunityNews {
 
     private String coverUrl;                  //视频封面图
 
-    private int newsType;                     //资讯类别   0居委会  1物业   2点对点通知通告（普通居民） 3内部人员通知
+    private int newsType;                     //社区： 0居委会  1物业
+
+    private int noticeType;                     //通告：0资讯 1点对点通知通告（普通居民） 2内部人员通知
 
     private int newsFormat;                   //发布类型  0纯文  1一图  2多图  3视频
 

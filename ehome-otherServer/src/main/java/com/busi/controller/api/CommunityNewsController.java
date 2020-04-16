@@ -113,13 +113,14 @@ public class CommunityNewsController extends BaseController implements Community
     /***
      * 查询新闻列表
      * @param communityId newsType=0时为居委会ID  newsType=1时为物业ID
-     * @param newsType 类型： 0居委会  1物业
+     * @param newsType 社区： 0居委会  1物业
+     * @param noticeType 通告： 0资讯 1点对点通知通告（普通居民） 2内部人员通知
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
     @Override
-    public ReturnData findNewsList(@PathVariable long communityId, @PathVariable int newsType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findNewsList(@PathVariable int noticeType, @PathVariable long communityId, @PathVariable int newsType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (newsType < 0 || newsType > 3) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数newsType有误", new JSONObject());
@@ -127,43 +128,47 @@ public class CommunityNewsController extends BaseController implements Community
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        PageBean<CommunityNews> pageBean;
+        PageBean<CommunityNews> pageBean = null;
         CommunityResident sa = null;
         PropertyResident resident = null;
         long userId = CommonUtils.getMyId();
         String[] tagArray = null;
-        //判断是否是本居民
-        if (newsType == 0) {//居委会
-            sa = communityService.findResident(communityId, userId);
-            if (sa == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
-            }
-            if (sa.getIdentity() > 0) {
-                pageBean = todayNewsService.findListByAdmin(communityId, newsType, page, count);
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
-            }
-            String tag = sa.getTags();
-            if (!CommonUtils.checkFull(tag)) {
-                String[] array = tag.split(",");
-                for (int i = 0; i < array.length; i++) {
-                    tagArray = new String[array.length];
-                    tagArray[i] = "#" + array[i] + "#";
+        if (noticeType <= 1) {// 0资讯 1点对点通知通告（普通居民）
+            if (newsType == 0 && noticeType == 1) {//居委会
+                sa = communityService.findResident(communityId, userId);
+                if (sa == null) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                }
+                String tag = sa.getTags();
+                if (!CommonUtils.checkFull(tag)) {
+                    String[] array = tag.split(",");
+                    for (int i = 0; i < array.length; i++) {
+                        tagArray = new String[array.length];
+                        tagArray[i] = "#" + array[i] + "#";
+                    }
                 }
             }
+            pageBean = todayNewsService.findList(communityId, newsType, noticeType, userId, tagArray, page, count);
         }
-        if (newsType == 1) { //物业
-            resident = propertyService.findResident(communityId, userId);
-            if (resident == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+        if (noticeType == 2) { //内部人员通知
+            if (newsType == 0) {
+                sa = communityService.findResident(communityId, userId);
+                if (sa == null) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                }
+                if (sa.getIdentity() > 0) {
+                    pageBean = todayNewsService.findListByAdmin(communityId, newsType, noticeType, page, count);
+                }
             }
-            if (resident.getIdentity() > 0) {
-                pageBean = todayNewsService.findListByAdmin(communityId, newsType, page, count);
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            if (newsType == 1) {
+                resident = propertyService.findResident(communityId, userId);
+                if (resident == null) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                }
+                if (resident.getIdentity() > 0) {
+                    pageBean = todayNewsService.findListByAdmin(communityId, newsType, noticeType, page, count);
+                }
             }
-        }
-        pageBean = todayNewsService.findList(communityId, newsType, userId, tagArray, page, count);
-        if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
