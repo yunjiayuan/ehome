@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,11 @@ public class CommunityNewsController extends BaseController implements Community
         long userId = CommonUtils.getMyId();
         String[] tagArray = null;
         if (noticeType <= 1) {// 0资讯 1点对点通知通告（普通居民）
+            pageBean = todayNewsService.findList(communityId, newsType, noticeType, userId, page, count);
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+            }
             if (newsType == 0 && noticeType == 1) {//居委会
                 sa = communityService.findResident(communityId, userId);
                 if (sa == null) {
@@ -148,7 +154,23 @@ public class CommunityNewsController extends BaseController implements Community
                     }
                 }
             }
-            pageBean = todayNewsService.findList(communityId, newsType, noticeType, userId, tagArray, page, count);
+            List list1 = new ArrayList();
+            if (tagArray.length > 0 && tagArray != null) {
+                for (int i = 0; i < tagArray.length; i++) {
+                    String num = tagArray[i];
+                    for (int j = 0; j < list.size(); j++) {
+                        CommunityNews news = (CommunityNews) list.get(j);
+                        String[] identity = news.getIdentity().split(",");
+                        String num2 = identity[j];
+                        if (num.equals(num2)) {
+                            list1.add(news);
+                        }
+                    }
+                }
+                pageBean = null;
+                pageBean.setList(list1);
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
         }
         if (noticeType == 2) { //内部人员通知
             if (newsType == 0) {
