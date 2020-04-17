@@ -112,9 +112,9 @@ public class CommunityNewsController extends BaseController implements Community
 
     /***
      * 查询新闻列表
+     * @param noticeType 通告： 0资讯 1点对点通知通告（普通居民） 2内部人员通知
      * @param communityId newsType=0时为居委会ID  newsType=1时为物业ID
      * @param newsType 社区： 0居委会  1物业
-     * @param noticeType 通告： 0资讯 1点对点通知通告（普通居民） 2内部人员通知
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
