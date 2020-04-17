@@ -85,7 +85,7 @@ public interface CommunityNewsDao {
     @Select("<script>" +
             "select * from CommunityNews" +
             " where 1 = 1" +
-            "<if test=\"usId != null and usId !='' and noticeType==1 \">" +
+            "<if test=\"usId != null and usId !='' and noticeType==2 \">" +
             " and lookUserIds LIKE CONCAT('%',#{usId},'%')" +
             "</if> " +
             " and noticeType=#{noticeType} " +
