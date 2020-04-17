@@ -140,6 +140,9 @@ public class CommunityNewsController extends BaseController implements Community
             if (list == null || list.size() <= 0) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
             }
+            if (noticeType == 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
             if (newsType == 0 && noticeType == 1) {//居委会
                 sa = communityService.findResident(communityId, userId);
                 if (sa == null) {
@@ -155,7 +158,7 @@ public class CommunityNewsController extends BaseController implements Community
                 }
             }
             List list1 = new ArrayList();
-            if (tagArray.length <= 0 || tagArray == null) {
+            if (tagArray == null) {
                 pageBean = todayNewsService.findList(communityId, newsType, 1, userId, page, count);
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
             }
@@ -170,7 +173,10 @@ public class CommunityNewsController extends BaseController implements Community
                     }
                 }
             }
-            pageBean = null;
+            pageBean = new PageBean<>();
+            pageBean.setSize(list1.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
             pageBean.setList(list1);
         }
         if (noticeType == 2) { //内部人员通知
