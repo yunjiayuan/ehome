@@ -47,7 +47,7 @@ public interface CommunityNewsApiController {
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findNewsList/{communityId}/{newsType}/{page}/{count}")
+    @GetMapping("findNewsList/{noticeType}/{communityId}/{newsType}/{page}/{count}")
     ReturnData findNewsList(@PathVariable int noticeType, @PathVariable long communityId, @PathVariable int newsType, @PathVariable int page, @PathVariable int count);
 
     /***
