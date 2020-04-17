@@ -130,54 +130,18 @@ public class CommunityNewsController extends BaseController implements Community
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<CommunityNews> pageBean = null;
+        pageBean = todayNewsService.findListByAdmin(communityId, newsType, noticeType, page, count);
         CommunityResident sa = null;
         PropertyResident resident = null;
         long userId = CommonUtils.getMyId();
         String[] tagArray = null;
-        if (noticeType <= 1) {// 0资讯 1点对点通知通告（普通居民）
-            pageBean = todayNewsService.findList(communityId, newsType, noticeType, userId, page, count);
-            List list = pageBean.getList();
-            if (list == null || list.size() <= 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
-            }
-            if (noticeType == 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
-            }
+        if (noticeType == 1) {// 1点对点通知通告（普通居民）
             if (newsType == 0 && noticeType == 1) {//居委会
                 sa = communityService.findResident(communityId, userId);
                 if (sa == null) {
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
                 }
-                String tag = sa.getTags();
-                if (!CommonUtils.checkFull(tag)) {
-                    String[] array = tag.split(",");
-                    for (int i = 0; i < array.length; i++) {
-                        tagArray = new String[array.length];
-                        tagArray[i] = "#" + array[i] + "#";
-                    }
-                }
             }
-            List list1 = new ArrayList();
-            if (tagArray == null) {
-                pageBean = todayNewsService.findList(communityId, newsType, 1, userId, page, count);
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
-            }
-            for (int i = 0; i < tagArray.length; i++) {
-                String num = tagArray[i];
-                for (int j = 0; j < list.size(); j++) {
-                    CommunityNews news = (CommunityNews) list.get(j);
-                    String[] identity = news.getIdentity().split(",");
-                    String num2 = identity[j];
-                    if (num.equals(num2)) {
-                        list1.add(news);
-                    }
-                }
-            }
-            pageBean = new PageBean<>();
-            pageBean.setSize(list1.size());
-            pageBean.setPageNum(page);
-            pageBean.setPageSize(count);
-            pageBean.setList(list1);
         }
         if (noticeType == 2) { //内部人员通知
             if (newsType == 0) {
@@ -186,7 +150,41 @@ public class CommunityNewsController extends BaseController implements Community
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
                 }
                 if (sa.getIdentity() > 0) {
-                    pageBean = todayNewsService.findListByAdmin(communityId, newsType, noticeType, page, count);
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+                } else {
+                    List list = pageBean.getList();
+                    if (list == null || list.size() <= 0) {
+                        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+                    }
+                    String tag = sa.getTags();
+                    if (!CommonUtils.checkFull(tag)) {
+                        String[] array = tag.split(",");
+                        for (int i = 0; i < array.length; i++) {
+                            tagArray = new String[array.length];
+                            tagArray[i] = "#" + array[i] + "#";
+                        }
+                    }
+                    List list1 = new ArrayList();
+                    if (tagArray == null) {
+                        pageBean = todayNewsService.findList(communityId, newsType, 2, userId, page, count);
+                        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+                    }
+                    for (int i = 0; i < tagArray.length; i++) {
+                        String num = tagArray[i];
+                        for (int j = 0; j < list.size(); j++) {
+                            CommunityNews news = (CommunityNews) list.get(j);
+                            String[] identity = news.getIdentity().split(",");
+                            String num2 = identity[j];
+                            if (num.equals(num2)) {
+                                list1.add(news);
+                            }
+                        }
+                    }
+                    pageBean = new PageBean<>();
+                    pageBean.setSize(list1.size());
+                    pageBean.setPageNum(page);
+                    pageBean.setPageSize(count);
+                    pageBean.setList(list1);
                 }
             }
             if (newsType == 1) {
