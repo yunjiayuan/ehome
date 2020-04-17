@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CommunityRepairService;
+import com.busi.service.CommunityService;
+import com.busi.service.PropertyService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
 import com.busi.utils.UserInfoUtils;
@@ -32,6 +34,12 @@ public class CommunityRepairController extends BaseController implements Communi
 
     @Autowired
     CommunityRepairService communityService;
+
+    @Autowired
+    CommunityService findResident;
+
+    @Autowired
+    PropertyService propertyService;
 
     /***
      * 新增报修
@@ -79,8 +87,27 @@ public class CommunityRepairController extends BaseController implements Communi
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
+        int is = 0;//0管理员  1普通人员
         PageBean<CommunityRepair> pageBean = null;
-        pageBean = communityService.findSetUpList(type, communityId, userId, page, count);
+        if (type == 0) {// type=0居委会
+            CommunityResident resident = findResident.findResident(communityId, CommonUtils.getMyId());
+            if (resident != null && resident.getIdentity() > 0) {
+                pageBean = communityService.findSetUpList(type, communityId, 0, page, count);
+            } else {
+                is = 1;
+            }
+        }
+        if (type == 1) {// type=1物业
+            PropertyResident resident = propertyService.findResident(communityId, CommonUtils.getMyId());
+            if (resident != null && resident.getIdentity() > 0) {
+                pageBean = communityService.findSetUpList(type, communityId, 0, page, count);
+            } else {
+                is = 1;
+            }
+        }
+        if (is == 1) {
+            pageBean = communityService.findSetUpList(type, communityId, userId, page, count);
+        }
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

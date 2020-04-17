@@ -339,6 +339,19 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
+        //判断是否是本居民
+        CommunityResident resident = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getUserId());
+        if (resident == null) {
+            CommunityResident resident1 = new CommunityResident();
+            resident1.setType(1);
+            resident1.setTime(new Date());
+            resident1.setRefreshTime(new Date());
+            resident1.setMasterId(CommonUtils.getMyId());
+            resident1.setUserId(homeHospital.getUserId());
+            resident1.setIdentity(homeHospital.getIdentity());
+            resident1.setCommunityId(homeHospital.getCommunityId());
+            communityService.addResident(resident1);
+        }
         if (homeHospital.getIdentity() == 2 && sa.getIdentity() == 2) {
             sa.setIdentity(1);
             communityService.changeResident(sa);
