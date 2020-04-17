@@ -94,11 +94,11 @@ public interface CommunityNewsDao {
 //                    " and identity LIKE CONCAT(CONCAT('%',#{item}),'%')" +
             " identity LIKE CONCAT('%',#{item},'%')" +
             "</foreach>" +
-            "<if test=\"usId != null and usId !='' and noticeType==1 \">" +
-            " or" +
-            "</if> " +
             "</if>" +
-            "<if test=\"usId != null and usId !='' and noticeType==1 \">" +
+            "<if test=\"tags != null and tags !='' and usId != null and usId !='' and noticeType==1 \">" +
+            " or lookUserIds LIKE CONCAT('%',#{usId},'%')" +
+            "</if> " +
+            "<if test=\"tags == null and tags =='' and usId != null and usId !='' and noticeType==1 \">" +
             " lookUserIds LIKE CONCAT('%',#{usId},'%')" +
             "</if> " +
             "<if test=\"noticeType==1 \">" +
