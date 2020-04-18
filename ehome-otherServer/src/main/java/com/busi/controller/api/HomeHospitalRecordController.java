@@ -177,19 +177,29 @@ public class HomeHospitalRecordController extends BaseController implements Home
                 }
             }
         } else {//医师查记录
-            HomeHospital hospital = homeHospitalService.findByUserId(CommonUtils.getMyId());
+            //查询医生缓存 缓存中不存在 查询数据库
+            Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_HOMEHOSPITAL + CommonUtils.getMyId());
+            if (map == null || map.size() <= 0) {
+                HomeHospital hospital = homeHospitalService.findByUserId(CommonUtils.getMyId());
+                if (hospital != null) {
+                    //放入缓存
+                    map = CommonUtils.objectToMap(hospital);
+                    redisUtils.hmset(Constants.REDIS_KEY_HOMEHOSPITAL + hospital.getUserId(), map, Constants.USER_TIME_OUT);
+                }
+            }
+            HomeHospital hospital = (HomeHospital) CommonUtils.mapToObject(map, HomeHospital.class);
             if (hospital == null) {
                 list = null;
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
             }
             UserInfo userInfo = null;
-            UserInfo sendInfoCache = null;
             userInfo = userInfoUtils.getUserInfo(hospital.getUserId());
             for (int i = 0; i < len; i++) {
                 fc = (HomeHospitalRecord) list.get(i);
                 if (fc == null) {
                     continue;
                 }
+                UserInfo sendInfoCache = null;
                 sendInfoCache = userInfoUtils.getUserInfo(fc.getUserId());
                 if (sendInfoCache == null) {
                     list.remove(i);
