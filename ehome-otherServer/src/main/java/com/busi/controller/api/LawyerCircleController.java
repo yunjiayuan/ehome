@@ -415,13 +415,12 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
                     //放入缓存
                     map = CommonUtils.objectToMap(hospital);
                     redisUtils.hmset(Constants.REDIS_KEY_LVSHI + hospital.getUserId(), map, Constants.USER_TIME_OUT);
+                } else {
+                    list = null;
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
                 }
             }
             LawyerCircle ik = (LawyerCircle) CommonUtils.mapToObject(map, LawyerCircle.class);
-            if (ik == null) {
-                list = null;
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
-            }
             for (int i = 0; i < len; i++) {
                 fc = (LawyerCircleRecord) list.get(i);
                 if (fc == null) {

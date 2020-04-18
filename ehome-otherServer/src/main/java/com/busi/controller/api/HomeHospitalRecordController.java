@@ -185,13 +185,12 @@ public class HomeHospitalRecordController extends BaseController implements Home
                     //放入缓存
                     map = CommonUtils.objectToMap(hospital);
                     redisUtils.hmset(Constants.REDIS_KEY_HOMEHOSPITAL + hospital.getUserId(), map, Constants.USER_TIME_OUT);
+                } else {
+                    list = null;
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
                 }
             }
             HomeHospital hospital = (HomeHospital) CommonUtils.mapToObject(map, HomeHospital.class);
-            if (hospital == null) {
-                list = null;
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
-            }
             UserInfo userInfo = null;
             userInfo = userInfoUtils.getUserInfo(hospital.getUserId());
             for (int i = 0; i < len; i++) {
