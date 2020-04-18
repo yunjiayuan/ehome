@@ -63,7 +63,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         ShippingAddress shippingAddress = null;
-        if (shopFloorOrders.getType() == 0) {//礼尚往来下单时不需要地址
+        if (shopFloorOrders.getType() == 0) {//普通订单下单时需要地址
             shippingAddress = addressUtils.findAddress(shopFloorOrders.getAddressId());
             if (shippingAddress == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "下单失败！收货地址不存在！", new JSONObject());
