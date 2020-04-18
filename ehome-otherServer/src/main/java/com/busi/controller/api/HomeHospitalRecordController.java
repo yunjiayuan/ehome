@@ -208,7 +208,9 @@ public class HomeHospitalRecordController extends BaseController implements Home
                 if (!CommonUtils.checkFull(hospital.getHeadCover())) {
                     fc.setDoctorHead(hospital.getHeadCover());
                 } else {
-                    fc.setDoctorHead(userInfo.getHead());
+                    if (userInfo != null) {
+                        fc.setDoctorHead(userInfo.getHead());
+                    }
                 }
                 fc.setDoctorName(hospital.getPhysicianName());
                 fc.setProTypeId(sendInfoCache.getProType());

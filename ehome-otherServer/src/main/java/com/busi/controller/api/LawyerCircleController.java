@@ -407,23 +407,34 @@ public class LawyerCircleController extends BaseController implements LawyerCirc
                 }
             }
         } else {//律师查记录
+            //查询缓存 缓存中不存在 查询数据库
+            Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_LVSHI + CommonUtils.getMyId());
+            if (map == null || map.size() <= 0) {
+                LawyerCircle hospital = lawyerCircleService.findByUserId(CommonUtils.getMyId());
+                if (hospital != null) {
+                    //放入缓存
+                    map = CommonUtils.objectToMap(hospital);
+                    redisUtils.hmset(Constants.REDIS_KEY_LVSHI + hospital.getUserId(), map, Constants.USER_TIME_OUT);
+                }
+            }
+            LawyerCircle ik = (LawyerCircle) CommonUtils.mapToObject(map, LawyerCircle.class);
+            if (ik == null) {
+                list = null;
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+            }
             for (int i = 0; i < len; i++) {
                 fc = (LawyerCircleRecord) list.get(i);
                 if (fc == null) {
                     continue;
                 }
-                UserInfo userInfo = null;
                 UserInfo sendInfoCache = null;
-                userInfo = userInfoUtils.getUserInfo(fc.getLvshiId());
-                if (userInfo == null) {
-                    continue;
-                }
                 sendInfoCache = userInfoUtils.getUserInfo(fc.getUserId());
                 if (sendInfoCache == null) {
+                    list.remove(i);
                     continue;
                 }
-                fc.setDoctorHead(userInfo.getHead());
-                fc.setDoctorName(userInfo.getName());
+                fc.setDoctorHead(ik.getHeadCover());
+                fc.setDoctorName(ik.getLvshiName());
                 fc.setProTypeId(sendInfoCache.getProType());
                 fc.setHouseNumber(sendInfoCache.getHouseNumber());
                 fc.setSex(sendInfoCache.getSex());
