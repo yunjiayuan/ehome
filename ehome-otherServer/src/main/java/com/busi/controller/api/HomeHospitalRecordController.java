@@ -177,23 +177,30 @@ public class HomeHospitalRecordController extends BaseController implements Home
                 }
             }
         } else {//医师查记录
+            HomeHospital hospital = homeHospitalService.findByUserId(CommonUtils.getMyId());
+            if (hospital == null) {
+                list = null;
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+            }
+            UserInfo userInfo = null;
+            UserInfo sendInfoCache = null;
+            userInfo = userInfoUtils.getUserInfo(hospital.getUserId());
             for (int i = 0; i < len; i++) {
                 fc = (HomeHospitalRecord) list.get(i);
                 if (fc == null) {
                     continue;
                 }
-                UserInfo userInfo = null;
-                UserInfo sendInfoCache = null;
-                userInfo = userInfoUtils.getUserInfo(fc.getDoctorId());
-                if (userInfo == null) {
-                    continue;
-                }
                 sendInfoCache = userInfoUtils.getUserInfo(fc.getUserId());
                 if (sendInfoCache == null) {
+                    list.remove(i);
                     continue;
                 }
-                fc.setDoctorHead(userInfo.getHead());
-                fc.setDoctorName(userInfo.getName());
+                if (!CommonUtils.checkFull(hospital.getHeadCover())) {
+                    fc.setDoctorHead(hospital.getHeadCover());
+                } else {
+                    fc.setDoctorHead(userInfo.getHead());
+                }
+                fc.setDoctorName(hospital.getPhysicianName());
                 fc.setProTypeId(sendInfoCache.getProType());
                 fc.setHouseNumber(sendInfoCache.getHouseNumber());
                 fc.setSex(sendInfoCache.getSex());
