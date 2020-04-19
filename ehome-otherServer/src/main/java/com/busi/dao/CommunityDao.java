@@ -54,6 +54,18 @@ public interface CommunityDao {
     int changeCommunity(Community selectionActivities);
 
     /***
+     * 更新居委会转让者
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update Community set" +
+            " userId=#{userId}" +
+            " where id=#{id}" +
+            "</script>")
+    int changeCommunitys(Community selectionActivities);
+
+    /***
      * 更新居委会
      * @param selectionActivities
      * @return

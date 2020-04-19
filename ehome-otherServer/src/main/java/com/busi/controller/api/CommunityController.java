@@ -361,7 +361,12 @@ public class CommunityController extends BaseController implements CommunityApiC
                 communityService.changeResident(resident);
             }
             sa.setIdentity(1);
-            communityService.changeResident(sa);
+            communityService.changeResident(sa);//更新居委会身份为管理员
+            //更新居委会创建者
+            Community community = new Community();
+            community.setId(sa.getCommunityId());
+            community.setUserId(homeHospital.getUserId());
+            communityService.changeCommunitys(community);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

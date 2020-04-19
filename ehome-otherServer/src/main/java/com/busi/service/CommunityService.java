@@ -93,6 +93,16 @@ public class CommunityService {
     }
 
     /***
+     * 更新居委会创建者
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeCommunitys(Community selectionVote) {
+        return epidemicSituationDao.changeCommunitys(selectionVote);
+    }
+
+    /***
      * 查询已加入的居委会
      * @param userId
      * @return

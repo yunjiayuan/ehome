@@ -423,7 +423,12 @@ public class PropertyController extends BaseController implements PropertyApiCon
                 communityService.changeResident(resident);
             }
             sa.setIdentity(1);
-            communityService.changeResident(sa);
+            communityService.changeResident(sa);//更新物业身份为管理员
+            //更新物业创建者
+            Property community = new Property();
+            community.setId(sa.getPropertyId());
+            community.setUserId(homeHospital.getUserId());
+            communityService.changeCommunitys(community);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

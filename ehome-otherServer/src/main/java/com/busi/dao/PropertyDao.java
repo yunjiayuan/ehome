@@ -165,6 +165,18 @@ public interface PropertyDao {
     int changeResident(PropertyResident selectionActivities);
 
     /***
+     * 更新居委会转让者
+     * @param selectionActivities
+     * @return
+     */
+    @Update("<script>" +
+            "update Property set" +
+            " userId=#{userId}" +
+            " where id=#{id}" +
+            "</script>")
+    int changeCommunitys(Property selectionActivities);
+
+    /***
      * 更新居民标签
      * @param selectionActivities
      * @return

@@ -137,6 +137,16 @@ public class PropertyService {
     }
 
     /***
+     * 更新物业创建者
+     * @param selectionVote
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeCommunitys(Property selectionVote) {
+        return epidemicSituationDao.changeCommunitys(selectionVote);
+    }
+
+    /***
      * 更新居民标签
      * @param selectionVote
      * @return
