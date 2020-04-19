@@ -397,12 +397,12 @@ public class PropertyController extends BaseController implements PropertyApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //判断设置者权限
-        PropertyResident sa = communityService.findResident(homeHospital.getCommunityId(), CommonUtils.getMyId());
+        PropertyResident sa = communityService.findResident(homeHospital.getPropertyId(), CommonUtils.getMyId());
         if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
         //判断被设置者是否是本居民
-        PropertyResident resident = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getUserId());
+        PropertyResident resident = communityService.findResident(homeHospital.getPropertyId(), homeHospital.getUserId());
         if (resident == null) {
             PropertyResident resident1 = new PropertyResident();
             resident1.setType(1);
@@ -411,7 +411,7 @@ public class PropertyController extends BaseController implements PropertyApiCon
             resident1.setMasterId(CommonUtils.getMyId());
             resident1.setUserId(homeHospital.getUserId());
             resident1.setIdentity(homeHospital.getIdentity());
-            resident1.setCommunityId(homeHospital.getCommunityId());
+            resident1.setPropertyId(homeHospital.getPropertyId());
             communityService.addResident(resident1);
         }
         if (homeHospital.getIdentity() == 1 && resident != null) {
