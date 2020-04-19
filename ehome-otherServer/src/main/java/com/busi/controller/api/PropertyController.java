@@ -396,16 +396,35 @@ public class PropertyController extends BaseController implements PropertyApiCon
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        //判断权限
-        PropertyResident sa = communityService.findResident(homeHospital.getPropertyId(), CommonUtils.getMyId());
+        //判断设置者权限
+        PropertyResident sa = communityService.findResident(homeHospital.getCommunityId(), CommonUtils.getMyId());
         if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
+        //判断被设置者是否是本居民
+        PropertyResident resident = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getUserId());
+        if (resident == null) {
+            PropertyResident resident1 = new PropertyResident();
+            resident1.setType(1);
+            resident1.setTime(new Date());
+            resident1.setRefreshTime(new Date());
+            resident1.setMasterId(CommonUtils.getMyId());
+            resident1.setUserId(homeHospital.getUserId());
+            resident1.setIdentity(homeHospital.getIdentity());
+            resident1.setCommunityId(homeHospital.getCommunityId());
+            communityService.addResident(resident1);
+        }
+        if (homeHospital.getIdentity() == 1 && resident != null) {
+            communityService.changeResident(resident);
+        }
         if (homeHospital.getIdentity() == 2 && sa.getIdentity() == 2) {
+            if (resident != null) {
+                resident.setIdentity(2);
+                communityService.changeResident(resident);
+            }
             sa.setIdentity(1);
             communityService.changeResident(sa);
         }
-        communityService.changeResident(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

@@ -334,12 +334,12 @@ public class CommunityController extends BaseController implements CommunityApiC
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        //判断权限
+        //判断设置者权限
         CommunityResident sa = communityService.findResident(homeHospital.getCommunityId(), CommonUtils.getMyId());
         if (sa == null || sa.getIdentity() < 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
         }
-        //判断是否是本居民
+        //判断被设置者是否是本居民
         CommunityResident resident = communityService.findResident(homeHospital.getCommunityId(), homeHospital.getUserId());
         if (resident == null) {
             CommunityResident resident1 = new CommunityResident();
@@ -352,11 +352,17 @@ public class CommunityController extends BaseController implements CommunityApiC
             resident1.setCommunityId(homeHospital.getCommunityId());
             communityService.addResident(resident1);
         }
+        if (homeHospital.getIdentity() == 1 && resident != null) {
+            communityService.changeResident(resident);
+        }
         if (homeHospital.getIdentity() == 2 && sa.getIdentity() == 2) {
+            if (resident != null) {
+                resident.setIdentity(2);
+                communityService.changeResident(resident);
+            }
             sa.setIdentity(1);
             communityService.changeResident(sa);
         }
-        communityService.changeResident(homeHospital);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
