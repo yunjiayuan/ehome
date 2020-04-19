@@ -35,6 +35,9 @@ public interface ShopFloorOrdersDao {
      */
     @Update("<script>" +
             "update ShopFloorOrders set" +
+            "<if test=\"recipientId > 0\">" +
+            " recipientId=#{recipientId}," +
+            "</if>" +
             " addressCity=#{addressCity}," +
             " addressDistrict=#{addressDistrict}," +
             " addressProvince=#{addressProvince}," +
@@ -44,7 +47,7 @@ public interface ShopFloorOrdersDao {
             " shopId=#{shopId}," +
             " shopName=#{shopName}," +
             " address=#{address}" +
-            " where id=#{id} and recipientId=#{recipientId}" +
+            " where id=#{id}" +
             "</script>")
     int upSFreceiveState(ShopFloorOrders kitchen);
 

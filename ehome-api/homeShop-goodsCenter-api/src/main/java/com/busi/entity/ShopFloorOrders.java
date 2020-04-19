@@ -64,7 +64,7 @@ public class ShopFloorOrders {
 
     private String remarks;            //买家留言
 
-    private int type;            //订单类型：0普通  1礼尚往来指定接收者  2礼尚往来未指定接收者
+    private int type;            //订单类型：0普通  1礼尚往来指定接收者  2礼尚往来未指定接收者  3合伙购
 
     private int receiveState;            //礼尚往来领取状态：0未领取  1已领取
 
