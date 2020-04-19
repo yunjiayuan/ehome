@@ -64,13 +64,13 @@ public interface PartnerBuyDao {
             "select * from PartnerBuyGoods" +
             " where deleteType=0" +
             "<if test=\"sort == 2\">" +
-            " and personnel LIKE CONCAT('%',#{userId},'%')" +
+            " and personnel LIKE CONCAT('%',#{user},'%')" +
             "</if>" +
-            "<if test=\"stock == 1\">" +
+            "<if test=\"sort == 1\">" +
             " and userId=#{userId}" +
             "</if>" +
             " order by releaseTime desc" +
             "</script>")
-    List<PartnerBuyGoods> findDishesSortList(@Param("sort") int sort, @Param("userId") String userId);
+    List<PartnerBuyGoods> findDishesSortList(@Param("sort") int sort, @Param("user") String user, @Param("userId") long userId);
 
 }

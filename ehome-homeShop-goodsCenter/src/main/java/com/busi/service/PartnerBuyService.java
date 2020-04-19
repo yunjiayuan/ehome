@@ -61,10 +61,9 @@ public class PartnerBuyService {
      * @return
      */
     public PageBean<PartnerBuyGoods> findDishesSortList(int sort, long userId, int page, int count) {
-
         List<PartnerBuyGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = goodsCenterDao.findDishesSortList(sort, "#" + userId + "#");
+        list = goodsCenterDao.findDishesSortList(sort, "#" + userId + "#", userId);
         return PageUtils.getPageBean(p, list);
     }
 

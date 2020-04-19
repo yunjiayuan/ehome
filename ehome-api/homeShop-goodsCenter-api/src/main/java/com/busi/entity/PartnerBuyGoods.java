@@ -65,7 +65,7 @@ public class PartnerBuyGoods {
 
     private int number;                // 已合伙人数
 
-    private int remarks;                // 备注
+    private String remarks;                // 备注
 
     private int state;                // 合伙状态：0未成功  1成功
 

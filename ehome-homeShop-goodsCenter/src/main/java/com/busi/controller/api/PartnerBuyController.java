@@ -66,7 +66,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         UserInfo userInfo = null;
         userInfo = userInfoUtils.getUserInfo(homeShopGoods.getUserId());
         if (userInfo != null) {
-            homeShopGoods.setPersonnel("#" + homeShopGoods.getUserId() + "#" + userInfo.getName() + userInfo.getHead());
+            homeShopGoods.setPersonnel("#" + homeShopGoods.getUserId() + "#," + userInfo.getName() + "," + userInfo.getHead());
         }
         homeShopGoods.setReleaseTime(new Date());
         homeShopGoods.setNumber(1);
@@ -170,7 +170,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
             }
             userInfo = userInfoUtils.getUserInfo(ik.getBuyerId());
             if (userInfo != null) {
-                posts.setPersonnel(posts.getPersonnel() + ";" + "#" + ik.getBuyerId() + "#" + userInfo.getName() + userInfo.getHead());
+                posts.setPersonnel(posts.getPersonnel() + ";" + "#" + ik.getBuyerId() + "#," + userInfo.getName() + "," + userInfo.getHead());
             }
             posts.setNumber(posts.getNumber() + 1);
             goodsCenterService.update(posts);
@@ -188,8 +188,6 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
     public ReturnData changePartnerBuy(@Valid @RequestBody PartnerBuyGoods partnerBuyGoods, BindingResult bindingResult) {
         partnerBuyGoods.setState(1);
         goodsCenterService.update(partnerBuyGoods);
-        Map<String, Object> map = new HashMap<>();
-        map.put("infoId", partnerBuyGoods.getId());
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
