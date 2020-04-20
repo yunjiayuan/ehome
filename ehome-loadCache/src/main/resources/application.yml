@@ -43,9 +43,9 @@ spring:
 
   redis:
     database: 0  #数据库 默认0号库 0库用于存储用户相关信息
-  # host: 192.168.1.163 #单机时需要指定
+    host: 192.168.1.162 #单机时需要指定
     password: LiChengWang_redis_20180604
-  #    port: 6379 #单机时需要指定
+    port: 6379 #单机时需要指定
     timeout: PT10S # 连接超时时间（毫秒）默认是2000  改成10秒 修改请用 System.out.println(Duration.ofSeconds(10))
     jedis:
       pool:
@@ -53,9 +53,9 @@ spring:
         min-idle: 3 # 连接池中的最小空闲连接
         max-active: 10 #连接池最大连接数
         max-wait: PT24H # 连接池最大阻塞等待时间 改成1天 修改请用 System.out.println(Duration.ofDays(1))
-    sentinel: #哨兵配置
-      master: mymaster #哨兵监听的Redis server的名称
-      nodes: 192.168.1.160:26379 #哨兵多台时，分隔  如192.168.1.160:26379,192.168.1.163:26379
+#    sentinel: #哨兵配置
+#      master: mymaster #哨兵监听的Redis server的名称
+#      nodes: 192.168.1.160:26379 #哨兵多台时，分隔  如192.168.1.160:26379,192.168.1.163:26379
 
 eureka:
   instance:

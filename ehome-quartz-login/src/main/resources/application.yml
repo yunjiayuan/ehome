@@ -1,6 +1,6 @@
 #服务启动端口号
 server:
-  port: 9103 #定时任务系统应用端口号统一从9101开始累加
+  port: 9109 #定时任务系统应用端口号统一从9101开始累加
   connection-timeout: PT30S #修改请用 System.out.println(Duration.ofSeconds(30))  PT30S  PT1M
   tomcat:
     uri-encoding: UTF-8 #编码格式
