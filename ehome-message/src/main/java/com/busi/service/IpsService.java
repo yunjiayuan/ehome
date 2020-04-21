@@ -35,7 +35,7 @@ public class IpsService implements MessageAdapter {
             long infoId = Long.parseLong(body.getString("infoId"));
             int afficheType = Integer.parseInt(body.getString("afficheType"));
             String title = body.getString("title");
-            if(myId<=0||afficheType<0||afficheType>8||CommonUtils.checkFull(title)){
+            if(myId<=0||afficheType<0||afficheType>10||CommonUtils.checkFull(title)){
                 log.info("消息服务平台处理新增IPS系统公告浏览量操作失败，参数有误："+body.toJSONString());
                 return;
             }
