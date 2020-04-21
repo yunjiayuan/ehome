@@ -104,9 +104,10 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
     public ReturnData findRentAhouse(@PathVariable long id) {
         //查询缓存 缓存中不存在 查询数据库
         int roomState = 0;   //房屋状态：0出售 1出租
+        RentAhouse sa = null;
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_RENTAHOUSE + id);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            RentAhouse sa = communityService.findRentAhouse(id);
+            sa = communityService.findRentAhouse(id);
             if (sa == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询房源不存在!", new JSONObject());
             }
@@ -116,8 +117,6 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
             if (sa.getRoomState() == 1) {
                 roomState = 10;
             }
-            //新增浏览记录
-            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, sa.getTitle(), roomState);
             //返回收藏状态
             int collection = 0;
             Collect collect1 = null;
@@ -130,6 +129,15 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
             kitchenMap.put("collection", collection);
             redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE + id, kitchenMap, Constants.USER_TIME_OUT);
         }
+        int type = (int) kitchenMap.get("roomState");
+        if (type == 0) {
+            roomState = 9;
+        }
+        if (type == 1) {
+            roomState = 10;
+        }
+        //新增浏览记录
+        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, (String) kitchenMap.get("title"), roomState);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
 

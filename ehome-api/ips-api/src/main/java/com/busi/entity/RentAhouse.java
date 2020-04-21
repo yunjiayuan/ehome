@@ -7,7 +7,6 @@ import lombok.Setter;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
