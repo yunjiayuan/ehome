@@ -20,8 +20,18 @@ public interface RentAhouseDao {
      * @param kitchenBooked
      * @return
      */
-    @Insert("insert into RentAhouse(userId,roomState,title,describe,picture,videoUrl,videoCover,villageName,province,city,district,lat,lon,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,residence,livingRoom,toilet,housingArea,roomType,orientation,renovation,rentalType,bedroomType,houseType,expectedPrice,paymentMethod,lookHomeTime,realName,elevator,propertyFee,heatingCost,floor,totalFloor,addTime,refreshTime)" +
-            "values (#{userId},#{roomState},#{title},#{describe},#{picture},#{videoUrl},#{videoCover},#{villageName},#{province},#{city},#{district},#{lat},#{lon},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{residence},#{livingRoom},#{toilet},#{housingArea},#{roomType},#{orientation},#{renovation},#{rentalType},#{bedroomType},#{houseType},#{expectedPrice},#{paymentMethod},#{lookHomeTime},#{realName},#{elevator},#{propertyFee},#{heatingCost},#{floor},#{totalFloor},#{addTime},#{refreshTime})")
+    @Insert("insert into RentAhouse(userId,roomState,title,formulation,picture,videoUrl,videoCover," +
+            "villageName,province,city,district,lat,lon," +
+            "houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,residence," +
+            "livingRoom,toilet,housingArea,roomType,orientation,renovation," +
+            "rentalType,bedroomType,houseType,expectedPrice,paymentMethod,lookHomeTime," +
+            "realName,elevator,propertyFee,heatingCost,floor,totalFloor,addTime,refreshTime)" +
+            "values (#{userId},#{roomState},#{title},#{formulation},#{picture},#{videoUrl},#{videoCover}," +
+            "#{villageName},#{province},#{city},#{district},#{lat},#{lon},#{houseNumber},#{houseCompany}" +
+            ",#{unitNumber},#{unitCompany},#{roomNumber},#{residence},#{livingRoom},#{toilet},#{housingArea}," +
+            "#{roomType},#{orientation},#{renovation},#{rentalType},#{bedroomType},#{houseType},#{expectedPrice}," +
+            "#{paymentMethod},#{lookHomeTime},#{realName},#{elevator},#{propertyFee},#{heatingCost},#{floor},#{totalFloor}" +
+            ",#{addTime},#{refreshTime})")
     @Options(useGeneratedKeys = true)
     int addCommunity(RentAhouse kitchenBooked);
 
@@ -33,7 +43,7 @@ public interface RentAhouseDao {
     @Update("<script>" +
             "update RentAhouse set" +
             " title = #{title}," +
-            " describe=#{describe}," +
+            " formulation=#{formulation}," +
             " picture=#{picture}," +
             " videoUrl = #{videoUrl}," +
             " videoCover=#{videoCover}," +
@@ -88,7 +98,7 @@ public interface RentAhouseDao {
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
-            " and userId=#{userId}" +
+            " and userId=#{userId} and state=0" +
             "</script>")
     int delDishes(@Param("ids") String[] ids, @Param("userId") long userId);
 
@@ -97,7 +107,7 @@ public interface RentAhouseDao {
      * @param id
      * @return
      */
-    @Select("select * from RentAhouse where id=#{id}")
+    @Select("select * from RentAhouse where id=#{id} and state=0")
     RentAhouse findByUserId(@Param("id") long id);
 
     /***
@@ -109,8 +119,8 @@ public interface RentAhouseDao {
      * @param nearby  附近 -1不限  0附近
      * @param residence     房型：-1不限 0一室 1二室 2三室 3四室 4五室及以上
      * @param roomType     房屋类型 roomState=0时：-1不限 0新房 1二手房   roomState=1时：-1不限 0合租 1整租
-     * @param lon     经度
-     * @param lat     纬度
+     * @param lon     经度  nearby=0时有效
+     * @param lat     纬度  nearby=0时有效
      * @param province     省
      * @param city      市
      * @param district    区
@@ -124,27 +134,48 @@ public interface RentAhouseDao {
      * @param bedroomType   卧室类型：-1不限 0主卧 1次卧 2其他
      * @param houseType  房源类型: -1不限 0业主直租 1中介
      * @param paymentMethod  支付方式: -1不限  0押一付一 1押一付三 2季付 3半年付 4年付
-     * @param openHome  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
+     * @param lookHomeTime  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
      * @param string    模糊搜索
      * @return
      */
     @Select("<script>" +
-            "select * from RentAhouse where" +
+            "select * from RentAhouse where state=0" +
             "<if test=\"userId > 0\">" +
-            " userId = #{userId}" +
+            " and userId = #{userId}" +
             "</if>" +
-            " and state=0" +
-            " and roomState = #{roomState}" +
-            " and residence = #{residence}" +
-            " and sellState = #{sellState}" +
-            " and roomType = #{roomType}" +
-            " and orientation = #{orientation}" +
-            " and renovation = #{renovation}" +
-            " and floor = #{floor}" +
+            "<if test=\" bedroomType >= 0\">" +
             " and bedroomType = #{bedroomType}" +
+            "</if>" +
+            "<if test=\" houseType >= 0\">" +
             " and houseType = #{houseType}" +
+            "</if>" +
+            "<if test=\" paymentMethod >= 0\">" +
             " and paymentMethod = #{paymentMethod}" +
-            " and openHome = #{openHome}" +
+            "</if>" +
+            "<if test=\" lookHomeTime >= 0\">" +
+            " and lookHomeTime = #{lookHomeTime}" +
+            "</if>" +
+            "<if test=\" floor >= 0\">" +
+            " and floor = #{floor}" +
+            "</if>" +
+            "<if test=\" renovation >= 0\">" +
+            " and renovation = #{renovation}" +
+            "</if>" +
+            "<if test=\" orientation >= 0\">" +
+            " and orientation = #{orientation}" +
+            "</if>" +
+            "<if test=\" roomType >= 0\">" +
+            " and roomType = #{roomType}" +
+            "</if>" +
+            "<if test=\" sellState >= 0\">" +
+            " and sellState = #{sellState}" +
+            "</if>" +
+            "<if test=\" residence >= 0\">" +
+            " and residence = #{residence}" +
+            "</if>" +
+            "<if test=\" roomState >= 0\">" +
+            " and roomState = #{roomState}" +
+            "</if>" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
             "</if>" +
@@ -160,7 +191,7 @@ public interface RentAhouseDao {
             "  ]]> " +
             "</if>" +
             "<if test=\"maxPrice &lt;= 0\">" +
-            " and expectedPrice &lt;= #{minPrice}" +
+            " and expectedPrice >= #{minPrice}" +
             "</if>" +
             "<if test=\"maxArea > 0\">" +
             " <![CDATA[ " +
@@ -168,19 +199,31 @@ public interface RentAhouseDao {
             "  ]]> " +
             "</if>" +
             "<if test=\"maxArea &lt;= 0\">" +
-            " and housingArea &lt;= #{minArea}" +
+            " and housingArea >= #{minArea}" +
             "</if>" +
             "<if test=\"string != null and string != '' \">" +
             " and (title LIKE CONCAT('%',#{string},'%')" +
-            " or describe LIKE CONCAT('%',#{string},'%')" +
+            " or formulation LIKE CONCAT('%',#{string},'%')" +
             " or realName LIKE CONCAT('%',#{string},'%')" +
             " or villageName LIKE CONCAT('%',#{string},'%'))" +
             "</if>" +
-            "<if test=\"nearby == 1\">" +
+            "<if test=\"nearby == 0\">" +
             " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
             " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
             " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</if>" +
+            "<if test=\"nearby == 0\">" +
+            "<if test=\"sort == 0\">" +
+            " ,refreshTime desc" +
+            "</if>" +
+            "<if test=\"sort == 1\">" +
+            " ,expectedPrice asc" +
+            "</if>" +
+            "<if test=\"sort == 2\">" +
+            " ,expectedPrice desc" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"nearby != 0\">" +
             "<if test=\"sort == 0\">" +
             " order by refreshTime desc" +
             "</if>" +
@@ -190,12 +233,13 @@ public interface RentAhouseDao {
             "<if test=\"sort == 2\">" +
             " order by expectedPrice desc" +
             "</if>" +
+            "</if>" +
             "</script>")
     List<RentAhouse> findRentAhouseList(@Param("userId") long userId, @Param("sellState") int sellState, @Param("roomState") int roomState, @Param("sort") int sort,
                                         @Param("nearby") int nearby, @Param("residence") int residence, @Param("roomType") int roomType, @Param("lon") double lon, @Param("lat") double lat, @Param("province") int province,
                                         @Param("city") int city, @Param("district") int district, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice,
                                         @Param("minArea") int minArea, @Param("maxArea") int maxArea, @Param("orientation") int orientation, @Param("renovation") int renovation,
                                         @Param("floor") int floor, @Param("bedroomType") int bedroomType, @Param("houseType") int houseType, @Param("paymentMethod") int paymentMethod,
-                                        @Param("openHome") int openHome, @Param("string") String string);
+                                        @Param("lookHomeTime") int lookHomeTime, @Param("string") String string);
 
 }

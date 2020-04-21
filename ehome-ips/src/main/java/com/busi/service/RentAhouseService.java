@@ -73,8 +73,8 @@ public class RentAhouseService {
      * @param nearby  附近 -1不限  0附近
      * @param residence     房型：-1不限 0一室 1二室 2三室 3四室 4五室及以上
      * @param roomType     房屋类型 roomState=0时：-1不限 0新房 1二手房   roomState=1时：-1不限 0合租 1整租
-     * @param lon     经度
-     * @param lat     纬度
+     * @param lon     经度  nearby=0时有效
+     * @param lat     纬度  nearby=0时有效
      * @param province     省
      * @param city      市
      * @param district    区
@@ -88,7 +88,7 @@ public class RentAhouseService {
      * @param bedroomType   卧室类型：-1不限 0主卧 1次卧 2其他
      * @param houseType  房源类型: -1不限 0业主直租 1中介
      * @param paymentMethod  支付方式: -1不限  0押一付一 1押一付三 2季付 3半年付 4年付
-     * @param openHome  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
+     * @param lookHomeTime  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
      * @param string    模糊搜索
      * @param page     页码
      * @param count    条数
@@ -96,7 +96,7 @@ public class RentAhouseService {
      */
     public PageBean<RentAhouse> findRentAhouseList(long userId, int sellState, int roomState, int sort, int nearby, int residence, int roomType, double lon, double lat, int province, int city,
                                                    int district, int minPrice, int maxPrice, int minArea, int maxArea, int orientation, int renovation, int floor, int bedroomType,
-                                                   int houseType, int paymentMethod, int openHome, String string, int page, int count) {
+                                                   int houseType, int paymentMethod, int lookHomeTime, String string, int page, int count) {
 
         List<RentAhouse> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
@@ -105,7 +105,7 @@ public class RentAhouseService {
         }
         list = kitchenBookedDao.findRentAhouseList(userId, sellState, roomState, sort, nearby, residence, roomType, lon,
                 lat, province, city, district, minPrice, maxPrice, minArea, maxArea, orientation,
-                renovation, floor, bedroomType, houseType, paymentMethod, openHome, string);
+                renovation, floor, bedroomType, houseType, paymentMethod, lookHomeTime, string);
         return PageUtils.getPageBean(p, list);
     }
 }

@@ -27,9 +27,10 @@ public class RentAhouse {
     private int roomState;             //房屋状态：0出售 1出租
 
     private int sellState;             //roomState=0时：0出售中  1已售出  roomState=1时：0出租中  1已出租
+
     private String title;    //标题
 
-    private String describe;    //描述
+    private String formulation;    //描述
 
     private String picture;    //图片
 

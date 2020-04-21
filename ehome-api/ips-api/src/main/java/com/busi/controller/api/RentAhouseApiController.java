@@ -69,15 +69,15 @@ public interface RentAhouseApiController {
      * @param bedroomType   卧室类型：-1不限 0主卧 1次卧 2其他
      * @param houseType  房源类型: -1不限 0业主直租 1中介
      * @param paymentMethod  支付方式: -1不限  0押一付一 1押一付三 2季付 3半年付 4年付
-     * @param openHome  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
+     * @param lookHomeTime  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
      * @param string    模糊搜索
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findRentAhouseList/{userId}/{sellState}/{roomState}/{sort}/{nearby}/{residence}/{roomType}/{lon}/{lat}/{province}/{city}/{district}/{minPrice}/{maxPrice}/{minArea}/{maxArea}/{orientation}/{renovation}/{floor}/{bedroomType}/{houseType}/{paymentMethod}/{openHome}/{string}/{page}/{count}")
+    @GetMapping("findRentAhouseList/{userId}/{sellState}/{roomState}/{sort}/{nearby}/{residence}/{roomType}/{lon}/{lat}/{province}/{city}/{district}/{minPrice}/{maxPrice}/{minArea}/{maxArea}/{orientation}/{renovation}/{floor}/{bedroomType}/{houseType}/{paymentMethod}/{lookHomeTime}/{string}/{page}/{count}")
     ReturnData findRentAhouseList(@PathVariable long userId, @PathVariable int sellState, @PathVariable int roomState, @PathVariable int sort, @PathVariable int nearby, @PathVariable int residence, @PathVariable int roomType, @PathVariable double lon, @PathVariable double lat, @PathVariable int province, @PathVariable int city,
                                   @PathVariable int district, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int minArea, @PathVariable int maxArea, @PathVariable int orientation, @PathVariable int renovation, @PathVariable int floor, @PathVariable int bedroomType,
-                                  @PathVariable int houseType, @PathVariable int paymentMethod, @PathVariable int openHome, @PathVariable String string, @PathVariable int page, @PathVariable int count);
+                                  @PathVariable int houseType, @PathVariable int paymentMethod, @PathVariable int lookHomeTime, @PathVariable String string, @PathVariable int page, @PathVariable int count);
 
 }
