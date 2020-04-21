@@ -60,9 +60,12 @@ public interface CollectDao {
             "<if test=\"myId > 0\">" +
             " and myId=#{myId}" +
             "</if>" +
+            "<if test=\"afficheType > 8\">" +
+            " and afficheType=#{afficheType}" +
+            "</if>" +
             " order by time desc" +
             "</script>")
-    List<Collect> findList(@Param("myId") long myId);
+    List<Collect> findList(@Param("myId") long myId, @Param("afficheType") int afficheType);
 
     /***
      * 根据用户&公告主键ID查询

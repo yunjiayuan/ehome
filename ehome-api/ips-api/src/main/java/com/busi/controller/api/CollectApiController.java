@@ -4,6 +4,7 @@ import com.busi.entity.Collect;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 
 /***
@@ -23,20 +24,21 @@ public interface CollectApiController {
     ReturnData addCollect(@Valid @RequestBody Collect collect, BindingResult bindingResult);
 
     /**
-     *@Description: 删除我的收藏
-     *@return:
+     * @Description: 删除我的收藏
+     * @return:
      */
     @DeleteMapping("delCollect/{myId}/{ids}")
-    ReturnData delCollect(@PathVariable long myId,@PathVariable String ids);
+    ReturnData delCollect(@PathVariable long myId, @PathVariable String ids);
 
     /**
      * 统计收藏次数
+     *
      * @param infoId
      * @param afficheType
      * @return
      */
     @GetMapping("getCollect/{infoId}/{afficheType}")
-    ReturnData getCollect(@PathVariable long infoId,@PathVariable int afficheType);
+    ReturnData getCollect(@PathVariable long infoId, @PathVariable int afficheType);
 
     /***
      * 分页查询我的收藏接口
@@ -44,6 +46,6 @@ public interface CollectApiController {
      * @param count
      * @return
      */
-    @GetMapping("findCollect/{userId}/{page}/{count}")
-    ReturnData findCollect(@PathVariable long userId,@PathVariable int page, @PathVariable int count);
+    @GetMapping("findCollect/{userId}/{afficheType}/{page}/{count}")
+    ReturnData findCollect(@PathVariable long userId, @PathVariable int afficheType, @PathVariable int page, @PathVariable int count);
 }

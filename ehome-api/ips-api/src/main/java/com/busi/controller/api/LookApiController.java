@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface LookApiController {
 
     /**
-     *@Description: 删除我的浏览记录
-     *@return:
+     * @Description: 删除我的浏览记录
+     * @return:
      */
     @DeleteMapping("delLook/{myId}/{ids}")
-    ReturnData delLook(@PathVariable long myId,@PathVariable String ids);
+    ReturnData delLook(@PathVariable long myId, @PathVariable String ids);
 
     /***
      * 分页查询我的浏览记录接口
@@ -25,7 +25,7 @@ public interface LookApiController {
      * @param count
      * @return
      */
-    @GetMapping("findLook/{userId}/{page}/{count}")
-    ReturnData findLook(@PathVariable long userId,@PathVariable int page, @PathVariable int count);
+    @GetMapping("findLook/{userId}/{afficheType}/{page}/{count}")
+    ReturnData findLook(@PathVariable long userId, @PathVariable int afficheType, @PathVariable int page, @PathVariable int count);
 
 }

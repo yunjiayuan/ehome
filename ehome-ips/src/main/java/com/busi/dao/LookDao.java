@@ -3,6 +3,7 @@ package com.busi.dao;
 import com.busi.entity.Look;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -34,11 +35,11 @@ public interface LookDao {
             "delete from look" +
             " where id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
-            " #{item}"+
-            "</foreach>"+
+            " #{item}" +
+            "</foreach>" +
             " and myId=#{myId}" +
             "</script>")
-    int del(@Param("ids") String[] ids , @Param("myId") long myId);
+    int del(@Param("ids") String[] ids, @Param("myId") long myId);
 
     /***
      * 分页查询 默认按时间降序排序
@@ -48,10 +49,13 @@ public interface LookDao {
     @Select("<script>" +
             "select * from look" +
             " where 1=1" +
-            "<if test=\"myId > 0\">"+
+            "<if test=\"myId > 0\">" +
             " and myId=#{myId}" +
+            "</if>" +
+            "<if test=\"afficheType > 8\">" +
+            " and afficheType=#{afficheType}" +
             "</if>" +
             " order by time desc" +
             "</script>")
-    List<Look> findList(@Param("myId") long myId);
+    List<Look> findList(@Param("myId") long myId, @Param("afficheType") int afficheType);
 }

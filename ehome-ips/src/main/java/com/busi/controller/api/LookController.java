@@ -58,7 +58,7 @@ public class LookController extends BaseController implements LookApiController 
      * @return
      */
     @Override
-    public ReturnData findLook(@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findLook(@PathVariable long userId, @PathVariable int afficheType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -67,14 +67,14 @@ public class LookController extends BaseController implements LookApiController 
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //验证查看权限
-        if(userId != 0){
+        if (userId != 0) {
             if (CommonUtils.getMyId() != userId) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限浏览用户[" + userId + "]的浏览记录", new JSONObject());
             }
         }
         //开始查询
         PageBean<Look> pageBean;
-        pageBean = lookService.findList(userId, page, count);
+        pageBean = lookService.findList(userId,afficheType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

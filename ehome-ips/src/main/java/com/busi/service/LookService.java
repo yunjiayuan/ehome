@@ -9,6 +9,7 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 /**
@@ -27,8 +28,8 @@ public class LookService {
      * @param look
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int add( Look look){
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int add(Look look) {
         return lookDao.add(look);
     }
 
@@ -38,9 +39,9 @@ public class LookService {
      * @param userId
      * @return
      */
-    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
-    public int del(String[] ids ,long userId){
-        return lookDao.del(ids,userId);
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int del(String[] ids, long userId) {
+        return lookDao.del(ids, userId);
     }
 
     /***
@@ -50,12 +51,12 @@ public class LookService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<Look> findList(long myId, int page, int count) {
+    public PageBean<Look> findList(long myId, int afficheType, int page, int count) {
 
         List<Look> list;
-        Page p = PageHelper.startPage(page,count);//为此行代码下面的第一行sql查询结果进行分页
-        list = lookDao.findList(myId);
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = lookDao.findList(myId, afficheType);
 
-        return PageUtils.getPageBean(p,list);
+        return PageUtils.getPageBean(p, list);
     }
 }
