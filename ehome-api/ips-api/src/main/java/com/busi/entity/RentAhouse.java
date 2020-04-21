@@ -62,21 +62,21 @@ public class RentAhouse {
 
     private String roomNumber;             //室 具体房间号
 
-    private int residence;              //户型 几居室
+    private int residence;              //户型 几居室 0一居室、1两居室、2三居室、3四居室、4五居室、5五居室以上
 
     private int livingRoom;             //户型 几厅
 
     private int toilet;                 //户型 几卫
 
-    private double housingArea;         //户型面积
+    private int housingArea;         //户型面积
 
-    private int roomType;             //房屋类型 0新房 1二手房
+    private int roomType;             //房屋类型 roomState=0时：0新房 1二手房   roomState=1时：0合租 1整租
 
-    private int orientation;             //房屋朝向 0南北、1东北、2东南、3西南、4西北、5东西、6南、7东、8西、9北
+    private int orientation;             //房屋朝向 0南北、1东北、2东南、3西南、4西北、5东西、6南、7北、8东、9西
 
-    private int renovation;             //房屋装修 0精装 1普装 2毛坯
+    private int renovation;             //房屋装修 0精装修  1普通装修  2毛坯房
 
-    private int rentalType;             //出租类型 0整租 1合租 2拼租
+    private int rentalType;             //出租类型 0合租 1整租
 
     private int bedroomType;             //卧室类型 0主卧 1次卧 2其他
 
@@ -86,7 +86,7 @@ public class RentAhouse {
 
     private int paymentMethod;             //支付方式 0押一付一 1押一付三 2季付 3半年付 4年付
 
-    private int lookHomeTime;             //看房时间
+    private int lookHomeTime;             //看房时间  0随时看房 1 周末看房  2下班后看房  3电话预约
 
     private String realName;        //业主姓名
 

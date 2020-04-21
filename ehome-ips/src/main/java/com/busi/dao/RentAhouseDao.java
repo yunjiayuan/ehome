@@ -103,11 +103,12 @@ public interface RentAhouseDao {
     /***
      * 条件查询房源
      * @param userId    用户ID
-     * @param sellState  -1不限 leaseState=0时：0出售中  1已售出  leaseState=1时：0出租中  1已出租
-     * @param leaseState  -1不限 0出售  1出租
+     * @param sellState  -1不限 roomState=0时：0出售中  1已售出  roomState=1时：0出租中  1已出租
+     * @param roomState  -1不限 0出售  1出租
      * @param sort  排序条件:0最新发布，1价格最低，2价格最高
-     * @param nearby  附近 0不限  1附近
-     * @param roomType     房型：0不限 1一室 2二室 3三室 4四室 5五室及以上
+     * @param nearby  附近 -1不限  0附近
+     * @param residence     房型：-1不限 0一室 1二室 2三室 3四室 4五室及以上
+     * @param roomType     房屋类型 roomState=0时：-1不限 0新房 1二手房   roomState=1时：-1不限 0合租 1整租
      * @param lon     经度
      * @param lat     纬度
      * @param province     省
@@ -123,7 +124,7 @@ public interface RentAhouseDao {
      * @param bedroomType   卧室类型：-1不限 0主卧 1次卧 2其他
      * @param houseType  房源类型: -1不限 0业主直租 1中介
      * @param paymentMethod  支付方式: -1不限  0押一付一 1押一付三 2季付 3半年付 4年付
-     * @param openHome  看房时间
+     * @param openHome  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
      * @param string    模糊搜索
      * @return
      */
@@ -133,7 +134,8 @@ public interface RentAhouseDao {
             " userId = #{userId}" +
             "</if>" +
             " and state=0" +
-            " and roomState = #{leaseState}" +
+            " and roomState = #{roomState}" +
+            " and residence = #{residence}" +
             " and sellState = #{sellState}" +
             " and roomType = #{roomType}" +
             " and orientation = #{orientation}" +
@@ -189,10 +191,10 @@ public interface RentAhouseDao {
             " order by expectedPrice desc" +
             "</if>" +
             "</script>")
-    List<RentAhouse> findRentAhouseList(@Param("userId") long userId, @Param("sellState") int sellState, @Param("leaseState") int leaseState, @Param("sort") int sort,
-                                        @Param("nearby") int nearby, @Param("roomType") int roomType, @Param("lon") double lon, @Param("lat") double lat, @Param("province") int province,
+    List<RentAhouse> findRentAhouseList(@Param("userId") long userId, @Param("sellState") int sellState, @Param("roomState") int roomState, @Param("sort") int sort,
+                                        @Param("nearby") int nearby, @Param("residence") int residence, @Param("roomType") int roomType, @Param("lon") double lon, @Param("lat") double lat, @Param("province") int province,
                                         @Param("city") int city, @Param("district") int district, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice,
-                                        @Param("minArea") double minArea, @Param("maxArea") double maxArea, @Param("orientation") int orientation, @Param("renovation") int renovation,
+                                        @Param("minArea") int minArea, @Param("maxArea") int maxArea, @Param("orientation") int orientation, @Param("renovation") int renovation,
                                         @Param("floor") int floor, @Param("bedroomType") int bedroomType, @Param("houseType") int houseType, @Param("paymentMethod") int paymentMethod,
                                         @Param("openHome") int openHome, @Param("string") String string);
 

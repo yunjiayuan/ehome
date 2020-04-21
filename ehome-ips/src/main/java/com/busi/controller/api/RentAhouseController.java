@@ -139,11 +139,12 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
     /***
      * 条件查询房源
      * @param userId    用户ID
-     * @param sellState  -1不限 leaseState=0时：0出售中  1已售出  leaseState=1时：0出租中  1已出租
-     * @param leaseState  -1不限 0出售  1出租
+     * @param sellState  -1不限 roomState=0时：0出售中  1已售出  roomState=1时：0出租中  1已出租
+     * @param roomState  -1不限 0出售  1出租
      * @param sort  排序条件:0最新发布，1价格最低，2价格最高
-     * @param nearby  附近 0不限  1附近
-     * @param roomType     房型：0不限 1一室 2二室 3三室 4四室 5五室及以上
+     * @param nearby  附近 -1不限  0附近
+     * @param residence     房型：-1不限 0一室 1二室 2三室 3四室 4五室及以上
+     * @param roomType     房屋类型 roomState=0时：-1不限 0新房 1二手房   roomState=1时：-1不限 0合租 1整租
      * @param lon     经度
      * @param lat     纬度
      * @param province     省
@@ -159,22 +160,22 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
      * @param bedroomType   卧室类型：-1不限 0主卧 1次卧 2其他
      * @param houseType  房源类型: -1不限 0业主直租 1中介
      * @param paymentMethod  支付方式: -1不限  0押一付一 1押一付三 2季付 3半年付 4年付
-     * @param openHome  看房时间
+     * @param openHome  看房时间 ： -1不限 0随时看房 1 周末看房  2下班后看房  3电话预约
      * @param string    模糊搜索
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findRentAhouseList(@PathVariable long userId, @PathVariable int sellState, @PathVariable int leaseState, @PathVariable int sort, @PathVariable int nearby, @PathVariable int roomType, @PathVariable double lon, @PathVariable double lat, @PathVariable int province, @PathVariable int city,
-                                         @PathVariable int district, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable double minArea, @PathVariable double maxArea, @PathVariable int orientation, @PathVariable int renovation, @PathVariable int floor, @PathVariable int bedroomType,
+    public ReturnData findRentAhouseList(@PathVariable long userId, @PathVariable int sellState, @PathVariable int roomState, @PathVariable int sort, @PathVariable int nearby, @PathVariable int residence, @PathVariable int roomType, @PathVariable double lon, @PathVariable double lat, @PathVariable int province, @PathVariable int city,
+                                         @PathVariable int district, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int minArea, @PathVariable int maxArea, @PathVariable int orientation, @PathVariable int renovation, @PathVariable int floor, @PathVariable int bedroomType,
                                          @PathVariable int houseType, @PathVariable int paymentMethod, @PathVariable int openHome, @PathVariable String string, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<RentAhouse> pageBean = null;
-        pageBean = communityService.findRentAhouseList(userId, sellState, leaseState, sort, nearby, roomType, lon,
+        pageBean = communityService.findRentAhouseList(userId, sellState, roomState, sort, nearby, residence, roomType, lon,
                 lat, province, city, district, minPrice, maxPrice, minArea, maxArea, orientation,
                 renovation, floor, bedroomType, houseType, paymentMethod, openHome, string, page, count);
         if (pageBean == null) {
