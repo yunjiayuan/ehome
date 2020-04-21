@@ -50,7 +50,7 @@ public class CollectController extends BaseController implements CollectApiContr
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         Collect collect1 = null;
-        collect1 = collectService.findUserId(collect.getInfoId(), collect.getMyId());
+        collect1 = collectService.findUserId(collect.getInfoId(), collect.getMyId(),collect.getAfficheType());
         if (collect1 != null) {
             return returnData(StatusCode.CODE_IPS_COLLECTION.CODE_VALUE, "你已收藏过", new JSONObject());
         }

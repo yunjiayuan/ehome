@@ -50,8 +50,8 @@ public class CollectService {
      * @param userId
      * @return
      */
-    public Collect findUserId(long id, long userId) {
-        return collectDao.findUserId(id, userId);
+    public Collect findUserId(long id, long userId, int afficheType) {
+        return collectDao.findUserId(id, userId, afficheType);
     }
 
     /***

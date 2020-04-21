@@ -68,6 +68,6 @@ public interface CollectDao {
      * 根据用户&公告主键ID查询
      * @param id
      */
-    @Select("select * from Collect where infoId=#{id} and myId=#{myId}")
-    Collect findUserId(@Param("id") long id, @Param("myId") long myId);
+    @Select("select * from Collect where infoId=#{id} and myId=#{myId} and afficheType=#{afficheType}")
+    Collect findUserId(@Param("id") long id, @Param("myId") long myId, @Param("afficheType") int afficheType);
 }

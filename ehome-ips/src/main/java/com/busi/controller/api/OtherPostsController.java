@@ -239,13 +239,13 @@ public class OtherPostsController extends BaseController implements OtherPostsAp
         }
         int collection = 0;
         Collect collect1 = null;
-        collect1 = collectService.findUserId(id, CommonUtils.getMyId());
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId(), 6);
         if (collect1 != null) {
             collection = 1;
         }
         otherPostsMap.put("collection", collection);
         //新增浏览记录
-        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), 1);
+        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), 6);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", otherPostsMap);
     }

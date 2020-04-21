@@ -334,9 +334,10 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         }
         //查询缓存 缓存中不存在 查询数据库
         int num = 0;
+        SearchGoods posts = null;
         Map<String, Object> otherPostsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_SEARCHGOODS + id);
         if (otherPostsMap == null || otherPostsMap.size() <= 0) {
-            SearchGoods posts = searchGoodsService.findUserById(id);
+            posts = searchGoodsService.findUserById(id);
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
@@ -352,7 +353,7 @@ public class SearchGoodsController extends BaseController implements SearchGoods
         }
         int collection = 0;
         Collect collect1 = null;
-        collect1 = collectService.findUserId(id, CommonUtils.getMyId());
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId(), posts.getSearchType() + 2);
         if (collect1 != null) {
             collection = 1;
         }

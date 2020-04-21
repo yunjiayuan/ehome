@@ -420,7 +420,7 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         }
         int collection = 0;
         Collect collect1 = null;
-        collect1 = collectService.findUserId(id, CommonUtils.getMyId());
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId(), 2);
         if (collect1 != null) {
             collection = 1;
         }

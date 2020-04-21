@@ -436,7 +436,7 @@ public class LoveAndFriendsController extends BaseController implements LoveAndF
 
         int collection = 0;
         Collect collect1 = null;
-        collect1 = collectService.findUserId(id, CommonUtils.getMyId());
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId(), 1);
         if (collect1 != null) {
             collection = 1;
         }
