@@ -167,7 +167,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         if (ordersMap == null || ordersMap.size() <= 0) {
             io = shopFloorOrdersService.findNo(no);
             if (io == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前合伙购不存在", new JSONObject());
             }
             userInfo = userInfoUtils.getUserInfo(io.getBuyerId());
             if (userInfo != null) {
@@ -182,8 +182,10 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         }
         ShopFloorOrders ik = (ShopFloorOrders) CommonUtils.mapToObject(ordersMap, ShopFloorOrders.class);
         if (ik != null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前合伙购不存在", new JSONObject());
         }
+        int state = 0;  // 合伙购状态：0未成功  1成功
+        Map<String, Object> map = new HashMap<>();
         if (ik.getOrdersType() == 1) {
             PartnerBuyGoods posts = null;
             posts = goodsCenterService.findUserById(id);
@@ -191,7 +193,8 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
             if (posts.getState() == 1 || posts.getNumber() >= posts.getLimitNumber()) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前合伙购已拼购成功，请看看其他的吧", new JSONObject());
+                map.put("state", 1);// 合伙购状态：0未成功  1成功
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前合伙购已拼购成功，请看看其他的吧", map);
             }
             userInfo = userInfoUtils.getUserInfo(ik.getBuyerId());
             if (userInfo != null) {
@@ -201,11 +204,13 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
             goodsCenterService.update(posts);
             //更新合伙购状态
             if (posts.getNumber() == posts.getLimitNumber()) {
+                state = 1;
                 posts.setState(1);
                 goodsCenterService.update(posts);
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        map.put("state", state);// 合伙购状态：0未成功  1成功
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
