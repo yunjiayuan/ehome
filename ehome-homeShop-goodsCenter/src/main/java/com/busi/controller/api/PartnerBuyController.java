@@ -153,7 +153,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
     }
 
     /***
-     * 加入合伙购
+     * 加入合伙购（支付成功时调用）
      * @param no 订单编号
      * @param id 合伙购ID
      * @return
@@ -190,8 +190,8 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
-            if (posts.getState() == 1) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            if (posts.getState() == 1 || posts.getNumber() >= posts.getLimitNumber()) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前合伙购已拼购成功，请看看其他的吧", new JSONObject());
             }
             userInfo = userInfoUtils.getUserInfo(ik.getBuyerId());
             if (userInfo != null) {
@@ -199,6 +199,11 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
             }
             posts.setNumber(posts.getNumber() + 1);
             goodsCenterService.update(posts);
+            //更新合伙购状态
+            if (posts.getNumber() == posts.getLimitNumber()) {
+                posts.setState(1);
+                goodsCenterService.update(posts);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
