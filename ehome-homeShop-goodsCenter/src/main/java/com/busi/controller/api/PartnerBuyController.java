@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,8 +95,32 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         PageBean<PartnerBuyGoods> pageBean = null;
         pageBean = goodsCenterService.findDishesSortList(sort, CommonUtils.getMyId(), page, count);
         if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
         }
+        List list = null;
+        list = pageBean.getList();
+        PartnerBuyGoods t = null;
+        UserInfo userCache = null;
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        for (int i = 0; i < list.size(); i++) {
+            t = (PartnerBuyGoods) list.get(i);
+            if (t != null) {
+                userCache = userInfoUtils.getUserInfo(t.getUserId());
+                if (userCache != null) {
+                    t.setName(userCache.getName());
+                    t.setHead(userCache.getHead());
+                    t.setProTypeId(userCache.getProType());
+                    t.setHouseNumber(userCache.getHouseNumber());
+                }
+            }
+        }
+        pageBean = new PageBean<>();
+        pageBean.setSize(list.size());
+        pageBean.setPageNum(page);
+        pageBean.setPageSize(count);
+        pageBean.setList(list);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
