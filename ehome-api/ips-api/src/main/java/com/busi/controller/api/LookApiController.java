@@ -25,7 +25,7 @@ public interface LookApiController {
      * @param count
      * @return
      */
-    @GetMapping("findLook/{userId}/{afficheType}/{page}/{count}")
-    ReturnData findLook(@PathVariable long userId, @PathVariable int afficheType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findLook/{userId}/{page}/{count}")
+    ReturnData findLook(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
 
 }

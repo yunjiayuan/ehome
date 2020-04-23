@@ -46,6 +46,6 @@ public interface CollectApiController {
      * @param count
      * @return
      */
-    @GetMapping("findCollect/{userId}/{afficheType}/{page}/{count}")
-    ReturnData findCollect(@PathVariable long userId, @PathVariable int afficheType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findCollect/{userId}/{page}/{count}")
+    ReturnData findCollect(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
 }

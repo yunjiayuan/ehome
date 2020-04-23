@@ -52,10 +52,7 @@ public interface LookDao {
             "<if test=\"myId > 0\">" +
             " and myId=#{myId}" +
             "</if>" +
-            "<if test=\"afficheType > 8\">" +
-            " and afficheType=#{afficheType}" +
-            "</if>" +
             " order by time desc" +
             "</script>")
-    List<Look> findList(@Param("myId") long myId, @Param("afficheType") int afficheType);
+    List<Look> findList(@Param("myId") long myId);
 }

@@ -72,11 +72,11 @@ public class CollectService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<Collect> findList(long myId, int afficheType, int page, int count) {
+    public PageBean<Collect> findList(long myId, int page, int count) {
 
         List<Collect> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = collectDao.findList(myId, afficheType);
+        list = collectDao.findList(myId);
 
         return PageUtils.getPageBean(p, list);
     }

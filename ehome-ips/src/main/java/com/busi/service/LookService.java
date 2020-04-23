@@ -51,11 +51,11 @@ public class LookService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<Look> findList(long myId, int afficheType, int page, int count) {
+    public PageBean<Look> findList(long myId, int page, int count) {
 
         List<Look> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = lookDao.findList(myId, afficheType);
+        list = lookDao.findList(myId);
 
         return PageUtils.getPageBean(p, list);
     }
