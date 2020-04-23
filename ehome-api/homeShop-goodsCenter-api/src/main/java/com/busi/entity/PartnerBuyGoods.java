@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 /**
@@ -18,10 +20,13 @@ import java.util.Date;
 public class PartnerBuyGoods {
     private long id;                    //主键
 
+    @Min(value = 1, message = "userId参数有误")
     private long userId;                //发起人
 
+    @NotEmpty(message = "合伙人信息不能为空")
     private String personnel;           //合伙人信息：#用户ID#,名字,头像;#用户ID#,名字,头像;
 
+    @NotEmpty(message = "图片不能为空")
     private String imgUrl;            //图片
 
     private String videoUrl;        //视频地址
@@ -41,8 +46,10 @@ public class PartnerBuyGoods {
 
     private int levelFive;          //商品5级分类
 
+    @NotEmpty(message = "商品分类名称不能为空")
     private String usedSort;        //商品分类名称
 
+    @Min(value = 1, message = "usedSortId参数有误")
     private long usedSortId;        //商品分类Id
 
     private String specs;                //规格
@@ -51,13 +58,17 @@ public class PartnerBuyGoods {
 
     private double partnerPrice;                //合伙购价格
 
+    @Length(min = 1, max = 2000, message = "goodsTitle参数超出合法范围")
     private String details;                //商品详情描述
 
-    private int province;                //产地省份  默认为0
+    @Min(value = 0, message = "province参数有误，超出指定范围")
+    private int province; // 省
 
-    private int city;                    //产地城市  默认为0
+    @Min(value = 0, message = "city参数有误，超出指定范围")
+    private int city; // 城市
 
-    private int district;                //产地区域  默认为0
+    @Min(value = 0, message = "district参数有误，超出指定范围")
+    private int district;       //区
 
     private int deleteType;                //删除标志：0正常，1用户删除，2管理人员删除
 
