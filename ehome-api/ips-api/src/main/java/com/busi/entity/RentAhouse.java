@@ -27,10 +27,12 @@ public class RentAhouse {
 
     private int sellState;             //roomState=0时：0出售中  1已售出  roomState=1时：0出租中  1已出租
 
+    @NotEmpty(message = "标题不能为空")
     private String title;    //标题
 
     private String formulation;    //描述
 
+    @NotEmpty(message = "图片不能为空")
     private String picture;    //图片
 
     private String videoUrl;    //视频地址
@@ -40,10 +42,13 @@ public class RentAhouse {
     @NotEmpty(message = "小区名称不能为空")
     private String villageName;       // 小区名称
 
-    private int province;       //省
+    @Min(value = 0, message = "province参数有误，超出指定范围")
+    private int province; // 省
 
-    private int city;       //市
+    @Min(value = 0, message = "city参数有误，超出指定范围")
+    private int city; // 城市
 
+    @Min(value = 0, message = "district参数有误，超出指定范围")
     private int district;       //区
 
     @Digits(integer = 3, fraction = 6, message = "lat参数格式有误")
@@ -52,14 +57,17 @@ public class RentAhouse {
     @Digits(integer = 3, fraction = 6, message = "lon参数格式有误")
     private double lon;                    //经度
 
+    @NotEmpty(message = "小区名称不能为空")
     private String houseNumber;          //楼栋编号
 
     private int houseCompany;         //单位：0号楼、1栋、2幢、3座、4无
 
+    @NotEmpty(message = "单元编号不能为空")
     private String unitNumber;             //单元编号
 
     private int unitCompany;           //单位：0单元、1无单元
 
+    @NotEmpty(message = "具体房间号不能为空")
     private String roomNumber;             //室 具体房间号
 
     private int residence;              //户型 几居室 0一居室、1两居室、2三居室、3四居室、4五居室、5五居室以上
@@ -88,6 +96,7 @@ public class RentAhouse {
 
     private int lookHomeTime;             //看房时间  0随时看房 1 周末看房  2下班后看房  3电话预约
 
+    @NotEmpty(message = "业主姓名不能为空")
     private String realName;        //业主姓名
 
     private int elevator;       //电梯 0没有 1有
