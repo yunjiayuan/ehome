@@ -76,7 +76,7 @@ public class RentAhouse {
 
     private int renovation;             //房屋装修 0精装修  1普通装修  2毛坯房
 
-    private int rentalType;             //出租类型 0合租 1整租
+    private int rentalType;             //出租类型 0合租 1整租  *暂不需要*
 
     private int bedroomType;             //卧室类型 0主卧 1次卧 2其他
 
@@ -96,7 +96,7 @@ public class RentAhouse {
 
     private int heatingCost;        //取暖费 0没有 1有
 
-    private int floor;        //楼层：0低楼层 1中楼层 2高楼层
+    private int floor;        //楼层：0底层 1低楼层 2中楼层 3高楼层 4顶层
 
     private int totalFloor;        //总楼层
 

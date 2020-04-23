@@ -2,6 +2,7 @@ package com.busi.service;
 
 import com.busi.dao.ShopFloorGoodsDao;
 import com.busi.entity.PageBean;
+import com.busi.entity.PartnerBuyGoods;
 import com.busi.entity.ShopFloorGoods;
 import com.busi.entity.ShopFloorGoodsDescribe;
 import com.busi.utils.PageUtils;
@@ -74,6 +75,16 @@ public class ShopFloorGoodsService {
         list = goodsCenterDao.findList(ids);
         return list;
     }
+
+    /***
+     * 批量查询指定的商品
+     * @param id
+     * @return
+     */
+    public PartnerBuyGoods find(long id) {
+        return goodsCenterDao.find(id);
+    }
+
 
     /***
      * 批量上下架商品

@@ -161,7 +161,7 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
      * @param maxArea  最大面积
      * @param orientation  朝向：-1不限 0南北、1东北、2东南、3西南、4西北、5东西、6南、7东、8西、9北
      * @param renovation   房屋装修：-1不限 0精装 1普装 2毛坯
-     * @param floor   房屋楼层：-1不限 0低楼层 1中楼层 2高楼层
+     * @param floor   房屋楼层：-1不限 0底层 1低楼层 2中楼层 3高楼层 4顶层
      * @param bedroomType   卧室类型：-1不限 0主卧 1次卧 2其他
      * @param houseType  房源类型: -1不限 0业主直租 1中介
      * @param paymentMethod  支付方式: -1不限  0押一付一 1押一付三 2季付 3半年付 4年付

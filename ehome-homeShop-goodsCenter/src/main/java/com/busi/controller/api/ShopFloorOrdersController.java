@@ -88,32 +88,59 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         }
         String[] sd = shopFloorOrders.getGoodsIds().split(",");//商品ID
         String[] fn = shopFloorOrders.getGoodsNumber().split(",");//商品数量
+        if (shopFloorOrders.getType() < 3) { //订单类型：0普通  1礼尚往来指定接收者  2礼尚往来未指定接收者  3合伙购
 
-        iup = shopFloorGoodsService.findList(sd);
-        if (iup == null || iup.size() <= 0 || iup.size() != sd.length) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-        }
-        for (int i = 0; i < iup.size(); i++) {
-            laf = (ShopFloorGoods) iup.get(i);
-            for (int j = 0; j < sd.length; j++) {
-                if (laf.getId() == Long.parseLong(sd[j])) {//确认是当前商品ID
-                    //判断是否有折扣
-                    if (laf.getDiscountPrice() > 0) {
-                        cost = laf.getDiscountPrice();//折扣价
-                    } else {
-                        cost = laf.getPrice();//原价
+            iup = shopFloorGoodsService.findList(sd);
+            if (iup == null || iup.size() <= 0 || iup.size() != sd.length) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            for (int i = 0; i < iup.size(); i++) {
+                laf = (ShopFloorGoods) iup.get(i);
+                for (int j = 0; j < sd.length; j++) {
+                    if (laf.getId() == Long.parseLong(sd[j])) {//确认是当前商品ID
+                        //判断是否有折扣
+                        if (laf.getDiscountPrice() > 0) {
+                            cost = laf.getDiscountPrice();//折扣价
+                        } else {
+                            cost = laf.getPrice();//原价
+                        }
+                        goodsTitle = laf.getGoodsTitle();//标题
+                        if (CommonUtils.checkFull(laf.getGoodsCoverUrl())) {
+                            String[] img = laf.getImgUrl().split(",");
+                            imgUrl = img[0];//用第一张图做封面
+                        } else {
+                            imgUrl = laf.getGoodsCoverUrl();//图片
+                        }
+                        specs = laf.getSpecs();
+                        goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片,规格;
+                        money += Integer.parseInt(fn[j]) * cost;//总价格
                     }
-                    goodsTitle = laf.getGoodsTitle();//标题
-                    if (CommonUtils.checkFull(laf.getGoodsCoverUrl())) {
-                        String[] img = laf.getImgUrl().split(",");
-                        imgUrl = img[0];//用第一张图做封面
-                    } else {
-                        imgUrl = laf.getGoodsCoverUrl();//图片
-                    }
-                    specs = laf.getSpecs();
-                    goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片,规格;
-                    money += Integer.parseInt(fn[j]) * cost;//总价格
                 }
+            }
+            //移除购物车当前商品
+            goodsCenterService.delGoods(sd);
+            //清除缓存中购物车的信息
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorOrders.getBuyerId(), 0);
+        } else {//订单类型: 3合伙购
+            PartnerBuyGoods buyGoods = shopFloorGoodsService.find(Long.parseLong(sd[0]));
+            if (buyGoods == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            if (buyGoods.getId() == Long.parseLong(sd[0])) {//确认是当前商品ID
+                //判断是否有合伙购价格
+                if (buyGoods.getPartnerPrice() > 0) {
+                    cost = buyGoods.getPartnerPrice();//合伙购价格
+                } else {
+                    cost = buyGoods.getPrice();//原价
+                }
+                goodsTitle = buyGoods.getGoodsTitle();//标题
+                if (!CommonUtils.checkFull(buyGoods.getImgUrl())) {
+                    String[] img = buyGoods.getImgUrl().split(",");
+                    imgUrl = img[0];//用第一张图做封面
+                }
+                specs = buyGoods.getSpecs();
+                goods = buyGoods.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[0]) + "," + cost + "," + imgUrl + "," + specs;//商品ID,标题,数量,价格，图片,规格;
+                money = Integer.parseInt(fn [0]) * cost;//总价格
             }
         }
         Date date = new Date();
@@ -129,10 +156,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         shopFloorOrders.setOrdersType(0);
         shopFloorOrdersService.addOrders(shopFloorOrders);
 
-        //移除购物车当前商品
-        goodsCenterService.delGoods(sd);
-        //清除缓存中购物车的信息
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorOrders.getBuyerId(), 0);
 
         Map<String, Object> map = new HashMap<>();
         map.put("no", shopFloorOrders.getNo());

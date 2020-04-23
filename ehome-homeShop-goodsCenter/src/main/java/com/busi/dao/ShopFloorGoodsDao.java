@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.PartnerBuyGoods;
 import com.busi.entity.ShopFloorGoods;
 import com.busi.entity.ShopFloorGoodsDescribe;
 import org.apache.ibatis.annotations.*;
@@ -108,6 +109,17 @@ public interface ShopFloorGoodsDao {
     List<ShopFloorGoods> findList(@Param("ids") String[] ids);
 
     /***
+     * 查询指定合伙购的商品
+     * @param id
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PartnerBuyGoods" +
+            " where id=#{id} and deleteType=0 and state=0" +
+            "</script>")
+    PartnerBuyGoods find(@Param("id") long id);
+
+    /***
      * 根据Id查询
      * @param id
      */
@@ -152,61 +164,61 @@ public interface ShopFloorGoodsDao {
             "</if>" +
 
             "<if test=\"levelOne == -2 \">" +
-                " and levelOne > -1" +
+            " and levelOne > -1" +
             "</if>" +
 
             "<if test=\"levelOne >= 0 \">" +
-                "<if test=\"levelTwo == -2 \">" +
-                    " and levelOne = #{levelOne}" +
-                "</if>" +
-                "<if test=\"levelTwo > -1 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo = #{levelTwo}" +
-                    "<if test=\"levelThree >= 0\">" +
-                        " and levelThree = #{levelThree}" +
-                    "</if>" +
-                    "<if test=\"levelThree == -2\">" +
-                        " and levelThree >= -1" +
-                    "</if>" +
-                "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelOne = #{levelOne}" +
+            "</if>" +
+            "<if test=\"levelTwo > -1 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo = #{levelTwo}" +
+            "<if test=\"levelThree >= 0\">" +
+            " and levelThree = #{levelThree}" +
+            "</if>" +
+            "<if test=\"levelThree == -2\">" +
+            " and levelThree >= -1" +
+            "</if>" +
+            "</if>" +
             "</if>" +
 
             "<if test=\"maxPrice > 0\">" +
-                " and price >= #{minPrice} and #{maxPrice} >= price" +
+            " and price >= #{minPrice} and #{maxPrice} >= price" +
             "</if>" +
             "<if test=\"maxPrice &lt;= 0\">" +
-                " and price >= #{minPrice}" +
+            " and price >= #{minPrice}" +
             "</if>" +
             "<if test=\"stock == 0\">" +
-                " and stock > 0" +
+            " and stock > 0" +
             "</if>" +
             "<if test=\"stock == 1\">" +
-                " and stock = 0" +
+            " and stock = 0" +
             "</if>" +
             "<if test=\"sort == 0\">" +
-                "<if test=\"price == -1\">" +
-                    " order by sales desc" +
-                "</if>" +
-                "<if test=\"price == 0\">" +
-                    " order by price asc,sales desc" +
-                "</if>" +
-                "<if test=\"price == 1\">" +
-                    " order by price desc,sales desc" +
-                "</if>" +
+            "<if test=\"price == -1\">" +
+            " order by sales desc" +
+            "</if>" +
+            "<if test=\"price == 0\">" +
+            " order by price asc,sales desc" +
+            "</if>" +
+            "<if test=\"price == 1\">" +
+            " order by price desc,sales desc" +
+            "</if>" +
             "</if>" +
             "<if test=\"sort == 1\">" +
-                "<if test=\"price == -1\">" +
-                    " order by refreshTime desc" +
-                "</if>" +
-                "<if test=\"price == 0\">" +
-                    " order by price asc,refreshTime desc" +
-                "</if>" +
-                    "<if test=\"price == 1\">" +
-                " order by price desc,refreshTime desc" +
-                "</if>" +
+            "<if test=\"price == -1\">" +
+            " order by refreshTime desc" +
+            "</if>" +
+            "<if test=\"price == 0\">" +
+            " order by price asc,refreshTime desc" +
+            "</if>" +
+            "<if test=\"price == 1\">" +
+            " order by price desc,refreshTime desc" +
+            "</if>" +
             "</if>" +
             "</script>")
-    List<ShopFloorGoods> findDishesSortList(@Param("discount") int discount,@Param("sort") int sort,@Param("price") int price,@Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+    List<ShopFloorGoods> findDishesSortList(@Param("discount") int discount, @Param("sort") int sort, @Param("price") int price, @Param("stock") int stock, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
     /***
      * 分页查询商品
@@ -221,42 +233,42 @@ public interface ShopFloorGoodsDao {
             "select * from ShopFloorGoods" +
             " where deleteType=0" +
             "<if test=\"sort != -1\">" +
-                " and sellType = #{sort}" +
+            " and sellType = #{sort}" +
             "</if>" +
 
             "<if test=\"levelOne == -2 \">" +
-                " and levelOne > -1" +
-                " and levelTwo > -1" +
-                " and levelThree > -1" +
+            " and levelOne > -1" +
+            " and levelTwo > -1" +
+            " and levelThree > -1" +
             "</if>" +
 
             "<if test=\"levelOne >= 0 \">" +
-                "<if test=\"levelTwo == -2 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo > -1" +
-                    " and levelThree > -1" +
-                "</if>" +
-                "<if test=\"levelTwo > -1 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo = #{levelTwo}" +
-                        "<if test=\"levelThree >= 0\">" +
-                            " and levelThree = #{levelThree}" +
-                        "</if>" +
-                        "<if test=\"levelThree == -2\">" +
-                            " and levelThree > -1" +
-                        "</if>" +
-                "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo > -1" +
+            " and levelThree > -1" +
+            "</if>" +
+            "<if test=\"levelTwo > -1 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo = #{levelTwo}" +
+            "<if test=\"levelThree >= 0\">" +
+            " and levelThree = #{levelThree}" +
+            "</if>" +
+            "<if test=\"levelThree == -2\">" +
+            " and levelThree > -1" +
+            "</if>" +
+            "</if>" +
             "</if>" +
 
             "<if test=\"stock == 1\">" +
-                " order by stock asc" +
+            " order by stock asc" +
             "</if>" +
             "<if test=\"stock == 0\">" +
-                " order by stock desc" +
+            " order by stock desc" +
             "</if>" +
-                " ,refreshTime desc" +
+            " ,refreshTime desc" +
             "</script>")
-    List<ShopFloorGoods> findFGoodsList(@Param("sort") int sort,  @Param("stock") int stock,@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+    List<ShopFloorGoods> findFGoodsList(@Param("sort") int sort, @Param("stock") int stock, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
     /***
      * 分页查询商品
@@ -275,38 +287,38 @@ public interface ShopFloorGoodsDao {
             "</if>" +
 
             "<if test=\"levelOne == -2 \">" +
-                " and levelOne > -1" +
-                " and levelTwo > -1" +
-                " and levelThree > -1" +
+            " and levelOne > -1" +
+            " and levelTwo > -1" +
+            " and levelThree > -1" +
             "</if>" +
 
             "<if test=\"levelOne >= 0 \">" +
-                "<if test=\"levelTwo == -2 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo > -1" +
-                    " and levelThree > -1" +
-                "</if>" +
-                "<if test=\"levelTwo > -1 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo = #{levelTwo}" +
-                        "<if test=\"levelThree >= 0\">" +
-                            " and levelThree = #{levelThree}" +
-                        "</if>" +
-                        "<if test=\"levelThree == -2\">" +
-                            " and levelThree > -1" +
-                        "</if>" +
-                "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo > -1" +
+            " and levelThree > -1" +
+            "</if>" +
+            "<if test=\"levelTwo > -1 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo = #{levelTwo}" +
+            "<if test=\"levelThree >= 0\">" +
+            " and levelThree = #{levelThree}" +
+            "</if>" +
+            "<if test=\"levelThree == -2\">" +
+            " and levelThree > -1" +
+            "</if>" +
+            "</if>" +
             "</if>" +
 
             "<if test=\"time == 0\">" +
-                " order by refreshTime desc" +
+            " order by refreshTime desc" +
             "</if>" +
-                "<if test=\"time == 1\">" +
+            "<if test=\"time == 1\">" +
             " order by refreshTime asc" +
             "</if>" +
-                " ,stock desc" +
+            " ,stock desc" +
             "</script>")
-    List<ShopFloorGoods> findFGoodsList2(@Param("sort") int sort,  @Param("time") int time,@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
+    List<ShopFloorGoods> findFGoodsList2(@Param("sort") int sort, @Param("time") int time, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
 
     /***
