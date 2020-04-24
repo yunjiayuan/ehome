@@ -49,9 +49,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
     ShopFloorOrdersService shopFloorOrdersService;
 
     @Autowired
-    private PartnerBuyService partnerBuyService;
-
-    @Autowired
     private ShopFloorShoppingCartService goodsCenterService;
 
     /***
@@ -62,6 +59,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
      */
     @Override
     public ReturnData addSForders(@Valid @RequestBody ShopFloorOrders shopFloorOrders, BindingResult bindingResult) {
+        Map<String, Object> map = new HashMap<>();
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -138,7 +136,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             for (int i = 0; i < personnel.length; i++) {
                 String[] personne = personnel[i].split(",");
                 if (usr.equals(personne[0])) {
-                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "你已加入过此合伙购了", new JSONObject());
+                    map.put("no", "");
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "你已加入过此合伙购了", map);
                 }
             }
             if (buyGoods.getId() == Long.parseLong(sd[0])) {//确认是当前商品ID
@@ -171,10 +170,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         shopFloorOrders.setOrdersType(0);
         shopFloorOrdersService.addOrders(shopFloorOrders);
 
-
-        Map<String, Object> map = new HashMap<>();
         map.put("no", shopFloorOrders.getNo());
-
         //放入缓存
         // 付款超时 45分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(shopFloorOrders);
