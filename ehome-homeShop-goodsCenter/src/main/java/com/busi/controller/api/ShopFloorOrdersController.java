@@ -140,7 +140,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 }
                 specs = buyGoods.getSpecs();
                 goods = buyGoods.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[0]) + "," + cost + "," + imgUrl + "," + specs;//商品ID,标题,数量,价格，图片,规格;
-                money = Integer.parseInt(fn [0]) * cost;//总价格
+                money = Integer.parseInt(fn[0]) * cost;//总价格
             }
         }
         Date date = new Date();
@@ -351,7 +351,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         ShopFloorOrders io = null;
         Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
-            io = shopFloorOrdersService.findNo(no);
+            io = shopFloorOrdersService.findNo(no, CommonUtils.getMyId());
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
             }

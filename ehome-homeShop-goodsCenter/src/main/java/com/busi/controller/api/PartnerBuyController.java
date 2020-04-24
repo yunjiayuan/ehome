@@ -165,7 +165,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         ShopFloorOrders io = null;
         Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
-            io = shopFloorOrdersService.findNo(no);
+            io = shopFloorOrdersService.findNo(no, CommonUtils.getMyId());
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前合伙购不存在", new JSONObject());
             }
@@ -181,12 +181,12 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
             redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
         }
         ShopFloorOrders ik = (ShopFloorOrders) CommonUtils.mapToObject(ordersMap, ShopFloorOrders.class);
-        if (ik != null) {
+        if (ik == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前合伙购不存在", new JSONObject());
         }
         int state = 0;  // 合伙购状态：0未成功  1成功
         Map<String, Object> map = new HashMap<>();
-        if (ik.getOrdersType() == 1) {
+        if (ik.getOrdersType() == 1 && ik.getType() == 3) {
             PartnerBuyGoods posts = null;
             posts = goodsCenterService.findUserById(id);
             if (posts == null) {
