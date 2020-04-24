@@ -23,7 +23,6 @@ public class PartnerBuyGoods {
     @Min(value = 1, message = "userId参数有误")
     private long userId;                //发起人
 
-    @NotEmpty(message = "合伙人信息不能为空")
     private String personnel;           //合伙人信息：#用户ID#,名字,头像;#用户ID#,名字,头像;
 
     @NotEmpty(message = "图片不能为空")
