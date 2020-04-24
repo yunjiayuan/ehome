@@ -136,8 +136,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             for (int i = 0; i < personnel.length; i++) {
                 String[] personne = personnel[i].split(",");
                 if (usr.equals(personne[0])) {
-                    map.put("no", "");
-                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "你已加入过此合伙购了", map);
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "你已加入过此合伙购了", new JSONObject());
                 }
             }
             if (buyGoods.getId() == Long.parseLong(sd[0])) {//确认是当前商品ID
