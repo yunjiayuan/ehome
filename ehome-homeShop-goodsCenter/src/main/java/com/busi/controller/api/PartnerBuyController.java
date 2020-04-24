@@ -160,7 +160,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
      */
     @Override
     public ReturnData joinPartnerBuy(@PathVariable String no, @PathVariable long id) {
-        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> map = new HashMap<>();
         UserInfo userInfo = null;
         ShopFloorOrders io = null;
         PartnerBuyGoods posts = null;
@@ -168,6 +168,11 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         if (posts != null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "你已加入过此合伙购了", new JSONObject());
         }
+        if (posts.getState() == 1 || posts.getNumber() >= posts.getLimitNumber()) {
+            map.put("state", 1);// 合伙购状态：0未成功  1成功
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前合伙购已拼购成功，请看看其他的吧", map);
+        }
+        //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
             io = shopFloorOrdersService.findNo(no, CommonUtils.getMyId());
@@ -190,17 +195,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前合伙购不存在", new JSONObject());
         }
         int state = 0;  // 合伙购状态：0未成功  1成功
-        Map<String, Object> map = new HashMap<>();
         if (ik.getOrdersType() == 1 && ik.getType() == 3) {
-//            PartnerBuyGoods posts = null;
-//            posts = goodsCenterService.findUserById(id);
-//            if (posts == null) {
-//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-//            }
-            if (posts.getState() == 1 || posts.getNumber() >= posts.getLimitNumber()) {
-                map.put("state", 1);// 合伙购状态：0未成功  1成功
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前合伙购已拼购成功，请看看其他的吧", map);
-            }
             userInfo = userInfoUtils.getUserInfo(ik.getBuyerId());
             if (userInfo != null) {
                 posts.setPersonnel(posts.getPersonnel() + ";" + "#" + ik.getBuyerId() + "#," + userInfo.getName() + "," + userInfo.getHead());
