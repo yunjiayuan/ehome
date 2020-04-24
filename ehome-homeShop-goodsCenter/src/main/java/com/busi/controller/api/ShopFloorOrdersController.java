@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.PartnerBuyService;
 import com.busi.service.ShopFloorGoodsService;
 import com.busi.service.ShopFloorOrdersService;
 import com.busi.service.ShopFloorShoppingCartService;
@@ -48,6 +49,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
     ShopFloorOrdersService shopFloorOrdersService;
 
     @Autowired
+    private PartnerBuyService partnerBuyService;
+
+    @Autowired
     private ShopFloorShoppingCartService goodsCenterService;
 
     /***
@@ -89,7 +93,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         String[] sd = shopFloorOrders.getGoodsIds().split(",");//商品ID
         String[] fn = shopFloorOrders.getGoodsNumber().split(",");//商品数量
         if (shopFloorOrders.getType() < 3) { //订单类型：0普通  1礼尚往来指定接收者  2礼尚往来未指定接收者  3合伙购
-
             iup = shopFloorGoodsService.findList(sd);
             if (iup == null || iup.size() <= 0 || iup.size() != sd.length) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -122,9 +125,21 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             //清除缓存中购物车的信息
             redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorOrders.getBuyerId(), 0);
         } else {//订单类型: 3合伙购
-            PartnerBuyGoods buyGoods = shopFloorGoodsService.find(Long.parseLong(sd[0]));
+            PartnerBuyGoods buyGoods = null;
+            buyGoods = shopFloorGoodsService.find(Long.parseLong(sd[0]));
             if (buyGoods == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前合伙购不存在", new JSONObject());
+            }
+            if (buyGoods.getState() == 1 || buyGoods.getNumber() >= buyGoods.getLimitNumber()) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "当前合伙购已拼购成功，请看看其他的吧", new JSONObject());
+            }
+            String usr = "#" + shopFloorOrders.getBuyerId() + "#";
+            String[] personnel = buyGoods.getPersonnel().split(";");
+            for (int i = 0; i < personnel.length; i++) {
+                String[] personne = personnel[i].split(",");
+                if (usr.equals(personne[0])) {
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "你已加入过此合伙购了", new JSONObject());
+                }
             }
             if (buyGoods.getId() == Long.parseLong(sd[0])) {//确认是当前商品ID
                 //判断是否有合伙购价格

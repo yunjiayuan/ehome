@@ -164,10 +164,6 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         UserInfo userInfo = null;
         ShopFloorOrders io = null;
         PartnerBuyGoods posts = null;
-        posts = goodsCenterService.findUserById2(id, CommonUtils.getMyId());
-        if (posts != null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "你已加入过此合伙购了", new JSONObject());
-        }
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
