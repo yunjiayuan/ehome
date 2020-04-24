@@ -48,6 +48,15 @@ public class PartnerBuyService {
      * @param id
      * @return
      */
+    public PartnerBuyGoods findUserById2(long id, long userId) {
+        return goodsCenterDao.findUserById2(id, "#" + userId + "#");
+    }
+
+    /***
+     * 根据ID查询
+     * @param id
+     * @return
+     */
     public PartnerBuyGoods findUserById(long id) {
         return goodsCenterDao.findUserById(id);
     }

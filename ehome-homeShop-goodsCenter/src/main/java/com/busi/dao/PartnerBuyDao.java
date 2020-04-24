@@ -55,6 +55,13 @@ public interface PartnerBuyDao {
     PartnerBuyGoods findUserById(@Param("id") long id);
 
     /***
+     * 根据Id查询
+     * @param id
+     */
+    @Select("select * from PartnerBuyGoods where id=#{id} and deleteType=0 and personnel LIKE CONCAT('%',#{user},'%')")
+    PartnerBuyGoods findUserById2(@Param("id") long id, @Param("user") String user);
+
+    /***
      * 查询列表
      * @param sort  查询条件:0全部，1我发起的，2我参与的
      * @param userId  查询者
