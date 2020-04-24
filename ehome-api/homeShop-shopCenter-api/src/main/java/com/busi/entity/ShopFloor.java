@@ -25,6 +25,12 @@ public class ShopFloor {
     @Length(max = 15, message = "店铺名称最多可输入15个字")
     private String shopName;                //店铺名称
 
+    private int identity;            //店主身份:0个人 1居委会
+
+    private long communityId;    //居委会ID
+
+    private String communityName;                // 居委会名称
+
     private String shopHead;            //店铺封面
 
     private String videoUrl;        //视频地址
@@ -49,10 +55,10 @@ public class ShopFloor {
 
     private String address;                // 详细地址
 
-    @NotNull(message= "小区名称不能为空")
+    @NotNull(message = "小区名称不能为空")
     private String villageName;                // 小区名称
 
-    @NotNull(message= "小区唯一标识不能为空")
+    @NotNull(message = "小区唯一标识不能为空")
     private String villageOnly;                // 小区唯一标识
 
     // 与数据库无关字段

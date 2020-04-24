@@ -22,8 +22,8 @@ public interface ShopFloorDao {
      * @param homeShopCenter
      * @return
      */
-    @Insert("insert into ShopFloor(userId,shopName,shopHead,videoUrl,videoCoverUrl,content,payState,deleteType,addTime,lat,lon,address,villageName,villageOnly)" +
-            "values (#{userId},#{shopName},#{shopHead},#{videoUrl},#{videoCoverUrl},#{content},#{payState},#{deleteType},#{addTime},#{lat},#{lon},#{address},#{villageName},#{villageOnly})")
+    @Insert("insert into ShopFloor(userId,shopName,shopHead,videoUrl,videoCoverUrl,content,payState,deleteType,addTime,lat,lon,address,villageName,villageOnly,identity,communityId,communityName)" +
+            "values (#{userId},#{shopName},#{shopHead},#{videoUrl},#{videoCoverUrl},#{content},#{payState},#{deleteType},#{addTime},#{lat},#{lon},#{address},#{villageName},#{villageOnly},#{identity},#{communityId},#{communityName})")
     @Options(useGeneratedKeys = true)
     int addHomeShop(ShopFloor homeShopCenter);
 
@@ -34,6 +34,7 @@ public interface ShopFloorDao {
      */
     @Update("<script>" +
             "update ShopFloor set" +
+            " identity=#{identity}," +
             " shopName=#{shopName}," +
             " shopHead=#{shopHead}," +
             " videoUrl=#{videoUrl}," +

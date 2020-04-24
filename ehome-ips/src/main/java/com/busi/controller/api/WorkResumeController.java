@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.WorkRecruitService;
 import com.busi.service.WorkResumeService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    WorkRecruitService workRecruitService;
 
     @Autowired
     WorkResumeService workResumeService;
@@ -887,6 +891,10 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        WorkEnterprise enterprise = workRecruitService.getEnter(workDowRecord.getCompanyId());
+        if (enterprise == null) {
+            return returnData(StatusCode.CODE_IPS_AFFICHE_NOT_EXIST.CODE_VALUE, "下载失败，企业不存在", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库(是否下载过简历)
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_IPS_WORKDOWNLOAD + workDowRecord.getCompanyId() + "_" + workDowRecord.getResumeId());
