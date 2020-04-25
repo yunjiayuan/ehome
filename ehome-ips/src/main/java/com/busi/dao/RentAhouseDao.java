@@ -218,7 +218,7 @@ public interface RentAhouseDao {
             " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
             "</if>" +
             "<if test=\"nearby == 0\">" +
-            "<if test=\"sort == 0\">" +
+            "<if test=\"sort &lt;= 0\">" +
             " ,refreshTime desc" +
             "</if>" +
             "<if test=\"sort == 1\">" +
@@ -229,7 +229,7 @@ public interface RentAhouseDao {
             "</if>" +
             "</if>" +
             "<if test=\"nearby != 0\">" +
-            "<if test=\"sort == 0\">" +
+            "<if test=\"sort &lt;= 0\">" +
             " order by refreshTime desc" +
             "</if>" +
             "<if test=\"sort == 1\">" +

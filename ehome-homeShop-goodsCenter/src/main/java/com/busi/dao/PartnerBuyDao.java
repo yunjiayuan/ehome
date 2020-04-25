@@ -77,6 +77,9 @@ public interface PartnerBuyDao {
             "<if test=\"sort == 1\">" +
             " and userId=#{userId}" +
             "</if>" +
+            "<if test=\"sort == 0\">" +
+            " and state=0" +
+            "</if>" +
             " order by releaseTime desc" +
             "</script>")
     List<PartnerBuyGoods> findDishesSortList(@Param("sort") int sort, @Param("user") String user, @Param("userId") long userId);
