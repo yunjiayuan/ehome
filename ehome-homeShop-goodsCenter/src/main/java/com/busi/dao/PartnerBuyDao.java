@@ -38,11 +38,12 @@ public interface PartnerBuyDao {
             "update PartnerBuyGoods set" +
             "<if test=\"number > 0\">" +
             " personnel = #{personnel}," +
-            " number = #{number}" +
+            " number = #{number}," +
             "</if>" +
             "<if test=\"state > 0\">" +
-            " state = #{state}" +
+            " state = #{state}," +
             "</if>" +
+            " id=#{id}" +
             " where id=#{id}" +
             "</script>")
     int update(PartnerBuyGoods kitchenDishes);
