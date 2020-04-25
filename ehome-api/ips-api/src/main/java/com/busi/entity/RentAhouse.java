@@ -70,7 +70,7 @@ public class RentAhouse {
     @NotEmpty(message = "具体房间号不能为空")
     private String roomNumber;             //室 具体房间号
 
-    private int residence;              //户型 几居室 0一居室、1两居室、2三居室、3四居室、4五居室、5五居室以上
+    private int residence;              //户型 几居室
 
     private int livingRoom;             //户型 几厅
 

@@ -148,7 +148,7 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
      * @param roomState  0出售  1出租
      * @param sort  排序条件:-1不限 0最新发布，1价格最低，2价格最高
      * @param nearby  附近 -1不限  0附近
-     * @param residence     房型：-1不限 0一室 1二室 2三室 3四室 4五室及以上
+     * @param residence     房型：-1不限 0一室 1二室 2三室 3四室 4五室 5五室以上
      * @param roomType     房屋类型 roomState=0时：-1不限 0新房 1二手房   roomState=1时：-1不限 0合租 1整租
      * @param lon     经度  nearby=0时有效
      * @param lat     纬度  nearby=0时有效
@@ -180,6 +180,9 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<RentAhouse> pageBean = null;
+        if (residence > -1) {
+            residence = residence + 1;
+        }
         pageBean = communityService.findRentAhouseList(userId, sellState, roomState, sort, nearby, residence, roomType, lon,
                 lat, province, city, district, minPrice, maxPrice, minArea, maxArea, orientation,
                 renovation, floor, bedroomType, houseType, paymentMethod, lookHomeTime, string, page, count);

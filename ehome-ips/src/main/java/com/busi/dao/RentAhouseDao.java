@@ -171,7 +171,12 @@ public interface RentAhouseDao {
             " and sellState = #{sellState}" +
             "</if>" +
             "<if test=\" residence >= 0\">" +
+            "<if test=\" residence > 5\">" +
+            " and residence > 5" +
+            "</if>" +
+            "<if test=\" residence &lt; 6\">" +
             " and residence = #{residence}" +
+            "</if>" +
             "</if>" +
             "<if test=\" roomState >= 0\">" +
             " and roomState = #{roomState}" +
