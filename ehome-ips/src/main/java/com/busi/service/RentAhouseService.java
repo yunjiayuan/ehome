@@ -1,6 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.RentAhouseDao;
+import com.busi.entity.LoveAndFriends;
 import com.busi.entity.PageBean;
 import com.busi.entity.RentAhouse;
 import com.busi.utils.CommonUtils;
@@ -106,6 +107,22 @@ public class RentAhouseService {
         list = kitchenBookedDao.findRentAhouseList(userId, sellState, roomState, sort, nearby, residence, roomType, lon,
                 lat, province, city, district, minPrice, maxPrice, minArea, maxArea, orientation,
                 renovation, floor, bedroomType, houseType, paymentMethod, lookHomeTime, string);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * home推荐列表用
+     * @param userId   用户ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<RentAhouse> findHList(long userId, int page, int count) {
+
+        List<RentAhouse> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenBookedDao.findHList(userId);
+
         return PageUtils.getPageBean(p, list);
     }
 }

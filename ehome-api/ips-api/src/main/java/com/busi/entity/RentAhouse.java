@@ -84,7 +84,7 @@ public class RentAhouse {
 
     private int renovation;             //房屋装修 0精装修  1普通装修  2毛坯房
 
-    private int rentalType;             //出租类型 0合租 1整租  *暂不需要*
+    private int rentalType;             //公告分数
 
     private int bedroomType;             //卧室类型 0主卧 1次卧 2其他
 

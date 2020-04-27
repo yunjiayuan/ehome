@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.LoveAndFriends;
 import com.busi.entity.RentAhouse;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -67,12 +68,12 @@ public interface RentAhouseDao {
             " renovation=#{renovation}," +
 
             "<if test=\"roomState == 1\">" +
-            " rentalType=#{rentalType}," +
             " bedroomType = #{bedroomType}," +
             " houseType=#{houseType}," +
             " paymentMethod = #{paymentMethod}," +
             "</if>" +
 
+            " rentalType=#{rentalType}," +
             " expectedPrice=#{expectedPrice}," +
             " lookHomeTime=#{lookHomeTime}," +
             " realName=#{realName}," +
@@ -247,4 +248,18 @@ public interface RentAhouseDao {
                                         @Param("floor") int floor, @Param("bedroomType") int bedroomType, @Param("houseType") int houseType, @Param("paymentMethod") int paymentMethod,
                                         @Param("lookHomeTime") int lookHomeTime, @Param("string") String string);
 
+    /***
+     * 分页条件查询 按userId查询
+     * @param userId   用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from RentAhouse" +
+            " where state=0" +
+            "<if test=\"userId != 0\">" +
+            " and userId = #{userId}" +
+            "</if>" +
+            " order by refreshTime desc" +
+            "</script>")
+    List<RentAhouse> findHList(@Param("userId") long userId);
 }

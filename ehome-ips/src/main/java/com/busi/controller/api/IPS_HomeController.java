@@ -43,6 +43,9 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
     @Autowired
     WorkRecruitService workRecruitService;
 
+    @Autowired
+    RentAhouseService rentAhouseService;
+
     /***
      * 查询接口
      * @param userId   用户ID
@@ -56,15 +59,17 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
         }
         int page = 1;
         int count = 50;
-        List homeList = null;
-        OtherPosts posts = null;
         UsedDeal usedDeal = null;
-        SearchGoods searchGoods = null;
         PageBean<UsedDeal> dealPage = null;
+        OtherPosts posts = null;
         PageBean<OtherPosts> otherPage = null;
+        SearchGoods searchGoods = null;
         PageBean<SearchGoods> goodsPage = null;
-        PageBean<LoveAndFriends> lovePage = null;
         LoveAndFriends loveAndFriends = null;
+        PageBean<LoveAndFriends> lovePage = null;
+        RentAhouse rentAhouse = null;
+        PageBean<RentAhouse> rentPage = null;
+        List homeList = null;
         List<IPS_Home> ips = new ArrayList<>();
         homeList = redisUtils.getList(Constants.REDIS_KEY_IPS_HOMELIST, 0, 100);
         if (userId > 0 || homeList == null || homeList.size() <= 0) {
@@ -73,11 +78,13 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
                 dealPage = usedDealService.findList(0, page, count);
                 goodsPage = searchGoodsService.findList(0, page, count);
                 lovePage = loveAndFriendsService.findHList(0, page, count);
+                rentPage = rentAhouseService.findHList(0, page, count);
             } else {
                 dealPage = usedDealService.findList(userId, page, count);
                 otherPage = otherPostsService.findList(userId, page, count);
                 goodsPage = searchGoodsService.findList(userId, page, count);
                 lovePage = loveAndFriendsService.findHList(userId, page, count);
+                rentPage = rentAhouseService.findHList(userId, page, count);
             }
             List loveList = lovePage.getList();
             List dealList = dealPage.getList();
@@ -86,6 +93,7 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
                 otherList = otherPage.getList();
             }
             List goodsList = goodsPage.getList();
+            List rentList = rentPage.getList();
             if (dealList != null && dealList.size() > 0) {
                 for (int j = 0; j < dealList.size(); j++) {
                     usedDeal = (UsedDeal) dealList.get(j);
@@ -179,6 +187,32 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
                             ips.add(ipsHome);
                         } else {
                             if (loveAndFriends.getFraction() >= 70) {
+                                ips.add(ipsHome);
+                            }
+                        }
+                    }
+                }
+            }
+            if (rentList != null && rentList.size() > 0) {
+                for (int j = 0; j < rentList.size(); j++) {
+                    rentAhouse = (RentAhouse) dealList.get(j);
+                    if (usedDeal != null) {
+                        IPS_Home ipsHome = new IPS_Home();
+                        ipsHome.setInfoId(rentAhouse.getId());
+                        ipsHome.setTitle(rentAhouse.getTitle());
+                        ipsHome.setUserId(rentAhouse.getUserId());
+                        ipsHome.setContent(rentAhouse.getFormulation());
+                        ipsHome.setMediumImgUrl(rentAhouse.getPicture());
+                        ipsHome.setReleaseTime(rentAhouse.getAddTime());
+                        ipsHome.setRefreshTime(rentAhouse.getRefreshTime());
+                        ipsHome.setAuditType(2);
+                        ipsHome.setDeleteType(1);
+                        ipsHome.setAfficheType(rentAhouse.getRoomState() + 9);
+                        ipsHome.setFraction(rentAhouse.getRentalType());
+                        if (userId > 0 && j < 4) {
+                            ips.add(ipsHome);
+                        } else {
+                            if (rentAhouse.getRentalType() >= 70) {
                                 ips.add(ipsHome);
                             }
                         }

@@ -24,7 +24,7 @@ public class IPS_Home {
 
     private long infoId;				//公告id
 
-    private int afficheType;			//公告类别标志：1婚恋交友,2二手手机,3寻人,4寻物,5失物招领,6其他 7发简历找工作 8发布招聘（注：后续添加）
+    private int afficheType;			//公告类别标志：1婚恋交友,2二手手机,3寻人,4寻物,5失物招领,6其他 7发简历找工作 8发布招聘 9买房 10出租（注：后续添加）
 
     private long seeNumber;				//浏览数
 
