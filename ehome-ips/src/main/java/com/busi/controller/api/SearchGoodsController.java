@@ -333,7 +333,6 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
-        int num = 0;
         SearchGoods posts = null;
         Map<String, Object> otherPostsMap = redisUtils.hmget(Constants.REDIS_KEY_IPS_SEARCHGOODS + id);
         if (otherPostsMap == null || otherPostsMap.size() <= 0) {
@@ -341,19 +340,17 @@ public class SearchGoodsController extends BaseController implements SearchGoods
             if (posts == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
-            //新增浏览记录
-            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, posts.getTitle(), posts.getSearchType() + 2);
             //放入缓存
             otherPostsMap = CommonUtils.objectToMap(posts);
             redisUtils.hmset(Constants.REDIS_KEY_IPS_SEARCHGOODS + id, otherPostsMap, Constants.USER_TIME_OUT);
-        } else {
-            //新增浏览记录
-            num = (int) otherPostsMap.get("searchType");
-            mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), num + 2);
         }
+        //新增浏览记录
+        int num = (int) otherPostsMap.get("searchType");
+        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, otherPostsMap.get("title").toString(), num + 2);
+        //返回收藏状态
         int collection = 0;
         Collect collect1 = null;
-        collect1 = collectService.findUserId(id, CommonUtils.getMyId(), posts.getSearchType() + 2);
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId(), num + 2);
         if (collect1 != null) {
             collection = 1;
         }

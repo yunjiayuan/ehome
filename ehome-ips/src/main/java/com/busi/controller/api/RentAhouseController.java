@@ -286,8 +286,11 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
      */
     @Override
     public ReturnData findRentAhouse(@PathVariable long id) {
+        //验证参数
+        if (id <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+        }
         //查询缓存 缓存中不存在 查询数据库
-        int roomState = 0;   //房屋状态：0出售 1出租
         RentAhouse sa = null;
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_RENTAHOUSE + id);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
@@ -295,33 +298,21 @@ public class RentAhouseController extends BaseController implements RentAhouseAp
             if (sa == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前查询房源不存在!", new JSONObject());
             }
-            if (sa.getRoomState() == 0) {
-                roomState = 9;
-            }
-            if (sa.getRoomState() == 1) {
-                roomState = 10;
-            }
-            //返回收藏状态
-            int collection = 0;
-            Collect collect1 = null;
-            collect1 = collectService.findUserId(id, CommonUtils.getMyId(), roomState);
-            if (collect1 != null) {
-                collection = 1;
-            }
             //放入缓存
             kitchenMap = CommonUtils.objectToMap(sa);
-            kitchenMap.put("collection", collection);
             redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE + id, kitchenMap, Constants.USER_TIME_OUT);
         }
-        int type = (int) kitchenMap.get("roomState");
-        if (type == 0) {
-            roomState = 9;
-        }
-        if (type == 1) {
-            roomState = 10;
-        }
         //新增浏览记录
-        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, (String) kitchenMap.get("title"), roomState);
+        int type = (int) kitchenMap.get("roomState");
+        mqUtils.sendLookMQ(CommonUtils.getMyId(), id, (String) kitchenMap.get("title"), type + 9);
+        //返回收藏状态
+        int collection = 0;
+        Collect collect1 = null;
+        collect1 = collectService.findUserId(id, CommonUtils.getMyId(), type + 9);
+        if (collect1 != null) {
+            collection = 1;
+        }
+        kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
 
