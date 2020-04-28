@@ -128,7 +128,7 @@ public interface ShopFloorOrdersDao {
      */
     @Select("<script>" +
             "select * from ShopFloorOrders" +
-            " where ordersState=0" +
+            " where ordersState=0 and type=0" +//暂时只查楼店订单
             "<if test=\"userId > 0 \">" +
             " and buyerId = #{userId}" +
             "</if>" +
@@ -138,9 +138,9 @@ public interface ShopFloorOrdersDao {
             "<if test=\"ordersType >= 5 and ordersType &lt; 8\">" +
             " and ordersType > 4 and ordersType &lt; 8" +
             "</if>" +
-            "<if test=\"ordersType == 6\">" +
-            " and type =1" +
-            "</if>" +
+//            "<if test=\"ordersType == 6\">" +
+//            " and type =1" +
+//            "</if>" +
             " order by addTime desc" +
             "</script>")
     List<ShopFloorOrders> findOrderList(@Param("userId") long userId, @Param("ordersType") int ordersType);

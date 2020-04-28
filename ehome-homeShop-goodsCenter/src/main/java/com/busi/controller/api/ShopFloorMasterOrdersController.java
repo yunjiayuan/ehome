@@ -6,7 +6,6 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.ShopFloorGoodsService;
 import com.busi.service.ShopFloorMasterOrdersService;
-import com.busi.service.ShopFloorShoppingCartService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -46,9 +45,6 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
 
     @Autowired
     ShopFloorMasterOrdersService shopFloorOrdersService;
-
-//    @Autowired
-//    private ShopFloorShoppingCartService goodsCenterService;
 
     /***
      * 新增订单
@@ -232,8 +228,13 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
-        PageBean<ShopFloorMasterOrders> pageBean;
-        pageBean = shopFloorOrdersService.findOrderList(CommonUtils.getMyId(), ordersType, page, count);
+        PageBean<ShopFloorMasterOrders> pageBean = null;
+        long myId = CommonUtils.getMyId();
+        if (myId != 10076 && myId != 12770 && myId != 9389 && myId != 9999 && myId != 13005 && myId != 12774 && myId != 13031 && myId != 12769 && myId != 12796 && myId != 10053) {
+            pageBean = shopFloorOrdersService.findOrderList(CommonUtils.getMyId(), ordersType, page, count);
+        } else {
+            pageBean = shopFloorOrdersService.findOrderList(0, -2, page, count);//管理员可查看全部已付款的
+        }
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

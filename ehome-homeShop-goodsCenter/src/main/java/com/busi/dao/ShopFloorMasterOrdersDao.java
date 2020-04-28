@@ -106,6 +106,9 @@ public interface ShopFloorMasterOrdersDao {
             "<if test=\"userId > 0 \">" +
             " and buyerId = #{userId}" +
             "</if>" +
+            "<if test=\"ordersType == -2\">" +
+            " and ordersType > 0" +
+            "</if>" +
             "<if test=\"ordersType > 0 and ordersType &lt; 5\">" +
             " and ordersType = #{ordersType}" +
             "</if>" +
