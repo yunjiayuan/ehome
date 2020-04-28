@@ -714,7 +714,7 @@ public interface WorkResumeDao {
     @Select("<script>" +
             "select * from WorkDowRecord" +
             " where userId=#{userId}" +
-            " and id in" +
+            " and resumeId in" +
             "<foreach collection='id' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
