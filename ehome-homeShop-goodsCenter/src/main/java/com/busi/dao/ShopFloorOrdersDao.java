@@ -152,7 +152,7 @@ public interface ShopFloorOrdersDao {
     @Select("<script>" +
             "select * from ShopFloorOrders" +
             " where 1=1 " +
-            " and buyerId = #{userId}" +
+            " and buyerId = #{userId} and type=0" +//暂时只查楼店订单
             " and ordersState = 0" +
             "</script>")
     List<ShopFloorOrders> findIdentity(@Param("userId") long userId);
