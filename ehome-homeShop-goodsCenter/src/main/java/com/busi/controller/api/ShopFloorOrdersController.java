@@ -428,10 +428,23 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         int orderCont5 = 0;
         int orderCont6 = 0;
 
-        ShopFloorOrders kh = null;
-        List list = null;
         Map<String, Object> map = new HashMap<>();
+        map.put("orderCont0", orderCont0);
+        map.put("orderCont1", orderCont1);
+        map.put("orderCont2", orderCont2);
+        map.put("orderCont3", orderCont3);
+        map.put("orderCont4", orderCont4);
+        map.put("orderCont5", orderCont5);
         Map<String, Object> map2 = new HashMap<>();
+        map2.put("orderCont0", orderCont0);
+        map2.put("orderCont1", orderCont1);
+        map2.put("orderCont2", orderCont2);
+        map2.put("orderCont3", orderCont3);
+        map2.put("orderCont4", orderCont4);
+        map2.put("orderCont5", orderCont5);
+        map2.put("orderCont6", orderCont6);
+        List list = null;
+        ShopFloorOrders kh = null;
         List<Map<String, Object>> newList = new ArrayList<>();//最终组合后List
         list = shopFloorOrdersService.findIdentity(CommonUtils.getMyId());//全部
         if (list == null || list.size() <= 0) {
@@ -471,7 +484,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 map.put("orderCont3", orderCont3);
                 map.put("orderCont4", orderCont4);
                 map.put("orderCont5", orderCont5);
-                map.put("orderCont6", orderCont6);
             } else {
                 switch (kh.getOrdersType()) {
                     case 0://待付款

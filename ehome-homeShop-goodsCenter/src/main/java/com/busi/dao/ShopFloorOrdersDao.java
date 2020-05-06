@@ -150,7 +150,7 @@ public interface ShopFloorOrdersDao {
             "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<ShopFloorOrders> findOrderList(@Param("ordersType") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<ShopFloorOrders> findOrderList(@Param("type") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
 
     /***
      * 统计各类订单数量
