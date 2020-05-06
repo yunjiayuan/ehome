@@ -77,6 +77,8 @@ public class Constants {
     public static final int ACCOUNT_HOUR_TOTAL = 30;//同一账号每小时最多发送短信次数
     public static final int CLIENT_DAY_TOTAL = 200;//同一客户端设备每天最多发送短信次数
     public static final int CLIENT_HOUR_TOTAL = 60;//同一客户端设备每小时最多发送短信次数
+    public static final int PHONE_DAY_TOTAL = 10;//同一手机号每天最多发送短信次数
+    public static final int PHONE_HOUR_TOTAL = 5;//同一手机号每小时最多发送短信次数
     /** 短信平台配置 结束**/
 
     /** 附近的人配置 开始**/

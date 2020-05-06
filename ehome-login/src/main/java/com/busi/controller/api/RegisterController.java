@@ -155,6 +155,26 @@ public class RegisterController extends BaseController implements RegisterApiCon
         }
         String regToken = CommonUtils.strToMD5(clientId+System.currentTimeMillis()+CommonUtils.getRandom(6,0), 16);//注册用户的临时key
         String code = CommonUtils.getRandom(4,1);
+        //同一手机号每小时限制
+        String accountHourTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_ACCOUNT_HOUR_TOTAL,phone+""));
+        if(!CommonUtils.checkFull(accountHourTotal)&&Integer.parseInt(accountHourTotal)>Constants.PHONE_HOUR_TOTAL){
+            return returnData(StatusCode.CODE_SMS_USEROVER_ERROR.CODE_VALUE,"您当前手机号发送的短信次数过多,请一个小时后再试，如有疑问请联系官方客服",new JSONObject());
+        }
+        //同一手机号每天时限制
+        String accountDayTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_ACCOUNT_DAY_TOTAL,phone+""));
+        if(!CommonUtils.checkFull(accountDayTotal)&&Integer.parseInt(accountDayTotal)>Constants.PHONE_DAY_TOTAL){
+            return returnData(StatusCode.CODE_SMS_USEROVER_ERROR.CODE_VALUE,"您当前手机号发送的短信次数过多,系统已自动停用当前账号使用短信功能一天，如有疑问请联系官方客服",new JSONObject());
+        }
+        //同一客户端设备每小时限制
+        String clientHourTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+""));
+        if(!CommonUtils.checkFull(clientHourTotal)&&Integer.parseInt(clientHourTotal)>Constants.CLIENT_HOUR_TOTAL){
+            return returnData(StatusCode.CODE_SMS_PHONEOVER_ERROR.CODE_VALUE,"您当前设备发送的短信次数过多,请一个小时后再试，如有疑问请联系官方客服",new JSONObject());
+        }
+        //同一客户端设备每天时限制
+        String clientDayTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+""));
+        if(!CommonUtils.checkFull(clientDayTotal)&&Integer.parseInt(clientDayTotal)>Constants.ACCOUNT_DAY_TOTAL){
+            return returnData(StatusCode.CODE_SMS_PHONEOVER_ERROR.CODE_VALUE,"您当前设备发送的短信次数过多,系统已自动停用当前账号使用短信功能一天，如有疑问请联系官方客服",new JSONObject());
+        }
         if(type==1){//生成短信验证码
             //验证要注册的手机号是否被占用
             if(CommonUtils.checkFull(phone)||!CommonUtils.checkPhone(phone)){
@@ -181,19 +201,33 @@ public class RegisterController extends BaseController implements RegisterApiCon
             //将验证码存入缓存 后边注册时使用
             redisUtils.set(Constants.REDIS_KEY_REG_TOKEN+regToken,phone+"_"+code,60*10);//验证码10分钟内有效
             code = "";//手机验证码不返回客户端
+            //更新同一手机号每小时限制
+            if(CommonUtils.checkFull(accountHourTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_ACCOUNT_HOUR_TOTAL,phone+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_ACCOUNT_HOUR_TOTAL,phone+"",1);
+            }
+            //更新同一手机号每天时限制
+            if(CommonUtils.checkFull(accountDayTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_ACCOUNT_DAY_TOTAL,phone+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_ACCOUNT_DAY_TOTAL,phone+"",1);
+            }
         }else{
             //将验证码存入缓存 后边注册时使用
             redisUtils.set(Constants.REDIS_KEY_REG_TOKEN+regToken,code,60*10);//验证码10分钟内有效
-        }
-        //添加限流机制 每个设备每天最多只能调用50次
-        String requestCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_REGISTER_CREATECODE_COUNT,clientId+""));
-        if(!CommonUtils.checkFull(requestCount)&&Integer.parseInt(requestCount)>50){//大于100次 今天该账号禁止访问
-            return returnData(StatusCode.CODE_REQUEST_ERROR_COUNT.CODE_VALUE,"您今天获取的验证码次数过多，系统已自动禁止该设备使用一天，如有疑问请联系官方客服",new JSONObject());
-        }
-        if(CommonUtils.checkFull(requestCount)){//第一次
-            redisUtils.hset(Constants.REDIS_KEY_REGISTER_CREATECODE_COUNT,clientId+"",1,24*60*60);//设置1天后失效
-        }else{
-            redisUtils.hashIncr(Constants.REDIS_KEY_REGISTER_CREATECODE_COUNT,clientId+"",1);//自增1
+            //更新同一客户端设备每小时限制
+            if(CommonUtils.checkFull(clientHourTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+"",1);
+            }
+            //更新同一客户端设备每天时限制
+            if(CommonUtils.checkFull(clientDayTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+"",1);
+            }
         }
         //响应客户端
         Map<String,String> map = new HashMap();
