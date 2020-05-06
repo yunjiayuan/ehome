@@ -46,6 +46,7 @@ public interface ShopFloorOrdersDao {
             " receiveState=#{receiveState}," +
             " shopId=#{shopId}," +
             " shopName=#{shopName}," +
+            " ordersType=#{ordersType}," +
             " address=#{address}" +
             " where id=#{id}" +
             "</script>")
@@ -54,7 +55,7 @@ public interface ShopFloorOrdersDao {
     /***
      * 根据ID查询订单
      * @param id
-     * @param type  查询场景 0删除 1由未发货改为已发货 2由未收货改为已收货 3取消订单
+     * @param type  查询场景 0删除 1由未发货改为已发货 2由未收货改为已收货 3取消订单  4由未送出改为待发货（已送出）
      * @return
      */
     @Select("<script>" +
@@ -71,6 +72,9 @@ public interface ShopFloorOrdersDao {
             "</if>" +
             "<if test=\"type == 3\">" +
             " and ordersState=0 and ordersType &lt; 3 and buyerId=#{userId}" +
+            "</if>" +
+            "<if test=\"type == 4\">" +
+            " and ordersState=0  and ordersType=8" +
             "</if>" +
             "</script>")
     ShopFloorOrders findById(@Param("id") long id, @Param("userId") long userId, @Param("type") int type);
@@ -123,14 +127,17 @@ public interface ShopFloorOrdersDao {
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单  6礼尚往来
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单  6待送出（礼尚往来）
      * @return
      */
     @Select("<script>" +
             "select * from ShopFloorOrders" +
-            " where ordersState=0 and type=0" +//暂时只查楼店订单
-            "<if test=\"userId > 0 \">" +
-            " and buyerId = #{userId}" +
+            " where ordersState=0 " +
+            "<if test=\"type == 0 \">" +
+            " and type = #{type}" +
+            "</if>" +
+            "<if test=\"type == 1 \">" +
+            " and type in(1,2) " +
             "</if>" +
             "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
             " and ordersType = #{ordersType}" +
@@ -138,12 +145,12 @@ public interface ShopFloorOrdersDao {
             "<if test=\"ordersType >= 5 and ordersType &lt; 8\">" +
             " and ordersType > 4 and ordersType &lt; 8" +
             "</if>" +
-//            "<if test=\"ordersType == 6\">" +
-//            " and type =1" +
-//            "</if>" +
+            "<if test=\"ordersType == 8\">" +
+            " and ordersType = #{ordersType}" +
+            "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<ShopFloorOrders> findOrderList(@Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<ShopFloorOrders> findOrderList(@Param("ordersType") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
 
     /***
      * 统计各类订单数量
@@ -152,7 +159,7 @@ public interface ShopFloorOrdersDao {
     @Select("<script>" +
             "select * from ShopFloorOrders" +
             " where 1=1 " +
-            " and buyerId = #{userId} and type=0" +//暂时只查楼店订单
+            " and buyerId = #{userId} and type!=3" +
             " and ordersState = 0" +
             "</script>")
     List<ShopFloorOrders> findIdentity(@Param("userId") long userId);

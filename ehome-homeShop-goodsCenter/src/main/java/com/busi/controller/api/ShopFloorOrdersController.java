@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -195,6 +192,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "领取失败！收货地址不存在！", new JSONObject());
         }
         shopFloorOrders.setReceiveState(1);
+        shopFloorOrders.setOrdersType(1);
         shopFloorOrders.setAddress(shippingAddress.getAddress());
         shopFloorOrders.setAddressName(shippingAddress.getContactsName());
         shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
@@ -226,8 +224,35 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
     }
 
     /***
+     * 更改订单状态
+     * 由未送出改为待发货（已送出）
+     * @param id  订单Id
+     * @return
+     */
+//    @Override
+//    public ReturnData changeSFsendOut(@PathVariable long id) {
+//        ShopFloorOrders io = shopFloorOrdersService.findById(id, CommonUtils.getMyId(), 4);
+//        if (io == null) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
+//        }
+//        if (io.getRecipientId() != CommonUtils.getMyId() && (io.getType() == 1 || io.getType() == 2)) {
+//            io.setOrdersType(1);
+//            io.setDeliveryTime(new Date());
+//            io.setUpdateCategory(3);
+//            shopFloorOrdersService.updateOrders(io);
+//
+//            //清除缓存中的订单信息
+//            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
+//            //订单放入缓存
+//            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+//            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+//        }
+//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+//    }
+
+    /***
      * 更改发货状态
-     * 由未发货改为已发货
+     * 由未发货改为已发货（由已送出改为已发货）
      * @param id  订单Id
      * @return
      */
@@ -264,41 +289,50 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
-        if (io.getBuyerId() == CommonUtils.getMyId()) {
-            //由已接单改为已完成
-            io.setOrdersType(3);        //已收货
-            io.setReceivingTime(new Date());
-            io.setUpdateCategory(2);
-            shopFloorOrdersService.updateOrders(io);
-            //更新销量
-
-            //清除缓存中的商品信息
-
-            //清除缓存中的订单信息
-            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
-            //订单放入缓存
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
+        if (io.getType() == 0) {
+            if (io.getBuyerId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
         }
+        if (io.getType() == 1 || io.getType() == 2) {  //订单类型：0普通  1礼尚往来指定接收者  2礼尚往来未指定接收者  3合伙购
+            if (io.getRecipientId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+        }
+        //由已接单改为已完成
+        io.setOrdersType(3);        //已收货
+        io.setReceivingTime(new Date());
+        io.setUpdateCategory(2);
+        shopFloorOrdersService.updateOrders(io);
+        //更新销量
+
+        //清除缓存中的商品信息
+
+        //清除缓存中的订单信息
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
+        //订单放入缓存
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单
+     * @param type    0黑店订单  1礼尚往来
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单  8待送出（礼尚往来）
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
     @Override
-    public ReturnData findSFordersList(@PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findSFordersList(@PathVariable int type, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<ShopFloorOrders> pageBean;
-        pageBean = shopFloorOrdersService.findOrderList(CommonUtils.getMyId(), ordersType, page, count);
+        pageBean = shopFloorOrdersService.findOrderList(type, CommonUtils.getMyId(), ordersType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -392,45 +426,93 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         int orderCont3 = 0;
         int orderCont4 = 0;
         int orderCont5 = 0;
+        int orderCont6 = 0;
 
         ShopFloorOrders kh = null;
         List list = null;
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map2 = new HashMap<>();
+        List<Map<String, Object>> newList = new ArrayList<>();//最终组合后List
         list = shopFloorOrdersService.findIdentity(CommonUtils.getMyId());//全部
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", newList);
+        }
         for (int i = 0; i < list.size(); i++) {
             kh = (ShopFloorOrders) list.get(i);
-            switch (kh.getOrdersType()) {
-                case 0://待付款
-                    orderCont1++;
-                    orderCont0++;
-                    break;
-                case 1://待发货
-                    orderCont2++;
-                    orderCont0++;
-                    break;
-                case 2://待收货
-                    orderCont3++;
-                    orderCont0++;
-                    break;
-                case 3://待评价
-                    orderCont4++;
-                    orderCont0++;
-                    break;
-                case 7://取消订单
-                    orderCont5++;
-                    orderCont0++;
-                    break;
-                default:
-                    orderCont0++;
-                    break;
+            if (kh.getType() == 0) {
+                switch (kh.getOrdersType()) {
+                    case 0://待付款
+                        orderCont1++;
+                        orderCont0++;
+                        break;
+                    case 1://待发货
+                        orderCont2++;
+                        orderCont0++;
+                        break;
+                    case 2://待收货
+                        orderCont3++;
+                        orderCont0++;
+                        break;
+                    case 3://待评价
+                        orderCont4++;
+                        orderCont0++;
+                        break;
+                    case 7://取消订单
+                        orderCont5++;
+                        orderCont0++;
+                        break;
+                    default:
+                        orderCont0++;
+                        break;
+                }
+                map.put("orderCont0", orderCont0);
+                map.put("orderCont1", orderCont1);
+                map.put("orderCont2", orderCont2);
+                map.put("orderCont3", orderCont3);
+                map.put("orderCont4", orderCont4);
+                map.put("orderCont5", orderCont5);
+                map.put("orderCont6", orderCont6);
+            } else {
+                switch (kh.getOrdersType()) {
+                    case 0://待付款
+                        orderCont1++;
+                        orderCont0++;
+                        break;
+                    case 1://待发货
+                        orderCont2++;
+                        orderCont0++;
+                        break;
+                    case 2://待收货
+                        orderCont3++;
+                        orderCont0++;
+                        break;
+                    case 3://待评价
+                        orderCont4++;
+                        orderCont0++;
+                        break;
+                    case 8://待送出
+                        orderCont6++;
+                        orderCont0++;
+                        break;
+                    case 7://取消订单
+                        orderCont5++;
+                        orderCont0++;
+                        break;
+                    default:
+                        orderCont0++;
+                        break;
+                }
+                map2.put("orderCont0", orderCont0);
+                map2.put("orderCont1", orderCont1);
+                map2.put("orderCont2", orderCont2);
+                map2.put("orderCont3", orderCont3);
+                map2.put("orderCont4", orderCont4);
+                map2.put("orderCont5", orderCont5);
+                map2.put("orderCont6", orderCont6);
             }
         }
-        Map<String, Integer> map = new HashMap<>();
-        map.put("orderCont0", orderCont0);
-        map.put("orderCont1", orderCont1);
-        map.put("orderCont2", orderCont2);
-        map.put("orderCont3", orderCont3);
-        map.put("orderCont4", orderCont4);
-        map.put("orderCont5", orderCont5);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        newList.add(map);
+        newList.add(map2);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", newList);
     }
 }

@@ -47,7 +47,7 @@ public class ShopFloorOrdersService {
     /***
      * 根据用户ID查询订单
      * @param id
-     * @param type  查询场景 0删除 1由未发货改为已发货 2由未收货改为已收货 3取消订单
+     * @param type  查询场景 0删除 1由未发货改为已发货 2由未收货改为已收货 3取消订单 4由未送出改为待发货（已送出）
      * @return
      */
     public ShopFloorOrders findById(long id, long userId, int type) {
@@ -76,16 +76,16 @@ public class ShopFloorOrdersService {
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单 8待送出（礼尚往来）
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
-    public PageBean<ShopFloorOrders> findOrderList(long userId, int ordersType, int page, int count) {
+    public PageBean<ShopFloorOrders> findOrderList(int type, long userId, int ordersType, int page, int count) {
 
         List<ShopFloorOrders> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = shopFloorOrdersDao.findOrderList(userId, ordersType);
+        list = shopFloorOrdersDao.findOrderList(type, userId, ordersType);
 
         return PageUtils.getPageBean(p, list);
     }

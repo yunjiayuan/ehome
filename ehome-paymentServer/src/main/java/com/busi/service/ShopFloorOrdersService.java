@@ -17,7 +17,7 @@ import java.util.Map;
  * create time：2019-12-19 15:16:16
  */
 @Service
-public class ShopFloorOrdersService extends BaseController implements PayBaseService{
+public class ShopFloorOrdersService extends BaseController implements PayBaseService {
 
     @Autowired
     private RedisUtils redisUtils;
@@ -30,39 +30,44 @@ public class ShopFloorOrdersService extends BaseController implements PayBaseSer
 
     /**
      * 具体支付业务
+     *
      * @param pay      支付具体实体
      * @param purseMap 账户实体集合
      * @return
      */
     @Override
-    public ReturnData pay(Pay pay,Map<String,Object> purseMap) {
+    public ReturnData pay(Pay pay, Map<String, Object> purseMap) {
 
-        Map<String,Object> shopFloorOrderMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS+pay.getUserId()+"_"+pay.getOrderNumber() );
-        if(shopFloorOrderMap==null||shopFloorOrderMap.size()<=0){
-            return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"由于您等待时间过久或网络延迟导致支付楼店订单失败，请重新支付",new JSONObject());
+        Map<String, Object> shopFloorOrderMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + pay.getUserId() + "_" + pay.getOrderNumber());
+        if (shopFloorOrderMap == null || shopFloorOrderMap.size() <= 0) {
+            return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE, "由于您等待时间过久或网络延迟导致支付楼店订单失败，请重新支付", new JSONObject());
         }
-        ShopFloorOrders shopFloorOrders = (ShopFloorOrders)CommonUtils.mapToObject(shopFloorOrderMap,ShopFloorOrders.class);
-        if(shopFloorOrders==null||shopFloorOrders.getOrdersType()!=0){
-            return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"由于您等待时间过久或网络延迟导致支付楼店订单失败，请重新支付!",new JSONObject());
+        ShopFloorOrders shopFloorOrders = (ShopFloorOrders) CommonUtils.mapToObject(shopFloorOrderMap, ShopFloorOrders.class);
+        if (shopFloorOrders == null || shopFloorOrders.getOrdersType() != 0) {
+            return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE, "由于您等待时间过久或网络延迟导致支付楼店订单失败，请重新支付!", new JSONObject());
         }
         //判断余额
         double money = shopFloorOrders.getMoney();//将要支付的钱
         double serverMoney = Double.parseDouble(purseMap.get("spareMoney").toString());
-        if(serverMoney<money){
-            return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法支付楼店订单",new JSONObject());
+        if (serverMoney < money) {
+            return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE, "您账户余额不足，无法支付楼店订单", new JSONObject());
         }
         //更改状态 防止重复支付
-        redisUtils.hset(Constants.REDIS_KEY_SHOPFLOORORDERS+pay.getUserId()+"_"+pay.getOrderNumber(),"ordersType",1);
+        redisUtils.hset(Constants.REDIS_KEY_SHOPFLOORORDERS + pay.getUserId() + "_" + pay.getOrderNumber(), "ordersType", 1);
         //开始扣款支付
-        mqUtils.sendPurseMQ(pay.getUserId(),28,0,money*-1);//人民币转出
+        mqUtils.sendPurseMQ(pay.getUserId(), 28, 0, money * -1);//人民币转出
         //回调业务
-        ShopFloorOrders shopfOrders =  new ShopFloorOrders();
+        ShopFloorOrders shopfOrders = new ShopFloorOrders();
         shopfOrders.setId(shopFloorOrders.getId());
-        shopfOrders.setOrdersType(1);//已支付
+        if (shopFloorOrders.getType() == 1 || shopFloorOrders.getType() == 2) {//礼尚往来订单
+            shopfOrders.setOrdersType(8);//待送出（已付款未领取，礼尚往来订单有效）
+        } else {//普通
+            shopfOrders.setOrdersType(1);//待发货（已付款）
+        }
         shopfOrders.setPaymentTime(new Date());
         shopFloorOrdersLControllerFegin.updatePayType(shopfOrders);
         //清除缓存中的订单记录
-        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), 0);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + pay.getUserId() + "_" + pay.getOrderNumber(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
