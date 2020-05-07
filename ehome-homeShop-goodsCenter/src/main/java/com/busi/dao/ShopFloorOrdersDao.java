@@ -71,7 +71,7 @@ public interface ShopFloorOrdersDao {
             " and ordersState=0  and ordersType=2 and buyerId=#{userId}" +
             "</if>" +
             "<if test=\"type == 3\">" +
-            " and ordersState=0 and ordersType &lt; 3 and buyerId=#{userId}" +
+            " and ordersState=0 and (ordersType &lt; 3 or ordersType=8) and buyerId=#{userId}" +
             "</if>" +
             "<if test=\"type == 4\">" +
             " and ordersState=0  and ordersType=8" +
