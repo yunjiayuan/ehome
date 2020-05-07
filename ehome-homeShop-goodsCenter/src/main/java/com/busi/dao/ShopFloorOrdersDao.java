@@ -127,12 +127,13 @@ public interface ShopFloorOrdersDao {
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单  6待送出（礼尚往来）
+     * @param type    0黑店订单  1礼尚往来
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单  8待送出（礼尚往来）
      * @return
      */
     @Select("<script>" +
             "select * from ShopFloorOrders" +
-            " where ordersState=0 " +
+            " where ordersState=0 and buyerId = #{userId}" +
             "<if test=\"type == 0 \">" +
             " and type = #{type}" +
             "</if>" +
