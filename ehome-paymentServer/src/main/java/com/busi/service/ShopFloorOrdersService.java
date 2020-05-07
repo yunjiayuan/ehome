@@ -60,7 +60,11 @@ public class ShopFloorOrdersService extends BaseController implements PayBaseSer
         ShopFloorOrders shopfOrders = new ShopFloorOrders();
         shopfOrders.setId(shopFloorOrders.getId());
         if (shopFloorOrders.getType() == 1 || shopFloorOrders.getType() == 2) {//礼尚往来订单
-            shopfOrders.setOrdersType(8);//待送出（已付款未领取，礼尚往来订单有效）
+            if (shopFloorOrders.getRecipientId() > 0) {
+                shopfOrders.setOrdersType(1);//待发货（已付款）
+            } else {
+                shopfOrders.setOrdersType(8);//待送出（已付款未指定接受者，礼尚往来订单有效）
+            }
         } else {//普通
             shopfOrders.setOrdersType(1);//待发货（已付款）
         }
