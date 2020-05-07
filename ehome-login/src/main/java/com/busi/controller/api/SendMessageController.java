@@ -7,6 +7,10 @@ import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -42,6 +46,9 @@ public class SendMessageController extends BaseController implements SendMessage
         if(phoneType<1||phoneType>7){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"phoneType参数有误，超出合法范围",new JSONObject());
         }
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        String clientId = request.getHeader("clientId");//客户端设备的唯一标识（手机端/PC端）
         //同一账号每小时限制
         String accountHourTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_ACCOUNT_HOUR_TOTAL,CommonUtils.getMyId()+""));
         if(!CommonUtils.checkFull(accountHourTotal)&&Integer.parseInt(accountHourTotal)>Constants.ACCOUNT_HOUR_TOTAL){
@@ -53,13 +60,13 @@ public class SendMessageController extends BaseController implements SendMessage
             return returnData(StatusCode.CODE_SMS_USEROVER_ERROR.CODE_VALUE,"您当前账号发送的短信次数过多,系统已自动停用当前账号使用短信功能一天，如有疑问请联系官方客服",new JSONObject());
         }
         //同一客户端设备每小时限制
-        String clientHourTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,CommonUtils.getMyId()+""));
+        String clientHourTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+""));
         if(!CommonUtils.checkFull(clientHourTotal)&&Integer.parseInt(clientHourTotal)>Constants.CLIENT_HOUR_TOTAL){
             return returnData(StatusCode.CODE_SMS_PHONEOVER_ERROR.CODE_VALUE,"您当前设备发送的短信次数过多,请一个小时后再试，如有疑问请联系官方客服",new JSONObject());
         }
         //同一客户端设备每天时限制
-        String clientDayTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,CommonUtils.getMyId()+""));
-        if(!CommonUtils.checkFull(clientDayTotal)&&Integer.parseInt(clientDayTotal)>Constants.ACCOUNT_DAY_TOTAL){
+        String clientDayTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+""));
+        if(!CommonUtils.checkFull(clientDayTotal)&&Integer.parseInt(clientDayTotal)>Constants.CLIENT_DAY_TOTAL){
             return returnData(StatusCode.CODE_SMS_PHONEOVER_ERROR.CODE_VALUE,"您当前设备发送的短信次数过多,系统已自动停用当前账号使用短信功能一天，如有疑问请联系官方客服",new JSONObject());
         }
         //生成验证码
@@ -111,15 +118,15 @@ public class SendMessageController extends BaseController implements SendMessage
         }
         //更新同一客户端设备每小时限制
         if(CommonUtils.checkFull(clientHourTotal)){//第一次
-            redisUtils.hset(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,CommonUtils.getMyId()+"",1,24*60*60);//设置1天后失效
+            redisUtils.hset(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+"",1,24*60*60);//设置1天后失效
         }else{
-            redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,CommonUtils.getMyId()+"",1);
+            redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+"",1);
         }
         //更新同一客户端设备每天时限制
         if(CommonUtils.checkFull(clientDayTotal)){//第一次
-            redisUtils.hset(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,CommonUtils.getMyId()+"",1,24*60*60);//设置1天后失效
+            redisUtils.hset(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+"",1,24*60*60);//设置1天后失效
         }else{
-            redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,CommonUtils.getMyId()+"",1);
+            redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+"",1);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
