@@ -340,6 +340,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         list = pageBean.getList();
         ShopFloorOrders t = null;
         UserInfo userCache = null;
+        UserInfo userCache2 = null;
         if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 t = (ShopFloorOrders) list.get(i);
@@ -350,6 +351,13 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                         t.setHead(userCache.getHead());
                         t.setProTypeId(userCache.getProType());
                         t.setHouseNumber(userCache.getHouseNumber());
+                    }
+                    if (t.getRecipientId() > 0) {
+                        userCache2 = userInfoUtils.getUserInfo(t.getRecipientId());
+                        if (userCache != null) {
+                            t.setRecipientName(userCache2.getName());
+                            t.setRecipientHead(userCache2.getHead());
+                        }
                     }
                 }
             }

@@ -71,9 +71,13 @@ public class ShopFloorOrders {
     private long recipientId;            //礼尚往来接收者
 
     //与数据库无关字段
-    private String name;                //用户名
+    private String name;                //购买者用户名
 
-    private String head;                 //头像
+    private String head;                 //购买者头像
+
+    private String recipientName;                //接收者用户名
+
+    private String recipientHead;                 //接收者头像
 
     private int proTypeId;              //省简称ID
 
