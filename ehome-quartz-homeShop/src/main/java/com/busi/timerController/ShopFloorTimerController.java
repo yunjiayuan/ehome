@@ -52,7 +52,7 @@ public class ShopFloorTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 11 11 * * ?") //
+    @Scheduled(cron = "0 13 16 * * ?") //
     public void shopFloorTimer() throws Exception {
         log.info("开始查询数据库中待处理的黑店超时订单，并加装到内存中...");
         while (true) {

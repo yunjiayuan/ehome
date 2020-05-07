@@ -37,7 +37,7 @@ public interface ShopFloorOrdersDao {
      * @return
      */
     @Update("<script>" +
-            "update usedDealOrders set" +
+            "update ShopFloorOrders set" +
             " ordersType=#{ordersType}" +
             " where id=#{id} and buyerId=#{buyerId}" +
             "</script>")
@@ -50,7 +50,7 @@ public interface ShopFloorOrdersDao {
      * @return
      */
     @Update("<script>" +
-            "update usedDealOrders set" +
+            "update ShopFloorOrders set" +
             " ordersType=#{ordersType}," +
             " receivingTime=#{receivingTime}" +
             " where id=#{id} and buyerId=#{buyerId}" +
