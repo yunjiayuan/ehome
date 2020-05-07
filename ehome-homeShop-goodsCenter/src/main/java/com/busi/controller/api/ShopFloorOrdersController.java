@@ -76,6 +76,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         }
         String goods = ""; //商品信息
         String goodsTitle = ""; //商品标题
+        String basicDescribe = "";  //基本描述
         double cost = 0.00; //商品价格
         double money = 0.00; // 商品总金额
         String imgUrl = "";   //图片
@@ -103,6 +104,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                             cost = laf.getPrice();//原价
                         }
                         goodsTitle = laf.getGoodsTitle();//标题
+                        if (!CommonUtils.checkFull(laf.getBasicDescribe())) {
+                            basicDescribe = laf.getBasicDescribe(); //基本描述
+                        }
                         if (CommonUtils.checkFull(laf.getGoodsCoverUrl())) {
                             String[] img = laf.getImgUrl().split(",");
                             imgUrl = img[0];//用第一张图做封面
@@ -110,7 +114,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                             imgUrl = laf.getGoodsCoverUrl();//图片
                         }
                         specs = laf.getSpecs();
-                        goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片,规格;
+                        goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + "," + basicDescribe + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片,规格,基本描述;
                         money += Integer.parseInt(fn[j]) * cost;//总价格
                     }
                 }
