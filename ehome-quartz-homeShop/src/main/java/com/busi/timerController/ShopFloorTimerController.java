@@ -52,7 +52,7 @@ public class ShopFloorTimerController {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "0 13 16 * * ?") //
+    @Scheduled(cron = "0 50 16 * * ?") //
     public void shopFloorTimer() throws Exception {
         log.info("开始查询数据库中待处理的黑店超时订单，并加装到内存中...");
         while (true) {
@@ -87,7 +87,7 @@ public class ShopFloorTimerController {
                                 //清除缓存中的黑店订单信息
                                 redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + order.getBuyerId() + "_" + order.getNo(), 0);
                                 //更新买家缓存、钱包、账单
-                                mqUtils.sendPurseMQ(order.getBuyerId(), 14, 0, order.getMoney());
+                                mqUtils.sendPurseMQ(order.getBuyerId(), 27, 0, order.getMoney());
 
                                 log.info("更新了黑店订单[" + order.getId() + "]操作成功,状态为：发货超时！");
                             } else {
