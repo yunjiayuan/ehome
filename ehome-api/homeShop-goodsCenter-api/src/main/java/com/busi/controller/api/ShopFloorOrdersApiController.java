@@ -41,15 +41,6 @@ public interface ShopFloorOrdersApiController {
     ReturnData delSForders(@PathVariable long id);
 
     /***
-     * 更改订单状态
-     * 由未送出改为已送出
-     * @param id  订单Id
-     * @return
-     */
-//    @GetMapping("changeSFsendOut/{id}")
-//    ReturnData changeSFsendOut(@PathVariable long id);
-
-    /***
      * 更改发货状态
      * 由未发货改为已发货
      * @param id  订单Id
@@ -69,15 +60,14 @@ public interface ShopFloorOrdersApiController {
 
     /***
      * 分页查询订单列表
-     * @param identity    0送礼者  1接收者
      * @param type    0黑店订单  1礼尚往来
      * @param ordersType 订单类型: 0全部 1待付款,2待发货(已付款),3已发货（待收货）, 4已收货（待评价）  5已评价  6付款超时  7发货超时, 8取消订单
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
-    @GetMapping("findSFordersList/{identity}/{type}/{ordersType}/{page}/{count}")
-    ReturnData findSFordersList(@PathVariable int identity, @PathVariable int type, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findSFordersList/{type}/{ordersType}/{page}/{count}")
+    ReturnData findSFordersList(@PathVariable int type, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
     /***
      * 取消订单

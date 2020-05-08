@@ -134,30 +134,34 @@ public interface ShopFloorOrdersDao {
     @Select("<script>" +
             "select * from ShopFloorOrders" +
             " where ordersState=0" +
-            "<if test=\"identity == 0 \">" +
-            " and buyerId = #{userId}" +
-            "</if>" +
-            "<if test=\"identity == 1 \">" +
-            " and recipientId = #{userId}" +
-            "</if>" +
             "<if test=\"type == 0 \">" +
             " and type = #{type}" +
             "</if>" +
             "<if test=\"type == 1 \">" +
             " and type in(1,2) " +
             "</if>" +
+            "<if test=\"ordersType == -1\">" +
+            " and (buyerId = #{userId} or recipientId = #{userId})" +
+            "</if>" +
             "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
+            " and (buyerId = #{userId} or recipientId = #{userId})" +
             " and ordersType = #{ordersType}" +
             "</if>" +
             "<if test=\"ordersType >= 5 and ordersType &lt; 8\">" +
+            " and (buyerId = #{userId} or recipientId = #{userId})" +
             " and ordersType > 4 and ordersType &lt; 8" +
             "</if>" +
             "<if test=\"ordersType == 8\">" +
-            " and ordersType = #{ordersType}" +
+            " and ordersType = 8" +
+            " and buyerId = #{userId}" +
+            "</if>" +
+            "<if test=\"ordersType == 9\">" +
+            " and (buyerId = #{userId} or recipientId = #{userId}) " +
+            " and receiveState = 0" +
             "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<ShopFloorOrders> findOrderList(@Param("identity") int identity, @Param("type") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<ShopFloorOrders> findOrderList(@Param("type") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
 
     /***
      * 统计各类订单数量
@@ -166,7 +170,7 @@ public interface ShopFloorOrdersDao {
     @Select("<script>" +
             "select * from ShopFloorOrders" +
             " where 1=1 " +
-            " and buyerId = #{userId} and type!=3" +
+            " and (buyerId = #{userId} or recipientId = #{userId}) and type!=3" +
             " and ordersState = 0" +
             "</script>")
     List<ShopFloorOrders> findIdentity(@Param("userId") long userId);

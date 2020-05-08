@@ -81,11 +81,11 @@ public class ShopFloorOrdersService {
      * @param count    每页条数
      * @return
      */
-    public PageBean<ShopFloorOrders> findOrderList(int identity, int type, long userId, int ordersType, int page, int count) {
+    public PageBean<ShopFloorOrders> findOrderList(int type, long userId, int ordersType, int page, int count) {
 
         List<ShopFloorOrders> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = shopFloorOrdersDao.findOrderList(identity, type, userId, ordersType);
+        list = shopFloorOrdersDao.findOrderList(type, userId, ordersType);
 
         return PageUtils.getPageBean(p, list);
     }
