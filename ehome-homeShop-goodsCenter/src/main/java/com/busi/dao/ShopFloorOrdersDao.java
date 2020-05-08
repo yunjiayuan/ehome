@@ -133,7 +133,13 @@ public interface ShopFloorOrdersDao {
      */
     @Select("<script>" +
             "select * from ShopFloorOrders" +
-            " where ordersState=0 and buyerId = #{userId}" +
+            " where ordersState=0" +
+            "<if test=\"identity == 0 \">" +
+            " and buyerId = #{userId}" +
+            "</if>" +
+            "<if test=\"identity == 1 \">" +
+            " and recipientId = #{userId}" +
+            "</if>" +
             "<if test=\"type == 0 \">" +
             " and type = #{type}" +
             "</if>" +
@@ -151,7 +157,7 @@ public interface ShopFloorOrdersDao {
             "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<ShopFloorOrders> findOrderList(@Param("type") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<ShopFloorOrders> findOrderList(@Param("identity") int identity, @Param("type") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
 
     /***
      * 统计各类订单数量
