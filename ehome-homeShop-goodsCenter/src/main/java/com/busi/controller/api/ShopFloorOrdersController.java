@@ -494,10 +494,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                         orderCont5++;
                         orderCont0++;
                         break;
-                    case 9://待领取
-                        orderCont7++;
-                        orderCont0++;
-                        break;
                     default:
                         orderCont0++;
                         break;
@@ -508,7 +504,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 map.put("orderCont3", orderCont3);
                 map.put("orderCont4", orderCont4);
                 map.put("orderCont5", orderCont5);
-                map.put("orderCont7", orderCont7);
             } else {
                 switch (kh.getOrdersType()) {
                     case 0://待付款
@@ -535,13 +530,13 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                         orderCont5++;
                         orderCont0++;
                         break;
-                    case 9://待领取
-                        orderCont7++;
-                        orderCont0++;
-                        break;
                     default:
                         orderCont0++;
                         break;
+                }
+                if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
+                    orderCont7++;
+                    orderCont0++;
                 }
                 map2.put("orderCont0", orderCont0);
                 map2.put("orderCont1", orderCont1);
@@ -550,7 +545,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 map2.put("orderCont4", orderCont4);
                 map2.put("orderCont5", orderCont5);
                 map2.put("orderCont6", orderCont6);
-                map.put("orderCont7", orderCont7);
+                map2.put("orderCont7", orderCont7);
             }
         }
         newList.add(map);
