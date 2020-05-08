@@ -239,7 +239,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + ik.getBuyerId() + "_" + ik.getNo(), 0);
         //放入缓存
-        ordersMap = CommonUtils.objectToMap(io);
+        ordersMap = CommonUtils.objectToMap(ik);
         redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + ik.getBuyerId() + "_" + ik.getNo(), ordersMap, Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -453,7 +453,6 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         map.put("orderCont3", orderCont3);
         map.put("orderCont4", orderCont4);
         map.put("orderCont5", orderCont5);
-        map.put("orderCont7", orderCont7);
         Map<String, Object> map2 = new HashMap<>();
         map2.put("orderCont0", orderCont0);
         map2.put("orderCont1", orderCont1);
@@ -505,39 +504,24 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 map.put("orderCont4", orderCont4);
                 map.put("orderCont5", orderCont5);
             } else {
-                switch (kh.getOrdersType()) {
-                    case 0://待付款
+                if (CommonUtils.getMyId() == kh.getBuyerId()) {
+                    if (kh.getOrdersType() == 0) {//待付款
                         orderCont1++;
-                        orderCont0++;
-                        break;
-                    case 1://待发货
+                    } else if (kh.getOrdersType() == 1) {//待发货
                         orderCont2++;
-                        orderCont0++;
-                        break;
-                    case 2://待收货
+                    } else if (kh.getOrdersType() == 2) {//待收货
                         orderCont3++;
-                        orderCont0++;
-                        break;
-                    case 3://待评价
+                    } else if (kh.getOrdersType() == 3) {//待评价
                         orderCont4++;
-                        orderCont0++;
-                        break;
-                    case 8://待送出
+                    } else if (kh.getOrdersType() == 8) {//待送出
                         orderCont6++;
-                        orderCont0++;
-                        break;
-                    case 7://取消订单
+                    } else if (kh.getOrdersType() == 7) {//取消订单
                         orderCont5++;
-                        orderCont0++;
-                        break;
-                    default:
-                        orderCont0++;
-                        break;
-                }
-                if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
+                    }
+                } else if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
                     orderCont7++;
-                    orderCont0++;
                 }
+                orderCont0++;
                 map2.put("orderCont0", orderCont0);
                 map2.put("orderCont1", orderCont1);
                 map2.put("orderCont2", orderCont2);

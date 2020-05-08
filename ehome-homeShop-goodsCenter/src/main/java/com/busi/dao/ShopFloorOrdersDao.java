@@ -144,11 +144,11 @@ public interface ShopFloorOrdersDao {
             " and (buyerId = #{userId} or recipientId = #{userId})" +
             "</if>" +
             "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
-            " and (buyerId = #{userId})" +
+            " and buyerId = #{userId}" +
             " and ordersType = #{ordersType}" +
             "</if>" +
             "<if test=\"ordersType >= 5 and ordersType &lt; 8\">" +
-            " and (buyerId = #{userId})" +
+            " and buyerId = #{userId}" +
             " and ordersType > 4 and ordersType &lt; 8" +
             "</if>" +
             "<if test=\"ordersType == 8\">" +
@@ -170,7 +170,7 @@ public interface ShopFloorOrdersDao {
     @Select("<script>" +
             "select * from ShopFloorOrders" +
             " where 1=1 " +
-            " and buyerId = #{userId} and type!=3" +
+            " and (buyerId = #{userId} or recipientId = #{userId}) and type!=3" +
             " and ordersState = 0" +
             "</script>")
     List<ShopFloorOrders> findIdentity(@Param("userId") long userId);
