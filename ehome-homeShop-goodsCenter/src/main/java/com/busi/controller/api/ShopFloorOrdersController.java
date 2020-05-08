@@ -372,7 +372,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             for (int i = 0; i < list.size(); i++) {
                 t = (ShopFloorOrders) list.get(i);
                 if (t != null) {
-                    if (ordersType == -1) {
+                    if (ordersType == -1 || ordersType == 9) {
                         if (t.getOrdersType() == 1 || t.getOrdersType() == 8) {
                             if (t.getReceiveState() == 0) {
                                 t.setOrdersType(9);
@@ -541,7 +541,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                         orderCont5++;
                     }
                 } else if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
-                    orderCont7++;
+                    if (kh.getOrdersType() == 1 || kh.getOrdersType() == 8) {
+                        orderCont7++;
+                    }
                 }
                 orderCont0++;
                 map2.put("orderCont0", orderCont0);
