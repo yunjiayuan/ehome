@@ -59,8 +59,8 @@ public class ShopFloorOrdersService {
      * @param no  订单编号
      * @return
      */
-    public ShopFloorOrders findNo(String no, long userId) {
-        return shopFloorOrdersDao.findByNo(no, userId);
+    public ShopFloorOrders findNo(String no) {
+        return shopFloorOrdersDao.findByNo(no);
     }
 
     /***

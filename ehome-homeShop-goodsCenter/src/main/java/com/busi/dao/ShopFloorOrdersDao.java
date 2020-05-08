@@ -86,10 +86,10 @@ public interface ShopFloorOrdersDao {
      */
     @Select("<script>" +
             "select * from ShopFloorOrders" +
-            " where no = #{no} and buyerId=#{userId}" +
+            " where no = #{no}" +
             " and ordersState = 0" +
             "</script>")
-    ShopFloorOrders findByNo(@Param("no") String no, @Param("userId") long userId);
+    ShopFloorOrders findByNo(@Param("no") String no);
 
     /***
      *  更新楼店订单状态

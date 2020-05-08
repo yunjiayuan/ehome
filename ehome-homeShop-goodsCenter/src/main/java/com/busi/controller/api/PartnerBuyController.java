@@ -167,7 +167,7 @@ public class PartnerBuyController extends BaseController implements PartnerBuyAp
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
-            io = shopFloorOrdersService.findNo(no, CommonUtils.getMyId());
+            io = shopFloorOrdersService.findNo(no);
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "当前合伙购不存在", new JSONObject());
             }

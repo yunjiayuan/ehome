@@ -403,26 +403,23 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
      */
     @Override
     public ReturnData orderDetails(@PathVariable String no) {
-        //查询缓存 缓存中不存在 查询数据库
+        // 查询数据库
         ShopFloorOrders io = null;
-        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_SHOPFLOORORDERS + CommonUtils.getMyId() + "_" + no);
-        if (ordersMap == null || ordersMap.size() <= 0) {
-            io = shopFloorOrdersService.findNo(no, CommonUtils.getMyId());
-            if (io == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
-            }
-            UserInfo userInfo = null;
-            userInfo = userInfoUtils.getUserInfo(io.getBuyerId());
-            if (userInfo != null) {
-                io.setName(userInfo.getName());
-                io.setHead(userInfo.getHead());
-                io.setProTypeId(userInfo.getProType());
-                io.setHouseNumber(userInfo.getHouseNumber());
-            }
-            //放入缓存
-            ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
+        io = shopFloorOrdersService.findNo(no);
+        if (io == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
         }
+        UserInfo userInfo = null;
+        userInfo = userInfoUtils.getUserInfo(io.getBuyerId());
+        if (userInfo != null) {
+            io.setName(userInfo.getName());
+            io.setHead(userInfo.getHead());
+            io.setProTypeId(userInfo.getProType());
+            io.setHouseNumber(userInfo.getHouseNumber());
+        }
+        //放入缓存
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+        redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
     }
 
