@@ -206,6 +206,13 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             if (io.getReceiveState() != 0) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您已领取过了", new JSONObject());
             }
+            if (shopFloorOrders.getRecipientId() > 0) {
+                io.setRecipientId(shopFloorOrders.getRecipientId());
+            }
+            if (shopFloorOrders.getShopId() > 0) {
+                io.setShopId(shopFloorOrders.getShopId());
+                io.setShopName(shopFloorOrders.getShopName());
+            }
             io.setReceiveState(1);
             io.setOrdersType(1);
             io.setAddress(shippingAddress.getAddress());
@@ -226,6 +233,13 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         }
         if (ik.getReceiveState() != 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您已领取过了", new JSONObject());
+        }
+        if (shopFloorOrders.getRecipientId() > 0) {
+            io.setRecipientId(shopFloorOrders.getRecipientId());
+        }
+        if (shopFloorOrders.getShopId() > 0) {
+            io.setShopId(shopFloorOrders.getShopId());
+            io.setShopName(shopFloorOrders.getShopName());
         }
         ik.setReceiveState(1);
         ik.setOrdersType(1);
@@ -337,7 +351,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
      * @return
      */
     @Override
-    public ReturnData findSFordersList(@PathVariable int type, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findSFordersList(@PathVariable int type, @PathVariable int ordersType,
+                                       @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -357,6 +372,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             for (int i = 0; i < list.size(); i++) {
                 t = (ShopFloorOrders) list.get(i);
                 if (t != null) {
+                    if (t.getReceiveState() == 0) {
+                        t.setOrdersType(9);
+                    }
                     userCache = userInfoUtils.getUserInfo(t.getBuyerId());
                     if (userCache != null) {
                         t.setName(userCache.getName());

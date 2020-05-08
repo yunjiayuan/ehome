@@ -157,6 +157,7 @@ public interface ShopFloorOrdersDao {
             "</if>" +
             "<if test=\"ordersType == 9\">" +
             " and recipientId = #{userId} " +
+            " and (ordersType = 8 or ordersType = 1)" +
             " and receiveState = 0" +
             "</if>" +
             " order by addTime desc" +
