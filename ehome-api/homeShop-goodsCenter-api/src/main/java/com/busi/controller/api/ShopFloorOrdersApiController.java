@@ -41,6 +41,16 @@ public interface ShopFloorOrdersApiController {
     ReturnData delSForders(@PathVariable long id);
 
     /***
+     * 更改订单状态
+     * 由待送出改为待发货（已送出）
+     * @param id  订单Id
+     * @return
+     */
+    @GetMapping("changeSFsendOut/{id}")
+    ReturnData changeSFsendOut(@PathVariable long id);
+
+
+    /***
      * 更改发货状态
      * 由未发货改为已发货
      * @param id  订单Id

@@ -277,6 +277,32 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
     }
 
     /***
+     * 更改订单状态
+     * 由待送出改为待发货（已送出）
+     * @param id  订单Id
+     * @return
+     */
+    @Override
+    public ReturnData changeSFsendOut(@PathVariable long id) {
+        ShopFloorOrders io = shopFloorOrdersService.findById(id, CommonUtils.getMyId(), 4);
+        if (io == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
+        }
+        if (io.getBuyerId() == CommonUtils.getMyId()) {
+            io.setOrdersType(1);
+            io.setUpdateCategory(3);
+            shopFloorOrdersService.updateOrders(io);
+
+            //清除缓存中的订单信息
+            redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), 0);
+            //订单放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+            redisUtils.hmset(Constants.REDIS_KEY_SHOPFLOORORDERS + io.getBuyerId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 更改发货状态
      * 由未发货改为已发货（由已送出改为已发货）
      * @param id  订单Id
