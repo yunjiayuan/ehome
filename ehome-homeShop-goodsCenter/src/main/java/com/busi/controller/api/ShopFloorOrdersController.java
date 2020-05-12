@@ -281,7 +281,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
 
     /***
      * 更改订单状态
-     * 由待送出改为待发货（已送出）
+     * 由待送出改为待领取（已送出未领取）
      * @param id  订单Id
      * @return
      */
@@ -402,10 +402,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 t = (ShopFloorOrders) list.get(i);
                 if (t != null) {
                     if (ordersType == -1 || ordersType == 9) {
-                        if (t.getOrdersType() == 1 || t.getOrdersType() == 8) {
-                            if (t.getReceiveState() == 0) {
-                                t.setOrdersType(9);
-                            }
+                        if (t.getOrdersType() == 1 && t.getReceiveState() == 0 && CommonUtils.getMyId() == t.getRecipientId()) {
+                            t.setOrdersType(9);
                         }
                     }
                     userCache = userInfoUtils.getUserInfo(t.getBuyerId());
@@ -568,10 +566,10 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                         orderCont6++;
                     } else if (kh.getOrdersType() == 7) {//取消订单
                         orderCont5++;
-                    } else if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
-                        if (kh.getOrdersType() == 1 || kh.getOrdersType() == 8) {
-                            orderCont7++;
-                        }
+                    }
+                } else if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
+                    if (kh.getOrdersType() == 1) {
+                        orderCont7++;
                     }
                 }
                 orderCont0++;
