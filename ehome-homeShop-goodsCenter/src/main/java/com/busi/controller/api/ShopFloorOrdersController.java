@@ -238,11 +238,11 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您已领取过了", new JSONObject());
         }
         if (shopFloorOrders.getRecipientId() > 0) {
-            io.setRecipientId(shopFloorOrders.getRecipientId());
+            ik.setRecipientId(shopFloorOrders.getRecipientId());
         }
         if (shopFloorOrders.getShopId() > 0) {
-            io.setShopId(shopFloorOrders.getShopId());
-            io.setShopName(shopFloorOrders.getShopName());
+            ik.setShopId(shopFloorOrders.getShopId());
+            ik.setShopName(shopFloorOrders.getShopName());
         }
         ik.setReceiveState(1);
         ik.setOrdersType(1);
