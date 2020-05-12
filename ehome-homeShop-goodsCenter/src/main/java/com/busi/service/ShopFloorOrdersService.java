@@ -65,7 +65,7 @@ public class ShopFloorOrdersService {
 
     /***
      *  更新楼店订单状态
-     *  updateCategory 更新类别  0删除状态  1由未发货改为已发货 2由未收货改为已收货 3取消订单 4更新支付状态
+     *  updateCategory 更新类别  0删除状态  1由未发货改为已发货 2由未收货改为已收货 3取消订单 4更新支付状态  5更新礼尚往来领取状态  6更新礼尚往来接收者
      * @param kitchenBookedOrders
      * @return
      */

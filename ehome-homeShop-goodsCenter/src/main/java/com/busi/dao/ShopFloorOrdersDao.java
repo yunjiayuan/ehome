@@ -93,7 +93,7 @@ public interface ShopFloorOrdersDao {
 
     /***
      *  更新楼店订单状态
-     *  updateCategory 更新类别  0删除状态  1由未发货改为已发货 2由未收货改为已收货 3取消订单 4更新支付状态  5更新礼尚往来领取状态
+     *  updateCategory 更新类别  0删除状态  1由未发货改为已发货 2由未收货改为已收货 3取消订单 4更新支付状态  5更新礼尚往来领取状态  6更新礼尚往来接收者
      * @param orders
      * @return
      */
@@ -120,6 +120,10 @@ public interface ShopFloorOrdersDao {
             "<if test=\"updateCategory == 5\">" +
             " receiveState =#{receiveState}," +
             "</if>" +
+            "<if test=\"updateCategory == 6\">" +
+            " ordersType =#{ordersType}," +
+            " recipientId =#{recipientId}," +
+            "</if>" +
             " id=#{id} " +
             " where id=#{id} and ordersState=0" +
             "</script>")
@@ -144,6 +148,9 @@ public interface ShopFloorOrdersDao {
             " and (buyerId = #{userId} or recipientId = #{userId})" +
             "</if>" +
             "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
+            "<if test=\"type == 1 and ordersType == 1\">" +
+            " and receiveState = 1 " +
+            "</if>" +
             " and buyerId = #{userId}" +
             " and ordersType = #{ordersType}" +
             "</if>" +

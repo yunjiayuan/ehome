@@ -283,17 +283,19 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
      * 更改订单状态
      * 由待送出改为待领取（已送出未领取）
      * @param id  订单Id
+     * @param userId  接收者Id
      * @return
      */
     @Override
-    public ReturnData changeSFsendOut(@PathVariable long id) {
+    public ReturnData changeSFsendOut(@PathVariable long id, @PathVariable long userId) {
         ShopFloorOrders io = shopFloorOrdersService.findById(id, CommonUtils.getMyId(), 4);
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         if (io.getBuyerId() == CommonUtils.getMyId()) {
             io.setOrdersType(1);
-            io.setUpdateCategory(3);
+            io.setRecipientId(userId);
+            io.setUpdateCategory(6);
             shopFloorOrdersService.updateOrders(io);
 
             //清除缓存中的订单信息

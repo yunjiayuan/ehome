@@ -44,10 +44,11 @@ public interface ShopFloorOrdersApiController {
      * 更改订单状态
      * 由待送出改为待发货（已送出）
      * @param id  订单Id
+     * @param userId  接收者Id
      * @return
      */
-    @GetMapping("changeSFsendOut/{id}")
-    ReturnData changeSFsendOut(@PathVariable long id);
+    @GetMapping("changeSFsendOut/{id}/{userId}")
+    ReturnData changeSFsendOut(@PathVariable long id, @PathVariable long userId);
 
 
     /***
