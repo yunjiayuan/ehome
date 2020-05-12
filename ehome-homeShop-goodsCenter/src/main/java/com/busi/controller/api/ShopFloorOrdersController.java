@@ -558,7 +558,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 if (CommonUtils.getMyId() == kh.getBuyerId()) {
                     if (kh.getOrdersType() == 0) {//待付款
                         orderCont1++;
-                    } else if (kh.getOrdersType() == 1) {//待发货
+                    } else if (kh.getOrdersType() == 1 && kh.getReceiveState() == 1) {//待发货
                         orderCont2++;
                     } else if (kh.getOrdersType() == 2) {//待收货
                         orderCont3++;
@@ -568,10 +568,10 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                         orderCont6++;
                     } else if (kh.getOrdersType() == 7) {//取消订单
                         orderCont5++;
-                    }
-                } else if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
-                    if (kh.getOrdersType() == 1 || kh.getOrdersType() == 8) {
-                        orderCont7++;
+                    } else if (kh.getReceiveState() == 0 && CommonUtils.getMyId() == kh.getRecipientId()) {//待领取
+                        if (kh.getOrdersType() == 1 || kh.getOrdersType() == 8) {
+                            orderCont7++;
+                        }
                     }
                 }
                 orderCont0++;
