@@ -195,8 +195,8 @@ public class IPS_HomeController extends BaseController implements IPS_HomeApiCon
             }
             if (rentList != null && rentList.size() > 0) {
                 for (int j = 0; j < rentList.size(); j++) {
-                    rentAhouse = (RentAhouse) dealList.get(j);
-                    if (usedDeal != null) {
+                    rentAhouse = (RentAhouse) rentList.get(j);
+                    if (rentAhouse != null) {
                         IPS_Home ipsHome = new IPS_Home();
                         ipsHome.setInfoId(rentAhouse.getId());
                         ipsHome.setTitle(rentAhouse.getTitle());
