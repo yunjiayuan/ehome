@@ -31,6 +31,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     RedisUtils redisUtils;
 
     @Autowired
+    UserInfoUtils userInfoUtils;
+
+    @Autowired
     private ShopFloorService shopCenterService;
 
     @Autowired
@@ -272,15 +275,18 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 ShopFloor ik = (ShopFloor) list.get(i);
-
-//                double userlon = Double.valueOf(ik.getLon() + "");
-//                double userlat = Double.valueOf(ik.getLat() + "");
                 double userlon = ik.getLon();
                 double userlat = ik.getLat();
-
                 int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
-
                 ik.setDistance(distance);//距离/m
+                UserInfo userInfo = null;
+                userInfo = userInfoUtils.getUserInfo(ik.getUserId());
+                if (userInfo != null) {
+                    ik.setName(userInfo.getName());
+                    ik.setHead(userInfo.getHead());
+                    ik.setProTypeId(userInfo.getProType());
+                    ik.setHouseNumber(userInfo.getHouseNumber());
+                }
             }
             Collections.sort(list, new Comparator<ShopFloor>() {
                 /*

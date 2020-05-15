@@ -55,6 +55,8 @@ public class ShopFloor {
 
     private String address;                // 详细地址
 
+    private String telephone;                // 联系电话
+
     @NotNull(message = "小区名称不能为空")
     private String villageName;                // 小区名称
 
@@ -62,13 +64,13 @@ public class ShopFloor {
     private String villageOnly;                // 小区唯一标识
 
     // 与数据库无关字段
-//    private String name;                //用户名
-//
-//    private String head;                //头像
-//
-//    private int proTypeId;                //省简称ID
-//
-//    private long houseNumber;            //门牌号
+    private String name;                //用户名
+
+    private String head;                //头像
+
+    private int proTypeId;                //省简称ID
+
+    private long houseNumber;            //门牌号
 
     private String delImgUrls;      //将要删除的图片地址组合 “,”分隔
 
