@@ -396,6 +396,9 @@ public class PropertyController extends BaseController implements PropertyApiCon
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        if (homeHospital.getUserId() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "userId参数有误", new JSONArray());
+        }
         //判断设置者权限
         PropertyResident sa = communityService.findResident(homeHospital.getPropertyId(), CommonUtils.getMyId());
         if (sa == null || sa.getIdentity() < 1) {
@@ -404,24 +407,23 @@ public class PropertyController extends BaseController implements PropertyApiCon
         //判断被设置者是否是本居民
         PropertyResident resident = communityService.findResident(homeHospital.getPropertyId(), homeHospital.getUserId());
         if (resident == null) {
-            PropertyResident resident1 = new PropertyResident();
-            resident1.setType(1);
-            resident1.setTime(new Date());
-            resident1.setRefreshTime(new Date());
-            resident1.setMasterId(CommonUtils.getMyId());
-            resident1.setUserId(homeHospital.getUserId());
-            resident1.setIdentity(homeHospital.getIdentity());
-            resident1.setPropertyId(homeHospital.getPropertyId());
-            communityService.addResident(resident1);
+            resident = new PropertyResident();
+            resident.setType(1);
+            resident.setTime(new Date());
+            resident.setRefreshTime(new Date());
+            resident.setMasterId(CommonUtils.getMyId());
+            resident.setUserId(homeHospital.getUserId());
+            resident.setIdentity(homeHospital.getIdentity());
+            resident.setPropertyId(homeHospital.getPropertyId());
+            communityService.addResident(resident);
         }
         if (homeHospital.getIdentity() == 1 && resident != null) {
+            resident.setIdentity(1);
             communityService.changeResident(resident);
         }
-        if (homeHospital.getIdentity() == 2 && sa.getIdentity() == 2) {
-            if (resident != null) {
-                resident.setIdentity(2);
-                communityService.changeResident(resident);
-            }
+        if (homeHospital.getIdentity() == 2 && sa.getIdentity() == 2 && resident != null) {
+            resident.setIdentity(2);
+            communityService.changeResident(resident);
             sa.setIdentity(1);
             communityService.changeResident(sa);//更新物业身份为管理员
             //更新物业创建者
