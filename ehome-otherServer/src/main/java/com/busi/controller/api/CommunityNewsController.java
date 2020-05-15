@@ -173,10 +173,12 @@ public class CommunityNewsController extends BaseController implements Community
                         String num = tagArray[i];
                         for (int j = 0; j < list.size(); j++) {
                             CommunityNews news = (CommunityNews) list.get(j);
-                            String[] identity = news.getIdentity().split(",");
-                            String num2 = identity[j];
-                            if (num.equals(num2)) {
-                                list1.add(news);
+                            if (!CommonUtils.checkFull(news.getIdentity())) {
+                                String[] identity = news.getIdentity().split(",");
+                                String num2 = identity[j];
+                                if (num.equals(num2)) {
+                                    list1.add(news);
+                                }
                             }
                         }
                     }

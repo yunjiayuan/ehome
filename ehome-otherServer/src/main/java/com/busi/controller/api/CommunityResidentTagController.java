@@ -78,12 +78,12 @@ public class CommunityResidentTagController extends BaseController implements Co
         PageBean<CommunityResidentTag> pageBean = null;
         if (list == null || list.size() <= 0) {//缓存中不存在 查询数据库
             pageBean = residentTagService.findList(id, 0, 100);
-            if (pageBean == null) {
+            List list1 = pageBean.getList();
+            if (list1 == null || list1.size() <= 0) {
                 pageBean = new PageBean<CommunityResidentTag>();
                 pageBean.setList(new ArrayList<>());
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
-            }
-            if (pageBean.getList() != null) {
+            } else {
                 //放入缓存中
                 redisUtils.pushList(Constants.REDIS_KEY_COMMUNITY_TAG + id, pageBean.getList(), 0);
             }
