@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -165,23 +162,54 @@ public class CommunityNewsController extends BaseController implements Community
                         }
                     }
                     List list1 = new ArrayList();
-                    if (tagArray == null) {
-                        pageBean = todayNewsService.findList(communityId, newsType, 2, userId, page, count);
-                        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
-                    }
-                    for (int i = 0; i < tagArray.length; i++) {
-                        String num = tagArray[i];
-                        for (int j = 0; j < list.size(); j++) {
-                            CommunityNews news = (CommunityNews) list.get(j);
-                            if (!CommonUtils.checkFull(news.getIdentity())) {
-                                String[] identity = news.getIdentity().split(",");
-                                String num2 = identity[j];
-                                if (num.equals(num2)) {
+                    for (int j = 0; j < list.size(); j++) {
+                        CommunityNews news = (CommunityNews) list.get(j);
+                        if (CommonUtils.checkFull(news.getIdentity()) && CommonUtils.checkFull(news.getLookUserIds())) {//判断是否设置查看权限
+                            list1.add(news);
+                            break;
+                        }
+                        if (!CommonUtils.checkFull(news.getIdentity())) {
+                            String[] identity = news.getIdentity().split(",");
+                            if (!CommonUtils.checkFull(sa.getTags())) {
+                                for (int i = 0; i < tagArray.length; i++) {
+                                    String num = tagArray[i];
+                                    for (int a = 0; a < identity.length; a++) {
+                                        String num2 = identity[a];
+                                        if (num.equals(num2)) {
+                                            list1.add(news);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        for (int b = 0; b < list1.size(); b++) {
+                            if (list1.get(b) == news) {
+                                break;
+                            }
+                        }
+                        if (!CommonUtils.checkFull(news.getLookUserIds())) {//判断是否设置查看权限
+                            String[] num = news.getLookUserIds().split(",");
+                            String num1 = "#" + sa.getUserId() + "#";
+                            for (int i = 0; i < num.length; i++) {
+                                if (num[i].equals(num1)) {
                                     list1.add(news);
+                                    break;
                                 }
                             }
                         }
                     }
+                    //删除ArrayList中重复元素并保持顺序
+//                    Set set = new HashSet();
+//                    List newList = new ArrayList();
+//                    for (Iterator iter = list1.iterator(); iter.hasNext(); ) {
+//                        Object integer = iter.next();
+//                        if (set.add(integer)) {
+//                            newList.add(integer);
+//                        }
+//                    }
+//                    list.clear();
+//                    list.add(newList);
                     pageBean = new PageBean<>();
                     pageBean.setSize(list1.size());
                     pageBean.setPageNum(page);
@@ -225,7 +253,11 @@ public class CommunityNewsController extends BaseController implements Community
         }
         if (kitchenMap != null && kitchenMap.size() > 0) {
             CommunityNews communityNews = (CommunityNews) CommonUtils.mapToObject(kitchenMap, CommunityNews.class);
-            if (communityNews.getNewsType() < 2) {
+            if (communityNews.getNoticeType() < 2) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+            }
+            //居委会通告
+            if (CommonUtils.checkFull(communityNews.getIdentity()) && CommonUtils.checkFull(communityNews.getLookUserIds())) {//判断是否设置查看权限
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
             }
             //新增通告浏览记录
@@ -235,10 +267,6 @@ public class CommunityNewsController extends BaseController implements Community
             communityLook.setTime(new Date());
             communityLook.setTitle(communityNews.getTitle());
             communityLook.setUserId(CommonUtils.getMyId());
-            //居委会通告
-            if (CommonUtils.checkFull(communityNews.getIdentity())) {//判断是否设置查看权限
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
-            }
             //判断是否是管理员
             CommunityResident sa = communityService.findResident(communityNews.getCommunityId(), CommonUtils.getMyId());
             if (sa == null) {
@@ -248,19 +276,29 @@ public class CommunityNewsController extends BaseController implements Community
                 todayNewsService.addLook(communityLook);
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
             } else {
-                if (CommonUtils.checkFull(sa.getTags())) {
-                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                if (!CommonUtils.checkFull(sa.getTags()) && !CommonUtils.checkFull(communityNews.getIdentity())) {//判断是否设置查看权限
+                    String[] num = communityNews.getIdentity().split(",");
+                    String[] num1 = sa.getTags().split(",");
+                    for (int i = 0; i < num.length; i++) {
+                        for (int j = 0; j < num1.length; j++) {
+                            if (num[i].equals("#" + num1[j] + "#")) {
+                                todayNewsService.addLook(communityLook);
+                                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+                            }
+                        }
+                    }
                 }
-                String[] num = communityNews.getIdentity().split(",");
-                String[] num1 = sa.getTags().split(",");
-                for (int i = 0; i < num.length; i++) {
-                    for (int j = 0; j < num1.length; j++) {
-                        if (num[i].equals("#" + num1[j] + "#")) {
+                if (!CommonUtils.checkFull(communityNews.getLookUserIds())) {//判断是否设置查看权限
+                    String[] num = communityNews.getLookUserIds().split(",");
+                    String num1 = "#" + sa.getUserId() + "#";
+                    for (int i = 0; i < num.length; i++) {
+                        if (num[i].equals(num1)) {
                             todayNewsService.addLook(communityLook);
                             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
                         }
                     }
                 }
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
