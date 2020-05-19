@@ -871,9 +871,9 @@ public class RegisterController extends BaseController implements RegisterApiCon
         if(CommonUtils.checkFull(userInfo.getPassword())){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"密码不能为空",new JSONObject());
         }
-        if(CommonUtils.checkFull(userInfo.getCode())){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"验证码不能为空",new JSONObject());
-        }
+//        if(CommonUtils.checkFull(userInfo.getCode())){
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"验证码不能为空",new JSONObject());
+//        }
         //验证参数格式是否正确
         if(bindingResult.hasErrors()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
