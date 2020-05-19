@@ -170,7 +170,8 @@ public class Constants {
     public static String[] department = {"内科","心脏科","呼吸科","消化内科","血液科","内分泌科","感染科","影像科","免疫科","神经内科","外科","骨科","泌尿外科","心胸外科","血管外科","神经外科","妇科","产科","儿科","口腔科","眼科","耳鼻喉科","心理科","理疗科","皮肤科","男科","整形美容科","营养科","肝瘤及预防科","报告解读科","康复科","中医科"};
 
     /** 用户奖励提现金额的最低限制 配置 开始**/
-    public static final int REWARD_TOTAL_MONEY = 50;//例如 满50元可以提现到钱包
+    public static final int REWARD_TOTAL_MONEY = 100;//例如 满100元可以提现到钱包
+    public static final int REWARD_TOTAL_MONEY_LIMIT = 85;//奖励系统给钱的最大临界值 达到此值后将不再给钱 防止达到提现金额
     public static final int REWARD_EBLOG_LIKE_COUNT_10 = 10;//点赞数临界值 超过临界值 自动奖励用户红包
     public static final int REWARD_EBLOG_LIKE_COUNT_100 = 100;//点赞数临界值 超过临界值 自动奖励用户红包
     public static final int REWARD_EBLOG_LIKE_COUNT_10000 = 10000;//点赞数临界值 超过临界值 自动奖励用户红包
@@ -288,6 +289,7 @@ public class Constants {
     public static final String REDIS_KEY_RENTAHOUSE = "rentAhouse_";//买房租房与主键Id关系对照
     public static final String REDIS_KEY_PROPERTY = "property_";//物业与主键Id关系对照
     public static final String REDIS_KEY_COMMUNITY_TAG = "community_tag_";//居委会标签
+    public static final String REDIS_KEY_REWARD_TOTAL_MONEY = "reward_total_money_";//奖励系统总金额 reward_total_money_userId
 
 
 

@@ -5,9 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.ReturnData;
 import com.busi.entity.RewardTotalMoneyLog;
 import com.busi.service.RewardTotalMoneyLogService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.MqUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /***
  * 用户奖励总金额信息接口
@@ -30,6 +29,10 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
     @Autowired
     MqUtils mqUtils;
 
+    @Autowired
+    RedisUtils redisUtils;
+
+
     /***
      * 根据指定用户，查询获得奖励的总金额
      * @param userId
@@ -41,12 +44,20 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
         if (CommonUtils.getMyId() != userId) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作用户[" + userId + "]的奖励总金额信息", new JSONObject());
         }
-        RewardTotalMoneyLog rewardTotalMoneyLog = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfo(userId);
-        if(rewardTotalMoneyLog==null){
-            rewardTotalMoneyLog = new RewardTotalMoneyLog();
-            rewardTotalMoneyLog.setUserId(userId);
+        Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + userId);
+        if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
+            RewardTotalMoneyLog rewardTotalMoneyLog = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfo(userId);
+            if(rewardTotalMoneyLog==null){
+                rewardTotalMoneyLog = new RewardTotalMoneyLog();
+                rewardTotalMoneyLog.setUserId(userId);
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", rewardTotalMoneyLog);
+            }
+            //放入缓存
+            rewardTotalMoneyLogMap = CommonUtils.objectToMap(rewardTotalMoneyLog);
+            redisUtils.hmset(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + userId, rewardTotalMoneyLogMap, Constants.USER_TIME_OUT);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", rewardTotalMoneyLog);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", rewardTotalMoneyLogMap);
+
     }
 
     @Override
@@ -63,14 +74,14 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
         if(rtml==null){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您当前没有奖励可以转入钱包", rewardTotalMoneyLog);
         }
-        if(rtml.getRewardTotalMoney()<100){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您当前奖励金额不满100元，暂时无法转入钱包", rewardTotalMoneyLog);
+        if(rtml.getRewardTotalMoney()<Constants.REWARD_TOTAL_MONEY){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您当前奖励金额不满"+Constants.REWARD_TOTAL_MONEY+"元，暂时无法转入钱包", rewardTotalMoneyLog);
         }
         if(rewardTotalMoneyLog.getRewardTotalMoney()>rtml.getRewardTotalMoney()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您要转入钱包的金额大于您的奖励余额，无法转入钱包", rewardTotalMoneyLog);
         }
-        if(rewardTotalMoneyLog.getRewardTotalMoney()<100){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您要转入钱包的金额小于100元，暂时无法转入钱包", rewardTotalMoneyLog);
+        if(rewardTotalMoneyLog.getRewardTotalMoney()<Constants.REWARD_TOTAL_MONEY){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您要转入钱包的金额小于"+Constants.REWARD_TOTAL_MONEY+"元，暂时无法转入钱包", rewardTotalMoneyLog);
         }
         //开始转入
         //更新奖励系统余额
@@ -82,6 +93,8 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
         rewardTotalMoneyLogService.update(rtml);
         //更新钱包
         mqUtils.sendPurseMQ(rtml.getUserId(),21,0,rewardTotalMoneyLog.getRewardTotalMoney());
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + rewardTotalMoneyLog.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

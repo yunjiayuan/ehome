@@ -3,6 +3,7 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.fegin.RewardTotalMoneyLogLocalControllerFegin;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
     @Autowired
     private UserRelationShipUtils userRelationShipUtils;
+
+    @Autowired
+    private RewardTotalMoneyLogLocalControllerFegin rewardTotalMoneyLogLocalControllerFegin;
 
     @Autowired
     RedisUtils redisUtils;
@@ -146,6 +150,78 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 userInfoUtils.updateWelcomeVideoByHomeBlog(userHeadNotes);
             }
         }
+        //对首次视频类型的生活圈进行处理
+        double rewardMoney = 10;//奖励金额
+        int status = 0;//0表示不显示首次发视频红包 1表示显示首次发视频红包
+        boolean flag = false;
+        if(homeBlog.getBlogType()==0&&homeBlog.getSendType()==2){
+            //机器人不发送红包
+            if(homeBlog.getUserId()<=10000||(homeBlog.getUserId()<=53870&&homeBlog.getUserId()>=13870)){
+                flag  = true;
+            }
+            UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
+            if(userInfo==null){
+                flag  = true;
+            }
+            if(userInfo.getHomeBlogStatus()!=0){//首发视频
+                if(!flag){
+                    //修改首发视频奖励规则 当作稿费
+                    Random random = new Random();
+                    int count = random.nextInt(10)+1;
+                    if(count>7){
+                        rewardMoney=20;
+                    }
+                    status = 1;
+                    mqUtils.addRewardLog(homeBlog.getUserId(),3,0,rewardMoney,homeBlog.getId());
+                    //更新用户状态
+                    userInfo.setHomeBlogStatus(1);//改为：已发送
+                    userInfoUtils.updateHomeBlogStatus(userInfo);
+                    if(rewardMoney==10){
+                        homeBlog.setRemunerationStatus(1);
+                    }else{
+                        homeBlog.setRemunerationStatus(2);
+                    }
+                    homeBlog.setRemunerationMoney(rewardMoney);
+                    homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
+                    homeBlog.setRemunerationTime(homeBlog.getTime());
+                }
+            }else{//非首发视频 每次发视频60%-70%概率得10或20  总奖励累积到达70-90之间不给稿费
+                if(!flag){
+                    //判断奖励系统是否累计达到85（70-90）  达到85元则不再给稿费
+                    Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + homeBlog.getUserId());
+                    RewardTotalMoneyLog rewardTotalMoneyLog = null;
+                    if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
+                        rewardTotalMoneyLog = rewardTotalMoneyLogLocalControllerFegin.findTotalRewardMoneyInfo(homeBlog.getUserId());
+                    }else{
+                        rewardTotalMoneyLog = (RewardTotalMoneyLog) CommonUtils.mapToObject(rewardTotalMoneyLogMap,RewardTotalMoneyLog.class);
+                    }
+                    if(rewardTotalMoneyLog!=null&&rewardTotalMoneyLog.getRewardTotalMoney()<Constants.REWARD_TOTAL_MONEY_LIMIT){
+                        Random random = new Random();
+                        int count = random.nextInt(100)+1;
+                        int grade = 7;
+                        if(count<=60){
+                            int r = random.nextInt(100)+1;
+                            if(r>70){//30%的得20
+                                rewardMoney=20;
+                                grade = 8;
+                            }
+                        }
+                        mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
+                        //更新用户状态
+                        userInfo.setHomeBlogStatus(1);//改为：已发送
+                        userInfoUtils.updateHomeBlogStatus(userInfo);
+                        if(rewardMoney==10){
+                            homeBlog.setRemunerationStatus(1);
+                        }else{
+                            homeBlog.setRemunerationStatus(2);
+                        }
+                        homeBlog.setRemunerationMoney(rewardMoney);
+                        homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
+                        homeBlog.setRemunerationTime(homeBlog.getTime());
+                    }
+                }
+            }
+        }
         homeBlogService.add(homeBlog);
         if(homeBlog.getSendType()==2&&homeBlog.getBlogType()==0&&homeBlog.getClassify()==0&&homeBlog.getLikeCount()>10000){//制作假数据
 //            redisUtils.addListLeft(Constants.REDIS_KEY_EBLOGLIST, homeBlog, 0);
@@ -181,49 +257,53 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 mqUtils.addMessage(homeBlog.getUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigUserId(),homeBlog.getOrigBlogId(),0,0,homeBlog.getReprintContent(),3);
             }
         }
-        //对首次视频类型的生活圈进行处理
-        if(homeBlog.getBlogType()==0&&homeBlog.getSendType()==2){
-            //机器人不发送红包
-            if(homeBlog.getUserId()<=10000||(homeBlog.getUserId()<=53870&&homeBlog.getUserId()>=13870)){
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
-            }
-            UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
-            if(userInfo==null){
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
-            }
-            if(userInfo.getHomeBlogStatus()!=0){
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
-            }
-            //奖励首次发布视频红包 3-5 红包区间3-3.5居多
-            double rewardMoney = 0;//奖励金额
-            double[] moneyArray = new double[10000];//奖池 可自定义奖池大小
-            Random random = new Random();
-            //开始构建奖池
-            for(int i=0;i<10000;i++){
-                moneyArray[i] = (random.nextInt(51) + 300)/100.0;
-            }
-            //奖池中添加3.5-4  千分之的概率
-            for(int i=0;i<10;i++){
-                moneyArray[random.nextInt(10000)] = (random.nextInt(51) + 350)/100.0;
-            }
-            //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
-//            moneyArray[random.nextInt(10000)] = 88;
-//            moneyArray[random.nextInt(10000)] = 88.88;
-//            moneyArray[random.nextInt(10000)] = 16.88;
-//            moneyArray[random.nextInt(10000)] = 66;
-//            moneyArray[random.nextInt(10000)] = 66.66;
-            //奖池构建完成 开始随机取值
-            rewardMoney = moneyArray[random.nextInt(10000)];
-            mqUtils.addRewardLog(homeBlog.getUserId(),3,0,rewardMoney,homeBlog.getId());
-            //更新用户状态
-            userInfo.setHomeBlogStatus(1);//改为：已发送
-            userInfoUtils.updateHomeBlogStatus(userInfo);
-            Map<String,Object> map = new HashMap();
-            map.put("homeBlogStatus",1);//0表示不显示首次发视频红包 1表示显示首次发视频红包
-            map.put("rewardMoney",rewardMoney+"");//红包金额
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
-        }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        Map<String,Object> map = new HashMap();
+        map.put("homeBlogStatus",status);//0表示不显示首次发视频红包 1表示显示首次发视频红包
+        map.put("rewardMoney",rewardMoney+"");//红包金额
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
+//        //对首次视频类型的生活圈进行处理
+//        if(homeBlog.getBlogType()==0&&homeBlog.getSendType()==2){
+//            //机器人不发送红包
+//            if(homeBlog.getUserId()<=10000||(homeBlog.getUserId()<=53870&&homeBlog.getUserId()>=13870)){
+//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+//            }
+//            UserInfo userInfo = userInfoUtils.getUserInfo(homeBlog.getUserId());
+//            if(userInfo==null){
+//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+//            }
+//            if(userInfo.getHomeBlogStatus()!=0){
+//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+//            }
+//            //奖励首次发布视频红包 3-5 红包区间3-3.5居多
+//            double rewardMoney = 0;//奖励金额
+//            double[] moneyArray = new double[10000];//奖池 可自定义奖池大小
+//            Random random = new Random();
+//            //开始构建奖池
+//            for(int i=0;i<10000;i++){
+//                moneyArray[i] = (random.nextInt(51) + 300)/100.0;
+//            }
+//            //奖池中添加3.5-4  千分之的概率
+//            for(int i=0;i<10;i++){
+//                moneyArray[random.nextInt(10000)] = (random.nextInt(51) + 350)/100.0;
+//            }
+//            //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+////            moneyArray[random.nextInt(10000)] = 88;
+////            moneyArray[random.nextInt(10000)] = 88.88;
+////            moneyArray[random.nextInt(10000)] = 16.88;
+////            moneyArray[random.nextInt(10000)] = 66;
+////            moneyArray[random.nextInt(10000)] = 66.66;
+//            //奖池构建完成 开始随机取值
+//            rewardMoney = moneyArray[random.nextInt(10000)];
+//            mqUtils.addRewardLog(homeBlog.getUserId(),3,0,rewardMoney,homeBlog.getId());
+//            //更新用户状态
+//            userInfo.setHomeBlogStatus(1);//改为：已发送
+//            userInfoUtils.updateHomeBlogStatus(userInfo);
+//            Map<String,Object> map = new HashMap();
+//            map.put("homeBlogStatus",1);//0表示不显示首次发视频红包 1表示显示首次发视频红包
+//            map.put("rewardMoney",rewardMoney+"");//红包金额
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
+//        }
+//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 
     /***
