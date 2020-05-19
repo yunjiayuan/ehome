@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.busi.entity.PickNumber;
 import com.busi.entity.UserInfo;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
@@ -7,6 +8,7 @@ import com.busi.entity.ReturnData;
 import com.busi.entity.VisitView;
 import com.busi.mq.MqProducer;
 import com.busi.service.GraffitiChartLogService;
+import com.busi.service.PickNumberNewService;
 import com.busi.service.UserInfoService;
 import com.busi.service.VisitViewService;
 import com.busi.utils.*;
@@ -36,6 +38,9 @@ public class RegisterController extends BaseController implements RegisterApiCon
 
     @Autowired
     UserInfoService userInfoService;
+
+    @Autowired
+    PickNumberNewService pickNumberNewService;
 
     @Autowired
     VisitViewService visitViewService;
@@ -843,6 +848,96 @@ public class RegisterController extends BaseController implements RegisterApiCon
         }
         redisUtils.hmset(Constants.REDIS_KEY_USER+userInfo.getUserId(),CommonUtils.objectToMap(userInfo),Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+    /***
+     * 创建VIP账号、靓号、普通账号等预选账号接口（仅管理员可用）
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData createVIPHouseNumber(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
+        //验证用户身份
+        if(CommonUtils.getMyId()!=10076){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限进行此操作",new JSONObject());
+        }
+        //验证地区正确性
+        if(!CommonUtils.checkProvince_city_district(userInfo.getCountry(),userInfo.getProvince(),userInfo.getCity(),userInfo.getDistrict())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"国家、省、市、区参数不匹配",new JSONObject());
+        }
+        //验证不能为空的参数
+        if(CommonUtils.checkFull(userInfo.getName())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"用户名不能为空",new JSONObject());
+        }
+        if(CommonUtils.checkFull(userInfo.getPassword())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"密码不能为空",new JSONObject());
+        }
+        if(CommonUtils.checkFull(userInfo.getCode())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"验证码不能为空",new JSONObject());
+        }
+        //验证参数格式是否正确
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //检测门牌号是否可用
+        UserInfo u = userInfoService.findUserByHouseNumber(userInfo.getProType(),userInfo.getHouseNumber()+"");
+        if(u!=null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"账号已存在",new JSONObject());
+        }
+        //开始注册
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setName(userInfo.getName());
+        newUserInfo.setPassword(userInfo.getPassword());
+        newUserInfo.setIm_password(CommonUtils.strToMD5(userInfo.getPassword(),32));//环信密码为两遍MD5
+        newUserInfo.setSex(userInfo.getSex());
+        newUserInfo.setBirthday(userInfo.getBirthday());
+        newUserInfo.setCountry(userInfo.getCountry());
+        newUserInfo.setProvince(userInfo.getProvince());
+        newUserInfo.setCity(userInfo.getCity());
+        newUserInfo.setDistrict(userInfo.getDistrict());
+        newUserInfo.setIdCard(userInfo.getIdCard());
+        newUserInfo.setUser_ce(userInfo.getUser_ce());//设置是否为VIP
+        newUserInfo.setTime(new Date());
+        newUserInfo.setAccessRights(1);
+        newUserInfo.setProType(Constants.PRO_INFO_ARRAY[userInfo.getProvince()]);
+        newUserInfo.setHouseNumber(userInfo.getHouseNumber());
+        //生成默认头像
+        Random random = new Random();
+        newUserInfo.setHead("image/head/defaultHead/defaultHead_"+random.nextInt(20)+"_225x225.jpg");
+        //检测是否为靓号
+        if(CommonUtils.isPretty(userInfo.getHouseNumber())){
+            newUserInfo.setIsGoodNumber(1);//设为靓号
+            //更新靓号记录表
+            PickNumber pickNumber = new PickNumber();
+            pickNumber.setHouseNumber(newUserInfo.getHouseNumber());
+            pickNumber.setIsVipNumber(newUserInfo.getUser_ce());
+            pickNumber.setProId(newUserInfo.getProType());
+            pickNumber.setTime(new Date());
+            pickNumberNewService.add(pickNumber);
+            //更新靓号缓存记录
+            String pickNumberValue = pickNumber.getProId()+"_"+pickNumber.getHouseNumber();
+            redisUtils.hset("pickNumberMap",pickNumberValue,"1");
+        }
+        //写入数据库
+        userInfoService.add(newUserInfo);
+        //调用activeMQ消息系统 同步门牌号记录表
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", "2");//interfaceType 0 表示发送手机短信  1表示发送邮件  2表示新用户注册转发 3表示用户登录时同步登录信息 4表示新增访问量
+        JSONObject content = new JSONObject();
+        content.put("proType",newUserInfo.getProType() );
+        content.put("houseNumber",newUserInfo.getHouseNumber() );
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        mqProducer.sendMsg(activeMQQueue,sendMsg);
+        //同步环信 由于环信服务端接口限流每秒30次 所以此操作改到客户端完成 拼接注册环信需要的参数 返回给客户端 环信账号改成用户ID
+        Map<String,String> im_map = new HashMap<>();
+        im_map.put("proType",newUserInfo.getProType()+"");
+        im_map.put("houseNumber",newUserInfo.getHouseNumber()+"");
+        im_map.put("myId",newUserInfo.getUserId()+"");
+        im_map.put("password",newUserInfo.getIm_password());//环信密码
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",im_map);
     }
 
 }

@@ -130,6 +130,13 @@ public interface RegisterApiController {
     ReturnData bindHouseNumber(@PathVariable String homeNumber,@PathVariable String password,@PathVariable String otherPlatformKey,@PathVariable String otherPlatformAccount,
                           @PathVariable int otherPlatformType,@PathVariable int bindType);
 
+    /***
+     * 创建VIP账号、靓号、普通账号等预选账号接口（仅管理员可用）
+     * @param userInfo
+     * @return
+     */
+    @PostMapping("createVIPHouseNumber")
+    ReturnData createVIPHouseNumber(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 //    /***
 //     * 测试fegin被调用
 //     * @param id
