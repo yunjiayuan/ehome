@@ -235,6 +235,8 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         homePageInfo.setSex(Integer.parseInt(userMap.get("sex").toString()));//性别
         homePageInfo.setIsNewUser(Integer.parseInt(userMap.get("isNewUser").toString()));//是否为新用户  0新用户 1已领新人红包(老用户)
         homePageInfo.setWelcomeInfoStatus(Integer.parseInt(userMap.get("welcomeInfoStatus").toString()));//系统欢迎消息状态 0表示未发送  1表示已发送
+        homePageInfo.setIsGoodNumber(Integer.parseInt(userMap.get("isGoodNumber").toString()));//设置靓号情况
+        homePageInfo.setUser_ce(Integer.parseInt(userMap.get("user_ce").toString()));//设置大V用户状态
         int homepageinfoFlag = 0;//“屏蔽主界面部分功能按钮”状态  0默认关闭  1开启
         Object obj = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG);
         if(obj!=null){

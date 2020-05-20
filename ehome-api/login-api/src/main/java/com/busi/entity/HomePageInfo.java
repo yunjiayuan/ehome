@@ -55,4 +55,9 @@ public class HomePageInfo {
     private int isFollow;//0未关注  1已关注
 
     private long followCounts;//粉丝数
+
+    private int isGoodNumber;//是否为靓号（0：普通号，1：靓号）
+
+    private int user_ce;//用户认证 ，0表示未经过认证，1表示通过网络大V认证
+
 }
