@@ -906,9 +906,12 @@ public class RegisterController extends BaseController implements RegisterApiCon
         //检测是否为靓号
         if(CommonUtils.isPretty(userInfo.getHouseNumber())){
             newUserInfo.setIsGoodNumber(1);//设为靓号
+        }
+        if(newUserInfo.getIsGoodNumber()==1||newUserInfo.getUser_ce()==1){
             //更新靓号记录表
             PickNumber pickNumber = new PickNumber();
             pickNumber.setHouseNumber(newUserInfo.getHouseNumber());
+            pickNumber.setIsGoodNumber(newUserInfo.getIsGoodNumber());
             pickNumber.setIsVipNumber(newUserInfo.getUser_ce());
             pickNumber.setProId(newUserInfo.getProType());
             pickNumber.setTime(new Date());
