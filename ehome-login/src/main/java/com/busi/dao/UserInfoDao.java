@@ -19,7 +19,7 @@ public interface UserInfoDao {
      * @param userInfo
      * @return
      */
-    @Insert("insert into userInfo(phone,name,head,password,im_password,sex,proType,houseNumber,idCard,birthday,country,province,city,district,time,accountStatus,otherPlatformKey,otherPlatformType,accessRights,isGoodNumber) values (#{phone},#{name},#{head},#{password},#{im_password},#{sex},#{proType},#{houseNumber},#{idCard},#{birthday},#{country},#{province},#{city},#{district},#{time},#{accountStatus},#{otherPlatformKey},#{otherPlatformType},#{accessRights},#{isGoodNumber})")
+    @Insert("insert into userInfo(phone,name,head,password,im_password,sex,proType,houseNumber,idCard,birthday,country,province,city,district,time,accountStatus,otherPlatformKey,otherPlatformType,accessRights,isGoodNumber,user_ce) values (#{phone},#{name},#{head},#{password},#{im_password},#{sex},#{proType},#{houseNumber},#{idCard},#{birthday},#{country},#{province},#{city},#{district},#{time},#{accountStatus},#{otherPlatformKey},#{otherPlatformType},#{accessRights},#{isGoodNumber},#{user_ce})")
     @Options(useGeneratedKeys = true, keyProperty = "userId")
     int add(UserInfo userInfo);
 
