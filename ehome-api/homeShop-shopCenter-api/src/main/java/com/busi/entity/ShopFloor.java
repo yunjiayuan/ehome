@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * @program: ehome
- * @description: 楼店实体
+ * @description: 黑店实体
  * @author: ZHaoJiaJie
  * @create: 2019-11-12 16:14
  */
@@ -48,6 +48,8 @@ public class ShopFloor {
     private int shopState;        //店铺状态  0未开店  1开店（正常营业） 2暂停营业
 
     private int payState;        //缴费状态  0未缴费  1已缴费
+
+    private int distributionState;        //是否第一次配货状态  0未配送  1已配送
 
     private double lat;                    //纬度
 
