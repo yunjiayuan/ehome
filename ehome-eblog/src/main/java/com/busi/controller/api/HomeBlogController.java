@@ -163,7 +163,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             if(userInfo==null){
                 flag  = true;
             }
-            if(userInfo.getHomeBlogStatus()!=0){//首发视频
+            if(userInfo.getHomeBlogStatus()==0){//首发视频
                 if(!flag){
                     //修改首发视频奖励规则 当作稿费
                     Random random = new Random();
