@@ -172,6 +172,28 @@ public interface ShopFloorOrdersDao {
     List<ShopFloorOrders> findOrderList(@Param("type") int type, @Param("userId") long userId, @Param("ordersType") int ordersType);
 
     /***
+     * 分页查询订单列表
+     * @param shopId    店铺ID  只在商家查询黑店订单时有效
+     * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloorOrders" +
+            " where ordersState=0 and type = 0" +
+            "<if test=\"shopId > 0 \">" +
+            " and shopId = #{shopId}" +
+            "</if>" +
+            "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
+            " and ordersType = #{ordersType}" +
+            "</if>" +
+            "<if test=\"ordersType >= 5 and ordersType &lt; 8\">" +
+            " and ordersType > 4 and ordersType &lt; 8" +
+            "</if>" +
+            " order by addTime desc" +
+            "</script>")
+    List<ShopFloorOrders> findOrderList2(@Param("shopId") long shopId, @Param("ordersType") int ordersType);
+
+    /***
      * 统计各类订单数量
      * @return
      */

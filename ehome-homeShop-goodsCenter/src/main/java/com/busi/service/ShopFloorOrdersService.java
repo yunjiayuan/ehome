@@ -76,17 +76,21 @@ public class ShopFloorOrdersService {
 
     /***
      * 分页查询订单列表
+     * @param shopId    店铺ID  只在商家查询黑店订单时有效
      * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单 8待送出（礼尚往来）
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
-    public PageBean<ShopFloorOrders> findOrderList(int type, long userId, int ordersType, int page, int count) {
+    public PageBean<ShopFloorOrders> findOrderList(long shopId, int type, long userId, int ordersType, int page, int count) {
 
         List<ShopFloorOrders> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = shopFloorOrdersDao.findOrderList(type, userId, ordersType);
-
+        if (shopId > 0) {
+            list = shopFloorOrdersDao.findOrderList2(shopId, ordersType);
+        } else {
+            list = shopFloorOrdersDao.findOrderList(type, userId, ordersType);
+        }
         return PageUtils.getPageBean(p, list);
     }
 

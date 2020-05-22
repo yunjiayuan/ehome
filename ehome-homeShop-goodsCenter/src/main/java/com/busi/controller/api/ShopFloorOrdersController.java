@@ -375,6 +375,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
 
     /***
      * 分页查询订单列表
+     * @param shopId    店铺ID  只在商家查询黑店订单时有效
      * @param type    0黑店订单  1礼尚往来
      * @param ordersType 订单类型: -1全部 0待付款,1待发货(已付款),2已发货（待收货）, 3已收货（待评价）  4已评价  5付款超时、发货超时、取消订单  8待送出（礼尚往来） 9待领取
      * @param page     页码 第几页 起始值1
@@ -382,7 +383,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
      * @return
      */
     @Override
-    public ReturnData findSFordersList(@PathVariable int type, @PathVariable int ordersType,
+    public ReturnData findSFordersList(@PathVariable long shopId, @PathVariable int type, @PathVariable int ordersType,
                                        @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
@@ -390,7 +391,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         }
         //开始查询
         PageBean<ShopFloorOrders> pageBean;
-        pageBean = shopFloorOrdersService.findOrderList(type, CommonUtils.getMyId(), ordersType, page, count);
+        pageBean = shopFloorOrdersService.findOrderList(shopId, type, CommonUtils.getMyId(), ordersType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
