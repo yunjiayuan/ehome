@@ -67,15 +67,29 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         Map<String, Object> map = new HashMap<>();
         String[] sd = hourlyWorkerOrders.getWorkerTypeIds().split(",");//工种ID
         iup = hourlyWorkerService.findDishesList(sd);
-        if (hourlyWorkerOrders.getUserId() < 13870 || hourlyWorkerOrders.getUserId() > 53870) {//判断是否是假数据
-            if (hourlyWorkerOrders.getMyId() == laf.getUserId()) {
+        laf = (HourlyWorkerType) iup.get(0);
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOURLYWORKER + laf.getUserId());
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            HourlyWorker kitchen2 = hourlyWorkerService.findByUserId(laf.getUserId());
+            if (kitchen2 == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
             }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(kitchen2);
+            redisUtils.hmset(Constants.REDIS_KEY_HOURLYWORKER + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+        }
+        HourlyWorker kh = (HourlyWorker) CommonUtils.mapToObject(kitchenMap, HourlyWorker.class);
+        ShippingAddress s = shippingAddressService.findUserById(hourlyWorkerOrders.getAddressId());
+        if (kh == null || s == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
+        }
+        if (hourlyWorkerOrders.getMyId() == laf.getUserId()) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
         }
         if (iup == null || iup.size() <= 0 || sd == null) {//工种不存在
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
         }
-        laf = (HourlyWorkerType) iup.get(0);
         if (laf == null || iup.size() != sd.length) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
         }
@@ -89,22 +103,6 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
                     money += cost;//总价格
                 }
             }
-        }
-        //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOURLYWORKER + hourlyWorkerOrders.getUserId());
-        if (kitchenMap == null || kitchenMap.size() <= 0) {
-            HourlyWorker kitchen2 = hourlyWorkerService.findByUserId(hourlyWorkerOrders.getUserId());
-            if (kitchen2 == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
-            }
-            //放入缓存
-            kitchenMap = CommonUtils.objectToMap(kitchen2);
-            redisUtils.hmset(Constants.REDIS_KEY_HOURLYWORKER + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
-        }
-        HourlyWorker kh = (HourlyWorker) CommonUtils.mapToObject(kitchenMap, HourlyWorker.class);
-        ShippingAddress s = shippingAddressService.findUserById(hourlyWorkerOrders.getAddressId());
-        if (kh == null || s == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
         }
         long time = new Date().getTime();
         String noTime = String.valueOf(time);
