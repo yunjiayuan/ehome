@@ -67,67 +67,75 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         Map<String, Object> map = new HashMap<>();
         String[] sd = hourlyWorkerOrders.getWorkerTypeIds().split(",");//工种ID
         iup = hourlyWorkerService.findDishesList(sd);
-        if (iup != null && iup.size() > 0 && sd != null) {
-            laf = (HourlyWorkerType) iup.get(0);
-            if (laf != null && hourlyWorkerOrders.getMyId() != laf.getUserId() && iup.size() == sd.length) {
-                for (int i = 0; i < iup.size(); i++) {
-                    dis = (HourlyWorkerType) iup.get(i);
-                    for (int j = 0; j < sd.length; j++) {
-                        if (dis.getId() == Long.parseLong(sd[j])) {//确认是当前工种ID
-                            double cost = dis.getCharge();//单价
-                            String dishame = dis.getWorkerType();//工种名称
-                            typeIds += dis.getId() + "," + dishame + "," + cost + (i == iup.size() - 1 ? "" : ";");//工种ID,名称,价格【格式：12,打扫卫生,100;2,擦桌子,200;】
-                            money += cost;//总价格
-                        }
-                    }
-                }
-                //查询缓存 缓存中不存在 查询数据库
-                Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOURLYWORKER + laf.getUserId());
-                if (kitchenMap == null || kitchenMap.size() <= 0) {
-                    HourlyWorker kitchen2 = hourlyWorkerService.findByUserId(laf.getUserId());
-                    if (kitchen2 == null) {
-                        return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
-                    }
-                    //放入缓存
-                    kitchenMap = CommonUtils.objectToMap(kitchen2);
-                    redisUtils.hmset(Constants.REDIS_KEY_HOURLYWORKER + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
-                }
-                HourlyWorker kh = (HourlyWorker) CommonUtils.mapToObject(kitchenMap, HourlyWorker.class);
-                ShippingAddress s = shippingAddressService.findUserById(hourlyWorkerOrders.getAddressId());
-                if (kh != null && s != null) {
-                    long time = new Date().getTime();
-                    String noTime = String.valueOf(time);
-                    String random = CommonUtils.getRandom(6, 1);
-                    String noRandom = CommonUtils.strToMD5(noTime + hourlyWorkerOrders.getMyId() + random, 16);
-
-                    hourlyWorkerOrders.setNo(noRandom);//订单编号【MD5】
-                    hourlyWorkerOrders.setAddTime(date);
-                    hourlyWorkerOrders.setShopId(kh.getId());
-                    hourlyWorkerOrders.setWorkerTypeIds(typeIds);
-                    hourlyWorkerOrders.setAddressId(s.getId());
-                    hourlyWorkerOrders.setMoney(money);//总价
-                    hourlyWorkerOrders.setUserId(kh.getUserId());
-                    hourlyWorkerOrders.setAddress(s.getAddress());
-                    hourlyWorkerOrders.setAddress_city(s.getCity());
-                    hourlyWorkerOrders.setAddress_district(s.getDistrict());
-                    hourlyWorkerOrders.setAddress_province(s.getProvince());
-                    hourlyWorkerOrders.setCoverMap(kh.getCoverCover());
-                    hourlyWorkerOrders.setName(kh.getName());
-                    hourlyWorkerOrders.setAddress_Name(s.getContactsName());
-                    hourlyWorkerOrders.setAddress_Phone(s.getContactsPhone());
-                    hourlyWorkerOrders.setAddress_postalcode(s.getPostalcode());
-
-                    hourlyWorkerOrdersService.addOrders(hourlyWorkerOrders);
-
-                    map.put("infoId", hourlyWorkerOrders.getNo());
-
-                    //放入缓存
-                    // 付款超时 15分钟
-                    Map<String, Object> ordersMap = CommonUtils.objectToMap(hourlyWorkerOrders);
-                    redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + hourlyWorkerOrders.getMyId() + "_" + hourlyWorkerOrders.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_15);
+        if (hourlyWorkerOrders.getUserId() < 13870 || hourlyWorkerOrders.getUserId() > 53870) {//判断是否是假数据
+            if (hourlyWorkerOrders.getMyId() == laf.getUserId()) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
+            }
+        }
+        if (iup == null || iup.size() <= 0 || sd == null) {//工种不存在
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
+        }
+        laf = (HourlyWorkerType) iup.get(0);
+        if (laf == null || iup.size() != sd.length) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
+        }
+        for (int i = 0; i < iup.size(); i++) {
+            dis = (HourlyWorkerType) iup.get(i);
+            for (int j = 0; j < sd.length; j++) {
+                if (dis.getId() == Long.parseLong(sd[j])) {//确认是当前工种ID
+                    double cost = dis.getCharge();//单价
+                    String dishame = dis.getWorkerType();//工种名称
+                    typeIds += dis.getId() + "," + dishame + "," + cost + (i == iup.size() - 1 ? "" : ";");//工种ID,名称,价格【格式：12,打扫卫生,100;2,擦桌子,200;】
+                    money += cost;//总价格
                 }
             }
         }
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOURLYWORKER + hourlyWorkerOrders.getUserId());
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            HourlyWorker kitchen2 = hourlyWorkerService.findByUserId(hourlyWorkerOrders.getUserId());
+            if (kitchen2 == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
+            }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(kitchen2);
+            redisUtils.hmset(Constants.REDIS_KEY_HOURLYWORKER + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+        }
+        HourlyWorker kh = (HourlyWorker) CommonUtils.mapToObject(kitchenMap, HourlyWorker.class);
+        ShippingAddress s = shippingAddressService.findUserById(hourlyWorkerOrders.getAddressId());
+        if (kh == null || s == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,小时工不存在！", new JSONObject());
+        }
+        long time = new Date().getTime();
+        String noTime = String.valueOf(time);
+        String random = CommonUtils.getRandom(6, 1);
+        String noRandom = CommonUtils.strToMD5(noTime + hourlyWorkerOrders.getMyId() + random, 16);
+
+        hourlyWorkerOrders.setNo(noRandom);//订单编号【MD5】
+        hourlyWorkerOrders.setAddTime(date);
+        hourlyWorkerOrders.setShopId(kh.getId());
+        hourlyWorkerOrders.setWorkerTypeIds(typeIds);
+        hourlyWorkerOrders.setAddressId(s.getId());
+        hourlyWorkerOrders.setMoney(money);//总价
+        hourlyWorkerOrders.setUserId(kh.getUserId());
+        hourlyWorkerOrders.setAddress(s.getAddress());
+        hourlyWorkerOrders.setAddress_city(s.getCity());
+        hourlyWorkerOrders.setAddress_district(s.getDistrict());
+        hourlyWorkerOrders.setAddress_province(s.getProvince());
+        hourlyWorkerOrders.setCoverMap(kh.getCoverCover());
+        hourlyWorkerOrders.setName(kh.getName());
+        hourlyWorkerOrders.setAddress_Name(s.getContactsName());
+        hourlyWorkerOrders.setAddress_Phone(s.getContactsPhone());
+        hourlyWorkerOrders.setAddress_postalcode(s.getPostalcode());
+
+        hourlyWorkerOrdersService.addOrders(hourlyWorkerOrders);
+
+        map.put("infoId", hourlyWorkerOrders.getNo());
+
+        //放入缓存
+        // 付款超时 15分钟
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(hourlyWorkerOrders);
+        redisUtils.hmset(Constants.REDIS_KEY_HOURLYORDERS + hourlyWorkerOrders.getMyId() + "_" + hourlyWorkerOrders.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_15);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
