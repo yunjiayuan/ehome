@@ -318,7 +318,7 @@ public interface LawyerCircleDao {
      */
     @Select("<script>" +
             "select * from LawyerCircleRecord" +
-            " where consultationStatus &lt; 2 and deleteType = 0 and payState=1 " +
+            " where consultationStatus &lt; 2 and deleteType = 0 and payState=1 and lvshiId=#{userId}" +
             " order by consultationStatus desc,time desc" +
             "</script>")
     List<LawyerCircleRecord> findWaitList(@Param("userId") long userId);

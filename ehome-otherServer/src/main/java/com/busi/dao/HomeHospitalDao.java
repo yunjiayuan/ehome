@@ -221,8 +221,8 @@ public interface HomeHospitalDao {
      */
     @Select("<script>" +
             "select * from HomeHospitalRecord" +
-            " where consultationStatus &lt; 2 and deleteType = 0 and payState=1 " +
-            " order by consultationStatus desc,time desc" +
+            " where consultationStatus &lt; 2 and deleteType = 0 and payState=1 and doctorId=#{userId}" +
+            " order by consultationStatus desc,time asc" +
             "</script>")
     List<HomeHospitalRecord> findWaitList(@Param("userId") long userId);
 }
