@@ -59,7 +59,7 @@ public class ConsultationTimerController {
         list2 = lawyerCircleService.findList();
         if (list2 != null && list2.size() > 0) {
             for (int i = 0; i < list2.size(); i++) {
-                LawyerCircleRecord record = (LawyerCircleRecord) list.get(i);
+                LawyerCircleRecord record = (LawyerCircleRecord) list2.get(i);
                 if (record == null) {
                     continue;
                 }
