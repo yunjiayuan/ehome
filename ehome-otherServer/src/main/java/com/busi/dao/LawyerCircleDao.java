@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.HomeHospitalRecord;
 import com.busi.entity.LawyerCircle;
 import com.busi.entity.LawyerCircleRecord;
 import org.apache.ibatis.annotations.*;
@@ -293,7 +294,7 @@ public interface LawyerCircleDao {
      */
     @Update("<script>" +
             "update LawyerCircleRecord set" +
-            " consultationStatus=1" +
+            " consultationStatus=#{consultationStatus}" +
             " where orderNumber=#{orderNumber} and payState=1" +
             "</script>")
     int upConsultationStatus(LawyerCircleRecord kitchen);
@@ -306,7 +307,19 @@ public interface LawyerCircleDao {
     @Update("<script>" +
             "update LawyerCircleRecord set" +
             " actualDuration=#{actualDuration}" +
-            " where orderNumber=#{orderNumber} and payState=1 and consultationStatus=1" +
+            " where orderNumber=#{orderNumber} and payState=1 and consultationStatus=2" +
             "</script>")
     int upActualDuration(LawyerCircleRecord kitchen);
+
+    /***
+     * 查询等待人员列表(默认第一位是正在咨询中，其余为等待中)
+     * @param userId   律师ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from LawyerCircleRecord" +
+            " where consultationStatus &lt; 2 and deleteType = 0 and payState=1 " +
+            " order by consultationStatus desc,time desc" +
+            "</script>")
+    List<LawyerCircleRecord> findWaitList(@Param("userId") long userId);
 }

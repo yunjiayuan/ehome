@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
@@ -7,10 +8,7 @@ import com.busi.service.ConsultationService;
 import com.busi.service.HomeHospitalRecordService;
 import com.busi.service.HomeHospitalService;
 import com.busi.service.LawyerCircleService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.Constants;
-import com.busi.utils.RedisUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +32,9 @@ public class ConsultationController extends BaseController implements Consultati
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    UserInfoUtils userInfoUtils;
 
     @Autowired
     HomeHospitalService homeHospitalService;
@@ -212,19 +214,22 @@ public class ConsultationController extends BaseController implements Consultati
 
     /***
      * 更新咨询状态
+     * @param type   更新类型：1咨询中 2已咨询
      * @param occupation 职业：0医生  1律师
      * @param id   订单编号
      * @return
      */
     @Override
-    public ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable String id) {
+    public ReturnData upConsultationStatus(@PathVariable int type, @PathVariable int occupation, @PathVariable String id) {
         if (occupation == 0) {//职业：0医生
             HomeHospitalRecord record = new HomeHospitalRecord();
             record.setOrderNumber(id);
+            record.setConsultationStatus(type);
             homeHospitalRecordService.upConsultationStatus(record);
         } else {//职业： 1律师
             LawyerCircleRecord record = new LawyerCircleRecord();
             record.setOrderNumber(id);
+            record.setConsultationStatus(type);
             lawyerCircleService.upConsultationStatus(record);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -251,5 +256,130 @@ public class ConsultationController extends BaseController implements Consultati
             lawyerCircleService.upActualDuration(record);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询等待人员列表(默认第一位是正在咨询中，其余为等待中)
+     * @param occupation 职业：0医生  1律师
+     * @param userId   医师或律师ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findWaitList(@PathVariable int occupation, @PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        List list = null;
+        if (occupation == 0) {//职业：0医生  1律师
+            PageBean<HomeHospitalRecord> pageBean = null;
+            pageBean = homeHospitalService.findWaitList(userId, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            list = pageBean.getList();
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    HomeHospitalRecord ik = (HomeHospitalRecord) list.get(i);
+                    UserInfo sendInfoCache = null;
+                    sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
+                    if (sendInfoCache != null) {
+                        ik.setName(sendInfoCache.getName());
+                        ik.setHead(sendInfoCache.getHead());
+                    }
+                }
+            }
+        } else {
+            PageBean<LawyerCircleRecord> pageBean = null;
+            pageBean = lawyerCircleService.findWaitList(userId, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            list = pageBean.getList();
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    LawyerCircleRecord ik = (LawyerCircleRecord) list.get(i);
+                    UserInfo sendInfoCache = null;
+                    sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
+                    if (sendInfoCache != null) {
+                        ik.setName(sendInfoCache.getName());
+                        ik.setHead(sendInfoCache.getHead());
+                    }
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+    }
+
+    /***
+     * 查询等待咨询人数
+     * @param occupation 职业：0医生  1律师
+     * @param userId   医师或律师ID
+     * @return
+     */
+    @Override
+    public ReturnData findWaitNum(@PathVariable int occupation, @PathVariable long userId) {
+        //开始查询
+        List list = null;
+        int number = 0;
+        if (occupation == 0) {//职业：0医生  1律师
+            PageBean<HomeHospitalRecord> pageBean = null;
+            pageBean = homeHospitalService.findWaitList(userId, 1, 10000);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            list = pageBean.getList();
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    HomeHospitalRecord ik = (HomeHospitalRecord) list.get(i);
+                    if (ik.getConsultationStatus() == 1) {//咨询中
+                        if (ik.getUserId() != CommonUtils.getMyId()) {//不是自己
+                            number += 1;
+                        } else {//自己
+                            number = 0;
+                            break;
+                        }
+                    } else {//等待中
+                        if (ik.getUserId() != CommonUtils.getMyId()) {//不是自己
+                            number += 1;
+                        } else {//自己
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            PageBean<LawyerCircleRecord> pageBean = null;
+            pageBean = lawyerCircleService.findWaitList(userId, 1, 10000);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            }
+            list = pageBean.getList();
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    HomeHospitalRecord ik = (HomeHospitalRecord) list.get(i);
+                    if (ik.getConsultationStatus() == 1) {//咨询中
+                        if (ik.getUserId() != CommonUtils.getMyId()) {//不是自己
+                            number += 1;
+                        } else {//自己
+                            number = 0;
+                            break;
+                        }
+                    } else {//等待中
+                        if (ik.getUserId() != CommonUtils.getMyId()) {//不是自己
+                            number += 1;
+                        } else {//自己
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("number", number);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

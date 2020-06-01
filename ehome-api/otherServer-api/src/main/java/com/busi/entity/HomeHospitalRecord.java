@@ -57,7 +57,7 @@ public class HomeHospitalRecord {
 
     private int type;           // 咨询类型：0语音  1视频  2图文
 
-    private int consultationStatus;     // 咨询状态：0未咨询  1已咨询
+    private int consultationStatus;     // 咨询状态：0等待咨询 1咨询中 2已咨询
 
     private int title;            // 职称
 

@@ -1,6 +1,7 @@
 package com.busi.dao;
 
 import com.busi.entity.HomeHospital;
+import com.busi.entity.HomeHospitalRecord;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -212,4 +213,16 @@ public interface HomeHospitalDao {
             "</foreach>" +
             "</script>")
     List<HomeHospital> findUsersList(@Param("users") String[] users);
+
+    /***
+     * 查询等待人员列表(默认第一位是正在咨询中，其余为等待中)
+     * @param userId   医师ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeHospitalRecord" +
+            " where consultationStatus &lt; 2 and deleteType = 0 and payState=1 " +
+            " order by consultationStatus desc,time desc" +
+            "</script>")
+    List<HomeHospitalRecord> findWaitList(@Param("userId") long userId);
 }

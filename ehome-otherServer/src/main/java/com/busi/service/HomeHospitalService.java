@@ -2,6 +2,7 @@ package com.busi.service;
 
 import com.busi.dao.HomeHospitalDao;
 import com.busi.entity.HomeHospital;
+import com.busi.entity.HomeHospitalRecord;
 import com.busi.entity.PageBean;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
@@ -139,5 +140,20 @@ public class HomeHospitalService {
         List<HomeHospital> list = null;
         list = homeHospitalDao.findUsersList(users);
         return list;
+    }
+
+    /***
+     * 查询等待人员列表(默认第一位是正在咨询中，其余为等待中)
+     * @param userId   医师ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<HomeHospitalRecord> findWaitList(long userId, int page, int count) {
+
+        List<HomeHospitalRecord> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeHospitalDao.findWaitList(userId);
+        return PageUtils.getPageBean(p, list);
     }
 }

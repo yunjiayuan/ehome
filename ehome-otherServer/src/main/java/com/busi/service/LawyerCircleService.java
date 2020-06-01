@@ -204,4 +204,19 @@ public class LawyerCircleService {
     public int upActualDuration(LawyerCircleRecord hourlyWorker) {
         return lawyerCircleDao.upActualDuration(hourlyWorker);
     }
+
+    /***
+     * 查询等待人员列表(默认第一位是正在咨询中，其余为等待中)
+     * @param userId   律师ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<LawyerCircleRecord> findWaitList(long userId, int page, int count) {
+
+        List<LawyerCircleRecord> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = lawyerCircleDao.findWaitList(userId);
+        return PageUtils.getPageBean(p, list);
+    }
 }

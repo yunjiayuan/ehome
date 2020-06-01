@@ -38,12 +38,13 @@ public interface ConsultationApiController {
 
     /***
      * 更新咨询状态
+     * @param type   更新类型：1咨询中 2已咨询
      * @param occupation 职业：0医生  1律师
      * @param id   咨询记录ID
      * @return
      */
-    @GetMapping("upConsultationStatus/{occupation}/{id}")
-    ReturnData upConsultationStatus(@PathVariable int occupation, @PathVariable String id);
+    @GetMapping("upConsultationStatus/{type}/{occupation}/{id}")
+    ReturnData upConsultationStatus(@PathVariable int type, @PathVariable int occupation, @PathVariable String id);
 
     /***
      * 更新咨询时长
@@ -54,4 +55,25 @@ public interface ConsultationApiController {
      */
     @GetMapping("upActualDuration/{occupation}/{id}/{duration}")
     ReturnData upActualDuration(@PathVariable int occupation, @PathVariable String id, @PathVariable int duration);
+
+    /***
+     * 查询等待人员列表
+     * @param occupation 职业：0医生  1律师
+     * @param userId   医师或律师ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findWaitList/{occupation}/{userId}/{page}/{count}")
+    ReturnData findWaitList(@PathVariable int occupation, @PathVariable long userId, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询等待咨询人数
+     * @param occupation 职业：0医生  1律师
+     * @param userId   医师或律师ID
+     * @return
+     */
+    @GetMapping("findWaitNum/{occupation}/{userId}")
+    ReturnData findWaitNum(@PathVariable int occupation, @PathVariable long userId);
+
 }
