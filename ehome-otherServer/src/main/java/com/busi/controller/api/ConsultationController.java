@@ -46,7 +46,7 @@ public class ConsultationController extends BaseController implements Consultati
     HomeHospitalRecordService homeHospitalRecordService;
 
     @Autowired
-    private ConsultationService consultationService;
+    ConsultationService consultationService;
 
     /***
      * 新增订单
