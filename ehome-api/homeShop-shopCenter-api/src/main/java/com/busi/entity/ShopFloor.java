@@ -55,6 +55,12 @@ public class ShopFloor {
 
     private double lon;                    //经度
 
+    private int province;                //省份  默认为0
+
+    private int city;                    //城市  默认为0
+
+    private int district;                //区域  默认为0
+
     private String address;                // 详细地址
 
     private String telephone;                // 联系电话
