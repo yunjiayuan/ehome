@@ -252,21 +252,61 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     }
 
     /***
-     * 查询附近楼店
-     * @param lat      纬度
-     * @param lon      经度
+     * 查询黑店数量（返回结构：总数、未配货的 、已配货的）
+     * @param province     省(默认-1全部)
+     * @param city      市(默认-1全部)
+     * @param district    区(默认-1全部)
+     * @return
+     */
+    @Override
+    public ReturnData findSFnumList(@PathVariable int province, @PathVariable int city, @PathVariable int district) {
+        int cont0 = 0;//全部
+        int cont1 = 0;//未配货的
+        int cont2 = 0;//已配货的
+
+        ShopFloor kh = null;
+        List list = null;
+        list = shopCenterService.findNum(province, city, district);//全部
+        if (list != null && list.size() > 0) {
+            cont0 = list.size();
+            for (int i = 0; i < list.size(); i++) {
+                kh = (ShopFloor) list.get(i);
+                if (kh == null) {
+                    continue;
+                }
+                if (kh.getDistributionState() == 0) {
+                    cont1 += 1;
+                } else {
+                    cont2 += 1;
+                }
+            }
+        }
+        Map<String, Integer> map = new HashMap<>();
+        map.put("cont0", cont0);
+        map.put("cont1", cont1);
+        map.put("cont2", cont2);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 查询黑店列表
+     * @param province     省 (经纬度>0时默认-1)
+     * @param city      市 (经纬度>0时默认-1)
+     * @param district    区 (经纬度>0时默认-1)
+     * @param lat      纬度(省市区>0时默认-1)
+     * @param lon      经度(省市区>0时默认-1)
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findNearbySFList(@PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findNearbySFList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<ShopFloor> pageBean = null;
-        pageBean = shopCenterService.findNearbySFList(lat, lon, page, count);
+        pageBean = shopCenterService.findNearbySFList(province, city, district, lat, lon, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -275,10 +315,12 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 ShopFloor ik = (ShopFloor) list.get(i);
-                double userlon = ik.getLon();
-                double userlat = ik.getLat();
-                int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
-                ik.setDistance(distance);//距离/m
+                if (province == -1 && lat > 0) {
+                    double userlon = ik.getLon();
+                    double userlat = ik.getLat();
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
+                    ik.setDistance(distance);//距离/m
+                }
                 UserInfo userInfo = null;
                 userInfo = userInfoUtils.getUserInfo(ik.getUserId());
                 if (userInfo != null) {
@@ -288,25 +330,27 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
                     ik.setHouseNumber(userInfo.getHouseNumber());
                 }
             }
-            Collections.sort(list, new Comparator<ShopFloor>() {
-                /*
-                 * int compare(Person o1, Person o2) 返回一个基本类型的整型，
-                 * 返回负数表示：o1 小于o2，
-                 * 返回0 表示：o1和p2相等，
-                 * 返回正数表示：o1大于o2
-                 */
-                @Override
-                public int compare(ShopFloor o1, ShopFloor o2) {
-                    // 按照距离进行正序排列
-                    if (o1.getDistance() > o2.getDistance()) {
-                        return 1;
+            if (province == -1 && lat > 0) {
+                Collections.sort(list, new Comparator<ShopFloor>() {
+                    /*
+                     * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+                     * 返回负数表示：o1 小于o2，
+                     * 返回0 表示：o1和p2相等，
+                     * 返回正数表示：o1大于o2
+                     */
+                    @Override
+                    public int compare(ShopFloor o1, ShopFloor o2) {
+                        // 按照距离进行正序排列
+                        if (o1.getDistance() > o2.getDistance()) {
+                            return 1;
+                        }
+                        if (o1.getDistance() == o2.getDistance()) {
+                            return 0;
+                        }
+                        return -1;
                     }
-                    if (o1.getDistance() == o2.getDistance()) {
-                        return 0;
-                    }
-                    return -1;
-                }
-            });
+                });
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }

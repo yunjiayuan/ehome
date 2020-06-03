@@ -88,17 +88,20 @@ public class ShopFloorService {
     }
 
     /***
-     * 查询附近楼店
-     * @param lat      纬度
-     * @param lon      经度
+     * 查询黑店列表
+     * @param province     省 (经纬度>0时默认-1)
+     * @param city      市 (经纬度>0时默认-1)
+     * @param district    区 (经纬度>0时默认-1)
+     * @param lat      纬度(省市区>0时默认-1)
+     * @param lon      经度(省市区>0时默认-1)
      * @param page     页码
      * @param count    条数
      * @return
      */
-    public PageBean<ShopFloor> findNearbySFList(double lat, double lon, int page, int count) {
+    public PageBean<ShopFloor> findNearbySFList(int province, int city, int district, double lat, double lon, int page, int count) {
         List<ShopFloor> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = shopCenterDao.findNearbySFList(lat, lon);
+        list = shopCenterDao.findNearbySFList(province, city, district, lat, lon);
         return PageUtils.getPageBean(p, list);
     }
 
@@ -109,7 +112,7 @@ public class ShopFloorService {
      * @param count    条数
      * @return
      */
-    public PageBean<ShopFloor> findUserSFlist(long userId,  int page, int count) {
+    public PageBean<ShopFloor> findUserSFlist(long userId, int page, int count) {
         List<ShopFloor> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = shopCenterDao.findUserSFlist(userId);
@@ -158,6 +161,19 @@ public class ShopFloorService {
     public List<YongHuiGoodsSort> findYHSort(int levelOne, int levelTwo, int levelThree, String letter) {
         List<YongHuiGoodsSort> list = null;
         list = shopCenterDao.findYHSort(levelOne, levelTwo, levelThree, letter);
+        return list;
+    }
+
+    /***
+     * 查询黑店数量（返回结构：总数、未配货的 、已配货的）
+     * @param province     省
+     * @param city      市
+     * @param district    区
+     * @return
+     */
+    public List<ShopFloor> findNum(int province, int city, int district) {
+        List<ShopFloor> list;
+        list = shopCenterDao.findNearbySFList(province, city, district, 0, 0);
         return list;
     }
 }

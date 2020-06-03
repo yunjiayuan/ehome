@@ -99,19 +99,34 @@ public interface ShopFloorDao {
     List<ShopFloor> findByIds(@Param("villageOnly") String[] villageOnly);
 
     /***
-     * 查询附近楼店
-     * @param lat      纬度
-     * @param lon      经度
+     * 查询黑店列表
+     * @param province     省 (经纬度>0时默认-1)
+     * @param city      市 (经纬度>0时默认-1)
+     * @param district    区 (经纬度>0时默认-1)
+     * @param lat      纬度(省市区>0时默认-1)
+     * @param lon      经度(省市区>0时默认-1)
      * @return
      */
     @Select("<script>" +
             "select * from ShopFloor where" +
             " deleteType = 0 and shopState=1 and payState=1" +
+            "<if test=\"district >= 0\">" +
+            " and district = #{district}" +
+            "</if>" +
+            "<if test=\"city >= 0\">" +
+            " and city = #{city}" +
+            "</if>" +
+            "<if test=\"province >= 0\">" +
+            " and province = #{province}" +
+            " order by addTime desc" +
+            "</if>" +
+            "<if test=\"province == -1 and lat>0 and lon>0\">" +
             " and lat > #{lat}-0.018018" +  //只对于经度和纬度大于或小于该用户两公里（1度111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
             " and lat &lt; #{lat}+0.018018 and lon > #{lon}-0.018018" +
             " and lon &lt; #{lon}+0.018018 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+            "</if>" +
             "</script>")
-    List<ShopFloor> findNearbySFList(@Param("lat") double lat, @Param("lon") double lon);
+    List<ShopFloor> findNearbySFList(@Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 查询用户楼店

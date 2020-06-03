@@ -49,7 +49,7 @@ public class ShopFloor {
 
     private int payState;        //缴费状态  0未缴费  1已缴费
 
-    private int distributionState;        //是否第一次配货状态  0未配送  1已配送
+    private int distributionState;        //是否第一次配货状态  0未配货  1已配货
 
     private double lat;                    //纬度
 
