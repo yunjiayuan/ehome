@@ -98,10 +98,16 @@ public class ShopFloorService {
      * @param count    条数
      * @return
      */
-    public PageBean<ShopFloor> findNearbySFList(int province, int city, int district, double lat, double lon, int page, int count) {
-        List<ShopFloor> list;
+    public PageBean<ShopFloor> findNearbySFList(String shopName, int province, int city, int district, double lat, double lon, int page, int count) {
+        List<ShopFloor> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = shopCenterDao.findNearbySFList(province, city, district, lat, lon);
+        if (!CommonUtils.checkFull(shopName)) {
+            list = shopCenterDao.findNearbySFList2(shopName);
+        } else if (lat > 0 && lon > 0) {
+            list = shopCenterDao.findNearbySFList3(lat, lon);
+        } else {
+            list = shopCenterDao.findNearbySFList(province, city, district);
+        }
         return PageUtils.getPageBean(p, list);
     }
 
@@ -173,7 +179,7 @@ public class ShopFloorService {
      */
     public List<ShopFloor> findNum(int province, int city, int district) {
         List<ShopFloor> list;
-        list = shopCenterDao.findNearbySFList(province, city, district, 0, 0);
+        list = shopCenterDao.findNearbySFList(province, city, district);
         return list;
     }
 }

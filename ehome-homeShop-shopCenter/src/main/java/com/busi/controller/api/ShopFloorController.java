@@ -290,6 +290,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
 
     /***
      * 查询黑店列表
+     * @param shopName     店铺名称 (默认null)
      * @param province     省 (经纬度>0时默认-1)
      * @param city      市 (经纬度>0时默认-1)
      * @param district    区 (经纬度>0时默认-1)
@@ -300,13 +301,13 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData findNearbySFList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findNearbySFList(@PathVariable String shopName, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<ShopFloor> pageBean = null;
-        pageBean = shopCenterService.findNearbySFList(province, city, district, lat, lon, page, count);
+        pageBean = shopCenterService.findNearbySFList(shopName, province, city, district, lat, lon, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

@@ -75,6 +75,7 @@ public interface ShopFloorApiController {
 
     /***
      * 查询黑店列表
+     * @param shopName     店铺名称 (默认null)
      * @param province     省 (经纬度>0时默认-1)
      * @param city      市 (经纬度>0时默认-1)
      * @param district    区 (经纬度>0时默认-1)
@@ -84,8 +85,8 @@ public interface ShopFloorApiController {
      * @param count    条数
      * @return
      */
-    @GetMapping("findNearbySFList/{province}/{city}/{district}/{lat}/{lon}/{page}/{count}")
-    ReturnData findNearbySFList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findNearbySFList/{shopName}/{province}/{city}/{district}/{lat}/{lon}/{page}/{count}")
+    ReturnData findNearbySFList(@PathVariable String shopName, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 查询黑店数量（返回格式：总数、未配货的 、已配货的）
