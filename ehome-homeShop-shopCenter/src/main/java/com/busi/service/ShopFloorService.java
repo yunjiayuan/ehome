@@ -3,6 +3,7 @@ package com.busi.service;
 import com.busi.dao.ShopFloorDao;
 import com.busi.entity.PageBean;
 import com.busi.entity.ShopFloor;
+import com.busi.entity.ShopFloorStatistics;
 import com.busi.entity.YongHuiGoodsSort;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,6 +46,26 @@ public class ShopFloorService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateHomeShop(ShopFloor homeShopCenter) {
         return shopCenterDao.updateHomeShop(homeShopCenter);
+    }
+
+    /***
+     * 新建楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addStatistics(ShopFloorStatistics homeShopCenter) {
+        return shopCenterDao.addStatistics(homeShopCenter);
+    }
+
+    /***
+     * 更新楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upStatistics(ShopFloorStatistics homeShopCenter) {
+        return shopCenterDao.upStatistics(homeShopCenter);
     }
 
     /***
@@ -98,17 +120,47 @@ public class ShopFloorService {
      * @param count    条数
      * @return
      */
-    public PageBean<ShopFloor> findNearbySFList(String shopName, int province, int city, int district, double lat, double lon, int page, int count) {
+    public PageBean<ShopFloor> findNearbySFList(int province, int city, int district, double lat, double lon, int page, int count) {
+        List<ShopFloor> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (lat > 0 && lon > 0) {
+            list = shopCenterDao.findNearbySFList3(lat, lon);
+        } else {
+            list = shopCenterDao.findNearbySFList(null, province, city, district, -1);
+        }
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询黑店列表
+     * @param shopState     店铺状态   -1不限 0未营业  1已营业
+     * @param shopName     店铺名称 (默认null)
+     * @param province     省
+     * @param city      市
+     * @param district    区
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<ShopFloor> findNearbySFList2(Date date, int province, int city, int district, int shopState, String shopName, int page, int count) {
         List<ShopFloor> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (!CommonUtils.checkFull(shopName)) {
             list = shopCenterDao.findNearbySFList2(shopName);
-        } else if (lat > 0 && lon > 0) {
-            list = shopCenterDao.findNearbySFList3(lat, lon);
         } else {
-            list = shopCenterDao.findNearbySFList(province, city, district);
+            list = shopCenterDao.findNearbySFList(date, province, city, district, shopState);
         }
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询黑店统计列表
+     * @param province     省
+     * @param city      市
+     * @return
+     */
+    public ShopFloorStatistics findStatistics(int province, int city) {
+        return shopCenterDao.findStatistics(province, city);
     }
 
     /***
@@ -125,6 +177,18 @@ public class ShopFloorService {
         return PageUtils.getPageBean(p, list);
     }
 
+    /***
+     * 查询楼店
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    public PageBean<ShopFloorStatistics> findRegionSFlist(int page, int count) {
+        List<ShopFloorStatistics> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = shopCenterDao.findRegionSFlist();
+        return PageUtils.getPageBean(p, list);
+    }
 
     /***
      * 新增永辉分类
@@ -179,7 +243,7 @@ public class ShopFloorService {
      */
     public List<ShopFloor> findNum(int province, int city, int district) {
         List<ShopFloor> list;
-        list = shopCenterDao.findNearbySFList(province, city, district);
+        list = shopCenterDao.findNearbySFList(null, province, city, district, -1);
         return list;
     }
 }

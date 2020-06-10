@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -65,6 +67,20 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         homeShopCenter.setUserId(CommonUtils.getMyId());
         shopCenterService.addHomeShop(homeShopCenter);
 
+        //判断当天是否有新增
+        ShopFloorStatistics shopFloorStatistics = shopCenterService.findStatistics(homeShopCenter.getProvince(), homeShopCenter.getCity());
+        if (shopFloorStatistics == null) {
+            ShopFloorStatistics statistics = new ShopFloorStatistics();
+            statistics.setTime(new Date());
+            statistics.setProvince(homeShopCenter.getProvince());
+            statistics.setCity(homeShopCenter.getCity());
+            statistics.setNumber(1);
+            shopCenterService.addStatistics(statistics);
+        } else {
+            shopFloorStatistics.setTime(new Date());
+            shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
+            shopCenterService.upStatistics(shopFloorStatistics);
+        }
         Map<String, Object> map2 = new HashMap<>();
         map2.put("infoId", homeShopCenter.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
@@ -252,6 +268,57 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     }
 
     /***
+     * 查询黑店列表(新)
+     * @param time     时间：格式yyyy-MM-dd   默认null
+     * @param shopState     店铺状态   -1不限 0未营业  1已营业
+     * @param shopName     店铺名称 (默认null)
+     * @param province     省
+     * @param city      市
+     * @param district    区
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findBlackSFList(@PathVariable String time, @PathVariable int shopState, @PathVariable String shopName, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        Date date = null;
+        if (!CommonUtils.checkFull(time)) {
+            time = time + " 00:00:00";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                date = simpleDateFormat.parse(time);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        PageBean<ShopFloor> pageBean = null;
+        pageBean = shopCenterService.findNearbySFList2(date, province, city, district, shopState, shopName, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                ShopFloor ik = (ShopFloor) list.get(i);
+                UserInfo userInfo = null;
+                userInfo = userInfoUtils.getUserInfo(ik.getUserId());
+                if (userInfo != null) {
+                    ik.setName(userInfo.getName());
+                    ik.setHead(userInfo.getHead());
+                    ik.setProTypeId(userInfo.getProType());
+                    ik.setHouseNumber(userInfo.getHouseNumber());
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+    }
+
+    /***
      * 查询黑店数量（返回结构：总数、未配货的 、已配货的）
      * @param province     省(默认-1全部)
      * @param city      市(默认-1全部)
@@ -289,8 +356,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     }
 
     /***
-     * 查询黑店列表
-     * @param shopName     店铺名称 (默认null)
+     * 查询黑店列表(旧)
      * @param province     省 (经纬度>0时默认-1)
      * @param city      市 (经纬度>0时默认-1)
      * @param district    区 (经纬度>0时默认-1)
@@ -301,13 +367,13 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData findNearbySFList(@PathVariable String shopName, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findNearbySFList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<ShopFloor> pageBean = null;
-        pageBean = shopCenterService.findNearbySFList(shopName, province, city, district, lat, lon, page, count);
+        pageBean = shopCenterService.findNearbySFList(province, city, district, lat, lon, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -371,6 +437,24 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         }
         PageBean<ShopFloor> pageBean = null;
         pageBean = shopCenterService.findUserSFlist(userId, page, count);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 查询各地区黑店数量
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findRegionSFlist(@PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        PageBean<ShopFloorStatistics> pageBean = null;
+        pageBean = shopCenterService.findRegionSFlist(page, count);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }

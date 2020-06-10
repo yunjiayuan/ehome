@@ -1,10 +1,12 @@
 package com.busi.dao;
 
 import com.busi.entity.ShopFloor;
+import com.busi.entity.ShopFloorStatistics;
 import com.busi.entity.YongHuiGoodsSort;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,6 +54,30 @@ public interface ShopFloorDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateHomeShop(ShopFloor homeShopCenter);
+
+    /***
+     * 新增楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Insert("insert into ShopFloorStatistics(province,city,number,time)" +
+            "values (#{province},#{city},#{number},#{time})")
+    @Options(useGeneratedKeys = true)
+    int addStatistics(ShopFloorStatistics homeShopCenter);
+
+    /***
+     * 更新楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorStatistics set" +
+            " time=#{time}," +
+            " number=#{number}" +
+            " where id=#{id}" +
+            "</script>")
+    int upStatistics(ShopFloorStatistics homeShopCenter);
+
 
     /***
      * 更新楼店保证金支付状态
@@ -111,6 +137,9 @@ public interface ShopFloorDao {
     @Select("<script>" +
             "select * from ShopFloor where" +
             " deleteType = 0 and shopState=1 and payState=1" +
+            "<if test=\"shopState >= 0\">" +
+            " and distributionState = #{shopState}" +
+            "</if>" +
             "<if test=\"province >= 0\">" +
             " and province = #{province}" +
             "</if>" +
@@ -120,9 +149,24 @@ public interface ShopFloorDao {
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
             "</if>" +
+            "<if test=\"date != null and date != ''\">" +
+            " and TO_DAYS(addtime)=TO_DAYS(#{date})" +
+            "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<ShopFloor> findNearbySFList(@Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<ShopFloor> findNearbySFList(@Param("date") Date date, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("shopState") int shopState);
+
+    @Select("select * from ShopFloorStatistics where" +
+//            " TO_DAYS(time)=TO_DAYS(NOW())" +
+            "<if test=\"province >= 0\">" +
+            " and province = #{province}" +
+            "</if>" +
+            "<if test=\"city >= 0\">" +
+            " and city = #{city}" +
+            "</if>"
+    )
+    ShopFloorStatistics findStatistics(@Param("province") int province, @Param("city") int city);
+
 
     @Select("<script>" +
             "select * from ShopFloor where" +
@@ -158,6 +202,16 @@ public interface ShopFloorDao {
             " and payState=1 and userId=#{userId}" +
             "</script>")
     List<ShopFloor> findUserSFlist(@Param("userId") long userId);
+
+    /***
+     * 查询楼店
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloorStatistics where" +
+            " number > 0 " +
+            "</script>")
+    List<ShopFloorStatistics> findRegionSFlist();
 
     /***
      * 新增永辉分类

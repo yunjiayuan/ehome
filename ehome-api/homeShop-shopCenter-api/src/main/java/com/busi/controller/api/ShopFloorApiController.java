@@ -74,8 +74,7 @@ public interface ShopFloorApiController {
     ReturnData findVillage(@PathVariable String villageOnly);
 
     /***
-     * 查询黑店列表
-     * @param shopName     店铺名称 (默认null)
+     * 查询黑店列表（旧）
      * @param province     省 (经纬度>0时默认-1)
      * @param city      市 (经纬度>0时默认-1)
      * @param district    区 (经纬度>0时默认-1)
@@ -85,8 +84,24 @@ public interface ShopFloorApiController {
      * @param count    条数
      * @return
      */
-    @GetMapping("findNearbySFList/{shopName}/{province}/{city}/{district}/{lat}/{lon}/{page}/{count}")
-    ReturnData findNearbySFList(@PathVariable String shopName, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findNearbySFList/{province}/{city}/{district}/{lat}/{lon}/{page}/{count}")
+    ReturnData findNearbySFList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询黑店列表(新)
+     * @param time     时间：格式yyyy-MM-dd HH:mm:ss
+     * @param shopState     店铺状态  0未营业  1已营业
+     * @param shopName     店铺名称 (默认null)
+     * @param province     省
+     * @param city      市
+     * @param district    区
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findBlackSFList/{time}/{shopState}/{shopName}/{province}/{city}/{district}/{page}/{count}")
+    ReturnData findBlackSFList(@PathVariable String time, @PathVariable int shopState, @PathVariable String shopName, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable int page, @PathVariable int count);
+
 
     /***
      * 查询黑店数量（返回格式：总数、未配货的 、已配货的）
@@ -108,6 +123,16 @@ public interface ShopFloorApiController {
      */
     @GetMapping("findUserSFlist/{userId}/{page}/{count}")
     ReturnData findUserSFlist(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
+
+
+    /***
+     * 查询各地区黑店数量
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findRegionSFlist/{page}/{count}")
+    ReturnData findRegionSFlist(@PathVariable int page, @PathVariable int count);
 
 
     /***
