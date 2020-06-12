@@ -49,7 +49,10 @@ public class ShopFloor {
 
     private int payState;        //缴费状态  0未缴费  1已缴费
 
-    private int distributionState;        //是否第一次配货状态  0未配货  1已配货
+    private int distributionState;        //配货状态  0未配货  1已配货
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date distributionTime;        //配货时间
 
     private double lat;                    //纬度
 

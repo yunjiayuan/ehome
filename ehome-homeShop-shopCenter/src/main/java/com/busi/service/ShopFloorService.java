@@ -183,10 +183,10 @@ public class ShopFloorService {
      * @param count    条数
      * @return
      */
-    public PageBean<ShopFloorStatistics> findRegionSFlist(int page, int count) {
+    public PageBean<ShopFloorStatistics> findRegionSFlist(int shopState, int page, int count) {
         List<ShopFloorStatistics> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = shopCenterDao.findRegionSFlist();
+        list = shopCenterDao.findRegionSFlist(shopState);
         return PageUtils.getPageBean(p, list);
     }
 

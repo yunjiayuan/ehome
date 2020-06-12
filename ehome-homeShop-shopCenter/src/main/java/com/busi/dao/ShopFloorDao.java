@@ -60,8 +60,8 @@ public interface ShopFloorDao {
      * @param homeShopCenter
      * @return
      */
-    @Insert("insert into ShopFloorStatistics(province,city,number,time)" +
-            "values (#{province},#{city},#{number},#{time})")
+    @Insert("insert into ShopFloorStatistics(province,city,number,time,distributionState)" +
+            "values (#{province},#{city},#{number},#{time},#{distributionState})")
     @Options(useGeneratedKeys = true)
     int addStatistics(ShopFloorStatistics homeShopCenter);
 
@@ -157,7 +157,7 @@ public interface ShopFloorDao {
     List<ShopFloor> findNearbySFList(@Param("date") Date date, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("shopState") int shopState);
 
     @Select("select * from ShopFloorStatistics where" +
-//            " TO_DAYS(time)=TO_DAYS(NOW())" +
+            " distributionState = 0" +
             "<if test=\"province >= 0\">" +
             " and province = #{province}" +
             "</if>" +
@@ -209,9 +209,9 @@ public interface ShopFloorDao {
      */
     @Select("<script>" +
             "select * from ShopFloorStatistics where" +
-            " number > 0 " +
+            " number > 0 and distributionState=#{shopState}" +
             "</script>")
-    List<ShopFloorStatistics> findRegionSFlist();
+    List<ShopFloorStatistics> findRegionSFlist(@Param("shopState") int shopState);
 
     /***
      * 新增永辉分类

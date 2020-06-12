@@ -67,17 +67,19 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         homeShopCenter.setUserId(CommonUtils.getMyId());
         shopCenterService.addHomeShop(homeShopCenter);
 
-        //判断当天是否有新增
+        //判断是否有记录
         ShopFloorStatistics shopFloorStatistics = shopCenterService.findStatistics(homeShopCenter.getProvince(), homeShopCenter.getCity());
         if (shopFloorStatistics == null) {
             ShopFloorStatistics statistics = new ShopFloorStatistics();
             statistics.setTime(new Date());
+            statistics.setDistributionState(0);
             statistics.setProvince(homeShopCenter.getProvince());
             statistics.setCity(homeShopCenter.getCity());
             statistics.setNumber(1);
             shopCenterService.addStatistics(statistics);
         } else {
             shopFloorStatistics.setTime(new Date());
+            shopFloorStatistics.setDistributionState(0);
             shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
             shopCenterService.upStatistics(shopFloorStatistics);
         }
@@ -328,8 +330,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     @Override
     public ReturnData findSFnumList(@PathVariable int province, @PathVariable int city, @PathVariable int district) {
         int cont0 = 0;//全部
-        int cont1 = 0;//未配货的
-        int cont2 = 0;//已配货的
+        int cont1 = 0;//今日新增
+        int cont2 = 0;//开业店铺
+        int cont3 = 0;//今日开业
 
         ShopFloor kh = null;
         List list = null;
@@ -341,9 +344,24 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
                 if (kh == null) {
                     continue;
                 }
-                if (kh.getDistributionState() == 0) {
-                    cont1 += 1;
-                } else {
+                if (kh.getDistributionTime() != null) {
+                    boolean sign = false;
+                    Date distributionTime = kh.getDistributionTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    String date = simpleDateFormat.format(distributionTime);
+                    try {
+                        sign = isToday(date, "yyyy-MM-dd");//判断是不是当天
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (sign) {
+                        if (kh.getDistributionState() == 1) {
+                            cont3 += 1;
+                        }
+                        cont1 += 1;
+                    }
+                }
+                if (kh.getDistributionState() == 1) {
                     cont2 += 1;
                 }
             }
@@ -353,6 +371,31 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         map.put("cont1", cont1);
         map.put("cont2", cont2);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    //判断日期是不是当天
+    public static boolean isToday(String str, String formatStr) throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat(formatStr);
+        Date date = null;
+        try {
+            date = format.parse(str);
+        } catch (ParseException e) {
+            return false; //解析日期错误
+        }
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(date);
+        int year1 = c1.get(Calendar.YEAR);
+        int month1 = c1.get(Calendar.MONTH) + 1;
+        int day1 = c1.get(Calendar.DAY_OF_MONTH);
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(new Date());
+        int year2 = c2.get(Calendar.YEAR);
+        int month2 = c2.get(Calendar.MONTH) + 1;
+        int day2 = c2.get(Calendar.DAY_OF_MONTH);
+        if (year1 == year2 && month1 == month2 && day1 == day2) {
+            return true;
+        }
+        return false;
     }
 
     /***
@@ -443,18 +486,19 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
 
     /***
      * 查询各地区黑店数量
+     * @param shopState   店铺状态   -1不限 0未营业  1已营业
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findRegionSFlist(@PathVariable int page, @PathVariable int count) {
+    public ReturnData findRegionSFlist(@PathVariable int shopState, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<ShopFloorStatistics> pageBean = null;
-        pageBean = shopCenterService.findRegionSFlist(page, count);
+        pageBean = shopCenterService.findRegionSFlist(shopState, page, count);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
