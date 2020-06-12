@@ -312,7 +312,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     }
 
     /***
-     * 查询黑店数量（返回结构：总数、未配货的 、已配货的）
+     * 查询黑店数量
      * @param province     省(默认-1全部)
      * @param city      市(默认-1全部)
      * @param district    区(默认-1全部)
@@ -336,16 +336,11 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
                     continue;
                 }
                 if (kh.getDistributionTime() != null) {
-                    boolean sign = false;
                     Date distributionTime = kh.getDistributionTime();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String date = simpleDateFormat.format(distributionTime);
-                    try {
-                        sign = isToday(date, "yyyy-MM-dd");//判断是不是当天
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (sign) {
+                    String nowDate = simpleDateFormat.format(new Date());
+                    if (date.compareTo(nowDate) == 0) {//判断是不是当天
                         if (kh.getDistributionState() == 1) {
                             cont3 += 1;
                         }
@@ -361,32 +356,8 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         map.put("cont0", cont0);
         map.put("cont1", cont1);
         map.put("cont2", cont2);
+        map.put("cont3", cont3);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
-    }
-
-    //判断日期是不是当天
-    public static boolean isToday(String str, String formatStr) throws Exception {
-        SimpleDateFormat format = new SimpleDateFormat(formatStr);
-        Date date = null;
-        try {
-            date = format.parse(str);
-        } catch (ParseException e) {
-            return false; //解析日期错误
-        }
-        Calendar c1 = Calendar.getInstance();
-        c1.setTime(date);
-        int year1 = c1.get(Calendar.YEAR);
-        int month1 = c1.get(Calendar.MONTH) + 1;
-        int day1 = c1.get(Calendar.DAY_OF_MONTH);
-        Calendar c2 = Calendar.getInstance();
-        c2.setTime(new Date());
-        int year2 = c2.get(Calendar.YEAR);
-        int month2 = c2.get(Calendar.MONTH) + 1;
-        int day2 = c2.get(Calendar.DAY_OF_MONTH);
-        if (year1 == year2 && month1 == month2 && day1 == day2) {
-            return true;
-        }
-        return false;
     }
 
     /***
@@ -401,7 +372,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData findNearbySFList(@PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findNearbySFList(@PathVariable int province, @PathVariable int city,
+                                       @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page,
+                                       @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -483,7 +456,8 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData findRegionSFlist(@PathVariable int shopState, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findRegionSFlist(@PathVariable int shopState, @PathVariable int page,
+                                       @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -516,7 +490,8 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData changeYHSort(@Valid @RequestBody YongHuiGoodsSort yongHuiGoodsSort, BindingResult bindingResult) {
+    public ReturnData changeYHSort(@Valid @RequestBody YongHuiGoodsSort yongHuiGoodsSort, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -534,7 +509,8 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
      * @return
      */
     @Override
-    public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable String letter) {
+    public ReturnData findYHSort(@PathVariable int levelOne, @PathVariable int levelTwo,
+                                 @PathVariable int levelThree, @PathVariable String letter) {
         List sortList = null;
         sortList = redisUtils.getList(Constants.REDIS_KEY_SHOPFLOOR_SORTLIST + levelOne + "_" + levelTwo, 0, -1);
         if (sortList == null || sortList.size() <= 0) {

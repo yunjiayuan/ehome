@@ -205,7 +205,10 @@ public interface ShopFloorDao {
      */
     @Select("<script>" +
             "select * from ShopFloorStatistics where" +
-            " number > 0 and distributionState=#{shopState}" +
+            " number > 0" +
+            "<if test=\"shopState >= 0\">" +
+            " and distributionState=#{shopState}" +
+            "</if>" +
             "</script>")
     List<ShopFloorStatistics> findRegionSFlist(@Param("shopState") int shopState);
 
