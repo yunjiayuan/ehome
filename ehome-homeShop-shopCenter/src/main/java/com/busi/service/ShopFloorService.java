@@ -90,6 +90,25 @@ public class ShopFloorService {
     }
 
     /***
+     * 更新店铺配货状态
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upDistributionStatus(ShopFloor homeShopCenter) {
+        return shopCenterDao.upDistributionStatus(homeShopCenter);
+    }
+
+    /***
+     * 根据ID查询店铺
+     * @param id
+     * @return
+     */
+    public ShopFloor findId(long id) {
+        return shopCenterDao.findId(id);
+    }
+
+    /***
      * 根据用户ID查询店铺状态
      * @param userId
      * @return
@@ -97,7 +116,6 @@ public class ShopFloorService {
     public ShopFloor findByUserId(long userId, String villageOnly) {
         return shopCenterDao.findByUserId(userId, villageOnly);
     }
-
 
     /***
      * 查询所有店铺
@@ -161,6 +179,10 @@ public class ShopFloorService {
      */
     public ShopFloorStatistics findStatistics(int province, int city) {
         return shopCenterDao.findStatistics(province, city);
+    }
+
+    public ShopFloorStatistics findStatistics2(int province, int city) {
+        return shopCenterDao.findStatistics2(province, city);
     }
 
     /***

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -146,6 +145,46 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         shopCenterService.updateBusiness(homeShopCenter);
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId() + "_" + homeShopCenter.getVillageOnly(), 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新店铺配货状态
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData upDistributionStatus(@PathVariable long id) {
+        ShopFloor shopFloor = shopCenterService.findId(id);
+        if (shopFloor == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        shopFloor.setDistributionTime(new Date());
+        shopCenterService.upDistributionStatus(shopFloor);
+        //清除缓存
+        redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + shopFloor.getUserId() + "_" + shopFloor.getVillageOnly(), 0);
+        //更新黑店数量
+        //未配货
+        ShopFloorStatistics shopFloorStatistics = shopCenterService.findStatistics(shopFloor.getProvince(), shopFloor.getCity());
+        if (shopFloorStatistics != null) {
+            shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() - 1);
+            shopCenterService.upStatistics(shopFloorStatistics);
+        }
+        //已配货
+        ShopFloorStatistics statistics = shopCenterService.findStatistics2(shopFloor.getProvince(), shopFloor.getCity());
+        if (statistics == null) {
+            ShopFloorStatistics floorStatistics = new ShopFloorStatistics();
+            floorStatistics.setTime(new Date());
+            floorStatistics.setDistributionState(1);
+            floorStatistics.setProvince(shopFloor.getProvince());
+            floorStatistics.setCity(shopFloor.getCity());
+            floorStatistics.setNumber(1);
+            shopCenterService.addStatistics(floorStatistics);
+        } else {
+            statistics.setTime(new Date());
+            statistics.setNumber(statistics.getNumber() + 1);
+            shopCenterService.upStatistics(statistics);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

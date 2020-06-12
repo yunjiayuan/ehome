@@ -41,6 +41,14 @@ public interface ShopFloorApiController {
     ReturnData updShopFloorStatus(@Valid @RequestBody ShopFloor homeShopCenter, BindingResult bindingResult);
 
     /***
+     * 更新店铺配货状态
+     * @param id
+     * @return
+     */
+    @GetMapping("upDistributionStatus/{id}")
+    ReturnData upDistributionStatus(@PathVariable long id);
+
+    /***
      * 查询店铺信息
      * @param userId
      * @return

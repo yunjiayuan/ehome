@@ -105,12 +105,33 @@ public interface ShopFloorDao {
     int updateBusiness(ShopFloor homeShopCenter);
 
     /***
+     * 更新楼店配货状态
+     * @param homeShopCenter
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloor set" +
+            " distributionState=1," +
+            " distributionTime=#{distributionTime}" +
+            " where id=#{id} and deleteType=0 and payState=1" +
+            "</script>")
+    int upDistributionStatus(ShopFloor homeShopCenter);
+
+    /***
      * 根据用户ID查询楼店状态
      * @param userId
      * @return
      */
     @Select("select * from ShopFloor where userId=#{userId} and deleteType=0 and villageOnly = #{villageOnly}")
     ShopFloor findByUserId(@Param("userId") long userId, @Param("villageOnly") String villageOnly);
+
+    /***
+     * 根据ID查询楼店
+     * @param id
+     * @return
+     */
+    @Select("select * from ShopFloor where id=#{id} and deleteType=0 and payState=1 ")
+    ShopFloor findId(@Param("id") long id);
 
     /***
      * 查询所有店铺
@@ -163,6 +184,12 @@ public interface ShopFloorDao {
     )
     ShopFloorStatistics findStatistics(@Param("province") int province, @Param("city") int city);
 
+    @Select("select * from ShopFloorStatistics where" +
+            " distributionState = 1" +
+            " and province = #{province}" +
+            " and city = #{city}"
+    )
+    ShopFloorStatistics findStatistics2(@Param("province") int province, @Param("city") int city);
 
     @Select("<script>" +
             "select * from ShopFloor where" +
@@ -209,6 +236,7 @@ public interface ShopFloorDao {
             "<if test=\"shopState >= 0\">" +
             " and distributionState=#{shopState}" +
             "</if>" +
+            " order by time desc" +
             "</script>")
     List<ShopFloorStatistics> findRegionSFlist(@Param("shopState") int shopState);
 
