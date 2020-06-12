@@ -142,7 +142,7 @@ public class ShopFloorService {
      * @param count    条数
      * @return
      */
-    public PageBean<ShopFloor> findNearbySFList2(Date date, int province, int city, int district, int shopState, String shopName, int page, int count) {
+    public PageBean<ShopFloor> findNearbySFList2(String date, int province, int city, int district, int shopState, String shopName, int page, int count) {
         List<ShopFloor> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (!CommonUtils.checkFull(shopName)) {

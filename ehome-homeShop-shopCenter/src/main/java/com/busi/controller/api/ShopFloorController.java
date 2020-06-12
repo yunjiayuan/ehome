@@ -287,18 +287,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        Date date = null;
-        if (!CommonUtils.checkFull(time)) {
-            time = time + " 00:00:00";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                date = simpleDateFormat.parse(time);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
+        time = time + " 00:00:00";
         PageBean<ShopFloor> pageBean = null;
-        pageBean = shopCenterService.findNearbySFList2(date, province, city, district, shopState, shopName, page, count);
+        pageBean = shopCenterService.findNearbySFList2(time, province, city, district, shopState, shopName, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
