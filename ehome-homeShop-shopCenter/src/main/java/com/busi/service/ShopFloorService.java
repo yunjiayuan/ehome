@@ -166,6 +166,9 @@ public class ShopFloorService {
         if (!CommonUtils.checkFull(shopName)) {
             list = shopCenterDao.findNearbySFList2(shopName);
         } else {
+            if (CommonUtils.checkFull(date)) {
+                date = null;
+            }
             list = shopCenterDao.findNearbySFList(date, province, city, district, shopState);
         }
         return PageUtils.getPageBean(p, list);

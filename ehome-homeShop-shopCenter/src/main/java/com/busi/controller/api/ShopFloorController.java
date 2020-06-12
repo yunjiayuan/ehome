@@ -326,7 +326,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        time = time + " 00:00:00";
+        if (!CommonUtils.checkFull(time)) {
+            time = time + " 00:00:00";
+        }
         PageBean<ShopFloor> pageBean = null;
         pageBean = shopCenterService.findNearbySFList2(time, province, city, district, shopState, shopName, page, count);
         if (pageBean == null) {
