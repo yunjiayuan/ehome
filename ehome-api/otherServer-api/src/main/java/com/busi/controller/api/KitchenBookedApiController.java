@@ -24,6 +24,14 @@ public interface KitchenBookedApiController {
     ReturnData addReserve(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult);
 
     /***
+     * 新增订座数据
+     * @param kitchenReserve
+     * @return
+     */
+    @PostMapping("addReserveData")
+    ReturnData addReserveData(@Valid @RequestBody KitchenReserveData kitchenReserve, BindingResult bindingResult);
+
+    /***
      * 编辑厨房订座
      * @param kitchenReserve
      * @return
@@ -53,6 +61,35 @@ public interface KitchenBookedApiController {
      */
     @GetMapping("findReserve/{userId}")
     ReturnData findReserve(@PathVariable long userId);
+
+    /***
+     * 查询订座数据详情
+     * @param id
+     * @return
+     */
+    @GetMapping("findReserveData/{id}")
+    ReturnData findReserveData(@PathVariable long id);
+
+    /***
+     * 认领店铺
+     * @param realName  店主姓名
+     * @param phone  店主电话
+     * @return
+     */
+    @GetMapping("claimKitchen/{realName}/{phone}")
+    ReturnData claimKitchen(@PathVariable String realName, @PathVariable String phone);
+
+    /***
+     * 查询厨房订座数据列表
+     * @param kitchenName    厨房名称
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findReserveDataList/{kitchenName}/{lat}/{lon}/{page}/{count}")
+    ReturnData findReserveDataList(@PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 条件查询厨房订座

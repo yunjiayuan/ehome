@@ -84,18 +84,56 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (cs.length >= 5) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "菜系最多选四个", new JSONObject());
         }
-        UserInfo userInfo = null;
-        userInfo = userInfoUtils.getUserInfo(kitchenReserve.getUserId());
-        if (userInfo != null) {
-            kitchenReserve.setSex(userInfo.getSex());
-            kitchenReserve.setName(userInfo.getName());
-            kitchenReserve.setAge(getAge(userInfo.getBirthday()));//年龄
-        }
+//        UserInfo userInfo = null;
+//        userInfo = userInfoUtils.getUserInfo(kitchenReserve.getUserId());
+//        if (userInfo != null) {
+//            kitchenReserve.setSex(userInfo.getSex());
+//            kitchenReserve.setName(userInfo.getName());
+//            kitchenReserve.setAge(getAge(userInfo.getBirthday()));//年龄
+//        }
         kitchenBookedService.addKitchen(kitchenReserve);
 
         Map<String, Object> map2 = new HashMap<>();
         map2.put("infoId", kitchenReserve.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
+    }
+
+    /***
+     * 新增订座数据
+     * @param kitchenReserve
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addReserveData(@Valid @RequestBody KitchenReserveData kitchenReserve, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        KitchenReserveData reserveData = kitchenBookedService.findReserveData(kitchenReserve.getId());//暂用ID判定唯一
+        KitchenReserve reserve = new KitchenReserve();
+        reserve.setAddTime(new Date());
+        reserve.setAddress(kitchenReserve.getAddress());
+        reserve.setClaimId(kitchenReserve.getUid());
+        reserve.setKitchenName(kitchenReserve.getName());
+        reserve.setLat(kitchenReserve.getLatitude());
+        reserve.setLon(kitchenReserve.getLongitude());
+        reserve.setPhone(kitchenReserve.getPhone());
+        reserve.setStartingTime(kitchenReserve.getOpeningHours());
+        reserve.setTotalScore(kitchenReserve.getOverallRating());
+        if (reserveData == null) {//新增
+            //新增订座数据表
+            kitchenReserve.setAddTime(new Date());
+            kitchenBookedService.addReserveData(kitchenReserve);
+            //新增订座厨房表
+            kitchenBookedService.addKitchen(reserve);
+        } else {//更新
+            //更新订座数据表
+            kitchenBookedService.updateReserveData(kitchenReserve);
+            //更新订座厨房表
+            kitchenBookedService.updateKitchen(reserve);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
@@ -234,6 +272,102 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     }
 
     /***
+     * 查询订座数据详情
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findReserveData(@PathVariable long id) {
+        KitchenReserveData reserveData = kitchenBookedService.findReserveData(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 认领店铺
+     * @param realName  名字
+     * @param phone  电话
+     * @return
+     */
+    @Override
+    public ReturnData claimKitchen(@PathVariable String realName, @PathVariable String phone) {
+        KitchenReserveData kitchen = kitchenBookedService.findClaim(realName, phone);
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领信息不匹配", new JSONObject());
+        }
+        //更新订座数据
+        kitchen.setClaimStatus(1);
+        kitchen.setClaimTime(new Date());
+        kitchen.setUserId(CommonUtils.getMyId());
+        kitchenBookedService.claimKitchen(kitchen);
+        //更新订座厨房
+        KitchenReserve reserve = new KitchenReserve();
+//        reserve.setRealName(realName);
+        reserve.setPhone(phone);
+        reserve.setClaimId(kitchen.getUid());
+        reserve.setClaimStatus(1);
+        reserve.setClaimTime(kitchen.getClaimTime());
+        reserve.setUserId(CommonUtils.getMyId());
+        kitchenBookedService.claimKitchen2(reserve);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询订座数据列表
+     * @param kitchenName    厨房名称
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findReserveDataList(@PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<KitchenReserveData> pageBean = null;
+        pageBean = kitchenBookedService.findReserveDataList(kitchenName, lat, lon, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        if (list != null && list.size() > 0) {
+            if (CommonUtils.checkFull(kitchenName) && lat > 0) {//距离最近
+                for (int i = 0; i < list.size(); i++) {
+                    KitchenReserveData ik = (KitchenReserveData) list.get(i);
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLongitude(), ik.getLatitude(), lon, lat));
+                    ik.setRange(distance);//距离/m
+                }
+                Collections.sort(list, new Comparator<KitchenReserve>() {
+                    /*
+                     * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+                     * 返回负数表示：o1 小于o2，
+                     * 返回0 表示：o1和p2相等，
+                     * 返回正数表示：o1大于o2
+                     */
+                    @Override
+                    public int compare(KitchenReserve o1, KitchenReserve o2) {
+                        // 按照距离进行正序排列
+                        if (o1.getDistance() > o2.getDistance()) {
+                            return 1;
+                        }
+                        if (o1.getDistance() == o2.getDistance()) {
+                            return 0;
+                        }
+                        return -1;
+                    }
+                });
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+    }
+
+    /***
      * 条件查询厨房订座
      * @param cuisine    菜系
      * @param watchVideos 筛选视频：0否 1是
@@ -262,12 +396,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 KitchenReserve ik = (KitchenReserve) list.get(i);
-
-                double userlon = Double.valueOf(ik.getLon() + "");
-                double userlat = Double.valueOf(ik.getLat() + "");
-
-                int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
-
+                int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLon(), ik.getLat(), lon, lat));
                 ik.setDistance(distance);//距离/m
                 //过滤实名信息
                 ik.setName("");
@@ -336,9 +465,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData findKitchenBooked(@PathVariable long userId) {
         KitchenBooked kitchen = kitchenBookedService.findByUserId(userId);
-//        if (kitchen == null) {
-//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchen);
     }
 
@@ -397,7 +523,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData findRoom(@PathVariable long id) {
         KitchenPrivateRoom privateRoom = kitchenBookedService.findPrivateRoom(id);
-
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", privateRoom);
     }
 
@@ -543,7 +668,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         }
         kitchenDishes.setAddTime(new Date());
         kitchenBookedService.addDishes(kitchenDishes);
-
         //清除缓存中的菜品信息
         redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenDishes.getKitchenId() + "_" + 1, 0);
         Map<String, Object> map = new HashMap<>();
@@ -591,7 +715,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         }
         //清除缓存中的菜品信息
         redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + dishes.getKitchenId() + "_" + 1, 0);
-
         //查询数据库
         kitchenBookedService.delDishes(idss, CommonUtils.getMyId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -605,7 +728,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData detailsDishes(@PathVariable long id) {
         KitchenReserveDishes dishes = kitchenBookedService.disheSdetails(id);
-
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", dishes);
     }
 
@@ -700,6 +822,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         KitchenBooked kitchen = kitchenBookedService.findByUserId(kitchenServingTime.getUserId());
         if (kitchen != null) {
             for (int i = 0; i < time.length; i++) {
+                //compareTo用来比较两个对象，如果o1小于o2，返回负数；等于o2，返回0；大于o2返回正数
                 if (time[i].compareTo(kitchen.getEarliestTime()) < 0 || kitchen.getLatestTime().compareTo(time[i]) < 0) {
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
                 }
@@ -745,9 +868,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     public ReturnData findUpperTime(@PathVariable long kitchenId) {
         //开始查询
         KitchenServingTime servingTime = kitchenBookedService.findUpperTime(kitchenId);
-//        if (servingTime == null) {
-//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", servingTime);
     }
 

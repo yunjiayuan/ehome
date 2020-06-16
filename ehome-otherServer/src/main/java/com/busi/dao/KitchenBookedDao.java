@@ -118,9 +118,9 @@ public interface KitchenBookedDao {
      * @return
      */
     @Insert("insert into KitchenReserve(userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon," +
-            "address,videoUrl,videoCoverUrl)" +
+            "address,videoUrl,videoCoverUrl,claimId,claimStatus,claimTime,realName,phone)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{cuisine},#{goodFood},#{kitchenName},#{startingTime},#{addTime},#{healthyCard},#{kitchenCover},#{content},#{totalSales},#{totalScore},#{lat},#{lon}" +
-            ",#{address},#{videoUrl},#{videoCoverUrl})")
+            ",#{address},#{videoUrl},#{videoCoverUrl},#{claimId},#{claimStatus},#{claimTime},#{realName},#{phone})")
     @Options(useGeneratedKeys = true)
     int addKitchen(KitchenReserve kitchen);
 
@@ -143,6 +143,8 @@ public interface KitchenBookedDao {
             " kitchenCover=#{kitchenCover}," +
             " videoUrl=#{videoUrl}," +
             " videoCoverUrl=#{videoCoverUrl}," +
+            " realName=#{realName}," +
+            " phone=#{phone}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
             "</script>")
@@ -159,6 +161,37 @@ public interface KitchenBookedDao {
             " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
             "</script>")
     int updateDel(KitchenReserve kitchen);
+
+
+    /***
+     * 更新预定厨房认领状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenReserveData set" +
+            " userId=#{userId}," +
+            " claimTime=#{claimTime}," +
+            " claimStatus=#{claimStatus}" +
+            " where id=#{id}" +
+            "</script>")
+    int claimKitchen(KitchenReserveData kitchen);
+
+    /***
+     * 更新预定厨房认领状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenReserve set" +
+            " userId=#{userId}," +
+//            " realName=#{realName}," +
+            " phone=#{phone}," +
+            " claimTime=#{claimTime}," +
+            " claimStatus=#{claimStatus}" +
+            " where claimId=#{claimId}" +
+            "</script>")
+    int claimKitchen2(KitchenReserve kitchen);
 
     /***
      * 更新预定厨房销量
@@ -187,6 +220,25 @@ public interface KitchenBookedDao {
      */
     @Select("select * from KitchenReserve where userId=#{userId} and deleteType = 0 and auditType=1")
     KitchenReserve findReserve(@Param("userId") long userId);
+
+    /***
+     * 根据Id查询预定
+     * @param id
+     * @return
+     */
+    @Select("select * from KitchenReserveData where id=#{id}")
+    KitchenReserveData findReserveData(@Param("id") long id);
+
+    /***
+     * 根据姓名、电话查询
+     * @param realName  店主姓名
+     * @param phone  店主电话
+     * @return
+     */
+    @Select("select * from KitchenReserveData where 1=1" +
+//            " realName=#{realName}" +
+            " and phone=#{phone}")
+    KitchenReserveData findClaim(@Param("realName") String realName, @Param("phone") String phone);
 
     /***
      * 根据Id查询预定
@@ -289,6 +341,24 @@ public interface KitchenBookedDao {
             "</if>" +
             "</script>")
     List<KitchenReserve> findKitchenList3(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
+
+    /***
+     * 条件查询预定厨房
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenReserveData where 1=1 " +
+            "<if test=\"kitchenName != null and kitchenName != '' \">" +
+            " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
+            "</if>" +
+            "<if test=\"kitchenName == null and lat > 0' \">" +
+            " and lat > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+            " and lat &lt; #{latitude}+1 and lon > #{longitude}-1" +
+            " and lon &lt; #{longitude}+1 order by ACOS(SIN((#{latitude} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{latitude} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{longitude}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+            "</if>" +
+            "</script>")
+    List<KitchenReserveData> findReserveDataList(@Param("kitchenName") String kitchenName, @Param("lat") double lat, @Param("lon") double lon);
+
 
     /***
      * 条件查询预定厨房（条件搜索）
@@ -423,5 +493,58 @@ public interface KitchenBookedDao {
             " where kitchenId=#{kitchenId}" +
             "</script>")
     KitchenServingTime findUpperTime(@Param("kitchenId") long kitchenId);
+
+    /***
+     * 新增预定厨房
+     * @param kitchen
+     * @return
+     */
+    @Insert("insert into KitchenReserveData(userId,uid,streetID,name,addTime,province,city,area,latitude,longitude," +
+            "address,distance,claimStatus,claimTime,type,phone,tag,detailURL,price,openingHours,overallRating,tasteRating," +
+            "serviceRating,environmentRating,hygieneRating,technologyRating,facilityRating,imageNumber,grouponNumber,discountNumber,commentNumber,favoriteNumber,checkInNumber)" +
+            "values (#{userId},#{uid},#{streetID},#{name},#{addTime},#{province},#{city},#{area},#{latitude},#{longitude}" +
+            ",#{address},#{distance},#{claimStatus},#{claimTime},#{type},#{phone},#{tag},#{detailURL},#{price},#{openingHours},#{overallRating},#{tasteRating},#{serviceRating},#{environmentRating},#{hygieneRating}" +
+            ",#{technologyRating},#{facilityRating},#{imageNumber},#{grouponNumber},#{discountNumber},#{commentNumber},#{favoriteNumber},#{checkInNumber})")
+    @Options(useGeneratedKeys = true)
+    int addReserveData(KitchenReserveData kitchen);
+
+    /***
+     * 更新预定厨房
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenReserveData set" +
+            " province=#{province}," +
+            " city=#{city}," +
+            " area=#{area}," +
+            " name=#{name}," +
+            " latitude=#{latitude}," +
+            " longitude=#{longitude}," +
+            " address=#{address}," +
+            " phone=#{phone}," +
+            " distance=#{distance}," +
+            " type=#{type}," +
+            " tag=#{tag}," +
+            " detailURL=#{detailURL}," +
+            " price=#{price}," +
+            " openingHours=#{openingHours}," +
+            " imageNumber=#{imageNumber}," +
+            " grouponNumber=#{grouponNumber}," +
+            " discountNumber=#{discountNumber}," +
+            " overallRating=#{overallRating}," +
+            " commentNumber=#{commentNumber}," +
+            " tasteRating=#{tasteRating}," +
+            " serviceRating=#{serviceRating}," +
+            " environmentRating=#{environmentRating}," +
+            " hygieneRating=#{hygieneRating}," +
+            " technologyRating=#{technologyRating}," +
+            " facilityRating=#{facilityRating}," +
+            " favoriteNumber=#{favoriteNumber}," +
+            " checkInNumber=#{checkInNumber}," +
+            " userId=#{userId}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateReserveData(KitchenReserveData kitchen);
 
 }

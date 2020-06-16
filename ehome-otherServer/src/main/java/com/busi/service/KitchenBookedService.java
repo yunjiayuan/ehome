@@ -124,6 +124,15 @@ public class KitchenBookedService {
     }
 
     /***
+     * 根据ID查询预定
+     * @param id
+     * @return
+     */
+    public KitchenReserveData findReserveData(long id) {
+        return kitchenBookedDao.findReserveData(id);
+    }
+
+    /***
      * 新建厨房
      * @param kitchen
      * @return
@@ -153,6 +162,16 @@ public class KitchenBookedService {
     }
 
     /***
+     * 根据姓名、电话查询
+     * @param realName  店主姓名
+     * @param phone  店主电话
+     * @return
+     */
+    public KitchenReserveData findClaim(String realName, String phone) {
+        return kitchenBookedDao.findClaim(realName, phone);
+    }
+
+    /***
      * 更新厨房删除状态
      * @param kitchen
      * @return
@@ -160,6 +179,26 @@ public class KitchenBookedService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateDel(KitchenReserve kitchen) {
         return kitchenBookedDao.updateDel(kitchen);
+    }
+
+    /***
+     * 更新厨房认领状态
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int claimKitchen(KitchenReserveData kitchen) {
+        return kitchenBookedDao.claimKitchen(kitchen);
+    }
+
+    /***
+     * 更新厨房认领状态
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int claimKitchen2(KitchenReserve kitchen) {
+        return kitchenBookedDao.claimKitchen2(kitchen);
     }
 
     /***
@@ -202,6 +241,25 @@ public class KitchenBookedService {
         } else {
             list = kitchenBookedDao.findKitchenList3(userId, watchVideos, sortType);
         }
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 条件查询厨房
+     * @param lat 纬度
+     * @param lon 经度
+     * @param kitchenName  厨房名字
+     * @param page 页码
+     * @param count  条数
+     * @return
+     */
+    public PageBean<KitchenReserveData> findReserveDataList(String kitchenName, double lat, double lon, int page, int count) {
+        List<KitchenReserveData> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (CommonUtils.checkFull(kitchenName)) {
+            kitchenName = null;
+        }
+        list = kitchenBookedDao.findReserveDataList(kitchenName, lat, lon);
         return PageUtils.getPageBean(p, list);
     }
 
@@ -323,5 +381,25 @@ public class KitchenBookedService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int findNum(long kitchenId) {
         return kitchenBookedDao.findNum(kitchenId);
+    }
+
+    /***
+     * 新建厨房
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addReserveData(KitchenReserveData kitchen) {
+        return kitchenBookedDao.addReserveData(kitchen);
+    }
+
+    /***
+     * 更新厨房
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateReserveData(KitchenReserveData kitchen) {
+        return kitchenBookedDao.updateReserveData(kitchen);
     }
 }

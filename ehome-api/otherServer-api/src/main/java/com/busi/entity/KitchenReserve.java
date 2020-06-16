@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -24,6 +25,13 @@ public class KitchenReserve {
     private long userId;                // 商家ID
 
     private int businessStatus;        // 营业状态:0正常 1暂停
+
+    private String claimId;        // 认领数据ID
+
+    private int claimStatus;        // 认领状态:0待认领 1已认领
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date claimTime;        // 认领时间
 
     private int deleteType;                 // 删除标志:0未删除,1用户删除,2管理员删除
 
@@ -64,6 +72,12 @@ public class KitchenReserve {
     @Length(max = 46, message = "详细地址不能超过46字")
     private String address;            // 详细地址
 
+    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{2,30}", message = "名字格式有误，长度为2-10，并且不能包含非法字符")
+    private String realName;//店主姓名
+
+    @Pattern(regexp = "^\\s*$|^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号格式有误，请输入正确的手机号")
+    private String phone;//店主电话
+
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
@@ -73,9 +87,9 @@ public class KitchenReserve {
 
     private int distance;            //距离
 
-    private String name;                //用户名	查询后从内存获取最新
+    private String name;                //用户名
 
-    private String head;                    //头像	查询后从内存获取最新
+    private String head;                    //头像
 
     private int proTypeId;                //	省简称ID
 
