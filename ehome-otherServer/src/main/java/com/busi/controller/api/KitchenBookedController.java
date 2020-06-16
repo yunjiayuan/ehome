@@ -119,7 +119,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         reserve.setLat(kitchenReserve.getLatitude());
         reserve.setLon(kitchenReserve.getLongitude());
         reserve.setPhone(kitchenReserve.getPhone());
-        reserve.setStartingTime(kitchenReserve.getOpeningHours());
         reserve.setTotalScore(kitchenReserve.getOverallRating());
         if (reserveData == null) {//新增
             //新增订座数据表

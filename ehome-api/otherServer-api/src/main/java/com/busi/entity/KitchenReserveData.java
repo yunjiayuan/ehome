@@ -32,11 +32,11 @@ public class KitchenReserveData {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date claimTime;        // 认领时间
 
-    private int province;//所在省份
+    private String province;//所在省份
 
-    private int city;//所在城市
+    private String city;//所在城市
 
-    private int area;//所在行政区域
+    private String area;//所在行政区域
 
     @Length(max = 14, message = "厨房名称不能超过14字")
     private String name;                //厨房名称
@@ -63,7 +63,7 @@ public class KitchenReserveData {
 
     private double price;//商户的价格
 
-    private int openingHours;//营业时间
+    private String openingHours;//营业时间
 
     private long overallRating;//总体评分
 
