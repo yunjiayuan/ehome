@@ -230,6 +230,14 @@ public interface KitchenBookedDao {
     KitchenReserveData findReserveData(@Param("id") long id);
 
     /***
+     * 根据uid查询预定
+     * @param uid
+     * @return
+     */
+    @Select("select * from KitchenReserveData where uid=#{uid}")
+    KitchenReserveData findReserveDataId(@Param("uid") String uid);
+
+    /***
      * 根据姓名、电话查询
      * @param realName  店主姓名
      * @param phone  店主电话

@@ -110,7 +110,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        KitchenReserveData reserveData = kitchenBookedService.findReserveData(kitchenReserve.getId());//暂用ID判定唯一
+        KitchenReserveData reserveData = kitchenBookedService.findReserveDataId(kitchenReserve.getUid());
         KitchenReserve reserve = new KitchenReserve();
         reserve.setAddTime(new Date());
         reserve.setAddress(kitchenReserve.getAddress());

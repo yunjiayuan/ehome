@@ -133,6 +133,15 @@ public class KitchenBookedService {
     }
 
     /***
+     * 根据唯一标识符查询
+     * @param uid
+     * @return
+     */
+    public KitchenReserveData findReserveDataId(String uid) {
+        return kitchenBookedDao.findReserveDataId(uid);
+    }
+
+    /***
      * 新建厨房
      * @param kitchen
      * @return
