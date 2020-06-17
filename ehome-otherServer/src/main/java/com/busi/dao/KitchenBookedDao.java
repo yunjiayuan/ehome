@@ -359,13 +359,13 @@ public interface KitchenBookedDao {
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
             " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +
-            "<if test=\"kitchenName == null and lat > 0' \">" +
-            " and lat > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
-            " and lat &lt; #{latitude}+1 and lon > #{longitude}-1" +
-            " and lon &lt; #{longitude}+1 order by ACOS(SIN((#{latitude} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{latitude} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{longitude}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+            "<if test=\"kitchenName == null and latitude > 0' \">" +
+            " and latitude > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+            " and latitude &lt; #{latitude}+1 and longitude > #{longitude}-1" +
+            " and longitude &lt; #{longitude}+1 order by ACOS(SIN((#{latitude} * 3.1415) / 180 ) *SIN((latitude * 3.1415) / 180 ) +COS((#{latitude} * 3.1415) / 180 ) * COS((latitude * 3.1415) / 180 ) *COS((#{longitude}* 3.1415) / 180 - (longitude * 3.1415) / 180 ) ) * 6380 asc" +
             "</if>" +
             "</script>")
-    List<KitchenReserveData> findReserveDataList(@Param("kitchenName") String kitchenName, @Param("lat") double lat, @Param("lon") double lon);
+    List<KitchenReserveData> findReserveDataList(@Param("kitchenName") String kitchenName, @Param("latitude") double latitude, @Param("longitude") double longitude);
 
 
     /***
