@@ -78,6 +78,8 @@ public class KitchenReserve {
     @Pattern(regexp = "^\\s*$|^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号格式有误，请输入正确的手机号")
     private String phone;//店主电话
 
+    private String orderingPhone;//订餐电话
+
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 

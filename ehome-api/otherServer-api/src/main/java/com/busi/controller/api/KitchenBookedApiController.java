@@ -72,12 +72,15 @@ public interface KitchenBookedApiController {
 
     /***
      * 认领店铺
+     * @param id  店铺Id
      * @param realName  店主姓名
      * @param phone  店主电话
+     * @param orderingPhone  订餐电话
+     * @param healthyCard   营业执照
      * @return
      */
-    @GetMapping("claimKitchen/{realName}/{phone}")
-    ReturnData claimKitchen(@PathVariable String realName, @PathVariable String phone);
+    @GetMapping("claimKitchen/{id}/{realName}/{phone}/{orderingPhone}/{healthyCard}")
+    ReturnData claimKitchen(@PathVariable long id, @PathVariable String realName, @PathVariable String phone, @PathVariable String orderingPhone, @PathVariable String healthyCard);
 
     /***
      * 查询厨房订座数据列表

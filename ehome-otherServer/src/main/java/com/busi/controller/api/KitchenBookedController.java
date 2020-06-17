@@ -287,15 +287,18 @@ public class KitchenBookedController extends BaseController implements KitchenBo
 
     /***
      * 认领店铺
-     * @param realName  名字
-     * @param phone  电话
+     * @param id  店铺Id
+     * @param realName  店主姓名
+     * @param phone  店主电话
+     * @param orderingPhone  订餐电话
+     * @param healthyCard   营业执照
      * @return
      */
     @Override
-    public ReturnData claimKitchen(@PathVariable String realName, @PathVariable String phone) {
-        KitchenReserveData kitchen = kitchenBookedService.findClaim(realName, phone);
+    public ReturnData claimKitchen(@PathVariable long id, @PathVariable String realName, @PathVariable String phone, @PathVariable String orderingPhone, @PathVariable String healthyCard) {
+        KitchenReserveData kitchen = kitchenBookedService.findReserveData(id);
         if (kitchen == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领信息不匹配", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领店铺不存在", new JSONObject());
         }
         //更新订座数据
         kitchen.setClaimStatus(1);
@@ -304,8 +307,10 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         kitchenBookedService.claimKitchen(kitchen);
         //更新订座厨房
         KitchenReserve reserve = new KitchenReserve();
-//        reserve.setRealName(realName);
+        reserve.setRealName(realName);
         reserve.setPhone(phone);
+        reserve.setOrderingPhone(orderingPhone);
+        reserve.setHealthyCard(healthyCard);
         reserve.setClaimId(kitchen.getUid());
         reserve.setClaimStatus(1);
         reserve.setClaimTime(kitchen.getClaimTime());
@@ -344,7 +349,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
                     int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLongitude(), ik.getLatitude(), lon, lat));
                     ik.setRange(distance);//距离/m
                 }
-                Collections.sort(list, new Comparator<KitchenReserve>() {
+                Collections.sort(list, new Comparator<KitchenReserveData>() {
                     /*
                      * int compare(Person o1, Person o2) 返回一个基本类型的整型，
                      * 返回负数表示：o1 小于o2，
@@ -352,7 +357,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
                      * 返回正数表示：o1大于o2
                      */
                     @Override
-                    public int compare(KitchenReserve o1, KitchenReserve o2) {
+                    public int compare(KitchenReserveData o1, KitchenReserveData o2) {
                         // 按照距离进行正序排列
                         if (o1.getDistance() > o2.getDistance()) {
                             return 1;

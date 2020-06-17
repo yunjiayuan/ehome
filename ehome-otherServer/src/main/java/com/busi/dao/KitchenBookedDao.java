@@ -185,7 +185,9 @@ public interface KitchenBookedDao {
     @Update("<script>" +
             "update KitchenReserve set" +
             " userId=#{userId}," +
-//            " realName=#{realName}," +
+            " healthyCard=#{healthyCard}," +
+            " orderingPhone=#{orderingPhone}," +
+            " realName=#{realName}," +
             " phone=#{phone}," +
             " claimTime=#{claimTime}," +
             " claimStatus=#{claimStatus}" +
@@ -226,7 +228,7 @@ public interface KitchenBookedDao {
      * @param id
      * @return
      */
-    @Select("select * from KitchenReserveData where id=#{id}")
+    @Select("select * from KitchenReserveData where id=#{id} and claimStatus=0")
     KitchenReserveData findReserveData(@Param("id") long id);
 
     /***
@@ -357,9 +359,9 @@ public interface KitchenBookedDao {
     @Select("<script>" +
             "select * from KitchenReserveData where 1=1 " +
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
-            " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
+            " and name LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +
-            "<if test=\"kitchenName == null and latitude > 0' \">" +
+            "<if test=\"kitchenName == null and latitude > 0 \">" +
             " and latitude > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
             " and latitude &lt; #{latitude}+1 and longitude > #{longitude}-1" +
             " and longitude &lt; #{longitude}+1 order by ACOS(SIN((#{latitude} * 3.1415) / 180 ) *SIN((latitude * 3.1415) / 180 ) +COS((#{latitude} * 3.1415) / 180 ) * COS((latitude * 3.1415) / 180 ) *COS((#{longitude}* 3.1415) / 180 - (longitude * 3.1415) / 180 ) ) * 6380 asc" +
