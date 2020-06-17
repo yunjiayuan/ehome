@@ -1,6 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.ChildModelDao;
+import com.busi.entity.ChildModelPwd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.ChildModelPwd;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,7 @@ public interface ChildModelDao {
      * @param homeAlbumPwd
      * @return
      */
-    @Insert("insert into homeAlbumPwd(password,status,userId) " +
+    @Insert("insert into ChildModelPwd(password,status,userId) " +
             "values (#{password},#{status},#{userId})")
     @Options(useGeneratedKeys = true)
     int addPwd(ChildModelPwd homeAlbumPwd);

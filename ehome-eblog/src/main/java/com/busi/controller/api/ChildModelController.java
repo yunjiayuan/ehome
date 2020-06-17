@@ -2,10 +2,9 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import com.busi.service.ChildModelService;
 import com.busi.utils.CommonUtils;
-import com.busi.utils.MqUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -26,9 +25,6 @@ import java.util.Map;
 public class ChildModelController extends BaseController implements ChildModelApiController {
 
     @Autowired
-    MqUtils mqUtils;
-
-    @Autowired
     ChildModelService homeAlbumService;
 
     /***
@@ -44,6 +40,7 @@ public class ChildModelController extends BaseController implements ChildModelAp
             String code = CommonUtils.strToMD5(homeAlbum.getPassword() + status, 32);
             homeAlbum.setPassword(code);
             homeAlbum.setStatus(status);
+            homeAlbum.setUserId(CommonUtils.getMyId());
 //            homeAlbum.setState(1);
             homeAlbumService.addPwd(homeAlbum);
         }
@@ -65,6 +62,7 @@ public class ChildModelController extends BaseController implements ChildModelAp
                 String code = CommonUtils.strToMD5(homeAlbum.getPassword() + status, 32);
                 homeAlbum.setPassword(code);
                 homeAlbum.setStatus(status);
+                homeAlbum.setUserId(CommonUtils.getMyId());
 //                homeAlbum.setState(1);
                 homeAlbumService.addPwd(homeAlbum);
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -121,7 +119,7 @@ public class ChildModelController extends BaseController implements ChildModelAp
             }
         }
         if (!flag) {
-            return returnData(StatusCode.CODE_FOLDER_PASSWORD_ERROR.CODE_VALUE, "密码验证错误!", new JSONObject());
+            return returnData(StatusCode.CODE_PASSWORD_ERROR.CODE_VALUE, "密码验证错误!", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
