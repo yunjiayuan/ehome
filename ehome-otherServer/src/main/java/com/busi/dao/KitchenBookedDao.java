@@ -357,7 +357,7 @@ public interface KitchenBookedDao {
      * @return
      */
     @Select("<script>" +
-            "select * from KitchenReserveData where 1=1 " +
+            "select * from KitchenReserveData where claimStatus=0 " +
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
             " and name LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +

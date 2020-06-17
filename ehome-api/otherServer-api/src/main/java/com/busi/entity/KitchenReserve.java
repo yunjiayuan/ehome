@@ -26,7 +26,7 @@ public class KitchenReserve {
 
     private int businessStatus;        // 营业状态:0正常 1暂停
 
-    private String claimId;        // 认领数据ID
+    private String claimId;        // 认领数据唯一标识符
 
     private int claimStatus;        // 认领状态:0待认领 1已认领
 
