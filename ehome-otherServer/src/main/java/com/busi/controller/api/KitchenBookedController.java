@@ -77,6 +77,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增可预订厨房失败，厨房已存在！", new JSONObject());
         }
         kitchenReserve.setAuditType(1);
+        kitchenReserve.setClaimStatus(1);//默认自己新增店铺为已认领
         kitchenReserve.setBusinessStatus(1);//厨房默认关闭
         kitchenReserve.setAddTime(new Date());
         //菜系最多选四个
