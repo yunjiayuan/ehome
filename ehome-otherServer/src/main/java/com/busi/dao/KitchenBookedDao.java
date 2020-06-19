@@ -228,7 +228,7 @@ public interface KitchenBookedDao {
      * @param id
      * @return
      */
-    @Select("select * from KitchenReserveData where id=#{id} and claimStatus=0")
+    @Select("select * from KitchenReserveData where id=#{id}")
     KitchenReserveData findReserveData(@Param("id") long id);
 
     /***
@@ -236,7 +236,7 @@ public interface KitchenBookedDao {
      * @param uid
      * @return
      */
-    @Select("select * from KitchenReserveData where uid=#{uid}")
+    @Select("select * from KitchenReserveData where uid=#{uid} and claimStatus=0")
     KitchenReserveData findReserveDataId(@Param("uid") String uid);
 
     /***

@@ -288,16 +288,13 @@ public class KitchenBookedController extends BaseController implements KitchenBo
 
     /***
      * 认领店铺
-     * @param id  店铺Id
-     * @param realName  店主姓名
-     * @param phone  店主电话
-     * @param orderingPhone  订餐电话
-     * @param healthyCard   营业执照
+     * @param kitchenReserve
+     * @param bindingResult
      * @return
      */
     @Override
-    public ReturnData claimKitchen(@PathVariable long id, @PathVariable String realName, @PathVariable String phone, @PathVariable String orderingPhone, @PathVariable String healthyCard) {
-        KitchenReserveData kitchen = kitchenBookedService.findReserveData(id);
+    public ReturnData claimKitchen(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult) {
+        KitchenReserveData kitchen = kitchenBookedService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领店铺不存在", new JSONObject());
         }
@@ -308,10 +305,10 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         kitchenBookedService.claimKitchen(kitchen);
         //更新订座厨房
         KitchenReserve reserve = new KitchenReserve();
-        reserve.setRealName(realName);
-        reserve.setPhone(phone);
-        reserve.setOrderingPhone(orderingPhone);
-        reserve.setHealthyCard(healthyCard);
+        reserve.setRealName(kitchenReserve.getRealName());
+        reserve.setPhone(kitchenReserve.getPhone());
+        reserve.setOrderingPhone(kitchenReserve.getOrderingPhone());
+        reserve.setHealthyCard(kitchenReserve.getHealthyCard());
         reserve.setClaimId(kitchen.getUid());
         reserve.setClaimStatus(1);
         reserve.setClaimTime(kitchen.getClaimTime());
