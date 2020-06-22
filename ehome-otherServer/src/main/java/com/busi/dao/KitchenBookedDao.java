@@ -118,9 +118,9 @@ public interface KitchenBookedDao {
      * @return
      */
     @Insert("insert into KitchenReserve(userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon," +
-            "address,videoUrl,videoCoverUrl,claimId,claimStatus,claimTime,realName,phone)" +
+            "address,videoUrl,videoCoverUrl,claimId,claimStatus,claimTime,realName,phone,orderingPhone)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{cuisine},#{goodFood},#{kitchenName},#{startingTime},#{addTime},#{healthyCard},#{kitchenCover},#{content},#{totalSales},#{totalScore},#{lat},#{lon}" +
-            ",#{address},#{videoUrl},#{videoCoverUrl},#{claimId},#{claimStatus},#{claimTime},#{realName},#{phone})")
+            ",#{address},#{videoUrl},#{videoCoverUrl},#{claimId},#{claimStatus},#{claimTime},#{realName},#{phone},#{orderingPhone})")
     @Options(useGeneratedKeys = true)
     int addKitchen(KitchenReserve kitchen);
 
@@ -145,6 +145,7 @@ public interface KitchenBookedDao {
             " videoCoverUrl=#{videoCoverUrl}," +
             " realName=#{realName}," +
             " phone=#{phone}," +
+            " orderingPhone=#{orderingPhone}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
             "</script>")

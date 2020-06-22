@@ -122,7 +122,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         reserve.setPhone(kitchenReserve.getPhone());
         reserve.setTotalScore(kitchenReserve.getOverallRating());
         reserve.setAuditType(1);
-        reserve.setBusinessStatus(1);//厨房默认关闭
+//        reserve.setBusinessStatus(1);//厨房默认关闭
         if (reserveData == null) {//新增
             //新增订座数据表
             kitchenReserve.setAddTime(new Date());
