@@ -303,6 +303,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (kitchen == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领店铺不存在", new JSONObject());
         }
+        if (kitchen.getClaimStatus() == 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领店铺不存在", new JSONObject());
+        }
         //更新订座数据
         kitchen.setClaimStatus(1);
         kitchen.setClaimTime(new Date());
