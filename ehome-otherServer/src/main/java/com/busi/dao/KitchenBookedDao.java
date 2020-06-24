@@ -240,6 +240,9 @@ public interface KitchenBookedDao {
     @Select("select * from KitchenReserveData where uid=#{uid} and claimStatus=0")
     KitchenReserveData findReserveDataId(@Param("uid") String uid);
 
+    @Select("select * from KitchenReserve where claimId=#{uid}")
+    KitchenReserve findReserveId(@Param("uid") String uid);
+
     /***
      * 根据姓名、电话查询
      * @param realName  店主姓名

@@ -141,6 +141,10 @@ public class KitchenBookedService {
         return kitchenBookedDao.findReserveDataId(uid);
     }
 
+    public KitchenReserve findReserveId(String uid) {
+        return kitchenBookedDao.findReserveId(uid);
+    }
+
     /***
      * 新建厨房
      * @param kitchen

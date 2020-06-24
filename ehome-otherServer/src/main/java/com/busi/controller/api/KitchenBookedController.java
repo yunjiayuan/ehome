@@ -85,15 +85,17 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (cs.length >= 5) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "菜系最多选四个", new JSONObject());
         }
-//        UserInfo userInfo = null;
-//        userInfo = userInfoUtils.getUserInfo(kitchenReserve.getUserId());
-//        if (userInfo != null) {
-//            kitchenReserve.setSex(userInfo.getSex());
-//            kitchenReserve.setName(userInfo.getName());
-//            kitchenReserve.setAge(getAge(userInfo.getBirthday()));//年龄
-//        }
         kitchenBookedService.addKitchen(kitchenReserve);
-
+        //新增默认菜品分类
+        String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
+        for (int i = 0; i < strings.length; i++) {
+            KitchenDishesSort sort = new KitchenDishesSort();
+            sort.setName(strings[i]);
+            sort.setUserId(kitchenReserve.getUserId());
+            sort.setKitchenId(kitchenReserve.getId());
+            sort.setBookedState(1);
+            kitchenService.addSort(sort);
+        }
         Map<String, Object> map2 = new HashMap<>();
         map2.put("infoId", kitchenReserve.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
@@ -317,6 +319,20 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         kitchenBookedService.claimKitchen2(reserve);
+        //新增默认菜品分类
+        String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
+        KitchenReserve kitchen2 = kitchenBookedService.findReserveId(kitchen.getUid());
+        if (kitchen2 == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        for (int i = 0; i < strings.length; i++) {
+            KitchenDishesSort sort = new KitchenDishesSort();
+            sort.setName(strings[i]);
+            sort.setUserId(CommonUtils.getMyId());
+            sort.setKitchenId(kitchen2.getId());
+            sort.setBookedState(1);
+            kitchenService.addSort(sort);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
