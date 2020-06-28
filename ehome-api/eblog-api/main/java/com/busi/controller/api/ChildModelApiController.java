@@ -44,4 +44,29 @@ public interface ChildModelApiController {
      */
     @GetMapping("getChildPwd")
     ReturnData getChildPwd();
+
+    /***
+     * 申诉重置
+     * @param homeAlbum
+     * @return
+     */
+    @PostMapping("addChildPwdAppeal")
+    ReturnData addChildPwdAppeal(@Valid @RequestBody ChildModelPwdAppeal homeAlbum, BindingResult bindingResult);
+
+    /***
+     * 查询申诉列表
+     * @param page       页码 第几页 起始值1
+     * @param count      每页条数
+     * @return
+     */
+    @GetMapping("findChildAppealList/{page}/{count}")
+    ReturnData findChildAppealList(@PathVariable int page, @PathVariable int count);
+
+    /***
+     * 更新申诉状态
+     * @param homeAlbum
+     * @return
+     */
+    @PutMapping("changeAppealState")
+    ReturnData changeAppealState(@Valid @RequestBody ChildModelPwdAppeal homeAlbum, BindingResult bindingResult);
 }
