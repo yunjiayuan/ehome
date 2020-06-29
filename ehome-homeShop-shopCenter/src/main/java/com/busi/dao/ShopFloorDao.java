@@ -6,7 +6,6 @@ import com.busi.entity.YongHuiGoodsSort;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -192,11 +191,19 @@ public interface ShopFloorDao {
     ShopFloorStatistics findStatistics2(@Param("province") int province, @Param("city") int city);
 
     @Select("<script>" +
-            "select * from ShopFloor where" +
-            " deleteType = 0 and shopState=1 and payState=1" +
-            " and lat > #{lat}-0.018018" +  //只对于经度和纬度大于或小于该用户两公里（1度111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
-            " and lat &lt; #{lat}+0.018018 and lon > #{lon}-0.018018" +
-            " and lon &lt; #{lon}+0.018018 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+//            "select * from ShopFloor where" +
+//            " deleteType = 0 and shopState=1 and payState=1" +
+//            " and lat > #{lat}-0.045045" +  //只对于经度和纬度大于或小于该用户5公里（1度111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+//            " and lat &lt; #{lat}+0.045045 and lon > #{lon}-0.045045" +
+//            " and lon &lt; #{lon}+0.045045 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+            " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from ShopFloor " +
+            " where shopState=1 and deleteType = 0 and payState=1" +
+            " and lat > #{lat}-0.045045" +  //只对于经度和纬度大于或小于该用户5公里（1度111公里)范围内的用户进行距离计算
+            " and lat &lt; #{lat}+0.045045" +
+            " and lon > #{lon}-0.045045" +
+            " and lon &lt; #{lon}+0.045045" +
+            " order by juli asc" +
             "</script>")
     List<ShopFloor> findNearbySFList3(@Param("lat") double lat, @Param("lon") double lon);
 
