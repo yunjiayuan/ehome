@@ -407,14 +407,28 @@ public interface KitchenBookedDao {
      * @return
      */
     @Select("<script>" +
-            "select * from KitchenReserveData where claimStatus=0 " +
+//            "select * from KitchenReserveData where claimStatus=0 " +
+//            "<if test=\"kitchenName != null and kitchenName != '' \">" +
+//            " and name LIKE CONCAT('%',#{kitchenName},'%')" +
+//            "</if>" +
+//            "<if test=\"kitchenName == null and latitude > 0 \">" +
+//            " and latitude > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+//            " and latitude &lt; #{latitude}+1 and longitude > #{longitude}-1" +
+//            " and longitude &lt; #{longitude}+1 order by ACOS(SIN((#{latitude} * 3.1415) / 180 ) *SIN((latitude * 3.1415) / 180 ) +COS((#{latitude} * 3.1415) / 180 ) * COS((latitude * 3.1415) / 180 ) *COS((#{longitude}* 3.1415) / 180 - (longitude * 3.1415) / 180 ) ) * 6380 asc" +
+//            "</if>" +
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
+            "select * from KitchenReserveData where claimStatus=0 " +
             " and name LIKE CONCAT('%',#{kitchenName},'%')" +
             "</if>" +
             "<if test=\"kitchenName == null and latitude > 0 \">" +
-            " and latitude > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
-            " and latitude &lt; #{latitude}+1 and longitude > #{longitude}-1" +
-            " and longitude &lt; #{longitude}+1 order by ACOS(SIN((#{latitude} * 3.1415) / 180 ) *SIN((latitude * 3.1415) / 180 ) +COS((#{latitude} * 3.1415) / 180 ) * COS((latitude * 3.1415) / 180 ) *COS((#{longitude}* 3.1415) / 180 - (longitude * 3.1415) / 180 ) ) * 6380 asc" +
+            " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-longitude*PI()/180)/2),2)))*1000) AS juli " +
+            " from KitchenReserveData " +
+            " where claimStatus=0" +
+            " and latitude > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算
+            " and latitude &lt; #{latitude}+1" +
+            " and longitude > #{longitude}-1" +
+            " and longitude &lt; #{longitude}+1" +
+            " order by juli asc,overallRating desc" +
             "</if>" +
             "</script>")
     List<KitchenReserveData> findReserveDataList(@Param("kitchenName") String kitchenName, @Param("latitude") double latitude, @Param("longitude") double longitude);
