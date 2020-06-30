@@ -115,10 +115,9 @@ public class HourlyWorkerService {
         if (!CommonUtils.checkFull(name)) {
             list = hourlyWorkerDao.findHourlyList(userId, watchVideos, name);
         } else if (sortType == 1) {
-//            list = hourlyWorkerDao.findHourlyList2(userId, raidus, lat, lon);
             list = hourlyWorkerDao.findHourlyList2(userId, watchVideos, lat, lon);
         } else {
-            list = hourlyWorkerDao.findHourlyList3(userId, watchVideos, sortType);
+            list = hourlyWorkerDao.findHourlyList3(userId, watchVideos, sortType, lat, lon);
         }
         return PageUtils.getPageBean(p, list);
     }

@@ -252,7 +252,7 @@ public class KitchenBookedService {
         } else if (sortType == 1) {
             list = kitchenBookedDao.findKitchenList2(userId, watchVideos, lat, lon);
         } else {
-            list = kitchenBookedDao.findKitchenList3(userId, watchVideos, sortType);
+            list = kitchenBookedDao.findKitchenList3(userId, watchVideos, sortType, lat, lon);
         }
         return PageUtils.getPageBean(p, list);
     }

@@ -168,36 +168,40 @@ public interface KitchenDao {
     /***
      * 条件查询厨房（距离最近）
      * @param userId 用户ID
-    //     * @param lat 纬度
-    //     * @param lon 经度
-    //     * @param raidus 半径
+     * @param lat 纬度
+     * @param lon 经度
      * @param watchVideos 筛选视频：0否 1是
      * @return
      */
-//    @Select("<script>" +      //查询指定半径以内信息
-//            "select id,userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,videoUrl,videoCoverUrl,content,totalSales,totalScore,lat,lon,address," +
-//            " ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((#{lat} * PI() / 180 - lon * PI() / 180) / 2),2) + COS(#{lat} * PI() / 180) * COS(lon * PI() / 180) * POW(SIN((#{lon} * PI() / 180 - lat * PI() / 180) / 2),2))) * #{raidus}) AS distance" +
-//            " FROM Kitchen where userId != #{userId} and businessStatus=0 and deleteType = 0 and auditType=1" +
-//            "<if test=\"watchVideos == 1\">" +
-//            " and videoUrl is not null" +
-//            "</if>" +
-//            " ORDER BY distance ASC" +
-//            "</script>")
-//    List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("raidus") int raidus, @Param("lat") double lat, @Param("lon") double lon);
     @Select("<script>" +
-            "select * from Kitchen where" +
-            " userId != #{userId}" +
+//            "select * from Kitchen where" +
+//            " userId != #{userId}" +
+//            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl != ''" +
+//            "</if>" +
+//            "<if test=\"type > 0\">" +
+//            " and type = #{type}" +
+//            "</if>" +
+//            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
+//            " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
+//            " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+//            "</script>")
+            " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from Kitchen " +
+            " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
             "<if test=\"watchVideos == 1\">" +
-//            " and videoUrl is not null" +
             " and videoUrl != ''" +
             "</if>" +
             "<if test=\"type > 0\">" +
             " and type = #{type}" +
             "</if>" +
-            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算,同时对数据表中的经度和纬度两个列增加了索引来优化where语句执行时的速度.
-            " and lat &lt; #{lat}+1 and lon > #{lon}-1" +
-            " and lon &lt; #{lon}+1 order by ACOS(SIN((#{lat} * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((#{lat} * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((#{lon}* 3.1415) / 180 - (lon * 3.1415) / 180 ) ) * 6380 asc" +
+//            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算
+//            " and lat &lt; #{lat}+1" +
+//            " and lon > #{lon}-1" +
+//            " and lon &lt; #{lon}+1" +
+            " order by juli asc" +
             "</script>")
     List<Kitchen> findKitchenList2(@Param("userId") long userId, @Param("type") int type, @Param("watchVideos") int watchVideos, @Param("lat") double lat, @Param("lon") double lon);
 
@@ -209,7 +213,45 @@ public interface KitchenDao {
      * @param type        厨房类型： 0综合 1面点 2熟食 3豆制品 4桌菜
      * @return
      */
+//    @Select("<script>" +
+//            "select * from Kitchen" +
+//            " where userId != #{userId}" +
+//            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl != ''" +
+//            "</if>" +
+//            "<if test=\"type > 0\">" +
+//            " and type = #{type}" +
+//            "</if>" +
+//            "<if test=\"sortType == 0\">" +
+//            " order by totalSales desc,totalScore desc" +
+//            "</if>" +
+//            "<if test=\"sortType == 2\">" +
+//            " order by totalSales desc" +
+//            "</if>" +
+//            "<if test=\"sortType == 3\">" +
+//            " order by totalScore desc" +
+//            "</if>" +
+//            "</script>")
     @Select("<script>" +
+            "<if test=\"sortType == 0\">" +
+            " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from Kitchen " +
+            " where userId != #{userId}" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl != ''" +
+            "</if>" +
+            "<if test=\"type > 0\">" +
+            " and type = #{type}" +
+            "</if>" +
+//            " and lat > #{lat}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算
+//            " and lat &lt; #{lat}+1" +
+//            " and lon > #{lon}-1" +
+//            " and lon &lt; #{lon}+1" +
+            " order by juli asc,totalScore desc" +
+            "</if>" +
+            "<if test=\"sortType == 2\">" +
             "select * from Kitchen" +
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
@@ -219,17 +261,22 @@ public interface KitchenDao {
             "<if test=\"type > 0\">" +
             " and type = #{type}" +
             "</if>" +
-            "<if test=\"sortType == 0\">" +
-            " order by totalSales desc,totalScore desc" +
-            "</if>" +
-            "<if test=\"sortType == 2\">" +
             " order by totalSales desc" +
             "</if>" +
             "<if test=\"sortType == 3\">" +
+            "select * from Kitchen" +
+            " where userId != #{userId}" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            "<if test=\"watchVideos == 1\">" +
+            " and videoUrl != ''" +
+            "</if>" +
+            "<if test=\"type > 0\">" +
+            " and type = #{type}" +
+            "</if>" +
             " order by totalScore desc" +
             "</if>" +
             "</script>")
-    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("type") int type, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType);
+    List<Kitchen> findKitchenList3(@Param("userId") long userId, @Param("type") int type, @Param("watchVideos") int watchVideos, @Param("sortType") int sortType, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 验证用户是否收藏过

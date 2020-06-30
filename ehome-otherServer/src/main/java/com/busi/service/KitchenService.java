@@ -137,19 +137,6 @@ public class KitchenService {
      * @param type        厨房类型： 0综合 1面点 2熟食 3豆制品 4桌菜
      * @return
      */
-//    public PageBean<Kitchen> findKitchenList(long userId, int watchVideos, int sortType, double lat, double lon, int raidus, String kitchenName, int page, int count) {
-//
-//        List<Kitchen> list;
-//        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-//        if (!CommonUtils.checkFull(kitchenName)) {
-//            list = kitchenDao.findKitchenList(userId, watchVideos, kitchenName);
-//        } else if (sortType == 1) {
-//            list = kitchenDao.findKitchenList2(userId, watchVideos, raidus, lat, lon);
-//        } else {
-//            list = kitchenDao.findKitchenList3(userId, watchVideos, sortType);
-//        }
-//        return PageUtils.getPageBean(p, list);
-//    }
     public PageBean<Kitchen> findKitchenList(long userId, int type, int watchVideos, int sortType, String kitchenName, double lat, double lon, int page, int count) {
 
         List<Kitchen> list;
@@ -159,7 +146,7 @@ public class KitchenService {
         } else if (sortType == 1) {
             list = kitchenDao.findKitchenList2(userId, type, watchVideos, lat, lon);
         } else {
-            list = kitchenDao.findKitchenList3(userId, type, watchVideos, sortType);
+            list = kitchenDao.findKitchenList3(userId, type, watchVideos, sortType, lat, lon);
         }
         return PageUtils.getPageBean(p, list);
     }
