@@ -24,8 +24,8 @@ public interface PrizesLuckyDrawApiController {
      * @param infoId  领奖ID
      * @return
      */
-    @GetMapping("takeThePrize/{infoId}/{address}/{province}/{city}/{district}/{contactsName}/{contactsPhone}/{postalcode}")
-    ReturnData takeThePrize(@PathVariable long infoId, @PathVariable String address, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String contactsName, @PathVariable String contactsPhone, @PathVariable String postalcode);
+    @GetMapping("takeThePrize/{infoId}/{address}/{contactsName}/{contactsPhone}/{postalcode}")
+    ReturnData takeThePrize(@PathVariable long infoId, @PathVariable String address, @PathVariable String contactsName, @PathVariable String contactsPhone, @PathVariable String postalcode);
 
     /***
      * 查询中奖人员列表
