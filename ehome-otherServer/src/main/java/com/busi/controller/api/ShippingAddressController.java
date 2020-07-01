@@ -46,9 +46,9 @@ public class ShippingAddressController extends BaseController implements Shippin
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证地区
-        if (!CommonUtils.checkProvince_city_district(0, shippingAddress.getProvince(), shippingAddress.getCity(), shippingAddress.getDistrict())) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
-        }
+//        if (!CommonUtils.checkProvince_city_district(0, shippingAddress.getProvince(), shippingAddress.getCity(), shippingAddress.getDistrict())) {
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
+//        }
         //判断该用户是否达到地址个数上限 最多10条
         int num = shippingAddressService.findNum(CommonUtils.getMyId());
         if (num >= 10) {

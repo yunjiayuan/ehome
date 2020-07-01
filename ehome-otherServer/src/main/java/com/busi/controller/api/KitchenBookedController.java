@@ -367,7 +367,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
                 for (int i = 0; i < list.size(); i++) {
                     KitchenReserveData ik = (KitchenReserveData) list.get(i);
                     int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLongitude(), ik.getLatitude(), lon, lat));
-                    ik.setRange(distance);//距离/m
+                    ik.setDistance(distance);//距离/m
                 }
 //                Collections.sort(list, new Comparator<KitchenReserveData>() {
 //                    /*

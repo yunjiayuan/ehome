@@ -20,9 +20,9 @@ public interface ShippingAddressDao {
      * @param shippingAddress
      * @return
      */
-    @Insert("insert into shippingAddress(userId,contactsName,contactsPhone,province,city,district,postalcode,address,addressState,addTime," +
+    @Insert("insert into shippingAddress(userId,contactsName,contactsPhone,lat,lon,postalcode,address,addressState,addTime," +
             "refreshTime,defaultAddress) " +
-            "values (#{userId},#{contactsName},#{contactsPhone},#{province},#{city},#{district},#{postalcode},#{address},#{addressState},#{addTime}," +
+            "values (#{userId},#{contactsName},#{contactsPhone},#{lat},#{lon},#{postalcode},#{address},#{addressState},#{addTime}," +
             "#{refreshTime},#{defaultAddress})")
     @Options(useGeneratedKeys = true)
     int add(ShippingAddress shippingAddress);
@@ -43,9 +43,8 @@ public interface ShippingAddressDao {
             "<if test=\"postalcode != null and postalcode != ''\">" +
             " postalcode=#{postalcode}," +
             "</if>" +
-            " province=#{province}," +
-            " city=#{city}," +
-            " district=#{district}," +
+            " lat=#{lat}," +
+            " lon=#{lon}," +
             " address=#{address}," +
             " defaultAddress=#{defaultAddress}" +
             " where id=#{id} and userId=#{userId}" +

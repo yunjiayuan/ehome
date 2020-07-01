@@ -89,9 +89,9 @@ public class UsedDealOrdersController extends BaseController implements UsedDeal
         usedDealOrders.setPinkageType(usedDeal.getPinkageType());//是否包邮
         usedDealOrders.setAddressId(shippingAddress.getId());
         usedDealOrders.setAddress(shippingAddress.getAddress());
-        usedDealOrders.setAddress_city(shippingAddress.getCity());
-        usedDealOrders.setAddress_district(shippingAddress.getDistrict());
-        usedDealOrders.setAddress_province(shippingAddress.getProvince());
+//        usedDealOrders.setAddress_city(shippingAddress.getCity());
+//        usedDealOrders.setAddress_district(shippingAddress.getDistrict());
+//        usedDealOrders.setAddress_province(shippingAddress.getProvince());
         usedDealOrders.setAddress_Name(shippingAddress.getContactsName());
         usedDealOrders.setAddress_Phone(shippingAddress.getContactsPhone());
         usedDealOrders.setAddress_postalcode(shippingAddress.getPostalcode());

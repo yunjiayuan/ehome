@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.PartnerBuyService;
 import com.busi.service.ShopFloorGoodsService;
 import com.busi.service.ShopFloorOrdersService;
 import com.busi.service.ShopFloorShoppingCartService;
@@ -73,9 +72,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             shopFloorOrders.setAddress(shippingAddress.getAddress());
             shopFloorOrders.setAddressName(shippingAddress.getContactsName());
             shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
-            shopFloorOrders.setAddressCity(shippingAddress.getCity());
-            shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
-            shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
+//            shopFloorOrders.setAddressCity(shippingAddress.getCity());
+//            shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
+//            shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
         }
         String goods = ""; //商品信息
         String goodsTitle = ""; //商品标题
@@ -221,9 +220,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
             io.setAddress(shippingAddress.getAddress());
             io.setAddressName(shippingAddress.getContactsName());
             io.setAddressPhone(shippingAddress.getContactsPhone());
-            io.setAddressCity(shippingAddress.getCity());
-            io.setAddressDistrict(shippingAddress.getDistrict());
-            io.setAddressProvince(shippingAddress.getProvince());
+//            io.setAddressCity(shippingAddress.getCity());
+//            io.setAddressDistrict(shippingAddress.getDistrict());
+//            io.setAddressProvince(shippingAddress.getProvince());
             shopFloorOrdersService.upSFreceiveState(io);
             //放入缓存
             ordersMap = CommonUtils.objectToMap(io);
@@ -249,9 +248,9 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         ik.setAddress(shippingAddress.getAddress());
         ik.setAddressName(shippingAddress.getContactsName());
         ik.setAddressPhone(shippingAddress.getContactsPhone());
-        ik.setAddressCity(shippingAddress.getCity());
-        ik.setAddressDistrict(shippingAddress.getDistrict());
-        ik.setAddressProvince(shippingAddress.getProvince());
+//        ik.setAddressCity(shippingAddress.getCity());
+//        ik.setAddressDistrict(shippingAddress.getDistrict());
+//        ik.setAddressProvince(shippingAddress.getProvince());
         shopFloorOrdersService.upSFreceiveState(ik);
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOORORDERS + ik.getBuyerId() + "_" + ik.getNo(), 0);

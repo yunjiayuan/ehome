@@ -121,9 +121,9 @@ public class ShopFloorMasterOrdersController extends BaseController implements S
         shopFloorOrders.setAddress(shippingAddress.getAddress());
         shopFloorOrders.setAddressName(shippingAddress.getContactsName());
         shopFloorOrders.setAddressPhone(shippingAddress.getContactsPhone());
-        shopFloorOrders.setAddressCity(shippingAddress.getCity());
-        shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
-        shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
+//        shopFloorOrders.setAddressCity(shippingAddress.getCity());
+//        shopFloorOrders.setAddressDistrict(shippingAddress.getDistrict());
+//        shopFloorOrders.setAddressProvince(shippingAddress.getProvince());
         shopFloorOrdersService.addOrders(shopFloorOrders);
 
 //        //移除购物车当前商品

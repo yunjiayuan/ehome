@@ -26,11 +26,15 @@ public class ShippingAddress {
 
     private String contactsPhone;    // 联系人电话
 
+    private double lat;                    //纬度
+
+    private double lon;                    //经度
+
     private int province;            // 省
-
-    private int city;                // 城市
-
-    private int district;            // 地区或县
+//
+//    private int city;                // 城市
+//
+//    private int district;            // 地区或县
 
     private String postalcode;        // 邮政编码
 
