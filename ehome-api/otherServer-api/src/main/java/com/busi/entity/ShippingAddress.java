@@ -30,7 +30,7 @@ public class ShippingAddress {
 
     private double lon;                    //经度
 
-    private int province;            // 省
+//    private int province;            // 省
 //
 //    private int city;                // 城市
 //
