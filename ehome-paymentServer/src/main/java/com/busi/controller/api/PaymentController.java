@@ -217,7 +217,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
         //清除秘钥
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+pay.getUserId(),0);
         //检测是否设置过支付密码
-        if(pay.getServiceType()!=4||pay.getServiceType()!=21){//拆红包和接收转账 不需要支付密码
+        if(pay.getServiceType()!=4&&pay.getServiceType()!=21){//拆红包和接收转账 不需要支付密码
             Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pay.getUserId() );
             if(payPasswordMap==null||payPasswordMap.size()<=0){
                 PursePayPassword ppp = null;
