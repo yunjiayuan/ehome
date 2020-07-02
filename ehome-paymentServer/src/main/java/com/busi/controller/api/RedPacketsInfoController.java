@@ -65,7 +65,7 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
             //缓存中没有用户对象信息 查询数据库
             purse = purseInfoService.findPurseInfo(redPacketsInfo.getSendUserId());
             if(purse==null){
-                return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
+                return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法发送超额红包",new JSONObject());
             }
             purseMap = CommonUtils.objectToMap(purse);
         }
@@ -76,7 +76,7 @@ public class RedPacketsInfoController extends BaseController implements RedPacke
             //缓存中没有用户对象信息 查询数据库
             pursePayPassword = pursePayPasswordService.findPursePayPassword(redPacketsInfo.getSendUserId());
             if(pursePayPassword==null){
-                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您当前账户尚未设置过支付密码，无法进行兑换操作",new JSONObject());
+                return returnData(StatusCode.CODE_PAYPASSWORD_IS_NOT_EXIST_ERROR.CODE_VALUE,"您当前账户尚未设置过支付密码，无法进行发红包操作",new JSONObject());
             }
         }
         //判断余额

@@ -78,6 +78,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private ConsultationOrdersService consultationOrdersService;
+
+    @Autowired
+    private TransferAccountsInfoOrderService transferAccountsInfoOrderService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -298,6 +301,12 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 19://医生律师咨询订单支付
                 payBaseService = consultationOrdersService;
+                break;
+            case 20://发送转账
+                payBaseService = transferAccountsInfoOrderService;
+                break;
+            case 21://接收转账
+                payBaseService = transferAccountsInfoOrderService;
                 break;
             default:
                 break;

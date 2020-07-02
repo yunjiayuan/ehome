@@ -18,7 +18,7 @@ import java.util.Map;
  * create time：2018/8/28 15:21
  */
 @Service
-public class MemberOrderService extends BaseController implements PayBaseService{
+public class                             MemberOrderService extends BaseController implements PayBaseService{
 
     @Autowired
     private RedisUtils redisUtils;
