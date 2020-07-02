@@ -105,7 +105,7 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
      * @return
      */
     @Override
-    public ReturnData takeThePrize(@PathVariable long infoId, @PathVariable String address, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String contactsName, @PathVariable String contactsPhone, @PathVariable String postalcode) {
+    public ReturnData takeThePrize(@PathVariable long infoId, @PathVariable String address, @PathVariable String contactsName, @PathVariable String contactsPhone, @PathVariable String postalcode) {
 
         PrizesLuckyDraw draw = null;
         draw = prizesLuckyDrawService.findWinning(CommonUtils.getMyId(), infoId);
@@ -135,9 +135,9 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
             }
             prize.setAddress(address);
             prize.setAddTime(new Date());
-            prize.setCity(city);
-            prize.setDistrict(district);
-            prize.setProvince(province);
+//            prize.setCity(city);
+//            prize.setDistrict(district);
+//            prize.setProvince(province);
             prize.setContactsName(contactsName);
             prize.setContactsPhone(contactsPhone);
             prize.setPostalcode(postalcode);

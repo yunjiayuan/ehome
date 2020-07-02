@@ -117,9 +117,9 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
         hourlyWorkerOrders.setMoney(money);//总价
         hourlyWorkerOrders.setUserId(kh.getUserId());
         hourlyWorkerOrders.setAddress(s.getAddress());
-        hourlyWorkerOrders.setAddress_city(s.getCity());
-        hourlyWorkerOrders.setAddress_district(s.getDistrict());
-        hourlyWorkerOrders.setAddress_province(s.getProvince());
+//        hourlyWorkerOrders.setAddress_city(s.getCity());
+//        hourlyWorkerOrders.setAddress_district(s.getDistrict());
+//        hourlyWorkerOrders.setAddress_province(s.getProvince());
         hourlyWorkerOrders.setCoverMap(kh.getCoverCover());
         hourlyWorkerOrders.setName(kh.getName());
         hourlyWorkerOrders.setAddress_Name(s.getContactsName());

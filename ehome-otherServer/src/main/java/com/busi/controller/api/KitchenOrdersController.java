@@ -115,9 +115,9 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                         kitchenOrders.setMoney(money);//总价
                         kitchenOrders.setUserId(laf.getUserId());
                         kitchenOrders.setAddress(s.getAddress());
-                        kitchenOrders.setAddress_city(s.getCity());
-                        kitchenOrders.setAddress_district(s.getDistrict());
-                        kitchenOrders.setAddress_province(s.getProvince());
+//                        kitchenOrders.setAddress_city(s.getCity());
+//                        kitchenOrders.setAddress_district(s.getDistrict());
+//                        kitchenOrders.setAddress_province(s.getProvince());
                         kitchenOrders.setKitchenName(kh.getKitchenName());
                         kitchenOrders.setAddress_Name(s.getContactsName());
                         kitchenOrders.setSmallMap(kh.getKitchenCover());
