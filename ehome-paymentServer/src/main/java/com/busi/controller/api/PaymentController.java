@@ -78,6 +78,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private ConsultationOrdersService consultationOrdersService;
+
+    @Autowired
+    private TransferAccountsInfoOrderService transferAccountsInfoOrderService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -214,7 +217,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
         //清除秘钥
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY+pay.getUserId(),0);
         //检测是否设置过支付密码
-        if(pay.getServiceType()!=4){//拆红包 不需要支付密码
+        if(pay.getServiceType()!=4&&pay.getServiceType()!=21){//拆红包和接收转账 不需要支付密码
             Map<String,Object> payPasswordMap = redisUtils.hmget(Constants.REDIS_KEY_PAYMENT_PAYPASSWORD+pay.getUserId() );
             if(payPasswordMap==null||payPasswordMap.size()<=0){
                 PursePayPassword ppp = null;
@@ -298,6 +301,12 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 19://医生律师咨询订单支付
                 payBaseService = consultationOrdersService;
+                break;
+            case 20://发送转账
+                payBaseService = transferAccountsInfoOrderService;
+                break;
+            case 21://接收转账
+                payBaseService = transferAccountsInfoOrderService;
                 break;
             default:
                 break;
