@@ -176,6 +176,29 @@ public interface ShopFloorDao {
             "</script>")
     List<ShopFloor> findNearbySFList(@Param("date") String date, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("shopState") int shopState);
 
+    @Select("<script>" +
+            "select * from ShopFloor where" +
+            " deleteType = 0" +
+            "<if test=\"shopState >= 0\">" +
+            " and distributionState = #{shopState}" +
+            "</if>" +
+            "<if test=\"province >= 0\">" +
+            " and province = #{province}" +
+            "</if>" +
+            "<if test=\"city >= 0\">" +
+            " and city = #{city}" +
+            "</if>" +
+            "<if test=\"district >= 0\">" +
+            " and district = #{district}" +
+            "</if>" +
+            "<if test=\"date != null and date != ''\">" +
+            " and TO_DAYS(addTime)=TO_DAYS(#{date})" +
+            "</if>" +
+            " order by addTime desc" +
+            "</script>")
+    List<ShopFloor> findNearbySFList4(@Param("date") String date, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("shopState") int shopState);
+
+
     @Select("select * from ShopFloorStatistics where" +
             " distributionState = 0" +
             " and province = #{province}" +

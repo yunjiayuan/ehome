@@ -169,7 +169,7 @@ public class ShopFloorService {
             if (CommonUtils.checkFull(date)) {
                 date = null;
             }
-            list = shopCenterDao.findNearbySFList(date, province, city, district, shopState);
+            list = shopCenterDao.findNearbySFList4(date, province, city, district, shopState);
         }
         return PageUtils.getPageBean(p, list);
     }
@@ -268,7 +268,7 @@ public class ShopFloorService {
      */
     public List<ShopFloor> findNum(int province, int city, int district) {
         List<ShopFloor> list;
-        list = shopCenterDao.findNearbySFList(null, province, city, district, -1);
+        list = shopCenterDao.findNearbySFList4(null, province, city, district, -1);
         return list;
     }
 }
