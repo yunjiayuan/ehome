@@ -78,7 +78,6 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             shopCenterService.addStatistics(statistics);
         } else {
             shopFloorStatistics.setTime(new Date());
-            shopFloorStatistics.setDistributionState(0);
             shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
             shopCenterService.upStatistics(shopFloorStatistics);
         }
@@ -86,6 +85,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (shopFloorTimeStatistics == null) {
             ShopFloorTimeStatistics statistics = new ShopFloorTimeStatistics();
             statistics.setTime(new Date());
+            statistics.setDistributionState(0);
             statistics.setProvince(homeShopCenter.getProvince());
             statistics.setCity(homeShopCenter.getCity());
             statistics.setNumber(1);
@@ -119,7 +119,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(homeShopCenter.getUserId(), homeShopCenter.getDelImgUrls());
         }
-        //判断省市是否有更新
+        //判断省市是否有更新（暂只有未配货状态可以更新）
         if (shopFloor.getProvince() != homeShopCenter.getProvince() || shopFloor.getCity() != homeShopCenter.getCity()) {
             //判断是否有记录
             ShopFloorStatistics shopFloorStatistics = shopCenterService.findStatistics(homeShopCenter.getProvince(), homeShopCenter.getCity());
@@ -144,10 +144,11 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
                     shopCenterService.upStatistics(statistics);
                 }
             }
-            ShopFloorTimeStatistics shopFloorTimeStatistics = shopCenterService.findStatistics3(homeShopCenter.getProvince(), homeShopCenter.getCity());
+            ShopFloorTimeStatistics shopFloorTimeStatistics = shopCenterService.findStatistics4(homeShopCenter.getProvince(), homeShopCenter.getCity());
             if (shopFloorTimeStatistics == null) {
                 ShopFloorTimeStatistics timeStatistics = new ShopFloorTimeStatistics();
                 timeStatistics.setTime(new Date());
+                timeStatistics.setDistributionState(0);
                 timeStatistics.setProvince(homeShopCenter.getProvince());
                 timeStatistics.setCity(homeShopCenter.getCity());
                 timeStatistics.setNumber(1);
@@ -225,7 +226,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + shopFloor.getUserId() + "_" + shopFloor.getVillageOnly(), 0);
         //更新黑店数量
-        //未配货
+        //未配货的
         ShopFloorStatistics shopFloorStatistics = shopCenterService.findStatistics(shopFloor.getProvince(), shopFloor.getCity());
         if (shopFloorStatistics != null) {
             shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() - 1);
@@ -245,6 +246,27 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             statistics.setTime(new Date());
             statistics.setNumber(statistics.getNumber() + 1);
             shopCenterService.upStatistics(statistics);
+        }
+        //未配货的
+        ShopFloorTimeStatistics floorTimeStatistics = shopCenterService.findStatistics4(shopFloor.getProvince(), shopFloor.getCity());
+        if (floorTimeStatistics != null) {
+            floorTimeStatistics.setNumber(floorTimeStatistics.getNumber() - 1);
+            shopCenterService.upStatistics2(floorTimeStatistics);
+        }
+        //已配货
+        ShopFloorTimeStatistics floorStatistics = shopCenterService.findStatistics5(shopFloor.getProvince(), shopFloor.getCity());
+        if (floorStatistics == null) {
+            ShopFloorTimeStatistics timeStatistics = new ShopFloorTimeStatistics();
+            timeStatistics.setTime(new Date());
+            timeStatistics.setDistributionState(1);
+            timeStatistics.setProvince(shopFloor.getProvince());
+            timeStatistics.setCity(shopFloor.getCity());
+            timeStatistics.setNumber(1);
+            shopCenterService.addStatistics2(timeStatistics);
+        } else {
+            floorStatistics.setTime(new Date());
+            floorStatistics.setNumber(floorStatistics.getNumber() + 1);
+            shopCenterService.upStatistics2(floorStatistics);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -569,6 +591,25 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         }
         PageBean<ShopFloorStatistics> pageBean = null;
         pageBean = shopCenterService.findRegionSFlist(shopState, page, count);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 查询黑店数量（按时间）
+     * @param shopState   店铺状态   -1不限 0未营业  1已营业
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findTimeSFlist(@PathVariable int shopState, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        PageBean<ShopFloorTimeStatistics> pageBean = null;
+        pageBean = shopCenterService.findTimeSFlist(shopState, page, count);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }

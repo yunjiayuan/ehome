@@ -222,6 +222,10 @@ public class ShopFloorService {
         return shopCenterDao.findStatistics4(province, city);
     }
 
+    public ShopFloorTimeStatistics findStatistics5(int province, int city) {
+        return shopCenterDao.findStatistics5(province, city);
+    }
+
     /***
      * 查询用户楼店
      * @param userId   用户
@@ -246,6 +250,13 @@ public class ShopFloorService {
         List<ShopFloorStatistics> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = shopCenterDao.findRegionSFlist(shopState);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    public PageBean<ShopFloorTimeStatistics> findTimeSFlist(int shopState, int page, int count) {
+        List<ShopFloorTimeStatistics> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = shopCenterDao.findTimeSFlist(shopState);
         return PageUtils.getPageBean(p, list);
     }
 

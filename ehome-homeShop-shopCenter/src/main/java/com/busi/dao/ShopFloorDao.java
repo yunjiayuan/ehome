@@ -70,8 +70,8 @@ public interface ShopFloorDao {
      * @param homeShopCenter
      * @return
      */
-    @Insert("insert into ShopFloorTimeStatistics(province,city,number,time)" +
-            "values (#{province},#{city},#{number},#{time})")
+    @Insert("insert into ShopFloorTimeStatistics(province,city,number,time,distributionState)" +
+            "values (#{province},#{city},#{number},#{time},#{distributionState})")
     @Options(useGeneratedKeys = true)
     int addStatistics2(ShopFloorTimeStatistics homeShopCenter);
 
@@ -244,6 +244,7 @@ public interface ShopFloorDao {
     ShopFloorStatistics findStatistics2(@Param("province") int province, @Param("city") int city);
 
     @Select("select * from ShopFloorTimeStatistics where" +
+            " distributionState = 0" +
             " and province = #{province}" +
             " and city = #{city}" +
             " and TO_DAYS(time)=TO_DAYS(NOW())"
@@ -251,10 +252,18 @@ public interface ShopFloorDao {
     ShopFloorTimeStatistics findStatistics3(@Param("province") int province, @Param("city") int city);
 
     @Select("select * from ShopFloorTimeStatistics where" +
+            " distributionState = 0" +
             " and province = #{province}" +
             " and city = #{city}"
     )
     ShopFloorTimeStatistics findStatistics4(@Param("province") int province, @Param("city") int city);
+
+    @Select("select * from ShopFloorTimeStatistics where" +
+            " distributionState = 1" +
+            " and province = #{province}" +
+            " and city = #{city}"
+    )
+    ShopFloorTimeStatistics findStatistics5(@Param("province") int province, @Param("city") int city);
 
     @Select("<script>" +
 //            "select * from ShopFloor where" +
@@ -312,6 +321,16 @@ public interface ShopFloorDao {
             " order by time desc" +
             "</script>")
     List<ShopFloorStatistics> findRegionSFlist(@Param("shopState") int shopState);
+
+    @Select("<script>" +
+            "select * from ShopFloorTimeStatistics where" +
+            " number > 0" +
+            "<if test=\"shopState >= 0\">" +
+            " and distributionState=#{shopState}" +
+            "</if>" +
+            " order by time desc" +
+            "</script>")
+    List<ShopFloorTimeStatistics> findTimeSFlist(@Param("shopState") int shopState);
 
     /***
      * 新增永辉分类
