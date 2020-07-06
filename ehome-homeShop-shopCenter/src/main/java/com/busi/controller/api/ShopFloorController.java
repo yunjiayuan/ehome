@@ -98,10 +98,32 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        ShopFloor shopFloor = shopCenterService.findId2(homeShopCenter.getId());
+        if (shopFloor == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
         shopCenterService.updateHomeShop(homeShopCenter);
         if (!CommonUtils.checkFull(homeShopCenter.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(homeShopCenter.getUserId(), homeShopCenter.getDelImgUrls());
+        }
+        //判断是否有记录
+        if (shopFloor.getProvince() != homeShopCenter.getProvince() || shopFloor.getCity() != homeShopCenter.getCity()) {
+            ShopFloorStatistics shopFloorStatistics = shopCenterService.findStatistics(homeShopCenter.getProvince(), homeShopCenter.getCity());
+            if (shopFloorStatistics == null) {
+                ShopFloorStatistics statistics = new ShopFloorStatistics();
+                statistics.setTime(new Date());
+                statistics.setDistributionState(0);
+                statistics.setProvince(homeShopCenter.getProvince());
+                statistics.setCity(homeShopCenter.getCity());
+                statistics.setNumber(1);
+                shopCenterService.addStatistics(statistics);
+            } else {
+                shopFloorStatistics.setTime(new Date());
+                shopFloorStatistics.setDistributionState(0);
+                shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
+                shopCenterService.upStatistics(shopFloorStatistics);
+            }
         }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR + homeShopCenter.getUserId() + "_" + homeShopCenter.getVillageOnly(), 0);
@@ -376,20 +398,23 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
                 if (kh == null) {
                     continue;
                 }
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String nowDate = simpleDateFormat.format(new Date());
                 if (kh.getDistributionTime() != null) {
                     Date distributionTime = kh.getDistributionTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String date = simpleDateFormat.format(distributionTime);
-                    String nowDate = simpleDateFormat.format(new Date());
                     if (date.compareTo(nowDate) == 0) {//判断是不是当天
                         if (kh.getDistributionState() == 1) {
-                            cont3 += 1;
+                            cont3 += 1;//今日开业
                         }
-                        cont1 += 1;
                     }
                 }
+                String nowTime = simpleDateFormat.format(kh.getAddTime());
+                if (nowTime.compareTo(nowDate) == 0) {//判断是不是当天
+                    cont1 += 1;//今日新增
+                }
                 if (kh.getDistributionState() == 1) {
-                    cont2 += 1;
+                    cont2 += 1;//开业店铺
                 }
             }
         }
