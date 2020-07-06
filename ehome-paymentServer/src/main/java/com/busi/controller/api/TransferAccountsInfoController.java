@@ -160,6 +160,9 @@ public class TransferAccountsInfoController extends BaseController implements Tr
                 if(nowTime-sendTime>countTime){//已过期
                     return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"很抱歉，该转账已过期，无法再进行退款操作",new JSONObject());
                 }
+                transferAccountsInfo.setReceiveTime(new Date());
+                transferAccountsInfo.setTransferAccountsStatus(3);
+                transferAccountsInfoService.updateTransferAccountsInfo(transferAccountsInfo);
                 //开始退款 将转账金额放回账户
                 mqUtils.sendPurseMQ(transferAccountsInfo.getSendUserId(),36,0,transferAccountsInfo.getTransferAccountsMoney());
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
