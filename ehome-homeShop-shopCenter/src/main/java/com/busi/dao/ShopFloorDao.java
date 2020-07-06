@@ -2,6 +2,7 @@ package com.busi.dao;
 
 import com.busi.entity.ShopFloor;
 import com.busi.entity.ShopFloorStatistics;
+import com.busi.entity.ShopFloorTimeStatistics;
 import com.busi.entity.YongHuiGoodsSort;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -65,6 +66,16 @@ public interface ShopFloorDao {
     int addStatistics(ShopFloorStatistics homeShopCenter);
 
     /***
+     * 新增楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Insert("insert into ShopFloorTimeStatistics(province,city,number,time)" +
+            "values (#{province},#{city},#{number},#{time})")
+    @Options(useGeneratedKeys = true)
+    int addStatistics2(ShopFloorTimeStatistics homeShopCenter);
+
+    /***
      * 更新楼店统计
      * @param homeShopCenter
      * @return
@@ -77,6 +88,17 @@ public interface ShopFloorDao {
             "</script>")
     int upStatistics(ShopFloorStatistics homeShopCenter);
 
+    /***
+     * 更新楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorTimeStatistics set" +
+            " number=#{number}" +
+            " where id=#{id}" +
+            "</script>")
+    int upStatistics2(ShopFloorTimeStatistics homeShopCenter);
 
     /***
      * 更新楼店保证金支付状态
@@ -220,6 +242,19 @@ public interface ShopFloorDao {
             " and city = #{city}"
     )
     ShopFloorStatistics findStatistics2(@Param("province") int province, @Param("city") int city);
+
+    @Select("select * from ShopFloorTimeStatistics where" +
+            " and province = #{province}" +
+            " and city = #{city}" +
+            " and TO_DAYS(time)=TO_DAYS(NOW())"
+    )
+    ShopFloorTimeStatistics findStatistics3(@Param("province") int province, @Param("city") int city);
+
+    @Select("select * from ShopFloorTimeStatistics where" +
+            " and province = #{province}" +
+            " and city = #{city}"
+    )
+    ShopFloorTimeStatistics findStatistics4(@Param("province") int province, @Param("city") int city);
 
     @Select("<script>" +
 //            "select * from ShopFloor where" +

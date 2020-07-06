@@ -82,6 +82,18 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
             shopCenterService.upStatistics(shopFloorStatistics);
         }
+        ShopFloorTimeStatistics shopFloorTimeStatistics = shopCenterService.findStatistics3(homeShopCenter.getProvince(), homeShopCenter.getCity());
+        if (shopFloorTimeStatistics == null) {
+            ShopFloorTimeStatistics statistics = new ShopFloorTimeStatistics();
+            statistics.setTime(new Date());
+            statistics.setProvince(homeShopCenter.getProvince());
+            statistics.setCity(homeShopCenter.getCity());
+            statistics.setNumber(1);
+            shopCenterService.addStatistics2(statistics);
+        } else {
+            shopFloorTimeStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
+            shopCenterService.upStatistics2(shopFloorTimeStatistics);
+        }
         Map<String, Object> map2 = new HashMap<>();
         map2.put("infoId", homeShopCenter.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
@@ -107,8 +119,9 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(homeShopCenter.getUserId(), homeShopCenter.getDelImgUrls());
         }
-        //判断是否有记录
+        //判断省市是否有更新
         if (shopFloor.getProvince() != homeShopCenter.getProvince() || shopFloor.getCity() != homeShopCenter.getCity()) {
+            //判断是否有记录
             ShopFloorStatistics shopFloorStatistics = shopCenterService.findStatistics(homeShopCenter.getProvince(), homeShopCenter.getCity());
             if (shopFloorStatistics == null) {
                 ShopFloorStatistics statistics = new ShopFloorStatistics();
@@ -120,9 +133,35 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
                 shopCenterService.addStatistics(statistics);
             } else {
                 shopFloorStatistics.setTime(new Date());
-                shopFloorStatistics.setDistributionState(0);
                 shopFloorStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
                 shopCenterService.upStatistics(shopFloorStatistics);
+            }
+            ShopFloorStatistics statistics = shopCenterService.findStatistics(shopFloor.getProvince(), shopFloor.getCity());
+            if (statistics != null) {
+                if (statistics.getNumber() > 0) {
+                    shopFloorStatistics.setTime(new Date());
+                    statistics.setNumber(statistics.getNumber() - 1);
+                    shopCenterService.upStatistics(statistics);
+                }
+            }
+            ShopFloorTimeStatistics shopFloorTimeStatistics = shopCenterService.findStatistics3(homeShopCenter.getProvince(), homeShopCenter.getCity());
+            if (shopFloorTimeStatistics == null) {
+                ShopFloorTimeStatistics timeStatistics = new ShopFloorTimeStatistics();
+                timeStatistics.setTime(new Date());
+                timeStatistics.setProvince(homeShopCenter.getProvince());
+                timeStatistics.setCity(homeShopCenter.getCity());
+                timeStatistics.setNumber(1);
+                shopCenterService.addStatistics2(timeStatistics);
+            } else {
+                shopFloorTimeStatistics.setNumber(shopFloorStatistics.getNumber() + 1);
+                shopCenterService.upStatistics2(shopFloorTimeStatistics);
+            }
+            ShopFloorTimeStatistics floorTimeStatistics = shopCenterService.findStatistics4(shopFloor.getProvince(), shopFloor.getCity());
+            if (floorTimeStatistics != null) {
+                if (floorTimeStatistics.getNumber() > 0) {
+                    floorTimeStatistics.setNumber(floorTimeStatistics.getNumber() - 1);
+                    shopCenterService.upStatistics2(floorTimeStatistics);
+                }
             }
         }
         //清除缓存中的信息

@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.ShopFloorDao;
-import com.busi.entity.PageBean;
-import com.busi.entity.ShopFloor;
-import com.busi.entity.ShopFloorStatistics;
-import com.busi.entity.YongHuiGoodsSort;
+import com.busi.entity.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -59,6 +56,16 @@ public class ShopFloorService {
     }
 
     /***
+     * 新建楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addStatistics2(ShopFloorTimeStatistics homeShopCenter) {
+        return shopCenterDao.addStatistics2(homeShopCenter);
+    }
+
+    /***
      * 更新楼店统计
      * @param homeShopCenter
      * @return
@@ -66,6 +73,16 @@ public class ShopFloorService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int upStatistics(ShopFloorStatistics homeShopCenter) {
         return shopCenterDao.upStatistics(homeShopCenter);
+    }
+
+    /***
+     * 更新楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upStatistics2(ShopFloorTimeStatistics homeShopCenter) {
+        return shopCenterDao.upStatistics2(homeShopCenter);
     }
 
     /***
@@ -195,6 +212,14 @@ public class ShopFloorService {
 
     public ShopFloorStatistics findStatistics2(int province, int city) {
         return shopCenterDao.findStatistics2(province, city);
+    }
+
+    public ShopFloorTimeStatistics findStatistics3(int province, int city) {
+        return shopCenterDao.findStatistics3(province, city);
+    }
+
+    public ShopFloorTimeStatistics findStatistics4(int province, int city) {
+        return shopCenterDao.findStatistics4(province, city);
     }
 
     /***
