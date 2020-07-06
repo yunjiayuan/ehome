@@ -398,20 +398,23 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
                 if (kh == null) {
                     continue;
                 }
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String nowDate = simpleDateFormat.format(new Date());
                 if (kh.getDistributionTime() != null) {
                     Date distributionTime = kh.getDistributionTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String date = simpleDateFormat.format(distributionTime);
-                    String nowDate = simpleDateFormat.format(new Date());
                     if (date.compareTo(nowDate) == 0) {//判断是不是当天
                         if (kh.getDistributionState() == 1) {
-                            cont3 += 1;
+                            cont3 += 1;//今日开业
                         }
-                        cont1 += 1;
                     }
                 }
+                String nowTime = simpleDateFormat.format(kh.getAddTime());
+                if (nowTime.compareTo(nowDate) == 0) {//判断是不是当天
+                    cont1 += 1;//今日新增
+                }
                 if (kh.getDistributionState() == 1) {
-                    cont2 += 1;
+                    cont2 += 1;//开业店铺
                 }
             }
         }
