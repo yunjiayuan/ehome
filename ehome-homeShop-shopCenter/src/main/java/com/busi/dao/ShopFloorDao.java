@@ -133,6 +133,14 @@ public interface ShopFloorDao {
     ShopFloor findId(@Param("id") long id);
 
     /***
+     * 根据ID查询楼店
+     * @param id
+     * @return
+     */
+    @Select("select * from ShopFloor where id=#{id} and deleteType=0")
+    ShopFloor findId2(@Param("id") long id);
+
+    /***
      * 查询所有店铺
      * @return
      */

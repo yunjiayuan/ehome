@@ -109,6 +109,15 @@ public class ShopFloorService {
     }
 
     /***
+     * 根据ID查询店铺
+     * @param id
+     * @return
+     */
+    public ShopFloor findId2(long id) {
+        return shopCenterDao.findId2(id);
+    }
+
+    /***
      * 根据用户ID查询店铺状态
      * @param userId
      * @return
