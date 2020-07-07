@@ -68,8 +68,8 @@ public class BigVAccountsExamineController extends BaseController implements Big
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
         }
         BigVAccountsExamine modelPwd = bigVAccountsExamineService.findById(CommonUtils.getMyId());
+        homeAlbum.setTime(new Date());
         if (modelPwd != null) {//有记录的话覆盖
-            homeAlbum.setTime(new Date());
             homeAlbum.setId(modelPwd.getId());
             bigVAccountsExamineService.changeAppealState(homeAlbum);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
