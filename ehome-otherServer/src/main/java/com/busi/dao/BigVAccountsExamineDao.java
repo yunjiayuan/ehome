@@ -41,6 +41,9 @@ public interface BigVAccountsExamineDao {
             "<if test=\"state > 0\">" +
             " state=#{state}," +
             "</if>" +
+            "<if test=\"opinion != null and opinion != ''\">" +
+            " opinion=#{opinion}," +
+            "</if>" +
             " id=#{id}" +
             " where id=#{id}" +
             "</script>")
