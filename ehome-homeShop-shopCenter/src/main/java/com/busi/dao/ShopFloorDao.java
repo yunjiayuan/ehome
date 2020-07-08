@@ -2,6 +2,7 @@ package com.busi.dao;
 
 import com.busi.entity.ShopFloor;
 import com.busi.entity.ShopFloorStatistics;
+import com.busi.entity.ShopFloorTimeStatistics;
 import com.busi.entity.YongHuiGoodsSort;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -23,8 +24,8 @@ public interface ShopFloorDao {
      * @param homeShopCenter
      * @return
      */
-    @Insert("insert into ShopFloor(userId,shopName,shopHead,videoUrl,videoCoverUrl,content,payState,deleteType,addTime,lat,lon,address,villageName,villageOnly,identity,communityId,communityName,telephone,distributionState,province,city,district)" +
-            "values (#{userId},#{shopName},#{shopHead},#{videoUrl},#{videoCoverUrl},#{content},#{payState},#{deleteType},#{addTime},#{lat},#{lon},#{address},#{villageName},#{villageOnly},#{identity},#{communityId},#{communityName},#{telephone},#{distributionState},#{province},#{city},#{district})")
+    @Insert("insert into ShopFloor(userId,shopName,shopKeeper,shopHead,videoUrl,videoCoverUrl,content,payState,deleteType,addTime,lat,lon,address,villageName,villageOnly,identity,communityId,communityName,telephone,distributionState,province,city,district)" +
+            "values (#{userId},#{shopName},#{shopKeeper},#{shopHead},#{videoUrl},#{videoCoverUrl},#{content},#{payState},#{deleteType},#{addTime},#{lat},#{lon},#{address},#{villageName},#{villageOnly},#{identity},#{communityId},#{communityName},#{telephone},#{distributionState},#{province},#{city},#{district})")
     @Options(useGeneratedKeys = true)
     int addHomeShop(ShopFloor homeShopCenter);
 
@@ -35,6 +36,7 @@ public interface ShopFloorDao {
      */
     @Update("<script>" +
             "update ShopFloor set" +
+            " shopKeeper=#{shopKeeper}," +
             " telephone=#{telephone}," +
             " identity=#{identity}," +
             " province=#{province}," +
@@ -65,6 +67,16 @@ public interface ShopFloorDao {
     int addStatistics(ShopFloorStatistics homeShopCenter);
 
     /***
+     * 新增楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Insert("insert into ShopFloorTimeStatistics(province,city,number,time,distributionState)" +
+            "values (#{province},#{city},#{number},#{time},#{distributionState})")
+    @Options(useGeneratedKeys = true)
+    int addStatistics2(ShopFloorTimeStatistics homeShopCenter);
+
+    /***
      * 更新楼店统计
      * @param homeShopCenter
      * @return
@@ -77,6 +89,17 @@ public interface ShopFloorDao {
             "</script>")
     int upStatistics(ShopFloorStatistics homeShopCenter);
 
+    /***
+     * 更新楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorTimeStatistics set" +
+            " number=#{number}" +
+            " where id=#{id}" +
+            "</script>")
+    int upStatistics2(ShopFloorTimeStatistics homeShopCenter);
 
     /***
      * 更新楼店保证金支付状态
@@ -221,6 +244,28 @@ public interface ShopFloorDao {
     )
     ShopFloorStatistics findStatistics2(@Param("province") int province, @Param("city") int city);
 
+    @Select("select * from ShopFloorTimeStatistics where" +
+            " distributionState = 0" +
+            " and province = #{province}" +
+            " and city = #{city}" +
+            " and TO_DAYS(time)=TO_DAYS(NOW())"
+    )
+    ShopFloorTimeStatistics findStatistics3(@Param("province") int province, @Param("city") int city);
+
+    @Select("select * from ShopFloorTimeStatistics where" +
+            " distributionState = 0" +
+            " and province = #{province}" +
+            " and city = #{city}"
+    )
+    ShopFloorTimeStatistics findStatistics4(@Param("province") int province, @Param("city") int city);
+
+    @Select("select * from ShopFloorTimeStatistics where" +
+            " distributionState = 1" +
+            " and province = #{province}" +
+            " and city = #{city}"
+    )
+    ShopFloorTimeStatistics findStatistics5(@Param("province") int province, @Param("city") int city);
+
     @Select("<script>" +
 //            "select * from ShopFloor where" +
 //            " deleteType = 0 and shopState=1 and payState=1" +
@@ -277,6 +322,16 @@ public interface ShopFloorDao {
             " order by time desc" +
             "</script>")
     List<ShopFloorStatistics> findRegionSFlist(@Param("shopState") int shopState);
+
+    @Select("<script>" +
+            "select * from ShopFloorTimeStatistics where" +
+            " number > 0" +
+            "<if test=\"shopState >= 0\">" +
+            " and distributionState=#{shopState}" +
+            "</if>" +
+            " order by time desc" +
+            "</script>")
+    List<ShopFloorTimeStatistics> findTimeSFlist(@Param("shopState") int shopState);
 
     /***
      * 新增永辉分类

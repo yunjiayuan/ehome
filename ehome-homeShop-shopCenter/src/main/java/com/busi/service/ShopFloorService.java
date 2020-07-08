@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.ShopFloorDao;
-import com.busi.entity.PageBean;
-import com.busi.entity.ShopFloor;
-import com.busi.entity.ShopFloorStatistics;
-import com.busi.entity.YongHuiGoodsSort;
+import com.busi.entity.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -59,6 +56,16 @@ public class ShopFloorService {
     }
 
     /***
+     * 新建楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addStatistics2(ShopFloorTimeStatistics homeShopCenter) {
+        return shopCenterDao.addStatistics2(homeShopCenter);
+    }
+
+    /***
      * 更新楼店统计
      * @param homeShopCenter
      * @return
@@ -66,6 +73,16 @@ public class ShopFloorService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int upStatistics(ShopFloorStatistics homeShopCenter) {
         return shopCenterDao.upStatistics(homeShopCenter);
+    }
+
+    /***
+     * 更新楼店统计
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upStatistics2(ShopFloorTimeStatistics homeShopCenter) {
+        return shopCenterDao.upStatistics2(homeShopCenter);
     }
 
     /***
@@ -197,6 +214,18 @@ public class ShopFloorService {
         return shopCenterDao.findStatistics2(province, city);
     }
 
+    public ShopFloorTimeStatistics findStatistics3(int province, int city) {
+        return shopCenterDao.findStatistics3(province, city);
+    }
+
+    public ShopFloorTimeStatistics findStatistics4(int province, int city) {
+        return shopCenterDao.findStatistics4(province, city);
+    }
+
+    public ShopFloorTimeStatistics findStatistics5(int province, int city) {
+        return shopCenterDao.findStatistics5(province, city);
+    }
+
     /***
      * 查询用户楼店
      * @param userId   用户
@@ -221,6 +250,13 @@ public class ShopFloorService {
         List<ShopFloorStatistics> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = shopCenterDao.findRegionSFlist(shopState);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    public PageBean<ShopFloorTimeStatistics> findTimeSFlist(int shopState, int page, int count) {
+        List<ShopFloorTimeStatistics> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = shopCenterDao.findTimeSFlist(shopState);
         return PageUtils.getPageBean(p, list);
     }
 

@@ -143,6 +143,15 @@ public interface ShopFloorApiController {
     @GetMapping("findRegionSFlist/{shopState}/{page}/{count}")
     ReturnData findRegionSFlist(@PathVariable int shopState, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 按时间查询黑店数量
+     * @param shopState   店铺状态   -1不限 0未营业  1已营业
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findTimeSFlist/{shopState}/{page}/{count}")
+    ReturnData findTimeSFlist(@PathVariable int shopState, @PathVariable int page, @PathVariable int count);
 
     /***
      * 新增永辉分类

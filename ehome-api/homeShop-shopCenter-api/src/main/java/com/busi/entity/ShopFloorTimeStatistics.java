@@ -8,13 +8,13 @@ import java.util.Date;
 
 /**
  * @program: ehome
- * @description: 黑店统计实体（按城市）
+ * @description: 黑店统计实体（按时间）
  * @author: ZHaoJiaJie
- * @create: 2020-06-10 15:07:30
+ * @create: 2020-07-06 16:25:40
  */
 @Setter
 @Getter
-public class ShopFloorStatistics {
+public class ShopFloorTimeStatistics {
 
     private long id;                    //主键
 
@@ -27,5 +27,5 @@ public class ShopFloorStatistics {
     private int number;                  //数量
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date time;            //刷新时间
+    private Date time;            //时间
 }
