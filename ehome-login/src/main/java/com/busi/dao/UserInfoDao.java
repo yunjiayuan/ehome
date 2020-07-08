@@ -247,7 +247,7 @@ public interface UserInfoDao {
     int updateWelcomeInfoStatus(UserInfo userInfo);
 
     /**
-     * 修改新用户系统欢迎消息状态接口
+     * 修改新用户系统欢迎消息状态
      *
      * @param userInfo
      * @return
@@ -258,6 +258,19 @@ public interface UserInfoDao {
             " where userId=#{userId}" +
             "</script>")
     int updateIsNewUser(UserInfo userInfo);
+
+    /**
+     * 修改用户V认证状态
+     *
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set" +
+            " user_ce=#{user_ce}" +
+            " where userId=#{userId}" +
+            "</script>")
+    int updateUserCe(UserInfo userInfo);
 
     /**
      * 修改生活圈首次视频发布状态

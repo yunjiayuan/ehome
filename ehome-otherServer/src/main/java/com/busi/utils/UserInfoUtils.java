@@ -57,4 +57,16 @@ public class UserInfoUtils {
         }
         return userInfo;
     }
+
+    /***
+     * 更新用户V认证标识
+     * @param type    0表示更新为 未认证 1表示更新为 已认证
+     * @param userId  当前用户ID
+     */
+    public void updateUserCe(long userId ,int type) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userId);
+        userInfo.setUser_ce(type);
+        userInfoLocalControllerFegin.updateUserCe(userInfo);
+    }
 }

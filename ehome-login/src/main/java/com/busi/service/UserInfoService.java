@@ -155,6 +155,16 @@ public class UserInfoService {
     }
 
     /***
+     * 更新用户V认证的标识
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateUserCe(UserInfo userInfo) {
+        return userInfoDao.updateUserCe(userInfo);
+    }
+
+    /***
      * 修改生活圈首次视频发布状态
      * @param userInfo
      * @return

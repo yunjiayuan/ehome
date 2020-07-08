@@ -44,6 +44,14 @@ public interface UserInfoLocalController {
     ReturnData updateIsNew(@RequestBody UserInfo userInfo);
 
     /***
+     * 更新用户V认证标识
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateUserCe")
+    ReturnData updateUserCe(@RequestBody UserInfo userInfo);
+
+    /***
      * 更新生活圈首次视频发布状态
      * @param userInfo
      * @return
