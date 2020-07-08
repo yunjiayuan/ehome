@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /***
- * 大V审核相关接口
+ * V认证相关接口
  * author：zhaojiajie
  * create time：2020-07-07 15:18:53
  */
@@ -39,7 +39,7 @@ public class BigVAccountsExamineController extends BaseController implements Big
     UserInfoUtils userInfoUtils;
 
     /***
-     * 新增审核
+     * 新增
      * @param homeAlbum
      * @param bindingResult
      * @return
@@ -79,7 +79,7 @@ public class BigVAccountsExamineController extends BaseController implements Big
     }
 
     /***
-     * 查询审核列表
+     * 查询认证列表
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
      * @return
@@ -119,7 +119,7 @@ public class BigVAccountsExamineController extends BaseController implements Big
     }
 
     /***
-     * 更新审核状态
+     * 更新认证状态
      * @param homeAlbum
      * @param bindingResult
      * @return
@@ -157,5 +157,19 @@ public class BigVAccountsExamineController extends BaseController implements Big
         }
         bigVAccountsExamineService.changeAppealState(homeAlbum);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询认证
+     * @param userId
+     * @return
+     */
+    @Override
+    public ReturnData findBigVExamine(@PathVariable long userId) {
+        BigVAccountsExamine bigVAccountsExamine = bigVAccountsExamineService.findById(userId);
+        if (bigVAccountsExamine == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", bigVAccountsExamine);
     }
 }

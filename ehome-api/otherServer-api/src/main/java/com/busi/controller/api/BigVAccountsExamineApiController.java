@@ -39,4 +39,11 @@ public interface BigVAccountsExamineApiController {
     @PutMapping("changeBigVExamineState")
     ReturnData changeBigVExamineState(@Valid @RequestBody BigVAccountsExamine homeAlbum, BindingResult bindingResult);
 
+    /***
+     * 查询认证
+     * @param userId
+     * @return
+     */
+    @GetMapping("findBigVExamine/{userId}")
+    ReturnData findBigVExamine(@PathVariable long userId);
 }
