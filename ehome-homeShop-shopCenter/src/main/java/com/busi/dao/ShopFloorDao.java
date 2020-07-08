@@ -24,8 +24,8 @@ public interface ShopFloorDao {
      * @param homeShopCenter
      * @return
      */
-    @Insert("insert into ShopFloor(userId,shopName,shopHead,videoUrl,videoCoverUrl,content,payState,deleteType,addTime,lat,lon,address,villageName,villageOnly,identity,communityId,communityName,telephone,distributionState,province,city,district)" +
-            "values (#{userId},#{shopName},#{shopHead},#{videoUrl},#{videoCoverUrl},#{content},#{payState},#{deleteType},#{addTime},#{lat},#{lon},#{address},#{villageName},#{villageOnly},#{identity},#{communityId},#{communityName},#{telephone},#{distributionState},#{province},#{city},#{district})")
+    @Insert("insert into ShopFloor(userId,shopName,shopKeeper,shopHead,videoUrl,videoCoverUrl,content,payState,deleteType,addTime,lat,lon,address,villageName,villageOnly,identity,communityId,communityName,telephone,distributionState,province,city,district)" +
+            "values (#{userId},#{shopName},#{shopKeeper},#{shopHead},#{videoUrl},#{videoCoverUrl},#{content},#{payState},#{deleteType},#{addTime},#{lat},#{lon},#{address},#{villageName},#{villageOnly},#{identity},#{communityId},#{communityName},#{telephone},#{distributionState},#{province},#{city},#{district})")
     @Options(useGeneratedKeys = true)
     int addHomeShop(ShopFloor homeShopCenter);
 
@@ -36,6 +36,7 @@ public interface ShopFloorDao {
      */
     @Update("<script>" +
             "update ShopFloor set" +
+            " shopKeeper=#{shopKeeper}," +
             " telephone=#{telephone}," +
             " identity=#{identity}," +
             " province=#{province}," +

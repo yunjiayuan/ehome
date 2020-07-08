@@ -25,6 +25,8 @@ public class ShopFloor {
     @Length(max = 15, message = "店铺名称最多可输入15个字")
     private String shopName;                //店铺名称
 
+    private String shopKeeper;                //店主
+
     private int identity;            //店主身份:0个人 1居委会
 
     private long communityId;    //居委会ID
