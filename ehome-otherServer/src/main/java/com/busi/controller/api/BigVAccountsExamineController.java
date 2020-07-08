@@ -156,6 +156,11 @@ public class BigVAccountsExamineController extends BaseController implements Big
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
         }
         bigVAccountsExamineService.changeAppealState(homeAlbum);
+
+        //更新用户V认证标识
+        if (homeAlbum.getState() == 2) {
+            userInfoUtils.updateUserCe(homeAlbum.getUserId(), 1);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
