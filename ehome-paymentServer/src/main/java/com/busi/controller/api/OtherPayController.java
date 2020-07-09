@@ -474,15 +474,12 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
         //开始从用户钱包中扣除用户提现金额
 
         //将提现申请 交由MQ异步处理 同步到微信
-        String appkey = "137130421c9b43cb9763b39647a33bd9";// 微信商户秘钥, 根据实际情况填写
-        String certPath = "D:\\demo\\apiclient_cert.p12";// 微信商户证书路径, 根据实际情况填写
-
         TransfersDto model = new TransfersDto();
         model.setMch_appid(Constants.WEIXIN_MCH_APPID);
         model.setMchid(Constants.WEIXIN_MCHID); // 商户号
         model.setMch_name(Constants.WEIXIN_MCH_NAME); // 商户名称
         model.setOpenid("o6NMRv0tWDHHPhN_nhkICAgD9Xb0"); // 商户appid下，某用户的openid
-        model.setAmount(0.4); // 企业付款金额，这里单位为元
+        model.setAmount(cashOut.getMoney()); // 企业付款金额，这里单位为元
         model.setDesc("提现");
         WechatpayUtil.doTransfers(model);
 
