@@ -68,14 +68,7 @@ public class CashOutOrderService extends BaseController implements PayBaseServic
                 cashOutService.addCashOutOrder(cashOutOrder);
                 redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber(),0);//设置过期0秒
                 //将提现申请 交由MQ异步处理 同步到微信
-                TransfersDto model = new TransfersDto();
-                model.setMch_appid(Constants.WEIXIN_MCH_APPID);
-                model.setMchid(Constants.WEIXIN_MCHID);
-                model.setMch_name(Constants.WEIXIN_MCH_NAME);
-                model.setOpenid(cashOutOrder.getOpenid());
-                model.setAmount(cashOutOrder.getMoney());
-                model.setDesc("提现");
-                WechatpayUtil.doTransfers(model);
+                mqUtils.sendCashOutMQ(cashOutOrder.getUserId(),cashOutOrder.getType(),cashOutOrder.getOpenid(),cashOutOrder.getMoney());
                 break;
             case 23://提现到支付宝
 

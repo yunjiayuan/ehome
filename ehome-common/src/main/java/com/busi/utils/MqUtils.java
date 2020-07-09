@@ -44,6 +44,29 @@ public class MqUtils {
     }
 
     /***
+     * 提现同步到微信、支付宝、银行卡
+     * @param userId
+     * @param type
+     * @param openId
+     * @param tradeMoney
+     */
+    public void sendCashOutMQ(long userId,int type,String openId,double tradeMoney){
+        //调用MQ同步用户登录信息
+        JSONObject root = new JSONObject();
+        JSONObject header = new JSONObject();
+        header.put("interfaceType", 17);//interfaceType  17:表示提现
+        JSONObject content = new JSONObject();
+        content.put("userId",userId);//用户ID
+        content.put("type",type);
+        content.put("openId",openId);
+        content.put("tradeMoney",tradeMoney);
+        root.put("header", header);
+        root.put("content", content);
+        String sendMsg = root.toJSONString();
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+        MQProducer.sendMsg(activeMQQueue,sendMsg);
+    }
+    /***
      * 删除图片 调用MQ同步删除
      * @param userId       图片主人ID
      * @param delImageUrls 将要删除的图片地址组合，逗号分隔
