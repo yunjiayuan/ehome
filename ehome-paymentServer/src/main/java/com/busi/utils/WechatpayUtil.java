@@ -51,7 +51,7 @@ public class WechatpayUtil{
         }
         catch (Exception e){
             e.printStackTrace();
-            log.error("调用微信同步提现业务失败"+e.getMessage());
+            log.error("调用微信同步提现业务异常"+e.getMessage());
         }
     }
     

@@ -93,7 +93,7 @@ public class Constants {
     /** 七牛云存储配置 结束**/
 
     /** 微信支付提现业务 企业付款到零钱 开始**/
-    public static final String WEIXIN_URL = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfer";
+    public static final String WEIXIN_URL = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
     public static final String WEIXIN_MCH_APPID = "wx4cf8d1cd16fee6d4";//申请商户号的appid或商户号绑定的appid
     public static final String WEIXIN_MCHID = "1400030002";//商户号
     public static final String WEIXIN_MCH_NAME = "北京历程家园网络科技有限公司";//商户号
