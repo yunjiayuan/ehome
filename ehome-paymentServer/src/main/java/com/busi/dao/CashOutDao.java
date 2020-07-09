@@ -18,8 +18,8 @@ public interface CashOutDao {
      * @param cashOutOrder
      * @return
      */
-    @Insert("insert into cashOutOrder (id,userId,openid,type,money,payStatus,time) " +
-            "values (#{id},#{userId},#{openid},#{type},#{money},#{payStatus},#{time})")
+    @Insert("insert into cashOutOrder (id,userId,openid,type,money,payStatus,time,cashOutStatus) " +
+            "values (#{id},#{userId},#{openid},#{type},#{money},#{payStatus},#{time},#{cashOutStatus})")
 //    @Options(useGeneratedKeys = true)
     int addCashOutOrder(CashOutOrder cashOutOrder);
 
@@ -39,6 +39,14 @@ public interface CashOutDao {
      */
     @Update("update cashOutOrder set payStatus = #{payStatus} where userId = #{userId} and id = #{id}")
     int updateCashOutOrder(CashOutOrder cashOutOrder);
+
+    /***
+     * 更新到账状态
+     * @param cashOutOrder
+     * @return
+     */
+    @Update("update cashOutOrder set cashOutStatus = #{cashOutStatus} where userId = #{userId} and id = #{id}")
+    int updateCashOutStatus(CashOutOrder cashOutOrder);
 
 
 }

@@ -47,4 +47,14 @@ public class CashOutService {
         return cashOutDao.updateCashOutOrder(cashOutOrder);
     }
 
+    /***
+     * 更新到账状态
+     * @param cashOutOrder
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateCashOutStatus(CashOutOrder cashOutOrder) {
+        return cashOutDao.updateCashOutStatus(cashOutOrder);
+    }
+
 }

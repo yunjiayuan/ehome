@@ -19,7 +19,7 @@ public class WechatpayUtil{
      *            微信接口请求参数DTO对象
      * @return ResultEntity 返回结构体
      */
-    public static void doTransfers(TransfersDto model) {
+    public static int doTransfers(TransfersDto model) {
         try{
             // 1.计算参数签名
             String paramStr = WechatpayUtil.createLinkString(model);
@@ -43,15 +43,18 @@ public class WechatpayUtil{
 
             // 3.加载证书请求接口
             String result = HttpRequestHandler.httpsRequest(Constants.WEIXIN_URL, reqXmlStr.toString(),model, Constants.WEIXIN_CERT_PATH);
-            if(result.contains("CDATA[SUCCESS]")){
+            if(!result.contains("CDATA[FAIL]")){
                 log.error("调用微信同步提现业务成功");
+                return 0;
             }else{
                 log.error("调用微信同步提现业务失败"+result);
+                return 1;
             }
         }
         catch (Exception e){
             e.printStackTrace();
             log.error("调用微信同步提现业务异常"+e.getMessage());
+            return 1;
         }
     }
     

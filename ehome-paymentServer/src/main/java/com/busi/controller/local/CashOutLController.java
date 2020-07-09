@@ -5,6 +5,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.CashOutOrder;
 import com.busi.entity.Purse;
 import com.busi.entity.ReturnData;
+import com.busi.service.CashOutService;
 import com.busi.service.PurseInfoService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import java.util.Map;
 @RestController
 public class CashOutLController extends BaseController implements CashOutLocalController{
 
+    @Autowired
+    CashOutService cashOutService;
     /***
      *  提现同步到微信或者支付宝
      * @param cashOutOrder
@@ -37,7 +40,11 @@ public class CashOutLController extends BaseController implements CashOutLocalCo
             model.setOpenid(cashOutOrder.getOpenid());
             model.setAmount(cashOutOrder.getMoney());
             model.setDesc("提现");
-            WechatpayUtil.doTransfers(model);
+            int res = WechatpayUtil.doTransfers(model);
+            if(res==0){
+                cashOutOrder.setCashOutStatus(1);
+                cashOutService.updateCashOutStatus(cashOutOrder);
+            }
         }else if(cashOutOrder.getType()==1){//提现到支付宝
 
         }else {//提现到银行卡
