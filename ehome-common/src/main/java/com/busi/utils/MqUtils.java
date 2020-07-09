@@ -45,18 +45,20 @@ public class MqUtils {
 
     /***
      * 提现同步到微信、支付宝、银行卡
-     * @param userId
-     * @param type
-     * @param openId
-     * @param tradeMoney
+     * @param userId     用户ID
+     * @param id         订单ID
+     * @param type       同步类型 0微信 1支付宝 2银行卡
+     * @param openId     微信或支付宝的身份标识
+     * @param tradeMoney 金额
      */
-    public void sendCashOutMQ(long userId,int type,String openId,double tradeMoney){
+    public void sendCashOutMQ(long userId,String id,int type,String openId,double tradeMoney){
         //调用MQ同步用户登录信息
         JSONObject root = new JSONObject();
         JSONObject header = new JSONObject();
         header.put("interfaceType", 17);//interfaceType  17:表示提现
         JSONObject content = new JSONObject();
         content.put("userId",userId);//用户ID
+        content.put("id",id);//订单ID
         content.put("type",type);
         content.put("openId",openId);
         content.put("tradeMoney",tradeMoney);

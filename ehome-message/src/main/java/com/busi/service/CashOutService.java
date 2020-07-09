@@ -31,12 +31,14 @@ public class CashOutService implements MessageAdapter {
             long userId = Long.parseLong(body.getString("userId"));
             int type = Integer.parseInt(body.getString("type"));
             String openId = body.getString("openId");
+            String id = body.getString("id");
             Double tradeMoney = Double.parseDouble(body.getString("tradeMoney"));
             CashOutOrder cashOutOrder = new CashOutOrder();
             cashOutOrder.setUserId(userId);
             cashOutOrder.setType(type);
             cashOutOrder.setOpenid(openId);
             cashOutOrder.setMoney(tradeMoney);
+            cashOutOrder.setId(id);
             cashOutLControllerFegin.cashOutToOther(cashOutOrder);
             log.info("消息服务平台处理用户["+userId+"]提现操作成功！");
         } catch (Exception e) {

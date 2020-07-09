@@ -24,6 +24,9 @@ import java.util.Map;
 public class CashOutLController extends BaseController implements CashOutLocalController{
 
     @Autowired
+    RedisUtils redisUtils;
+
+    @Autowired
     CashOutService cashOutService;
     /***
      *  提现同步到微信或者支付宝
@@ -32,6 +35,20 @@ public class CashOutLController extends BaseController implements CashOutLocalCo
      */
     @Override
     public ReturnData cashOutToOther(@RequestBody CashOutOrder cashOutOrder) {
+        Map<String,Object> cashOutOrderMap = redisUtils.hmget(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+cashOutOrder.getId() );
+        if(cashOutOrderMap==null||cashOutOrderMap.size()<=0){//交由定时任务补偿系统
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }
+        cashOutOrder = (CashOutOrder)CommonUtils.mapToObject(cashOutOrderMap,CashOutOrder.class);
+        if(cashOutOrder==null){//交由定时任务补偿系统
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }
+        //判断状态 防止重复操作
+        if(cashOutOrder.getCashOutStatus()!=0){//已到账
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+        }
+        //更改状态 防止重复支付
+        redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+cashOutOrder.getId() ,"cashOutStatus",1);
         if(cashOutOrder.getType()==0){//提现到微信
             TransfersDto model = new TransfersDto();
             model.setMch_appid(Constants.WEIXIN_MCH_APPID);
@@ -44,6 +61,7 @@ public class CashOutLController extends BaseController implements CashOutLocalCo
             if(res==0){
                 cashOutOrder.setCashOutStatus(1);
                 cashOutService.updateCashOutStatus(cashOutOrder);
+                redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+cashOutOrder.getId() ,0);//清除
             }
         }else if(cashOutOrder.getType()==1){//提现到支付宝
 

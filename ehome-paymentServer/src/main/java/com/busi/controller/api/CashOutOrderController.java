@@ -55,8 +55,8 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前用户还未绑定微信，无法提现到微信",new JSONObject());
             }
             cashOut.setOpenid(userInfo.getOtherPlatformKey());
-            //将订单放入缓存中  5分钟有效时间  超时作废
-            redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+orderNumber,CommonUtils.objectToMap(cashOut),Constants.TIME_OUT_MINUTE_5);
+            //将订单放入缓存中  15分钟有效时间  超时作废
+            redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+orderNumber,CommonUtils.objectToMap(cashOut),Constants.TIME_OUT_MINUTE_15);
             //响应客户端
             Map<String,String> map = new HashMap();
             map.put("orderNumber",orderNumber);

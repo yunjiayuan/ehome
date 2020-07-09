@@ -66,9 +66,9 @@ public class CashOutOrderService extends BaseController implements PayBaseServic
                 //回调业务 更新会员状态
                 cashOutOrder.setPayStatus(1);//已支付
                 cashOutService.addCashOutOrder(cashOutOrder);
-                redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber(),0);//设置过期0秒
+//                redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber(),Constants.TIME_OUT_MINUTE_5);//防止重复调用微信
                 //将提现申请 交由MQ异步处理 同步到微信
-                mqUtils.sendCashOutMQ(cashOutOrder.getUserId(),cashOutOrder.getType(),cashOutOrder.getOpenid(),cashOutOrder.getMoney());
+                mqUtils.sendCashOutMQ(cashOutOrder.getUserId(),cashOutOrder.getId(),cashOutOrder.getType(),cashOutOrder.getOpenid(),cashOutOrder.getMoney());
                 break;
             case 23://提现到支付宝
 
