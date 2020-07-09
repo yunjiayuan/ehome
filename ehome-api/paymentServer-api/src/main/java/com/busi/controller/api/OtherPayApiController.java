@@ -51,11 +51,4 @@ public interface OtherPayApiController {
     @PostMapping("checkUnionPaySign")
     String checkUnionPaySign(@RequestBody UnionpayBean unionpayBean);
 
-    /***
-     * 提现接口
-     * @param cashOut
-     * @return
-     */
-    @PostMapping("cashOut")
-    ReturnData cashOut(@Valid @RequestBody CashOut cashOut, BindingResult bindingResult);
 }

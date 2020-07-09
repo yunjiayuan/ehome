@@ -81,6 +81,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private TransferAccountsInfoOrderService transferAccountsInfoOrderService;
+
+    @Autowired
+    private CashOutOrderService cashOutOrderService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -173,7 +176,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
         }
         //验证操作人权限
         if(CommonUtils.getMyId()!=pay.getUserId()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限支付用户["+pay.getUserId()+"]的订单",new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限操作用户["+pay.getUserId()+"]的交易功能",new JSONObject());
         }
         //添加防暴力验证
         String errorCount = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_PAY_ERROR_COUNT,CommonUtils.getMyId()+""));
@@ -307,6 +310,15 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 21://接收转账
                 payBaseService = transferAccountsInfoOrderService;
+                break;
+            case 22://提现到微信
+                payBaseService = cashOutOrderService;
+                break;
+            case 23://提现到支付宝
+                payBaseService = cashOutOrderService;
+                break;
+            case 24://提现到银行卡（预留）
+                payBaseService = cashOutOrderService;
                 break;
             default:
                 break;

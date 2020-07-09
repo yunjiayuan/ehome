@@ -82,7 +82,7 @@ public class TransferAccountsInfoController extends BaseController implements Tr
         if(spareMoney<transferAccountsInfo.getTransferAccountsMoney()){
             return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行转账操作",new JSONObject());
         }
-        //生成红包订单
+        //生成订单
         String orderNumber = CommonUtils.getOrderNumber(transferAccountsInfo.getSendUserId(),Constants.REDIS_KEY_PAY_ORDER_TRANSFERACCOUNTSINFO);
         transferAccountsInfo.setId(orderNumber);
         transferAccountsInfo.setPayStatus(0);//未支付

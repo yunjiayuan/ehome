@@ -230,6 +230,7 @@ public class Constants {
     public static final String REDIS_KEY_PAY_ORDER_MEMBER = "payment_order_member_";//购买会员订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_PAY_ORDER_REDPACKETSINFO = "payment_order_redpacketsInfo_";//发送红包订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_PAY_ORDER_TRANSFERACCOUNTSINFO = "payment_order_transferAccountsInfo_";//发送转账订单 对应关系  订单ID对应订单实体
+    public static final String REDIS_KEY_PAY_ORDER_CASHOUT = "payment_order_cashOut_";//提现订单 对应关系  订单ID对应订单实体
     public static final String REDIS_KEY_FOLLOW_LIST = "follow_list_";//关注信息 当前用户关注的人的ID组合 逗号分隔
     public static final String REDIS_KEY_FOLLOW_COUNTS = "follow_counts_";//粉丝数对照 用户ID对应粉丝数
     public static final String REDIS_KEY_CHAT_SQUARE = "chat_square_";//聊天室在线用户对照 省ID对应在线用户

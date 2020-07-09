@@ -452,37 +452,4 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
             return "fail";
         }
     }
-
-    /***
-     * 提现接口
-     * @param cashOut
-     * @return
-     */
-    @Override
-    public ReturnData cashOut(@Valid @RequestBody CashOut cashOut, BindingResult bindingResult) {
-        //验证参数
-        if(bindingResult.hasErrors()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
-        }
-        //验证修改人权限
-        if(CommonUtils.getMyId()!=cashOut.getUserId()){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限提现用户["+cashOut.getUserId()+"]的钱包金额",new JSONObject());
-        }
-        //开始业务
-        //判断当前用户余额是否满足提现需求
-
-        //开始从用户钱包中扣除用户提现金额
-
-        //将提现申请 交由MQ异步处理 同步到微信
-        TransfersDto model = new TransfersDto();
-        model.setMch_appid(Constants.WEIXIN_MCH_APPID);
-        model.setMchid(Constants.WEIXIN_MCHID); // 商户号
-        model.setMch_name(Constants.WEIXIN_MCH_NAME); // 商户名称
-        model.setOpenid("o6NMRv0tWDHHPhN_nhkICAgD9Xb0"); // 商户appid下，某用户的openid
-        model.setAmount(cashOut.getMoney()); // 企业付款金额，这里单位为元
-        model.setDesc("提现");
-        WechatpayUtil.doTransfers(model);
-
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-    }
 }
