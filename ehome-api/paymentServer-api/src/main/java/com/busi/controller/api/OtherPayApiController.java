@@ -1,13 +1,13 @@
 package com.busi.controller.api;
 
-import com.busi.entity.AlipayBean;
-import com.busi.entity.ReturnData;
-import com.busi.entity.UnionpayBean;
-import com.busi.entity.WeixinSignBean;
+import com.busi.entity.*;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.validation.Valid;
 
 /**
  * 第三方支付平台 加签 回调相关接口
@@ -50,4 +50,12 @@ public interface OtherPayApiController {
      */
     @PostMapping("checkUnionPaySign")
     String checkUnionPaySign(@RequestBody UnionpayBean unionpayBean);
+
+    /***
+     * 提现接口
+     * @param cashOut
+     * @return
+     */
+    @PostMapping("cashOut")
+    ReturnData cashOut(@Valid @RequestBody CashOut cashOut, BindingResult bindingResult);
 }

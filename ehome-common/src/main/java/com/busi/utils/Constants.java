@@ -92,6 +92,16 @@ public class Constants {
     public static final String QINIU_BUCKET = "ehome";//空间名
     /** 七牛云存储配置 结束**/
 
+    /** 微信支付提现业务 企业付款到零钱 开始**/
+    public static final String WEIXIN_URL = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfer";
+    public static final String WEIXIN_MCH_APPID = "wx4cf8d1cd16fee6d4";//申请商户号的appid或商户号绑定的appid
+    public static final String WEIXIN_MCHID = "1400030002";//商户号
+    public static final String WEIXIN_MCH_NAME = "北京历程家园网络科技有限公司";//商户号
+    public static final String WEIXIN_CERT_PATH = "/lib/apiclient_cert.p12";//证书地址
+    public static final String WEIXIN_API_KEY = "a3ece05030d973cbad8b8943732960bf";//API秘钥
+    public static final String WEIXIN_APIV3_KEY = "a5f3a5276a278354564dd6f9df0c7469";//APIV3秘钥
+    /** 微信支付提现业务 企业付款到零钱 结束**/
+
     /** 实名制认证配置 开始**/
     public static final String CHECK_REALNAME_URL="http://op.juhe.cn/idcard/query";//实名认证地址
     public static final String REALNAME_KEY="78fff9fb99509e96a66110c92de4a5bf";//实名认证key

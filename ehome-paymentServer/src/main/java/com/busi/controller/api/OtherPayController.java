@@ -17,12 +17,14 @@ import com.busi.service.RechargeOrderService;
 import com.busi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -449,5 +451,41 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
             log.info("验签失败，请重新充值!");
             return "fail";
         }
+    }
+
+    /***
+     * 提现接口
+     * @param cashOut
+     * @return
+     */
+    @Override
+    public ReturnData cashOut(@Valid @RequestBody CashOut cashOut, BindingResult bindingResult) {
+        //验证参数
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证修改人权限
+        if(CommonUtils.getMyId()!=cashOut.getUserId()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限提现用户["+cashOut.getUserId()+"]的钱包金额",new JSONObject());
+        }
+        //开始业务
+        //判断当前用户余额是否满足提现需求
+
+        //开始从用户钱包中扣除用户提现金额
+
+        //将提现申请 交由MQ异步处理 同步到微信
+        String appkey = "137130421c9b43cb9763b39647a33bd9";// 微信商户秘钥, 根据实际情况填写
+        String certPath = "D:\\demo\\apiclient_cert.p12";// 微信商户证书路径, 根据实际情况填写
+
+        TransfersDto model = new TransfersDto();
+        model.setMch_appid(Constants.WEIXIN_MCH_APPID);
+        model.setMchid(Constants.WEIXIN_MCHID); // 商户号
+        model.setMch_name(Constants.WEIXIN_MCH_NAME); // 商户名称
+        model.setOpenid("o6NMRv0tWDHHPhN_nhkICAgD9Xb0"); // 商户appid下，某用户的openid
+        model.setAmount(0.4); // 企业付款金额，这里单位为元
+        model.setDesc("提现");
+        WechatpayUtil.doTransfers(model);
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
