@@ -38,16 +38,13 @@ public interface BigVAccountsExamineDao {
             "<if test=\"idBack != null and idBack != ''\">" +
             " idBack=#{idBack}," +
             "</if>" +
-            "<if test=\"state > 0\">" +
-            " state=#{state}," +
-            "</if>" +
             "<if test=\"opinion != null and opinion != ''\">" +
             " opinion=#{opinion}," +
             "</if>" +
             "<if test=\"time != null\">" +
             " time=#{time}," +
             "</if>" +
-            " id=#{id}" +
+            " state=#{state}" +
             " where id=#{id}" +
             "</script>")
     int changeAppealState(BigVAccountsExamine homeAlbumPwd);
