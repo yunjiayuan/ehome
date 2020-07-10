@@ -41,5 +41,7 @@ public class CashOutOrder {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date time;//提现发起时间
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date accountTime;//到账时间
 
 }

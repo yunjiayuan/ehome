@@ -60,6 +60,7 @@ public class CashOutLController extends BaseController implements CashOutLocalCo
             int res = WechatpayUtil.doTransfers(model);
             if(res==0){
                 cashOutOrder.setCashOutStatus(1);
+                cashOutOrder.setAccountTime(new Date());
                 cashOutService.updateCashOutStatus(cashOutOrder);
                 redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+cashOutOrder.getId() ,0);//清除
             }
