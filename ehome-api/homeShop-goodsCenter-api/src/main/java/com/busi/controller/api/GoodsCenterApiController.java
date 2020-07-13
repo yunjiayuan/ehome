@@ -70,6 +70,17 @@ public interface GoodsCenterApiController {
     ReturnData findGoodsList(@PathVariable int sort, @PathVariable long shopId, @PathVariable int stock, @PathVariable int time, @PathVariable long goodsSort, @PathVariable int page, @PathVariable int count);
 
     /***
+     * 二货商城首页分类查询
+     * @param sort  分类 0精选 1生活 2电器 3母婴 4时尚
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findHomePageList/{sort}/{page}/{count}")
+    ReturnData findHomePageList(@PathVariable int sort, @PathVariable int page, @PathVariable int count);
+
+
+    /***
      * 新增分类
      * @param goodsSort
      * @return
