@@ -245,6 +245,28 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
     }
 
     /***
+     * 二货商城首页分类查询
+     * @param sort  分类 0精选 1生活 2电器 3母婴 4时尚
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findHomePageList(@PathVariable int sort, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<HomeShopGoods> pageBean = null;
+        pageBean = goodsCenterService.findHomePageList(sort, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
      * 新增分类
      * @param goodsSort
      * @return
