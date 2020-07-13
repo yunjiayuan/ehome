@@ -433,4 +433,16 @@ public interface GoodsCenterDao {
     @Select("select * from GoodsDescribe where id=#{id}")
     GoodsDescribe disheSdetails(@Param("id") long id);
 
+    /***
+     * 更新浏览数
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update HomeShopGoods set" +
+            " lookCount=#{lookCount}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateSee(HomeShopGoods kitchenDishes);
+
 }

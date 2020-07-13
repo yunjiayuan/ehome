@@ -304,4 +304,14 @@ public class GoodsCenterService {
     public GoodsDescribe disheSdetails(long id) {
         return goodsCenterDao.disheSdetails(id);
     }
+
+    /***
+     * 更新浏览数
+     * @param homeShopGoods
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateSee(HomeShopGoods homeShopGoods) {
+        return goodsCenterDao.updateSee(homeShopGoods);
+    }
 }
