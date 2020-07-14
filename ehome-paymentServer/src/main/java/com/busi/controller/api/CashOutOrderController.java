@@ -41,16 +41,16 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
         if(CommonUtils.getMyId()!=cashOut.getUserId()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限提现用户["+cashOut.getUserId()+"]的钱包金额",new JSONObject());
         }
+        //生成订单
+        String orderNumber = CommonUtils.getOrderNumber(cashOut.getUserId(),Constants.REDIS_KEY_PAY_ORDER_CASHOUT);
+        cashOut.setId(orderNumber);
+        cashOut.setPayStatus(0);//未支付
+        cashOut.setTime(new Date());
+        UserInfo userInfo = userInfoUtils.getUserInfo(cashOut.getUserId());
+        if(userInfo==null){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前用户账号异常，请重新登录后再尝试提现操作",new JSONObject());
+        }
         if(cashOut.getType()==0){//提现到微信
-            //生成订单
-            String orderNumber = CommonUtils.getOrderNumber(cashOut.getUserId(),Constants.REDIS_KEY_PAY_ORDER_CASHOUT);
-            cashOut.setId(orderNumber);
-            cashOut.setPayStatus(0);//未支付
-            cashOut.setTime(new Date());
-            UserInfo userInfo = userInfoUtils.getUserInfo(cashOut.getUserId());
-            if(userInfo==null){
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前用户账号异常，请重新登录后再尝试提现操作",new JSONObject());
-            }
             if(CommonUtils.checkFull(userInfo.getOtherPlatformKey())||userInfo.getOtherPlatformType()!=2){
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"当前用户还未绑定微信，无法提现到微信",new JSONObject());
             }
@@ -62,8 +62,16 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
             map.put("orderNumber",orderNumber);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
         }else if(cashOut.getType()==1){//提现到支付宝
-
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+            if(CommonUtils.checkFull(userInfo.getPhone())){
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您还未关联支付宝账号，请先绑定与支付宝账号相同的手机号，再进行提现操作",new JSONObject());
+            }
+            cashOut.setOpenid(userInfo.getOtherPlatformKey());
+            //将订单放入缓存中  15分钟有效时间  超时作废
+            redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+orderNumber,CommonUtils.objectToMap(cashOut),Constants.TIME_OUT_MINUTE_15);
+            //响应客户端
+            Map<String,String> map = new HashMap();
+            map.put("orderNumber",orderNumber);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
         }else{//预留
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
         }
