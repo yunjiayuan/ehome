@@ -69,7 +69,7 @@ public class CashOutLController extends BaseController implements CashOutLocalCo
                 redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+cashOutOrder.getId() ,0);//清除
             }
         }else if(cashOutOrder.getType()==1){//提现到支付宝
-            int res = AlipayUtils.cashOutToAli(cashOutOrder.getId(),cashOutOrder.getOpenid(),cashOutOrder.getMoney());
+            int res = AlipayUtils.cashOutToAli(cashOutOrder);
             if(res==0){
                 cashOutOrder.setCashOutStatus(1);
                 cashOutOrder.setType(1);//支付宝

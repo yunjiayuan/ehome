@@ -20,7 +20,9 @@ public class CashOutOrder {
 
     private String id;//订单ID 程序生成
 
-    private String openid;//用户标识  微信身份标识或支付宝身份标识
+    private String openid;//用户标识  微信身份标识或支付宝登录ID
+
+    private String name;//支付宝账号对应的名字
 
     private int type;//提现类型 0提现到微信 1提现到支付宝 2提现到银行卡（银联）
 

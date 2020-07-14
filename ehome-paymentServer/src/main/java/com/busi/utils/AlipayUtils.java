@@ -21,11 +21,9 @@ public class AlipayUtils {
 
     /***
      * 提现到支付宝
-     * @param ordernumber  订单编号
-     * @param identity     支付宝会员ID
-     * @param money        提现金额
+     * @param cashOutOrder
      */
-    public static int cashOutToAli(String ordernumber,String identity,double money){
+    public static int cashOutToAli( CashOutOrder cashOutOrder){
         //请求参数数据格式(仅json)
         String format = "json";
         //请求使用的编码格式,如utf-8,gbk,gb2312等
@@ -53,7 +51,7 @@ public class AlipayUtils {
             AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
 
             Participant payeeInfo = new Participant();
-            payeeInfo.setIdentity(identity);
+            payeeInfo.setIdentity(cashOutOrder.getI);
             payeeInfo.setIdentityType("ALIPAY_LOGON_ID");
             payeeInfo.setName("孙天杰");
 
