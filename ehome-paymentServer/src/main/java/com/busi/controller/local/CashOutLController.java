@@ -1,6 +1,10 @@
 package com.busi.controller.local;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayFundTransUniTransferRequest;
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.busi.controller.BaseController;
 import com.busi.entity.CashOutOrder;
 import com.busi.entity.Purse;
@@ -65,7 +69,15 @@ public class CashOutLController extends BaseController implements CashOutLocalCo
                 redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+cashOutOrder.getId() ,0);//清除
             }
         }else if(cashOutOrder.getType()==1){//提现到支付宝
-
+            cashOutOrder.setOpenid("15901213694");
+            int res = AlipayUtils.cashOutToAli(cashOutOrder.getId(),cashOutOrder.getOpenid(),cashOutOrder.getMoney());
+            if(res==0){
+                cashOutOrder.setCashOutStatus(1);
+                cashOutOrder.setType(1);//支付宝
+                cashOutOrder.setAccountTime(new Date());
+                cashOutService.updateCashOutStatus(cashOutOrder);
+                redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+cashOutOrder.getId() ,0);//清除
+            }
         }else {//提现到银行卡
 
         }
