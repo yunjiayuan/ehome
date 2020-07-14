@@ -59,10 +59,9 @@ public interface CashOutDao {
             "select * from cashOutOrder" +
             " where 1=1" +
             "<if test=\"findType != -1 \">"+
-            " and cashOutStatus = #{findType}" +
+                " and cashOutStatus = #{findType}" +
             "</if>" +
             " order by time desc" +
-            "</if>" +
             "</script>")
     List<CashOutOrder> findCashOutList(@Param("findType") long findType);
 
