@@ -252,6 +252,20 @@ public class GoodsCenterService {
     }
 
     /***
+     * 二货商城首页分类查询
+     * @param sort  分类 0精选 1生活 2电器 3母婴 4时尚
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<HomeShopGoods> findHomePageList(int sort, int page, int count) {
+        List<HomeShopGoods> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = goodsCenterDao.findHomePageList(sort);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 新增商品描述
      * @param homeShopGoods
      * @return
@@ -289,5 +303,15 @@ public class GoodsCenterService {
      */
     public GoodsDescribe disheSdetails(long id) {
         return goodsCenterDao.disheSdetails(id);
+    }
+
+    /***
+     * 更新浏览数
+     * @param homeShopGoods
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateSee(HomeShopGoods homeShopGoods) {
+        return goodsCenterDao.updateSee(homeShopGoods);
     }
 }

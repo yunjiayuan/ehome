@@ -358,6 +358,39 @@ public interface GoodsCenterDao {
     List<HomeShopGoods> findDishesSortList2(@Param("sort") int sort, @Param("shopId") long shopId, @Param("time") int time, @Param("goodsSort") long goodsSort);
 
     /***
+     * 二货商城首页分类查询
+     * @param sort  分类 0精选 1生活 2电器 3母婴 4时尚
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeShopGoods" +
+            " where auditType = 1 and deleteType=0" +
+            " and sellType = 0" +
+            "<if test=\"sort == 0\">" +
+            " order by refreshTime desc" +
+            " ,goodsType,stock desc" +
+            "</if>" +
+            "<if test=\"sort == 1\">" +
+            " and levelOne in(3,5)" +
+            " order by refreshTime desc" +
+            "</if>" +
+            "<if test=\"sort == 2\">" +
+            " and levelOne in(1,2)" +
+            " order by refreshTime desc" +
+            "</if>" +
+            "<if test=\"sort == 3\">" +
+            " and levelOne = 10" +
+            " order by refreshTime desc" +
+            "</if>" +
+            "<if test=\"sort == 4\">" +
+            " and levelOne in(6,7,9,11)" +
+            " order by refreshTime desc" +
+            "</if>" +
+            "</script>")
+    List<HomeShopGoods> findHomePageList(@Param("sort") int sort);
+
+
+    /***
      * 新增商品描述
      * @param dishes
      * @return
@@ -399,5 +432,17 @@ public interface GoodsCenterDao {
      */
     @Select("select * from GoodsDescribe where id=#{id}")
     GoodsDescribe disheSdetails(@Param("id") long id);
+
+    /***
+     * 更新浏览数
+     * @param kitchenDishes
+     * @return
+     */
+    @Update("<script>" +
+            "update HomeShopGoods set" +
+            " lookCount=#{lookCount}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int updateSee(HomeShopGoods kitchenDishes);
 
 }

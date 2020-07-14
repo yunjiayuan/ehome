@@ -293,6 +293,7 @@ public class Constants {
     public static final String REDIS_KEY_HOMESHOP = "homeShop_";//userId与家店对象关系对照
     public static final String REDIS_KEY_SHOPFLOOR = "shopFloor_";//userId与楼店对象关系对照
     public static final String REDIS_KEY_SHOPFLOOR_CARTLIST = "shopFloor_cartList_";//楼店购物车列表与userId关系对照
+    public static final String REDIS_KEY_HOMESHOP_CARTLIST = "homeShop_cartList_";//二货商城购物车列表与userId关系对照
     public static final String REDIS_KEY_SHOPFLOOR_SORTLIST = "shopFloor_sortList_";//楼店分类列表 格式 shopFloor_sortList_一级分类ID_二级楼店分类ID
     public static final String REDIS_KEY_SHOPFLOORORDERS = "shopFloorOrders_";//订单编号与楼店订单对象关系对照
     public static final String REDIS_KEY_SHOPFLOOR_MASTERORDERS = "shopFloor_masterOrders_";//订单编号与楼店补货订单对象关系对照

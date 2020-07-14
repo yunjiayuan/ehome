@@ -31,6 +31,8 @@ public class GoodsCategory {
 
     private String letter;//商品分类首字母
 
+    private String logo;//商品分类logo
+
     //与数据库无关
     private String ids;  //分类组合id
 //    private int brand;  //是否包含品牌  0没有 1有

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.GoodsCenterService;
+import com.busi.service.HomeShopOtherService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -36,6 +37,10 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
 
     @Autowired
     private GoodsCenterService goodsCenterService;
+
+    @Autowired
+    HomeShopOtherService collectService;
+
 
     /***
      * 发布商品
@@ -215,6 +220,29 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
             posts.setHouseNumber(userInfo.getHouseNumber());
         }
         Map<String, Object> map = CommonUtils.objectToMap(posts);
+        //新增浏览记录
+        HomeShopGoodsLook look = new HomeShopGoodsLook();
+        look.setTime(new Date());
+        look.setGoodsId(id);
+        look.setUserId(CommonUtils.getMyId());
+        look.setGoodsName(posts.getGoodsTitle());
+        if (!CommonUtils.checkFull(posts.getImgUrl())) {
+            String[] img = posts.getImgUrl().split(",");
+            look.setImgUrl(img[0]);//用第一张图做封面
+        }
+        look.setPrice(posts.getPrice());
+        look.setBasicDescribe(posts.getDetails());
+        look.setSpecs(posts.getSpecs());
+        collectService.addLook(look);
+        posts.setSeeNumber(posts.getSeeNumber() + 1);
+        goodsCenterService.updateSee(posts);
+        int collection = 0;//是否收藏过此商品  0没有  1已收藏
+        //验证是否收藏过
+        HomeShopGoodsCollection flag = collectService.findUserId(id, CommonUtils.getMyId());
+        if (flag != null) {
+            collection = 1;//1已收藏
+        }
+        map.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -238,6 +266,28 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         //开始查询
         PageBean<HomeShopGoods> pageBean = null;
         pageBean = goodsCenterService.findDishesSortList(sort, shopId, stock, time, goodsSort, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 二货商城首页分类查询
+     * @param sort  分类 0精选 1生活 2电器 3母婴 4时尚
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findHomePageList(@PathVariable int sort, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<HomeShopGoods> pageBean = null;
+        pageBean = goodsCenterService.findHomePageList(sort, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

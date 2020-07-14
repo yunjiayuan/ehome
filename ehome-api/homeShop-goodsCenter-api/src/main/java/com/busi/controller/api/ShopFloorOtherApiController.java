@@ -2,7 +2,6 @@ package com.busi.controller.api;
 
 import com.busi.entity.ReturnData;
 import com.busi.entity.ShopFloorGoodsCollection;
-import com.busi.entity.ShopFloorGoodsLook;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
