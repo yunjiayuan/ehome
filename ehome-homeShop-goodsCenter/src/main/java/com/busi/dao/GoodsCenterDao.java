@@ -440,7 +440,7 @@ public interface GoodsCenterDao {
      */
     @Update("<script>" +
             "update HomeShopGoods set" +
-            " lookCount=#{lookCount}" +
+            " seeNumber=#{seeNumber}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateSee(HomeShopGoods kitchenDishes);
