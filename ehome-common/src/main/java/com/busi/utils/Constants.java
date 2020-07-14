@@ -102,6 +102,13 @@ public class Constants {
     public static final String WEIXIN_APIV3_KEY = "a5f3a5276a278354564dd6f9df0c7469";//APIV3秘钥
     /** 微信支付提现业务 企业付款到零钱 结束**/
 
+    /**支付宝提现业务 单笔转账 开始**/
+    public static final String ALIPAY_URL = "https://openapi.alipay.com/gateway.do";
+    public static final String ALIPAY_APPID = "2016113003623646";//appid
+    public static final String ALIPAY_PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALklUsTh8UwAVzAnEsU83+v5BJthipdbWX7yF6Xt01wvGGVTW9wh1igGtY1uGJQtrJowRLLkfvU46DLPriEMCr4EWaDM70pR3AbVqrXOuQ3cbn0v9/hbAdL8G56kk6oPxLJS39RtCOnZurIz3ifRqEssMqTyMV02mJZcNVnDyIGLAgMBAAECgYEAif+Xwcfm4o8ebXWyN/E3tdrV5Dq/4jDkdApeNf8eGwe/V0baoSlXRl451EDLcSbaD9MKYYyOVJkl+TlywI8JMXPgxc2vkTr5Lb0D4lDeuDBo6aAqZJo6y5IEMYQpbprbY/iMLOpGR5SBUgpFZ7X522sIse9C7EBmFmQftWyrJIECQQDafXTtiYn6dekGVXrFXJMAtor/wvX3Vgsh12VHYprBbUMJEI/3HnVcLlkunk2L1K22l5EJLT0LoYdd4kxgJwWnAkEA2O5mfkTNnl3v6REldjIWUwi6CzURdV3viAJMRVH/xVvikGmGwPJT0MQ+IIvP5joooMSZsjw/Agh21R8DmPUpfQJBAK405awXw/n9VYUFVtRSEau54G445qEE6+9ZrJkUV8vt8Esj94XTtUOAeP8gnTfmpXM2uh+VAF1rt2D19Gud8XUCQCnvZBbSvCD6Lc+TRfekVRZ2IGjcOGTE5PIY55+a62O+kHy0OZ2A+tznos7t2CG8anAxsTh4VwHQmxA1758Y/Y0CQDHX4BRrvdl0Mp2SPy1ibqvlDCSs4wda4r+6rJRdJT+WN13sAb1cY6uRVA4KVQqyBq4u8AZut+TRPzgfzjR9Py4=";//私钥
+    public static final String ALIPAY_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB";//公钥
+    /** 支付宝提现业务 单笔转账钱 结束**/
+
     /** 实名制认证配置 开始**/
     public static final String CHECK_REALNAME_URL="http://op.juhe.cn/idcard/query";//实名认证地址
     public static final String REALNAME_KEY="78fff9fb99509e96a66110c92de4a5bf";//实名认证key

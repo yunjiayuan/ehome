@@ -45,7 +45,7 @@ public interface CashOutDao {
      * @param cashOutOrder
      * @return
      */
-    @Update("update cashOutOrder set cashOutStatus = #{cashOutStatus},accountTime = #{accountTime} where userId = #{userId} and id = #{id}")
+    @Update("update cashOutOrder set cashOutStatus = #{cashOutStatus},accountTime = #{accountTime},type = #{type} where userId = #{userId} and id = #{id}")
     int updateCashOutStatus(CashOutOrder cashOutOrder);
 
 
