@@ -54,8 +54,8 @@ public class AlipayUtils {
 
             Participant payeeInfo = new Participant();
             payeeInfo.setIdentity(identity);
-            payeeInfo.setIdentityType("ALIPAY_USER_ID");
-            payeeInfo.setName("");
+            payeeInfo.setIdentityType("ALIPAY_LOGON_ID");
+            payeeInfo.setName("孙天杰");
 
             AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
             model.setOutBizNo(ordernumber);
