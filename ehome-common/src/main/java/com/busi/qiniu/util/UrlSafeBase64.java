@@ -1,6 +1,7 @@
 package com.busi.qiniu.util;
 
-import com.qiniu.common.Constants;
+
+import java.nio.charset.Charset;
 
 /**
  * URL安全的Base64编码和解码
@@ -18,7 +19,7 @@ public final class UrlSafeBase64 {
      * @return 结果字符串
      */
     public static String encodeToString(String data) {
-        return encodeToString(data.getBytes(Constants.UTF_8));
+        return encodeToString(data.getBytes(Charset.forName("UTF-8")));
     }
 
     /**

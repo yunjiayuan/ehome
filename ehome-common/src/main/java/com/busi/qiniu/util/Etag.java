@@ -1,6 +1,5 @@
 package com.busi.qiniu.util;
 
-import com.qiniu.common.Constants;
 
 import java.io.*;
 import java.security.MessageDigest;
@@ -12,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public final class Etag {
 
+    public static final int BLOCK_SIZE = 4194304;
     private Etag() {
     }
 
@@ -89,10 +89,10 @@ public final class Etag {
             return "Fto5o-5ea0sNMlW_75VgGJCv2AcJ";
         }
         byte[] buffer = new byte[64 * 1024];
-        byte[][] blocks = new byte[(int) ((len + Constants.BLOCK_SIZE - 1) / Constants.BLOCK_SIZE)][];
+        byte[][] blocks = new byte[(int) ((len + BLOCK_SIZE - 1) / BLOCK_SIZE)][];
         for (int i = 0; i < blocks.length; i++) {
-            long left = len - (long) Constants.BLOCK_SIZE * i;
-            long read = left > Constants.BLOCK_SIZE ? Constants.BLOCK_SIZE : left;
+            long left = len - (long) BLOCK_SIZE * i;
+            long read = left > BLOCK_SIZE ? BLOCK_SIZE : left;
             blocks[i] = oneBlock(buffer, in, (int) read);
         }
         return resultEncode(blocks);
