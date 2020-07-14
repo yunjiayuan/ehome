@@ -9,6 +9,7 @@ import com.alipay.api.domain.AlipayFundTransUniTransferModel;
 import com.alipay.api.domain.Participant;
 import com.alipay.api.request.AlipayFundTransUniTransferRequest;
 import com.alipay.api.response.AlipayFundTransUniTransferResponse;
+import com.busi.entity.CashOutOrder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -51,13 +52,13 @@ public class AlipayUtils {
             AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
 
             Participant payeeInfo = new Participant();
-            payeeInfo.setIdentity(cashOutOrder.getI);
+            payeeInfo.setIdentity(cashOutOrder.getOpenid());
             payeeInfo.setIdentityType("ALIPAY_LOGON_ID");
-            payeeInfo.setName("孙天杰");
+            payeeInfo.setName(cashOutOrder.getName());
 
             AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
-            model.setOutBizNo(ordernumber);
-            model.setTransAmount(money+"");
+            model.setOutBizNo(cashOutOrder.getId());
+            model.setTransAmount(cashOutOrder.getMoney()+"");
             model.setProductCode("TRANS_ACCOUNT_NO_PWD");
             model.setBizScene("DIRECT_TRANSFER");
             model.setOrderTitle("提现");
