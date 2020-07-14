@@ -3,6 +3,8 @@ package com.busi.controller.api;
 import com.busi.entity.CashOutOrder;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,4 +24,14 @@ public interface CashOutOrderApiController {
      */
     @PostMapping("cashOut")
     ReturnData cashOut(@Valid @RequestBody CashOutOrder cashOut, BindingResult bindingResult);
+
+    /***
+     * 查询提现记录列表
+     * @param findType -1查询全部 2未到账 1已到账
+     * @param page     页码 第几页 起始值1
+     * @param count    每页条数
+     * @return
+     */
+    @GetMapping("findCashOutList/{findType}/{page}/{count}")
+    ReturnData findRedPacketsList(@PathVariable int findType, @PathVariable int page, @PathVariable int count);
 }
