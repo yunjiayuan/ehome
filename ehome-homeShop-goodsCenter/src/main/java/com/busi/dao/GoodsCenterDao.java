@@ -456,6 +456,7 @@ public interface GoodsCenterDao {
      * @param province  -1不限 发货地省份
      * @param city  -1不限 发货地城市
      * @param district  -1不限 发货地区域
+     * @param propertyName  属性值 多个属性之间","分隔
      * @return
      */
     @Select("<script>" +
@@ -487,10 +488,13 @@ public interface GoodsCenterDao {
             " and pinkageType = #{pinkageType}" +
             "</if>" +
 
-//            "<if test=\"colour != null and colour !='' and size != null and size !=''\">" +
-//            " and (propertyName LIKE CONCAT('%',#{colour},'%')" +
-//            " or propertyName LIKE CONCAT('%',#{size},'%'))" +
-//            "</if>" +
+
+            "<if test=\"propertyName != null and propertyName !=''\">" +
+            "<foreach collection='propertyName' index='index' item='item' separator='and'>" +
+            "propertyName  LIKE CONCAT('%',#{item},'%')" +
+            "</foreach>" +
+            "</if>" +
+
 
             "<if test=\"sort == 0\">" +
             " order by monthSales desc,refreshTime desc" +
@@ -505,6 +509,6 @@ public interface GoodsCenterDao {
             " order by price asc" +
             "</if>" +
             "</script>")
-    List<HomeShopGoods> findUserGoodsList(@Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String propertyName);
+    List<HomeShopGoods> findUserGoodsList(@Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String[] propertyName);
 
 }

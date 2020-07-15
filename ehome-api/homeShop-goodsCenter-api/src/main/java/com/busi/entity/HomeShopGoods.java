@@ -128,7 +128,9 @@ public class HomeShopGoods {
 
     private String specialProperty;       //特殊商品属性(多个属性之间";"分隔)  【暂不用】
 
-    private String propertyName;        //商品属性名称   传参时：多个属性之间"_"分隔  写表时：多个属性之间","分隔
+    private String propertyName;        //商品属性名称：分场景
+                                        // 传参时：多个属性之间"_"分隔 格式：属性ID,属性名称,属性值 如： 1,颜色,红色
+                                        // 写表时：多个属性之间","分隔 格式：#属性#,#属性# 如：#红色#,#4寸#
 
     // 与数据库无关字段
     private String name;                //用户名

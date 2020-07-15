@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,9 +72,9 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         for (int i = 0; i < strings.length; i++) {
             String[] s = strings[i].split(",");
             if (i == 0) {
-                propertyName = s[2];
+                propertyName = "#" + s[2] + "#";
             } else {
-                propertyName += "," + s[2];
+                propertyName += "," + "#" + s[2] + "#";
             }
         }
         homeShopGoods.setPropertyName(propertyName);
@@ -137,9 +136,9 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         for (int i = 0; i < strings.length; i++) {
             String[] s = strings[i].split(",");
             if (i == 0) {
-                propertyName = s[2];
+                propertyName = "#" + s[2] + "#";
             } else {
-                propertyName += "," + s[2];
+                propertyName += "," + "#" + s[2] + "#";
             }
         }
         homeShopGoods.setPropertyName(propertyName);
@@ -319,8 +318,17 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
+        String[] strings = null;
+        String[] tagArray = null;
         PageBean<HomeShopGoods> pageBean = null;
-        pageBean = goodsCenterService.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, propertyName, page, count);
+        if (!CommonUtils.checkFull(propertyName)) {
+            strings = propertyName.split(",");
+            for (int i = 0; i < strings.length; i++) {
+                tagArray = new String[strings.length];
+                tagArray[i] = "#" + strings[i] + "#";
+            }
+        }
+        pageBean = goodsCenterService.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, tagArray, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

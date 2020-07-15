@@ -255,22 +255,23 @@ public class GoodsCenterService {
     /***
      * 分页查询商品(用户调用)
      * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
-     * @param brandId  品牌ID
-     * @param pinkageType  是否包邮:0是  1否
+     * @param brandId  -1不限 品牌ID
+     * @param pinkageType  是否包邮:-1不限 0是  1否
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
-     * @param province  发货地省份
-     * @param city  发货地城市
-     * @param district  发货地区域
+     * @param province  -1不限 发货地省份
+     * @param city  -1不限 发货地城市
+     * @param district  -1不限 发货地区域
+     * @param propertyName  属性值 多个属性之间","分隔
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<HomeShopGoods> findUserGoodsList(int sort, long brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String propertyName, int page, int count) {
+    public PageBean<HomeShopGoods> findUserGoodsList(int sort, long brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String[] propertyName, int page, int count) {
 
         List<HomeShopGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        if (CommonUtils.checkFull(propertyName)) {
+        if (propertyName.length <= 0) {
             propertyName = null;
         }
         list = goodsCenterDao.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, propertyName);
