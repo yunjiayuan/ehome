@@ -31,6 +31,8 @@ public class BigVAccountsExamine {
 
     private int state;//状态：0审核中  1未通过  2审核通过
 
+    private int sort;//区分：0个人  1组织、团体
+
     //与数据库无关字段
     private String name;        //用户名称
     private String head;        //用户头像

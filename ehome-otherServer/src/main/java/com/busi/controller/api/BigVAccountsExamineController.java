@@ -50,22 +50,25 @@ public class BigVAccountsExamineController extends BaseController implements Big
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        //判断该用户是否实名
-        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + CommonUtils.getMyId());
-        if (map == null || map.size() <= 0) {
-            UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(CommonUtils.getMyId());
-            if (userAccountSecurity == null) {
-                return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
-            } else {
-                userAccountSecurity.setRedisStatus(1);//数据库中已有记录
+        //判断是否是个人
+        if (homeAlbum.getSort() == 0) {
+            //判断该用户是否实名
+            Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + CommonUtils.getMyId());
+            if (map == null || map.size() <= 0) {
+                UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(CommonUtils.getMyId());
+                if (userAccountSecurity == null) {
+                    return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+                } else {
+                    userAccountSecurity.setRedisStatus(1);//数据库中已有记录
+                }
+                //放到缓存中
+                map = CommonUtils.objectToMap(userAccountSecurity);
+                redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + CommonUtils.getMyId(), map, Constants.USER_TIME_OUT);
             }
-            //放到缓存中
-            map = CommonUtils.objectToMap(userAccountSecurity);
-            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + CommonUtils.getMyId(), map, Constants.USER_TIME_OUT);
-        }
-        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
-        if (userAccountSecurity == null || CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
-            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+            UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
+            if (userAccountSecurity == null || CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
+                return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+            }
         }
         BigVAccountsExamine modelPwd = bigVAccountsExamineService.findById(CommonUtils.getMyId());
         homeAlbum.setTime(new Date());
@@ -134,26 +137,29 @@ public class BigVAccountsExamineController extends BaseController implements Big
         if (myId != 10076 && myId != 12770 && myId != 9389 && myId != 9999 && myId != 13005 && myId != 12774 && myId != 13031 && myId != 12769 && myId != 12796 && myId != 10053) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
         }
-        //判断该用户是否实名
-        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + homeAlbum.getUserId());
-        if (map == null || map.size() <= 0) {
-            UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(homeAlbum.getUserId());
-            if (userAccountSecurity == null) {
+        //判断是否是个人
+        if (homeAlbum.getSort() == 0) {
+            //判断该用户是否实名
+            Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + homeAlbum.getUserId());
+            if (map == null || map.size() <= 0) {
+                UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(homeAlbum.getUserId());
+                if (userAccountSecurity == null) {
+                    homeAlbum.setState(1);//未通过
+                    bigVAccountsExamineService.changeAppealState(homeAlbum);
+                    return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+                } else {
+                    userAccountSecurity.setRedisStatus(1);//数据库中已有记录
+                }
+                //放到缓存中
+                map = CommonUtils.objectToMap(userAccountSecurity);
+                redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + homeAlbum.getUserId(), map, Constants.USER_TIME_OUT);
+            }
+            UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
+            if (userAccountSecurity == null || CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
                 homeAlbum.setState(1);//未通过
                 bigVAccountsExamineService.changeAppealState(homeAlbum);
                 return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
-            } else {
-                userAccountSecurity.setRedisStatus(1);//数据库中已有记录
             }
-            //放到缓存中
-            map = CommonUtils.objectToMap(userAccountSecurity);
-            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + homeAlbum.getUserId(), map, Constants.USER_TIME_OUT);
-        }
-        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
-        if (userAccountSecurity == null || CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
-            homeAlbum.setState(1);//未通过
-            bigVAccountsExamineService.changeAppealState(homeAlbum);
-            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
         }
         bigVAccountsExamineService.changeAppealState(homeAlbum);
 

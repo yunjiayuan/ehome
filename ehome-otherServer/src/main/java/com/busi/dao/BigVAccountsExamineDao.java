@@ -20,8 +20,8 @@ public interface BigVAccountsExamineDao {
      * @param homeAlbumPwd
      * @return
      */
-    @Insert("insert into BigVAccountsExamine(idPositive,userId,idBack,opinion,time,state) " +
-            "values (#{idPositive},#{userId},#{idBack},#{opinion},#{time},#{state})")
+    @Insert("insert into BigVAccountsExamine(idPositive,userId,idBack,opinion,time,state,sort) " +
+            "values (#{idPositive},#{userId},#{idBack},#{opinion},#{time},#{state},#{sort})")
     @Options(useGeneratedKeys = true)
     int add(BigVAccountsExamine homeAlbumPwd);
 
@@ -44,13 +44,14 @@ public interface BigVAccountsExamineDao {
             "<if test=\"time != null\">" +
             " time=#{time}," +
             "</if>" +
-            " state=#{state}" +
+            " state=#{state}," +
+            " sort=#{sort}" +
             " where id=#{id}" +
             "</script>")
     int changeAppealState(BigVAccountsExamine homeAlbumPwd);
 
     /***
-     * 根据ID查询用户
+     * 根据用户ID查询
      * @param userId
      */
     @Select("select * from BigVAccountsExamine where userId = #{userId}")
