@@ -2,6 +2,7 @@ package com.busi.service;
 
 import com.busi.dao.GoodsCenterDao;
 import com.busi.entity.*;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -261,17 +262,18 @@ public class GoodsCenterService {
      * @param province  发货地省份
      * @param city  发货地城市
      * @param district  发货地区域
-     * @param colour  颜色
-     * @param size  尺码
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<HomeShopGoods> findUserGoodsList(int sort, long brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String colour, String size, int page, int count) {
+    public PageBean<HomeShopGoods> findUserGoodsList(int sort, long brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String propertyName, int page, int count) {
 
         List<HomeShopGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = goodsCenterDao.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, colour, size);
+        if (CommonUtils.checkFull(propertyName)) {
+            propertyName = null;
+        }
+        list = goodsCenterDao.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, propertyName);
         return PageUtils.getPageBean(p, list);
     }
 

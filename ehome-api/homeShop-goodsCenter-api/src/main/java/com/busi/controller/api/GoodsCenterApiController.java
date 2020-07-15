@@ -79,14 +79,13 @@ public interface GoodsCenterApiController {
      * @param province  发货地省份
      * @param city  发货地城市
      * @param district  发货地区域
-     * @param colour  颜色
-     * @param size  尺码
+     * @param propertyName  属性值 多个属性之间","分隔
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findUserGoodsList/{sort}/{brandId}/{pinkageType}/{minPrice}/{maxPrice}/{province}/{city}/{district}/{colour}/{size}/{page}/{count}")
-    ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String colour, @PathVariable String size, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findUserGoodsList/{sort}/{brandId}/{pinkageType}/{minPrice}/{maxPrice}/{province}/{city}/{district}/{colour}/{page}/{count}")
+    ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count);
 
 
     /***

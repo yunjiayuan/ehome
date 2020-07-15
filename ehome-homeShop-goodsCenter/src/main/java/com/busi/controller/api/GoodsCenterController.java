@@ -307,19 +307,20 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
      * @param province  -1不限 发货地省份
      * @param city  -1不限 发货地城市
      * @param district  -1不限 发货地区域
-     * @param colour  颜色
-     * @param size  尺码
+     * @param propertyName  属性值 多个属性之间","分隔
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
      * @return
      */
     @Override
-    public ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String colour, @PathVariable String size, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<HomeShopGoods> pageBean = null;
-        pageBean = goodsCenterService.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, colour, size, page, count);
+        pageBean = goodsCenterService.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, propertyName, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

@@ -456,8 +456,6 @@ public interface GoodsCenterDao {
      * @param province  -1不限 发货地省份
      * @param city  -1不限 发货地城市
      * @param district  -1不限 发货地区域
-     * @param colour  颜色
-     * @param size  尺码
      * @return
      */
     @Select("<script>" +
@@ -489,20 +487,10 @@ public interface GoodsCenterDao {
             " and pinkageType = #{pinkageType}" +
             "</if>" +
 
-            "<if test=\"colour != null and colour !='' and size != null and size !=''\">" +
-            " and (propertyName LIKE CONCAT('%',#{colour},'%')" +
-            " or propertyName LIKE CONCAT('%',#{size},'%'))" +
-            "</if>" +
-            "<if test=\"size != null and size !=''\">" +
-            "<if test=\"colour == null or colour ==''\">" +
-            " and propertyName LIKE CONCAT('%',#{size},'%')" +
-            "</if>" +
-            "</if>" +
-            "<if test=\"colour != null and colour !=''\">" +
-            "<if test=\"size == null or size ==''\">" +
-            " and propertyName LIKE CONCAT('%',#{colour},'%')" +
-            "</if>" +
-            "</if>" +
+//            "<if test=\"colour != null and colour !='' and size != null and size !=''\">" +
+//            " and (propertyName LIKE CONCAT('%',#{colour},'%')" +
+//            " or propertyName LIKE CONCAT('%',#{size},'%'))" +
+//            "</if>" +
 
             "<if test=\"sort == 0\">" +
             " order by monthSales desc,refreshTime desc" +
@@ -517,6 +505,6 @@ public interface GoodsCenterDao {
             " order by price asc" +
             "</if>" +
             "</script>")
-    List<HomeShopGoods> findUserGoodsList(@Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("colour") String colour, @Param("size") String size);
+    List<HomeShopGoods> findUserGoodsList(@Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String propertyName);
 
 }
