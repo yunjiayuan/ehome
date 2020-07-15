@@ -84,7 +84,7 @@ public interface GoodsCenterApiController {
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findUserGoodsList/{sort}/{brandId}/{pinkageType}/{minPrice}/{maxPrice}/{province}/{city}/{district}/{colour}/{page}/{count}")
+    @GetMapping("findUserGoodsList/{sort}/{brandId}/{pinkageType}/{minPrice}/{maxPrice}/{province}/{city}/{district}/{propertyName}/{page}/{count}")
     ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count);
 
 
