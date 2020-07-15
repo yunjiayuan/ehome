@@ -4,6 +4,8 @@ import com.busi.entity.CashOutOrder;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 提现相关DAO
  * author：SunTianJie
@@ -48,5 +50,19 @@ public interface CashOutDao {
     @Update("update cashOutOrder set cashOutStatus = #{cashOutStatus},accountTime = #{accountTime},type = #{type} where userId = #{userId} and id = #{id}")
     int updateCashOutStatus(CashOutOrder cashOutOrder);
 
+    /**
+     * 查询红包列表
+     * @param findType -1查询全部 2未到账 1已到账
+     * @return
+     */
+    @Select("<script>" +
+            "select * from cashOutOrder" +
+            " where 1=1" +
+            "<if test=\"findType != -1 \">"+
+                " and cashOutStatus = #{findType}" +
+            "</if>" +
+            " order by time desc" +
+            "</script>")
+    List<CashOutOrder> findCashOutList(@Param("findType") long findType);
 
 }

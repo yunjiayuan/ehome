@@ -20,7 +20,7 @@ public class CashOutOrder {
 
     private String id;//订单ID 程序生成
 
-    private String openid;//用户标识  微信身份标识或支付宝身份标识
+    private String openid;//用户标识  微信身份标识或支付宝登录ID
 
     private int type;//提现类型 0提现到微信 1提现到支付宝 2提现到银行卡（银联）
 
@@ -44,4 +44,9 @@ public class CashOutOrder {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date accountTime;//到账时间
 
+    private String name;//支付宝账号对应的名字  与数据库无关
+    private String userName;//用户名字  与数据库无关
+    private String userHead;//用户头像  与数据库无关
+    private long houseNumber;//用户门牌号  与数据库无关
+    private int proId;//用户省简称ID  与数据库无关
 }

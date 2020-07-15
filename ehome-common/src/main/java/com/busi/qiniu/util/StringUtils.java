@@ -1,6 +1,5 @@
 package com.busi.qiniu.util;
 
-import com.qiniu.common.Constants;
 import qiniu.happydns.util.Hex;
 
 import java.nio.charset.Charset;
@@ -131,11 +130,11 @@ public final class StringUtils {
     }
 
     public static byte[] utf8Bytes(String data) {
-        return data.getBytes(Constants.UTF_8);
+        return data.getBytes(Charset.forName("UTF-8"));
     }
 
     public static String utf8String(byte[] data) {
-        return new String(data, Constants.UTF_8);
+        return new String(data, Charset.forName("UTF-8"));
     }
 
     public static String md5Lower(String src) throws NoSuchAlgorithmException {
