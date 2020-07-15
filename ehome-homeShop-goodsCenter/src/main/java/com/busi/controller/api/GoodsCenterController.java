@@ -300,17 +300,15 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
     /***
      * 分页查询商品(用户调用)
      * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
-     * @param brandId  品牌ID
-     * @param pinkageType  是否包邮:0是  1否
+     * @param brandId  -1不限 品牌ID
+     * @param pinkageType  是否包邮:-1不限 0是  1否
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
-     * @param province  发货地省份
-     * @param city  发货地城市
-     * @param district  发货地区域
-     * @param colour  颜色 逗号分隔
-     * @param size  尺码  逗号分隔
-     * @param page  页码 第几页 起始值1
-     * @param count 每页条数
+     * @param province  -1不限 发货地省份
+     * @param city  -1不限 发货地城市
+     * @param district  -1不限 发货地区域
+     * @param colour  颜色
+     * @param size  尺码
      * @return
      */
     @Override

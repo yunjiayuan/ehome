@@ -489,11 +489,19 @@ public interface GoodsCenterDao {
             " and pinkageType = #{pinkageType}" +
             "</if>" +
 
-            "<if test=\"colour != null and colour !=''\">" +
-            " and propertyName LIKE CONCAT('%',#{colour},'%')" +
+            "<if test=\"colour != null and colour !='' and size != null and size !=''\">" +
+            " and (propertyName LIKE CONCAT('%',#{colour},'%')" +
+            " or propertyName LIKE CONCAT('%',#{size},'%'))" +
             "</if>" +
             "<if test=\"size != null and size !=''\">" +
+            "<if test=\"colour == null or colour ==''\">" +
             " and propertyName LIKE CONCAT('%',#{size},'%')" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"colour != null and colour !=''\">" +
+            "<if test=\"size == null or size ==''\">" +
+            " and propertyName LIKE CONCAT('%',#{colour},'%')" +
+            "</if>" +
             "</if>" +
 
             "<if test=\"sort == 0\">" +
