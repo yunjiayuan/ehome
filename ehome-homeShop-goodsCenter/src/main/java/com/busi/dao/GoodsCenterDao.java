@@ -21,11 +21,11 @@ public interface GoodsCenterDao {
      * @return
      */
     @Insert("insert into HomeShopGoods(shopId,userId,imgUrl,goodsType,goodsTitle,usedSort,levelOne,levelTwo,levelThree,levelFour,levelFive,brandId,videoCoverUrl,videoUrl," +
-            "brand,specs,price,stock,details,detailsId,barCode,code,sort,sortId," +
+            "brand,specs,price,stock,details,detailsId,barCode,code,sort,sortId,propertyName," +
             "province,city,district,pinkageType,expressMode,invoice,guarantee,refunds,returnPolicy,stockCount,startTime," +
             "spike,galleryFeatured,releaseTime,refreshTime,sellType,auditType,frontPlaceType,specialProperty,usedSortId) " +
             "values (#{shopId},#{userId},#{imgUrl},#{goodsType},#{goodsTitle},#{usedSort},#{levelOne},#{levelTwo},#{levelThree},#{levelFour},#{levelFive},#{brandId},#{videoCoverUrl},#{videoUrl}," +
-            "#{brand},#{specs},#{price},#{stock},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId}," +
+            "#{brand},#{specs},#{price},#{stock},#{details},#{detailsId},#{barCode},#{code},#{sort},#{sortId},#{propertyName}," +
             "#{province},#{city},#{district},#{pinkageType},#{expressMode},#{invoice},#{guarantee},#{refunds},#{returnPolicy},#{stockCount},#{startTime}," +
             "#{spike},#{galleryFeatured},#{releaseTime},#{refreshTime},#{sellType},#{auditType},#{frontPlaceType},#{specialProperty},#{usedSortId})")
     @Options(useGeneratedKeys = true)
@@ -107,6 +107,7 @@ public interface GoodsCenterDao {
             " spike=#{spike}," +
             " refreshTime=#{refreshTime}," +
             " specialProperty=#{specialProperty}," +
+            " propertyName=#{propertyName}," +
             " galleryFeatured=#{galleryFeatured}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -444,5 +445,70 @@ public interface GoodsCenterDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateSee(HomeShopGoods kitchenDishes);
+
+    /***
+     * 分页查询商品(用户调用)
+     * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
+     * @param brandId  -1不限 品牌ID
+     * @param pinkageType  是否包邮:-1不限 0是  1否
+     * @param minPrice  最小价格
+     * @param maxPrice  最大价格
+     * @param province  -1不限 发货地省份
+     * @param city  -1不限 发货地城市
+     * @param district  -1不限 发货地区域
+     * @param colour  颜色
+     * @param size  尺码
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeShopGoods" +
+            " where deleteType=0 and sellType=0 and auditType=1" +
+
+            "<if test=\"brandId >= 1\">" +
+            " and brandId = #{brandId}" +
+            "</if>" +
+
+            "<if test=\"province >= 0\">" +
+            " and province = #{province}" +
+            "</if>" +
+            "<if test=\"city >= 0\">" +
+            " and city = #{city}" +
+            "</if>" +
+            "<if test=\"district >= 0\">" +
+            " and district = #{district}" +
+            "</if>" +
+
+            "<if test=\"maxPrice > 0\">" +
+            " and price >= #{minPrice} and #{maxPrice} >= price" +
+            "</if>" +
+            "<if test=\"maxPrice &lt;= 0\">" +
+            " and price >= #{minPrice}" +
+            "</if>" +
+
+            "<if test=\"pinkageType >= 0\">" +
+            " and pinkageType = #{pinkageType}" +
+            "</if>" +
+
+            "<if test=\"colour != null and colour !=''\">" +
+            " and propertyName LIKE CONCAT('%',#{colour},'%')" +
+            "</if>" +
+            "<if test=\"size != null and size !=''\">" +
+            " and propertyName LIKE CONCAT('%',#{size},'%')" +
+            "</if>" +
+
+            "<if test=\"sort == 0\">" +
+            " order by monthSales desc,refreshTime desc" +
+            "</if>" +
+            "<if test=\"sort == 1\">" +
+            " order by monthSales desc" +
+            "</if>" +
+            "<if test=\"sort == 2\">" +
+            " order by price desc" +
+            "</if>" +
+            "<if test=\"sort == 3\">" +
+            " order by price asc" +
+            "</if>" +
+            "</script>")
+    List<HomeShopGoods> findUserGoodsList(@Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("colour") String colour, @Param("size") String size);
 
 }

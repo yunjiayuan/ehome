@@ -56,7 +56,7 @@ public interface GoodsCenterApiController {
     ReturnData getShopGoods(@PathVariable long id);
 
     /***
-     * 分页查询
+     * 分页查询（店家）
      * @param sort  排序条件:0出售中，1仓库中，2已预约
      * @param shopId  店铺ID
      * @param stock  库存：0倒序 1正序
@@ -68,6 +68,26 @@ public interface GoodsCenterApiController {
      */
     @GetMapping("findGoodsList/{sort}/{shopId}/{stock}/{time}/{goodsSort}/{page}/{count}")
     ReturnData findGoodsList(@PathVariable int sort, @PathVariable long shopId, @PathVariable int stock, @PathVariable int time, @PathVariable long goodsSort, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 分页查询商品(用户调用)
+     * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
+     * @param brandId  品牌ID
+     * @param pinkageType  是否包邮:0是  1否
+     * @param minPrice  最小价格
+     * @param minPrice  最小价格
+     * @param province  发货地省份
+     * @param city  发货地城市
+     * @param district  发货地区域
+     * @param colour  颜色
+     * @param size  尺码
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findUserGoodsList/{sort}/{brandId}/{pinkageType}/{minPrice}/{maxPrice}/{province}/{city}/{district}/{colour}/{size}/{page}/{count}")
+    ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String colour, @PathVariable String size, @PathVariable int page, @PathVariable int count);
+
 
     /***
      * 二货商城首页分类查询

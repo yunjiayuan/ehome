@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,6 +67,18 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         if (!CommonUtils.checkProvince_city_district(0, homeShopGoods.getProvince(), homeShopGoods.getCity(), homeShopGoods.getDistrict())) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
         }
+        //获取属性值
+        String propertyName = "";
+        String[] strings = homeShopGoods.getPropertyName().split("_");
+        for (int i = 0; i < strings.length; i++) {
+            String[] s = strings[i].split(",");
+            if (i == 0) {
+                propertyName = s[2];
+            } else {
+                propertyName += "," + s[2];
+            }
+        }
+        homeShopGoods.setPropertyName(propertyName);
         homeShopGoods.setAuditType(1);
 //        homeShopGoods.setSellType(1);
         homeShopGoods.setReleaseTime(new Date());
@@ -118,6 +131,18 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         if (posts == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
+        //获取属性值
+        String propertyName = "";
+        String[] strings = homeShopGoods.getPropertyName().split("_");
+        for (int i = 0; i < strings.length; i++) {
+            String[] s = strings[i].split(",");
+            if (i == 0) {
+                propertyName = s[2];
+            } else {
+                propertyName += "," + s[2];
+            }
+        }
+        homeShopGoods.setPropertyName(propertyName);
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.update(homeShopGoods);
 
@@ -247,7 +272,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
     }
 
     /***
-     * 分页查询商品
+     * 分页查询商品（店家）
      * @param shopId  店铺ID
      * @param sort  查询条件:-1全部  0出售中，1仓库中，2已预约
      * @param stock  库存：0倒序 1正序
@@ -266,6 +291,37 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         //开始查询
         PageBean<HomeShopGoods> pageBean = null;
         pageBean = goodsCenterService.findDishesSortList(sort, shopId, stock, time, goodsSort, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 分页查询商品(用户调用)
+     * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
+     * @param brandId  品牌ID
+     * @param pinkageType  是否包邮:0是  1否
+     * @param minPrice  最小价格
+     * @param maxPrice  最大价格
+     * @param province  发货地省份
+     * @param city  发货地城市
+     * @param district  发货地区域
+     * @param colour  颜色 逗号分隔
+     * @param size  尺码  逗号分隔
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String colour, @PathVariable String size, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<HomeShopGoods> pageBean = null;
+        pageBean = goodsCenterService.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, colour, size, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
