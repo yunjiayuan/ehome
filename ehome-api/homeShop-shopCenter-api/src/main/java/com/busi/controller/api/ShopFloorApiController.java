@@ -1,9 +1,6 @@
 package com.busi.controller.api;
 
-import com.busi.entity.ReturnData;
-import com.busi.entity.ShopFloor;
-import com.busi.entity.ShopFloorBondOrders;
-import com.busi.entity.YongHuiGoodsSort;
+import com.busi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -186,4 +183,19 @@ public interface ShopFloorApiController {
      */
     @DeleteMapping("delYHSort/{ids}")
     ReturnData delYHSort(@PathVariable String ids);
+
+    /***
+     * 新增or更新家门口坐标
+     * @param shopFloorMyDoorway
+     * @return
+     */
+    @PutMapping("editMyDoorway")
+    ReturnData editMyDoorway(@Valid @RequestBody ShopFloorMyDoorway shopFloorMyDoorway, BindingResult bindingResult);
+
+    /***
+     * 查询家门口坐标
+     * @return
+     */
+    @GetMapping("findMyDoorway")
+    ReturnData findMyDoorway();
 }

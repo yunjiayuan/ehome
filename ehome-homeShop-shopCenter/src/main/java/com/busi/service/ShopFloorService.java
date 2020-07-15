@@ -316,4 +316,33 @@ public class ShopFloorService {
         list = shopCenterDao.findNearbySFList4(null, province, city, district, -1);
         return list;
     }
+
+    /***
+     * 新增家门口坐标
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addMyDoorway(ShopFloorMyDoorway homeShopCenter) {
+        return shopCenterDao.addMyDoorway(homeShopCenter);
+    }
+
+    /***
+     * 更新家门口坐标
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int editMyDoorway(ShopFloorMyDoorway homeShopCenter) {
+        return shopCenterDao.editMyDoorway(homeShopCenter);
+    }
+
+    /***
+     * 根据用户ID查询
+     * @param userId
+     * @return
+     */
+    public ShopFloorMyDoorway findMyDoorway(long userId) {
+        return shopCenterDao.findMyDoorway(userId);
+    }
 }
