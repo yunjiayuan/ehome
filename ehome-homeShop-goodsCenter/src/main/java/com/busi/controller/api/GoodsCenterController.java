@@ -298,6 +298,11 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
 
     /***
      * 分页查询商品(用户调用)
+     * @param levelOne 商品1级分类  默认为0, -2为不限
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
      * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
      * @param brandId  -1不限 品牌ID
      * @param pinkageType  是否包邮:-1不限 0是  1否
@@ -312,23 +317,26 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
      * @return
      */
     @Override
-    public ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findUserGoodsList(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
+        String tagArray = "";
         String[] strings = null;
-        String[] tagArray = null;
         PageBean<HomeShopGoods> pageBean = null;
         if (!CommonUtils.checkFull(propertyName)) {
             strings = propertyName.split(",");
             for (int i = 0; i < strings.length; i++) {
-                tagArray = new String[strings.length];
-                tagArray[i] = "#" + strings[i] + "#";
+                if (i == 0) {
+                    tagArray = "#" + strings[i] + "#";
+                } else {
+                    tagArray += "," + "#" + strings[i] + "#";
+                }
             }
         }
-        pageBean = goodsCenterService.findUserGoodsList(sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, tagArray, page, count);
+        pageBean = goodsCenterService.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, tagArray, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

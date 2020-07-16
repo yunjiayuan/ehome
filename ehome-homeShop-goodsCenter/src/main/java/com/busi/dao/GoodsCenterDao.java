@@ -448,6 +448,11 @@ public interface GoodsCenterDao {
 
     /***
      * 分页查询商品(用户调用)
+     * @param levelOne 商品1级分类  默认为0, -2为不限
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
      * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
      * @param brandId  -1不限 品牌ID
      * @param pinkageType  是否包邮:-1不限 0是  1否
@@ -462,6 +467,38 @@ public interface GoodsCenterDao {
     @Select("<script>" +
             "select * from HomeShopGoods" +
             " where deleteType=0 and sellType=0 and auditType=1" +
+
+            "<if test=\"levelOne == -2 \">" +
+            " and levelOne > -1" +
+            "</if>" +
+
+            "<if test=\"levelOne >= 0 \">" +
+                "<if test=\"levelTwo == -2 \">" +
+                    " and levelOne = #{levelOne}" +
+                "</if>" +
+                "<if test=\"levelTwo > -1 \">" +
+                    " and levelOne = #{levelOne}" +
+                    " and levelTwo = #{levelTwo}" +
+                        "<if test=\"levelThree >= 0\">" +
+                          " and levelThree = #{levelThree}" +
+                                "<if test=\"levelFour >= 0\">" +
+                                " and levelFour = #{levelFour}" +
+                                    "<if test=\"levelFive >= 0\">" +
+                                    " and levelFive = #{levelFive}" +
+                                    "</if>" +
+                                    "<if test=\"levelFive == -2\">" +
+                                    " and levelFive >= -1" +
+                                    "</if>" +
+                                "</if>" +
+                                "<if test=\"levelFour == -2\">" +
+                                " and levelFour >= -1" +
+                                "</if>" +
+                        "</if>" +
+                        "<if test=\"levelThree == -2\">" +
+                            " and levelThree >= -1" +
+                        "</if>" +
+                "</if>" +
+            "</if>" +
 
             "<if test=\"brandId >= 1\">" +
             " and brandId = #{brandId}" +
@@ -488,13 +525,12 @@ public interface GoodsCenterDao {
             " and pinkageType = #{pinkageType}" +
             "</if>" +
 
-
             "<if test=\"propertyName != null and propertyName !=''\">" +
-            "<foreach collection='propertyName' index='index' item='item' separator='and'>" +
-            "propertyName  LIKE CONCAT('%',#{item},'%')" +
+            " and " +
+            "<foreach collection='propertyName' index='index' item='item' open='(' separator='or' close=')'>" +
+            " propertyName like CONCAT('%',#{item},'%')" +
             "</foreach>" +
             "</if>" +
-
 
             "<if test=\"sort == 0\">" +
             " order by monthSales desc,refreshTime desc" +
@@ -509,6 +545,6 @@ public interface GoodsCenterDao {
             " order by price asc" +
             "</if>" +
             "</script>")
-    List<HomeShopGoods> findUserGoodsList(@Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String[] propertyName);
+    List<HomeShopGoods> findUserGoodsList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive, @Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String[] propertyName);
 
 }

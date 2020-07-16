@@ -71,21 +71,26 @@ public interface GoodsCenterApiController {
 
     /***
      * 分页查询商品(用户调用)
+     * @param levelOne 商品1级分类  默认为0, -2为不限
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
      * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
-     * @param brandId  品牌ID
-     * @param pinkageType  是否包邮:0是  1否
+     * @param brandId  -1不限 品牌ID
+     * @param pinkageType  是否包邮:-1不限 0是  1否
      * @param minPrice  最小价格
-     * @param minPrice  最小价格
-     * @param province  发货地省份
-     * @param city  发货地城市
-     * @param district  发货地区域
+     * @param maxPrice  最大价格
+     * @param province  -1不限 发货地省份
+     * @param city  -1不限 发货地城市
+     * @param district  -1不限 发货地区域
      * @param propertyName  属性值 多个属性之间","分隔
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findUserGoodsList/{sort}/{brandId}/{pinkageType}/{minPrice}/{maxPrice}/{province}/{city}/{district}/{propertyName}/{page}/{count}")
-    ReturnData findUserGoodsList(@PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findUserGoodsList/{levelOne}/{levelTwo}/{levelThree}/{levelFour}/{levelFive}/{sort}/{brandId}/{pinkageType}/{minPrice}/{maxPrice}/{province}/{city}/{district}/{propertyName}/{page}/{count}")
+    ReturnData findUserGoodsList(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count);
 
 
     /***

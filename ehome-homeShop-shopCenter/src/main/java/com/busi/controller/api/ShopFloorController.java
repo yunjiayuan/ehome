@@ -713,7 +713,7 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
     public ReturnData findMyDoorway() {
         ShopFloorMyDoorway shopFloorMyDoorway = shopCenterService.findMyDoorway(CommonUtils.getMyId());
         if (shopFloorMyDoorway == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, shopFloorMyDoorway);
     }
