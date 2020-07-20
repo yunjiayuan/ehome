@@ -91,7 +91,7 @@ public class AlipayUtils {
         AlipayUserInfoAuthRequest request = new AlipayUserInfoAuthRequest();
         request.setBizContent("{" +
                 "      \"scopes\":[" +
-                "        \"auth_base\"" +
+                "        \"auth_user\"" +
                 "      ]," +
                 "\"state\":\"init\"" +
                 "  }");
