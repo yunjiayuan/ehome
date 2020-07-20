@@ -1,6 +1,7 @@
 package com.busi.utils;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.CertAlipayRequest;
@@ -97,14 +98,16 @@ public class AlipayUtils {
         AlipayUserInfoAuthResponse response = null;
         try {
             response = alipayClient.pageExecute(request);
+            if(response.isSuccess()){
+                JSONObject jsonObject = JSONObject.parseObject(response.getBody().getBytes().toString());
+                return jsonObject.toString();
+            } else {
+                log.info("调用失败");
+            }
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
-        if(response.isSuccess()){
-            return response.getBody();
-        } else {
-            log.info("调用失败");
-        }
+
         return null;
     }
 }
