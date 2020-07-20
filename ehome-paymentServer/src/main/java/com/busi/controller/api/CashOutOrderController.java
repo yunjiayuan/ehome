@@ -135,4 +135,15 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,pageBean);
     }
+
+    /***
+     * 获取支付宝登录签名
+     * @return
+     */
+    @Override
+    public ReturnData getAliLoginSign() {
+        Map<String,String> map = new HashMap();
+        map.put("sign",AlipayUtils.getLoginSign());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
+    }
 }

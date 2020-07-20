@@ -34,4 +34,11 @@ public interface CashOutOrderApiController {
      */
     @GetMapping("findCashOutList/{findType}/{page}/{count}")
     ReturnData findRedPacketsList(@PathVariable int findType, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 获取支付宝登录签名
+     * @return
+     */
+    @GetMapping("getAliLoginSign")
+    ReturnData getAliLoginSign();
 }
