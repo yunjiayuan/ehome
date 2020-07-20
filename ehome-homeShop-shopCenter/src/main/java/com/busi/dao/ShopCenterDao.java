@@ -230,9 +230,13 @@ public interface ShopCenterDao {
      * @return
      */
     @Select("<script>" +
-            "select * from GoodsBrandCategoryValue where categoryId=#{sortId}" +
+            "select * from GoodsBrandCategoryValue where " +
+            "categoryId in" +
+            "<foreach collection='sortId' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
             "</script>")
-    List<GoodsBrandCategoryValue> findCategoryValue(@Param("sortId") long sortId);
+    List<GoodsBrandCategoryValue> findCategoryValue(@Param("sortId") String[] sortId);
 
     /***
      * 查询商品品牌
