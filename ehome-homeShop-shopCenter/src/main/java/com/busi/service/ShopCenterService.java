@@ -125,6 +125,12 @@ public class ShopCenterService {
         return PageUtils.getPageBean(p, list);
     }
 
+    public List<GoodsCategory> findGoodsCategoryId(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive) {
+        List<GoodsCategory> list;
+        list = shopCenterDao.findList(levelOne, levelTwo, levelThree, levelFour, levelFive);
+        return list;
+    }
+
     public GoodsCategory findList2(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive) {
 
         return shopCenterDao.findList3(levelOne, levelTwo, levelThree, levelFour, levelFive);
@@ -135,8 +141,8 @@ public class ShopCenterService {
      * @param sortId 商品分类ID
      * @return
      */
-    public List<GoodsBrandCategoryValue> findCategoryValue(long sortId) {
-        return shopCenterDao.findCategoryValue(sortId);
+    public List<GoodsBrandCategoryValue> findCategoryValue(String sortId) {
+        return shopCenterDao.findCategoryValue(sortId.split(","));
     }
 
     /***

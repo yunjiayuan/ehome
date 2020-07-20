@@ -111,13 +111,26 @@ public interface ShopCenterApiController {
     ReturnData findGoodsCategory(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable String letter, @PathVariable int page, @PathVariable int count);
 
     /***
+     * 查询商品分类主键ID
+     * @param levelOne 商品1级分类
+     * @param levelTwo 商品2级分类
+     * @param levelThree 商品3级分类
+     * @param levelFour 商品4级分类
+     * @param levelFive 商品5级分类
+     * @return
+     */
+    @GetMapping("findGoodsCategoryId/{levelOne}/{levelTwo}/{levelThree}/{levelFour}/{levelFive}")
+    ReturnData findGoodsCategoryId(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive);
+
+
+    /***
      * 查询商品品牌
-     * @param sortId 商品分类ID
+     * @param sortId 商品分类Ids
      * @param letter 商品品牌首字母
      * @return
      */
     @GetMapping("findGoodsBrand/{sortId}/{letter}")
-    ReturnData findGoodsBrand(@PathVariable long sortId, @PathVariable String letter);
+    ReturnData findGoodsBrand(@PathVariable String sortId, @PathVariable String letter);
 
     /***
      * 查询商品属性名称
