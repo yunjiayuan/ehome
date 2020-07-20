@@ -99,11 +99,11 @@ public class AlipayUtils {
         try {
             response = alipayClient.pageExecute(request);
             if(response.isSuccess()){
-                log.info("调用1:"+response.getParams().toString());
+                log.info("调用1:"+response.getParams());
                 log.info("调用2:"+response.getBody());
                 log.info("调用3:"+response.getMsg());
                 log.info("调用4:"+response.getSubMsg());
-                return response.getParams().get("sign");
+                return response.getBody();
 //                JSONObject jsonObject = JSONObject.parseObject(response.getBody().getBytes().toString());
 //                return jsonObject.toString();
             } else {
