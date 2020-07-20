@@ -99,8 +99,9 @@ public class AlipayUtils {
         try {
             response = alipayClient.pageExecute(request);
             if(response.isSuccess()){
-                JSONObject jsonObject = JSONObject.parseObject(response.getBody().getBytes().toString());
-                return jsonObject.toString();
+                return response.getParams().get("sign");
+//                JSONObject jsonObject = JSONObject.parseObject(response.getBody().getBytes().toString());
+//                return jsonObject.toString();
             } else {
                 log.info("调用失败");
             }
