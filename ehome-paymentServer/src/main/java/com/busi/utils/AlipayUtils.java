@@ -91,7 +91,7 @@ public class AlipayUtils {
         AlipayUserInfoAuthRequest request = new AlipayUserInfoAuthRequest();
         request.setBizContent("{" +
                 "      \"scopes\":[" +
-                "        \"auth_user\"" +
+                "        \"auth_base\"" +
                 "      ]," +
                 "\"state\":\"init\"" +
                 "  }");
@@ -99,13 +99,10 @@ public class AlipayUtils {
         try {
             response = alipayClient.pageExecute(request);
             if(response.isSuccess()){
-                log.info("调用1:"+response.getParams());
-                log.info("调用2:"+response.getBody());
-                log.info("调用3:"+response.getMsg());
-                log.info("调用4:"+response.getSubMsg());
-                return response.getBody();
-//                JSONObject jsonObject = JSONObject.parseObject(response.getBody().getBytes().toString());
-//                return jsonObject.toString();
+                String sign = "";
+                sign = response.getBody().substring(response.getBody().indexOf("&sign="),response.getBody().indexOf("&version=")+1);
+                log.info(response.getBody());
+                return sign;
             } else {
                 log.info("调用失败");
             }
