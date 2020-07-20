@@ -104,6 +104,10 @@ public class HomeShopGoods {
 
     private long seeNumber;                //浏览数
 
+    private long monthSales;                //月销量
+
+    private long commentNum;                //评价数
+
     private int deleteType;                //删除标志：0正常，1用户删除，2管理人员删除
 
     private int auditType;                // 审核标志:0审核中,1通过,2未通过
@@ -122,7 +126,11 @@ public class HomeShopGoods {
 
     private int frontPlaceType;            //是否置顶：0未置顶，1已置顶
 
-    private String specialProperty;       //特殊商品属性(多个属性之间";"分隔)
+    private String specialProperty;       //特殊商品属性(多个属性之间";"分隔)  【暂不用】
+
+    private String propertyName;        //商品属性名称：分场景
+                                        // 传参时：多个属性之间"_"分隔 格式：属性ID,属性名称,属性值 如： 1,颜色,红色
+                                        // 写表时：多个属性之间","分隔 格式：#属性#,#属性# 如：#红色#,#4寸#
 
     // 与数据库无关字段
     private String name;                //用户名
@@ -134,8 +142,6 @@ public class HomeShopGoods {
     private long houseNumber;            //门牌号
 
     private int sellingNumber;            //在卖宝贝数量
-
-    private String propertyName;        //商品属性名称(多个属性之间"_"分隔)
 
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 }

@@ -25,7 +25,7 @@ public class BigVAccountsExamineService {
     private BigVAccountsExamineDao homeAlbumDao;
 
     /***
-     * 新增密码
+     * 新增
      * @param homeAlbumPwd
      * @return
      */

@@ -252,6 +252,34 @@ public class GoodsCenterService {
     }
 
     /***
+     * 分页查询商品(用户调用)
+     * @param levelOne 商品1级分类  默认为0, -2为不限
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
+     * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
+     * @param brandId  -1不限 品牌ID
+     * @param pinkageType  是否包邮:-1不限 0是  1否
+     * @param minPrice  最小价格
+     * @param maxPrice  最大价格
+     * @param province  -1不限 发货地省份
+     * @param city  -1不限 发货地城市
+     * @param district  -1不限 发货地区域
+     * @param propertyName  属性值 多个属性之间","分隔
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<HomeShopGoods> findUserGoodsList(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive, int sort, long brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String propertyName, int page, int count) {
+
+        List<HomeShopGoods> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, propertyName.split(","));
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 二货商城首页分类查询
      * @param sort  分类 0精选 1生活 2电器 3母婴 4时尚
      * @param page  页码 第几页 起始值1

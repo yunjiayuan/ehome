@@ -682,4 +682,39 @@ public class ShopFloorController extends BaseController implements ShopFloorApiC
         shopCenterService.delYHSort(ids.split(","));
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
+
+    /***
+     * 新增or更新家门口坐标
+     * @param shopFloorMyDoorway
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData editMyDoorway(@Valid @RequestBody ShopFloorMyDoorway shopFloorMyDoorway, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        ShopFloorMyDoorway myDoorway = shopCenterService.findMyDoorway(CommonUtils.getMyId());
+        if (myDoorway == null) {
+            shopCenterService.addMyDoorway(shopFloorMyDoorway);
+        } else {
+            shopFloorMyDoorway.setId(myDoorway.getId());
+            shopCenterService.editMyDoorway(shopFloorMyDoorway);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询家门口坐标
+     * @return
+     */
+    @Override
+    public ReturnData findMyDoorway() {
+        ShopFloorMyDoorway shopFloorMyDoorway = shopCenterService.findMyDoorway(CommonUtils.getMyId());
+        if (shopFloorMyDoorway == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, shopFloorMyDoorway);
+    }
 }

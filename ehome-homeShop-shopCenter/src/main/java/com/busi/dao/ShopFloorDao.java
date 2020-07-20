@@ -1,9 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.ShopFloor;
-import com.busi.entity.ShopFloorStatistics;
-import com.busi.entity.ShopFloorTimeStatistics;
-import com.busi.entity.YongHuiGoodsSort;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -414,4 +411,37 @@ public interface ShopFloorDao {
             "</foreach>" +
             "</script>")
     int delYHSort(@Param("ids") String[] ids);
+
+    /***
+     * 新增家门口坐标
+     * @param homeShopCenter
+     * @return
+     */
+    @Insert("insert into ShopFloorMyDoorway(lat,lon,userId)" +
+            "values (#{lat},#{lon},#{userId})")
+    @Options(useGeneratedKeys = true)
+    int addMyDoorway(ShopFloorMyDoorway homeShopCenter);
+
+    /***
+     * 更新家门口坐标
+     * @param homeShopCenter
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorMyDoorway set" +
+            " lat=#{lat}," +
+            " lon=#{lon}" +
+            " where id=#{id}" +
+            "</script>")
+    int editMyDoorway(ShopFloorMyDoorway homeShopCenter);
+
+    /***
+     * 查询用户家门口坐标
+     * @param userId   用户
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloorMyDoorway where userId=#{userId}" +
+            "</script>")
+    ShopFloorMyDoorway findMyDoorway(@Param("userId") long userId);
 }
