@@ -100,7 +100,7 @@ public class AlipayUtils {
             response = alipayClient.pageExecute(request);
             if(response.isSuccess()){
                 String sign = "";
-                sign = response.getBody().substring(response.getBody().indexOf("&sign="),response.getBody().indexOf("&version=")+1);
+                sign = response.getBody().substring(response.getBody().indexOf("&sign=")+6,response.getBody().indexOf("&version="));
                 log.info(response.getBody());
                 return sign;
             } else {
