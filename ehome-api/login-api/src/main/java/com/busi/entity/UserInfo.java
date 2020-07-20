@@ -113,7 +113,7 @@ public class UserInfo {
 
 	private String otherPlatformKey;//第三方平台用户唯一身份标识
 
-	private int otherPlatformType;//第三方平台类型 1：QQ，2：微信，3：新浪微博
+	private int otherPlatformType;//第三方平台类型 1：QQ，2：微信，3：苹果账号
 
 	@Length(max = 50, message = "otherPlatformAccount参数长度不合法")
 	private String otherPlatformAccount;//第三方平台账号名称

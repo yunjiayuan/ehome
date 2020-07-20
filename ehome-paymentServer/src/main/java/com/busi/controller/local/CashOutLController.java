@@ -13,9 +13,9 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * 钱包相关接口(通过fegin本地内部调用)
+ * 提现相关接口(通过fegin本地内部调用)
  * author：SunTianJie
- * create time：2018-8-16 09:46:30
+ * create time：2020-7-20 10:11:37
  */
 @RestController
 public class CashOutLController extends BaseController implements CashOutLocalController{
