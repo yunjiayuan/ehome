@@ -57,8 +57,8 @@ public class AlipayUtils {
 
             Participant payeeInfo = new Participant();
             payeeInfo.setIdentity(cashOutOrder.getOpenid());
-            payeeInfo.setIdentityType("ALIPAY_LOGON_ID");
-            payeeInfo.setName(cashOutOrder.getName());
+            payeeInfo.setIdentityType("ALIPAY_USER_ID");//参与方的标识类型，目前支持如下类型：1、ALIPAY_USER_ID 支付宝的会员ID 2、ALIPAY_LOGON_ID：支付宝登录号，支持邮箱和手机号格式
+//            payeeInfo.setName(cashOutOrder.getName());
 
             AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
             model.setOutBizNo(cashOutOrder.getId());
@@ -101,7 +101,7 @@ public class AlipayUtils {
                     +"&sign_type=RSA2"
                     +"&target_id="+CommonUtils.getOrderNumber(0,"0");
             String sign = AlipaySignature.sign(param,Constants.ALIPAY_PRIVATE_KEY,"utf-8","RSA2");
-            return param+"&"+URLEncoder.encode(sign, "utf-8");
+            return param+"&sign="+URLEncoder.encode(sign, "utf-8");
         } catch (AlipayApiException e) {
             e.printStackTrace();
             log.info("调用支付宝获取登录签名失败");
