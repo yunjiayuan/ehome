@@ -122,7 +122,7 @@ public class AlipayUtils {
             if(response.isSuccess()){
                 String sign = "";
                 sign = response.getBody().substring(response.getBody().indexOf("&sign=")+6,response.getBody().indexOf("&version="));
-                log.info("调用支付宝获取登录签名成功："+sign);
+                log.info("调用支付宝获取登录签名成功："+response.getBody());
                 return sign;
             } else {
                 log.info("调用支付宝获取登录签名失败");
