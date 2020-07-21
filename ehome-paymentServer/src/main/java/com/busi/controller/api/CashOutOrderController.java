@@ -73,8 +73,8 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
 //                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您还未关联支付宝账号，请先绑定与支付宝账号相同的手机号，再进行提现操作",new JSONObject());
 //            }
 //            cashOut.setOpenid(userInfo.getPhone());
-            if(CommonUtils.checkFull(cashOut.getOpenid())||CommonUtils.checkFull(cashOut.getName())){
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"支付宝账号ID和姓名不能为空",new JSONObject());
+            if(CommonUtils.checkFull(cashOut.getOpenid())){
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"支付宝用户ID不能为空",new JSONObject());
             }
             //将订单放入缓存中  15分钟有效时间  超时作废
             redisUtils.hmset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+orderNumber,CommonUtils.objectToMap(cashOut),Constants.TIME_OUT_MINUTE_15);
