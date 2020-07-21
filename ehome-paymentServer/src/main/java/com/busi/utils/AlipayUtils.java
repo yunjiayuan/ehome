@@ -1,19 +1,20 @@
 package com.busi.utils;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.CertAlipayRequest;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayFundTransUniTransferModel;
 import com.alipay.api.domain.Participant;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayFundTransUniTransferRequest;
-import com.alipay.api.request.AlipayUserInfoAuthRequest;
 import com.alipay.api.response.AlipayFundTransUniTransferResponse;
-import com.alipay.api.response.AlipayUserInfoAuthResponse;
 import com.busi.entity.CashOutOrder;
 import lombok.extern.slf4j.Slf4j;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 
 /**
  * 支付宝工具类
@@ -87,6 +88,29 @@ public class AlipayUtils {
      * 给客户端使用
      */
     public static String getLoginSign(){
+        try {
+            String param = "apiname=com.alipay.account.auth"
+                    +"&app_id="+Constants.ALIPAY_APPID
+                    +"&app_name=mc"
+                    +"&auth_type=AUTHACCOUNT"
+                    +"&biz_type=openservice"
+                    +"&method=alipay.open.auth.sdk.code.get"
+                    +"&pid="+Constants.ALIPAY_PID
+                    +"&product_id=APP_FAST_LOGIN"
+                    +"&scope=kuaijie"
+                    +"&sign_type=RSA2"
+                    +"&target_id="+CommonUtils.getOrderNumber(0,"0");
+            String sign = AlipaySignature.sign(param,Constants.ALIPAY_PRIVATE_KEY,"utf-8","RSA2");
+            return param+"&"+URLEncoder.encode(sign, "utf-8");
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            log.info("调用支付宝获取登录签名失败");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            log.info("调用支付宝获取登录签名失败");
+        }
+        return "";
+
 //        //请求参数数据格式(仅json)
 //        String format = "json";
 //        //请求使用的编码格式,如utf-8,gbk,gb2312等
@@ -108,30 +132,30 @@ public class AlipayUtils {
 //        //支付宝根证书绝对路径
 //        certAlipayRequest.setRootCertPath(Constants.ALIPAY_ALIPAYROOTCERT_KEY);
 //        AlipayClient alipayClient = null;
-        try {
-            AlipayClient alipayClient = new DefaultAlipayClient(Constants.ALIPAY_URL,Constants.ALIPAY_APPID,Constants.ALIPAY_PRIVATE_KEY,"json","GBK",Constants.ALIPAY_PUBLIC_KEY,"RSA2");
-//            alipayClient = new DefaultAlipayClient(certAlipayRequest);
-            AlipayUserInfoAuthRequest request = new AlipayUserInfoAuthRequest();
-            request.setBizContent("{" +
-                    "      \"scopes\":[" +
-                    "        \"auth_base\"" +
-                    "      ]," +
-                    "\"state\":\"init\"" +
-                    "  }");
-            AlipayUserInfoAuthResponse response = null;
-            response = alipayClient.pageExecute(request);
-            if(response.isSuccess()){
-                String sign = "";
-//                sign = response.getBody().substring(response.getBody().indexOf("&sign=")+6,response.getBody().indexOf("&version="));
-                log.info("调用支付宝获取登录签名成功："+response.getBody());
-                return sign;
-            } else {
-                log.info("调用支付宝获取登录签名失败");
-            }
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
-            log.info("调用支付宝获取登录签名失败");
-        }
-        return "";
+//        try {
+//            AlipayClient alipayClient = new DefaultAlipayClient(Constants.ALIPAY_URL,Constants.ALIPAY_APPID,Constants.ALIPAY_PRIVATE_KEY,"json","GBK",Constants.ALIPAY_PUBLIC_KEY,"RSA2");
+////            alipayClient = new DefaultAlipayClient(certAlipayRequest);
+//            AlipayUserInfoAuthRequest request = new AlipayUserInfoAuthRequest();
+//            request.setBizContent("{" +
+//                    "      \"scopes\":[" +
+//                    "        \"auth_base\"" +
+//                    "      ]," +
+//                    "\"state\":\"init\"" +
+//                    "  }");
+//            AlipayUserInfoAuthResponse response = null;
+//            response = alipayClient.pageExecute(request);
+//            if(response.isSuccess()){
+//                String sign = "";
+////                sign = response.getBody().substring(response.getBody().indexOf("&sign=")+6,response.getBody().indexOf("&version="));
+//                log.info("调用支付宝获取登录签名成功："+response.getBody());
+//                return sign;
+//            } else {
+//                log.info("调用支付宝获取登录签名失败");
+//            }
+//        } catch (AlipayApiException e) {
+//            e.printStackTrace();
+//            log.info("调用支付宝获取登录签名失败");
+//        }
+//        return "";
     }
 }
