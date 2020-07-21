@@ -66,29 +66,31 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         if (!CommonUtils.checkProvince_city_district(0, homeShopGoods.getProvince(), homeShopGoods.getCity(), homeShopGoods.getDistrict())) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "省、市、区参数不匹配", new JSONObject());
         }
-        //获取属性值
-        String propertyName = "";
-        String[] strings = homeShopGoods.getPropertyName().split("_");
-        for (int i = 0; i < strings.length; i++) {
-            String[] s = strings[i].split(",");
-            if (i == 0) {
-                propertyName = "#" + s[2] + "#";
-            } else {
-                propertyName += "," + "#" + s[2] + "#";
-            }
-        }
-        homeShopGoods.setPropertyName(propertyName);
-        homeShopGoods.setAuditType(1);
-//        homeShopGoods.setSellType(1);
-        homeShopGoods.setReleaseTime(new Date());
-        homeShopGoods.setRefreshTime(new Date());
-        goodsCenterService.add(homeShopGoods);
-
         //新增商品对应属性
         GoodsProperty property = new GoodsProperty();
         property.setGoodsId(homeShopGoods.getId());
         property.setName(homeShopGoods.getPropertyName());
         goodsCenterService.addProperty(property);
+
+        //获取属性值
+        String propertyName = "";
+        if(!CommonUtils.checkFull(homeShopGoods.getPropertyName())){
+            String[] strings = homeShopGoods.getPropertyName().split("_");
+            for (int i = 0; i < strings.length; i++) {
+                String[] s = strings[i].split(",");
+                if (i == 0) {
+                    propertyName = "#" + s[2] + "#";
+                } else {
+                    propertyName += "," + "#" + s[2] + "#";
+                }
+            }
+            homeShopGoods.setPropertyName(propertyName);
+        }
+        homeShopGoods.setAuditType(1);
+//        homeShopGoods.setSellType(1);
+        homeShopGoods.setReleaseTime(new Date());
+        homeShopGoods.setRefreshTime(new Date());
+        goodsCenterService.add(homeShopGoods);
 
         //更新商品对应特殊属性
 //        GoodsOfSpecialProperty ofSpecialProperty = new GoodsOfSpecialProperty();
@@ -130,6 +132,12 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         if (posts == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
+        //更新商品对应属性
+        GoodsProperty property = new GoodsProperty();
+        property.setGoodsId(homeShopGoods.getId());
+        property.setName(homeShopGoods.getPropertyName());
+        goodsCenterService.updateProperty(property);
+
         //获取属性值
         String propertyName = "";
         String[] strings = homeShopGoods.getPropertyName().split("_");
@@ -144,13 +152,6 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         homeShopGoods.setPropertyName(propertyName);
         homeShopGoods.setRefreshTime(new Date());
         goodsCenterService.update(homeShopGoods);
-
-        //更新商品对应属性
-        GoodsProperty property = new GoodsProperty();
-        property.setGoodsId(homeShopGoods.getId());
-        property.setName(homeShopGoods.getPropertyName());
-        goodsCenterService.updateProperty(property);
-
         //更新商品对应特殊属性
 //        GoodsOfSpecialProperty ofSpecialProperty = new GoodsOfSpecialProperty();
 //        ofSpecialProperty.setGoodsId(homeShopGoods.getId());

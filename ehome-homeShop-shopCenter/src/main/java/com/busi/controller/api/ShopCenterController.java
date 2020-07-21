@@ -439,23 +439,24 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
      */
     @Override
     public ReturnData findGoodsCategoryId(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive) {
+        String ids = "";
+        Map<String, Object> map = new HashMap<>();
         List<GoodsCategory> list = null;
         list = shopCenterService.findGoodsCategoryId(levelOne, levelTwo, levelThree, levelFour, levelFive);
-        if (list == null || list.size() <= 0) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
-        }
-        String ids = "";
-        for (int i = 0; i < list.size(); i++) {
-            GoodsCategory categoryValue = list.get(i);
-            if (categoryValue != null) {
-                if (i == list.size() - 1) {
-                    ids += categoryValue.getId();//分类主键ID
-                } else {
-                    ids += categoryValue.getId() + ",";
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                GoodsCategory categoryValue = list.get(i);
+                if (categoryValue != null) {
+                    if (i == list.size() - 1) {
+                        ids += categoryValue.getId();//分类主键ID
+                    } else {
+                        ids += categoryValue.getId() + ",";
+                    }
                 }
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, ids);
+        map.put("ids", ids);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
