@@ -118,7 +118,7 @@ public class AlipayUtils {
                     "\"state\":\"init\"" +
                     "  }");
             AlipayUserInfoAuthResponse response = null;
-            response = alipayClient.execute(request);
+            response = alipayClient.certificateExecute(request);
             if(response.isSuccess()){
                 String sign = "";
 //                sign = response.getBody().substring(response.getBody().indexOf("&sign=")+6,response.getBody().indexOf("&version="));
