@@ -473,35 +473,38 @@ public interface GoodsCenterDao {
             "</if>" +
 
             "<if test=\"levelOne >= 0 \">" +
-                "<if test=\"levelTwo == -2 \">" +
-                    " and levelOne = #{levelOne}" +
-                "</if>" +
-                "<if test=\"levelTwo > -1 \">" +
-                    " and levelOne = #{levelOne}" +
-                    " and levelTwo = #{levelTwo}" +
-                        "<if test=\"levelThree >= 0\">" +
-                          " and levelThree = #{levelThree}" +
-                                "<if test=\"levelFour >= 0\">" +
-                                " and levelFour = #{levelFour}" +
-                                    "<if test=\"levelFive >= 0\">" +
-                                    " and levelFive = #{levelFive}" +
-                                    "</if>" +
-                                    "<if test=\"levelFive == -2\">" +
-                                    " and levelFive >= -1" +
-                                    "</if>" +
-                                "</if>" +
-                                "<if test=\"levelFour == -2\">" +
-                                " and levelFour >= -1" +
-                                "</if>" +
-                        "</if>" +
-                        "<if test=\"levelThree == -2\">" +
-                            " and levelThree >= -1" +
-                        "</if>" +
-                "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelOne = #{levelOne}" +
+            "</if>" +
+            "<if test=\"levelTwo > -1 \">" +
+            " and levelOne = #{levelOne}" +
+            " and levelTwo = #{levelTwo}" +
+            "<if test=\"levelThree >= 0\">" +
+            " and levelThree = #{levelThree}" +
+            "<if test=\"levelFour >= 0\">" +
+            " and levelFour = #{levelFour}" +
+            "<if test=\"levelFive >= 0\">" +
+            " and levelFive = #{levelFive}" +
+            "</if>" +
+            "<if test=\"levelFive == -2\">" +
+            " and levelFive >= -1" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"levelFour == -2\">" +
+            " and levelFour >= -1" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"levelThree == -2\">" +
+            " and levelThree >= -1" +
+            "</if>" +
+            "</if>" +
             "</if>" +
 
-            "<if test=\"brandId >= 1\">" +
-            " and brandId = #{brandId}" +
+            "<if test=\"brandId != null and brandId !=''\">" +
+            " and brandId in" +
+            "<foreach collection='brandId' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
             "</if>" +
 
             "<if test=\"province >= 0\">" +
@@ -545,6 +548,6 @@ public interface GoodsCenterDao {
             " order by price asc" +
             "</if>" +
             "</script>")
-    List<HomeShopGoods> findUserGoodsList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive, @Param("sort") int sort, @Param("brandId") long brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String[] propertyName);
+    List<HomeShopGoods> findUserGoodsList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive, @Param("sort") int sort, @Param("brandId") String[] brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String[] propertyName);
 
 }

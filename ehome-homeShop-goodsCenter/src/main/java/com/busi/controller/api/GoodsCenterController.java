@@ -74,7 +74,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
 
         //获取属性值
         String propertyName = "";
-        if(!CommonUtils.checkFull(homeShopGoods.getPropertyName())){
+        if (!CommonUtils.checkFull(homeShopGoods.getPropertyName())) {
             String[] strings = homeShopGoods.getPropertyName().split("_");
             for (int i = 0; i < strings.length; i++) {
                 String[] s = strings[i].split(",");
@@ -140,13 +140,15 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
 
         //获取属性值
         String propertyName = "";
-        String[] strings = homeShopGoods.getPropertyName().split("_");
-        for (int i = 0; i < strings.length; i++) {
-            String[] s = strings[i].split(",");
-            if (i == 0) {
-                propertyName = "#" + s[2] + "#";
-            } else {
-                propertyName += "," + "#" + s[2] + "#";
+        if (!CommonUtils.checkFull(homeShopGoods.getPropertyName())) {
+            String[] strings = homeShopGoods.getPropertyName().split("_");
+            for (int i = 0; i < strings.length; i++) {
+                String[] s = strings[i].split(",");
+                if (i == 0) {
+                    propertyName = "#" + s[2] + "#";
+                } else {
+                    propertyName += "," + "#" + s[2] + "#";
+                }
             }
         }
         homeShopGoods.setPropertyName(propertyName);
@@ -232,7 +234,9 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
         userInfo = userInfoUtils.getUserInfo(posts.getUserId());
         //查询商品对应属性
         GoodsProperty property = goodsCenterService.findProperty(id);
-        posts.setPropertyName(property.getName());
+        if (property != null) {
+            posts.setPropertyName(property.getName());
+        }
         //查询商品对应特殊属性
 //            GoodsOfSpecialProperty goodsOfSpecialProperty = goodsCenterService.findSpecialProperty(id);
 //            posts.setSpecialProperty(goodsOfSpecialProperty.getName());
@@ -305,7 +309,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
      * @param levelFour 商品4级分类  默认为0, -2为不限
      * @param levelFive 商品5级分类  默认为0, -2为不限
      * @param sort  排序条件:0综合  1销量  2价格最高  3价格最低
-     * @param brandId  -1不限 品牌ID
+     * @param brandId  null不限 多个品牌ID 逗号分隔
      * @param pinkageType  是否包邮:-1不限 0是  1否
      * @param minPrice  最小价格
      * @param maxPrice  最大价格
@@ -318,7 +322,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
      * @return
      */
     @Override
-    public ReturnData findUserGoodsList(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable int sort, @PathVariable long brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findUserGoodsList(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable int sort, @PathVariable String brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
