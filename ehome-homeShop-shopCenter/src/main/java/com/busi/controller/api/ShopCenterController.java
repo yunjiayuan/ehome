@@ -503,7 +503,6 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
                 two2 = cate2.getLevelTwo();
                 if (one == one2 && two == two2) {//1、2级相等为3级
                     list1.add(cate2);
-                    list2.remove(j);
                 }
             }
             map.put("name", cate.getName());//分类名
