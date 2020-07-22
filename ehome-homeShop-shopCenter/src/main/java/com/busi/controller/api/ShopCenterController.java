@@ -467,7 +467,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
      * @return
      */
     @Override
-    public ReturnData findGoodsCategory(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree) {
+    public ReturnData findGoodsCategorys(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree) {
         GoodsCategory cate = null;
         GoodsCategory cate2 = null;
         List list = null;
@@ -503,6 +503,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
                 two2 = cate2.getLevelTwo();
                 if (one == one2 && two == two2) {//1、2级相等为3级
                     list1.add(cate2);
+                    list2.remove(j);
                 }
             }
             map.put("name", cate.getName());//分类名

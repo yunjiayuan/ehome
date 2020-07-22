@@ -129,8 +129,8 @@ public interface ShopCenterApiController {
      * @param levelThree 商品3级分类
      * @return
      */
-    @GetMapping("findGoodsCategory/{levelOne}/{levelTwo}/{levelThree}")
-    ReturnData findGoodsCategory(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree);
+    @GetMapping("findGoodsCategorys/{levelOne}/{levelTwo}/{levelThree}")
+    ReturnData findGoodsCategorys(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree);
 
 
     /***
