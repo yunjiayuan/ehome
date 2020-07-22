@@ -38,47 +38,49 @@ public class CashOutOrderService extends BaseController implements PayBaseServic
         //获取缓存中的订单
         Map<String,Object> cashOutOrderMap = redisUtils.hmget(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber() );
         CashOutOrder cashOutOrder = null;
-        switch (pay.getServiceType()) {
-            case 22://提现到微信
-                if(cashOutOrderMap==null||cashOutOrderMap.size()<=0){
-                    return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"该提现操作已过期，请重新提现",new JSONObject());
-                }
-                cashOutOrder = (CashOutOrder)CommonUtils.mapToObject(cashOutOrderMap,CashOutOrder.class);
-                if(cashOutOrder==null){
-                    return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"该提现操作已过期，请重新进行提现",new JSONObject());
-                }
-                //判断余额
-                double serverMoney = Double.parseDouble(purseMap.get("spareMoney").toString());
-                if(serverMoney<cashOutOrder.getMoney()){
-                    return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行提现",new JSONObject());
-                }
-                if(cashOutOrder.getPayStatus()!=0){//已支付
-                    return returnData(StatusCode.CODE_RED_PACKETS_NOT_AWARDYOU.CODE_VALUE,"该提现已成功，无法再进行重复提现",new JSONObject());
-                }
-                //当前用户是否有权限
-                if(pay.getUserId()!=cashOutOrder.getUserId()){
-                    return returnData(StatusCode.CODE_RED_PACKETS_NOT_AWARDYOU.CODE_VALUE,"您无权使用其他人的账号进行提现操作",new JSONObject());
-                }
-                //更改状态 防止重复支付
-                redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber() ,"payStatus",1);
-                //开始扣款支付
-                mqUtils.sendPurseMQ(pay.getUserId(),37,0,cashOutOrder.getMoney()*-1);
-                //回调业务 更新会员状态
-                cashOutOrder.setPayStatus(1);//已支付
-                cashOutService.addCashOutOrder(cashOutOrder);
-//                redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber(),Constants.TIME_OUT_MINUTE_5);//防止重复调用微信
-                //将提现申请 交由MQ异步处理 同步到微信
-                mqUtils.sendCashOutMQ(cashOutOrder.getUserId(),cashOutOrder.getId(),cashOutOrder.getType(),cashOutOrder.getOpenid(),cashOutOrder.getMoney());
-                break;
-            case 23://提现到支付宝
-
-                break;
-            case 24://提现到银行卡
-
-                break;
-            default:
-                break;
+        if(cashOutOrderMap==null||cashOutOrderMap.size()<=0){
+            return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"该提现操作已过期，请重新提现",new JSONObject());
         }
+        cashOutOrder = (CashOutOrder)CommonUtils.mapToObject(cashOutOrderMap,CashOutOrder.class);
+        if(cashOutOrder==null){
+            return returnData(StatusCode.CODE_PAY_OBJECT_NOT_EXIST_ERROR.CODE_VALUE,"该提现操作已过期，请重新进行提现",new JSONObject());
+        }
+        //判断余额
+        double serverMoney = Double.parseDouble(purseMap.get("spareMoney").toString());
+        if(serverMoney<cashOutOrder.getMoney()){
+            return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行提现",new JSONObject());
+        }
+        if(cashOutOrder.getPayStatus()!=0){//已支付
+            return returnData(StatusCode.CODE_RED_PACKETS_NOT_AWARDYOU.CODE_VALUE,"该提现已成功，无法再进行重复提现",new JSONObject());
+        }
+        //当前用户是否有权限
+        if(pay.getUserId()!=cashOutOrder.getUserId()){
+            return returnData(StatusCode.CODE_RED_PACKETS_NOT_AWARDYOU.CODE_VALUE,"您无权使用其他人的账号进行提现操作",new JSONObject());
+        }
+        //更改状态 防止重复支付
+        redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber() ,"payStatus",1);
+        //开始扣款支付
+        mqUtils.sendPurseMQ(pay.getUserId(),37,0,cashOutOrder.getMoney()*-1);
+        //回调业务 更新会员状态
+        cashOutOrder.setPayStatus(1);//已支付
+        cashOutService.addCashOutOrder(cashOutOrder);
+//                redisUtils.expire(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber(),Constants.TIME_OUT_MINUTE_5);//防止重复调用微信
+        //将提现申请 交由MQ异步处理 同步到微信
+        mqUtils.sendCashOutMQ(cashOutOrder.getUserId(),cashOutOrder.getId(),cashOutOrder.getType(),cashOutOrder.getOpenid(),cashOutOrder.getMoney());
+//        switch (pay.getServiceType()) {
+//
+//            case 22://提现到微信
+//
+//                break;
+//            case 23://提现到支付宝
+//
+//                break;
+//            case 24://提现到银行卡
+//
+//                break;
+//            default:
+//                break;
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }
