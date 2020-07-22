@@ -80,6 +80,8 @@ public class KitchenReserve {
 
     private String orderingPhone;//订餐电话
 
+    private String invitationCode;//邀请码
+
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 
