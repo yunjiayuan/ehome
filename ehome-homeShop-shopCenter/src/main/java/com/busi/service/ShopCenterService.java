@@ -131,6 +131,12 @@ public class ShopCenterService {
         return list;
     }
 
+    public List<GoodsCategory> findGoodsCategoryId2(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive) {
+        List<GoodsCategory> list;
+        list = shopCenterDao.findList4(levelOne, levelTwo, levelThree, levelFour, levelFive);
+        return list;
+    }
+
     public GoodsCategory findList2(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive) {
 
         return shopCenterDao.findList3(levelOne, levelTwo, levelThree, levelFour, levelFive);
@@ -173,6 +179,12 @@ public class ShopCenterService {
         return PageUtils.getPageBean(p, list);
     }
 
+    public List<GoodsBrandProperty> findBrandPropertyss(String goodCategoryId, String goodsBrandId) {
+        List<GoodsBrandProperty> list;
+        list = shopCenterDao.findBrandPropertyss(goodCategoryId.split(","), goodsBrandId.split(","));
+        return list;
+    }
+
     /***
      * 查询商品属性值
      * @param goodsBrandPropertyId 品牌商品属性值id
@@ -194,5 +206,11 @@ public class ShopCenterService {
      */
     public GoodsBrandCategoryValue findRelation(long goodCategoryId, long goodsBrandId) {
         return shopCenterDao.findRelation(goodCategoryId, goodsBrandId);
+    }
+
+    public List<GoodsBrandCategoryValue> findBrandPropertys(String goodCategoryId, String goodsBrandId) {
+        List<GoodsBrandCategoryValue> values;
+        values = shopCenterDao.findBrandPropertys(goodCategoryId.split(","), goodsBrandId.split(","));
+        return values;
     }
 }

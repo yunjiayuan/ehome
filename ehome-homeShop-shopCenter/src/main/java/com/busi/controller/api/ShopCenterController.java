@@ -460,6 +460,60 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
     }
 
     /***
+     * 查询商品分类(新)
+     * @param levelOne 商品1级分类
+     * @param levelTwo 商品2级分类
+     * @param levelThree 商品3级分类
+     * @return
+     */
+    @Override
+    public ReturnData findGoodsCategory(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree) {
+        GoodsCategory cate = null;
+        GoodsCategory cate2 = null;
+        List list = null;
+        List list2 = null;
+        Map<String, Object> collectionMap = new HashMap<>();
+        List<Map<String, Object>> newList = new ArrayList<>();//最终组合后List
+        //指定一级的所有二级
+        list = shopCenterService.findGoodsCategoryId2(levelOne, -2, -1, -1, -1);
+        //指定一级的所有二级三级
+        list2 = shopCenterService.findGoodsCategoryId2(levelOne, -2, -2, -1, -1);
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            int one = 0;
+            int two = 0;
+            int one2 = 0;
+            int two2 = 0;
+            List list1 = new ArrayList<>();
+            Map<String, Object> map = new HashMap<>();
+            cate = (GoodsCategory) list.get(i);
+            if (cate == null) {
+                continue;
+            }
+            one = cate.getLevelOne();
+            two = cate.getLevelTwo();
+            for (int j = 0; j < list2.size(); j++) {
+                cate2 = (GoodsCategory) list.get(j);
+                if (cate2 == null) {
+                    continue;
+                }
+                one2 = cate2.getLevelOne();
+                two2 = cate2.getLevelTwo();
+                if (one == one2 && two == two2) {//1、2级相等为3级
+                    list1.add(cate2);
+                }
+            }
+            map.put("name", cate.getName());//分类名
+            map.put("list", list1);//三级分类集合
+            newList.add(map);
+        }
+        collectionMap.put("newList", newList);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", collectionMap);
+    }
+
+    /***
      * 查询商品品牌
      * @param sortId 商品分类Ids
      * @param letter 商品品牌首字母
@@ -494,7 +548,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
     }
 
     /***
-     * 查询商品属性名称
+     * 根据单个分类、品牌查询商品属性名称
      * @param goodCategoryId 商品分类id
      * @param goodsBrandId 品牌id
      * @param page
@@ -507,12 +561,47 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         PageBean<GoodsBrandProperty> pageBean = null;
         GoodsBrandCategoryValue categoryValue = shopCenterService.findRelation(goodCategoryId, goodsBrandId);
         if (categoryValue == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONArray());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         pageBean = shopCenterService.findBrandProperty(goodCategoryId, categoryValue.getId(), page, count);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
 
+    }
+
+    /***
+     * 根据多个分类、品牌查询商品属性名称
+     * @param goodCategoryIds 商品分类ids
+     * @param goodsBrandIds 品牌ids
+     * @return
+     */
+    @Override
+    public ReturnData findBrandPropertys(@PathVariable String goodCategoryIds, @PathVariable String goodsBrandIds) {
+        //开始查询
+        List<GoodsBrandProperty> list = null;//商品属性实体类
+        List<GoodsBrandCategoryValue> list2 = null;//品牌主键id与分类主键id关系实体类
+        //通过分类与品牌ID查询品牌主键id
+        list2 = shopCenterService.findBrandPropertys(goodCategoryIds, goodsBrandIds);
+        if (list2 == null || list2.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        String s = "";
+        for (int i = 0; i < list2.size(); i++) {
+            GoodsBrandCategoryValue value = list2.get(i);
+            if (value == null) {
+                continue;
+            }
+            if (i == 0) {
+                s = value.getId() + "";
+            } else {
+                s += "," + value.getId();
+            }
+        }
+        list = shopCenterService.findBrandPropertyss(goodCategoryIds, s);
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 
     /***

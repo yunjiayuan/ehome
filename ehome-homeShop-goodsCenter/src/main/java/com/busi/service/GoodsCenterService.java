@@ -277,7 +277,7 @@ public class GoodsCenterService {
         List<HomeShopGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (CommonUtils.checkFull(brandId)) {
-            brandId = null;
+            brandId = "";
         }
         list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId.split(","), pinkageType, minPrice, maxPrice, province, city, district, propertyName.split(","));
         return PageUtils.getPageBean(p, list);
