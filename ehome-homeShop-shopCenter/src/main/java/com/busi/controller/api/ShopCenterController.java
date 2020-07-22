@@ -495,7 +495,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
             one = cate.getLevelOne();
             two = cate.getLevelTwo();
             for (int j = 0; j < list2.size(); j++) {
-                cate2 = (GoodsCategory) list.get(j);
+                cate2 = (GoodsCategory) list2.get(j);
                 if (cate2 == null) {
                     continue;
                 }
