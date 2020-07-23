@@ -2,6 +2,7 @@ package com.busi.service;
 
 import com.busi.dao.GoodsCenterDao;
 import com.busi.entity.*;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -271,11 +272,14 @@ public class GoodsCenterService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<HomeShopGoods> findUserGoodsList(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive, int sort, long brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String propertyName, int page, int count) {
+    public PageBean<HomeShopGoods> findUserGoodsList(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive, int sort, String brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String propertyName, int page, int count) {
 
         List<HomeShopGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, propertyName.split(","));
+        if (CommonUtils.checkFull(brandId)) {
+            brandId = "";
+        }
+        list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId.split(","), pinkageType, minPrice, maxPrice, province, city, district, propertyName.split(","));
         return PageUtils.getPageBean(p, list);
     }
 

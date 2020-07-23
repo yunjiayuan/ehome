@@ -200,6 +200,27 @@ public interface ShopCenterDao {
             "</script>")
     GoodsCategory findList3(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
 
+    @Select("<script>" +
+            "select * from GoodsCategory" +
+            " where 1=1" +
+            " and levelOne = #{levelOne}" +
+            "<if test=\"levelTwo != -2 \">" +
+            " and levelTwo = #{levelTwo}" +
+            "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelTwo > -1" +
+            "</if>" +
+            "<if test=\"levelThree != -2 \">" +
+            " and levelThree = #{levelThree}" +
+            "</if>" +
+            "<if test=\"levelThree == -2 \">" +
+            " and levelThree > -1" +
+            "</if>" +
+            " and levelFour = #{levelFour}" +
+            " and levelFive = #{levelFive}" +
+            "</script>")
+    List<GoodsCategory> findList4(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
+
 
     /***
      * 模糊查询商品分类
@@ -287,6 +308,41 @@ public interface ShopCenterDao {
      * @return
      */
     @Select("select * from GoodsBrandCategoryValue where categoryId=#{goodCategoryId} and brandId=#{goodsBrandId}")
-    GoodsBrandCategoryValue findRelation(@Param("goodCategoryId") long goodCategoryId,@Param("goodsBrandId") long goodsBrandId);
+    GoodsBrandCategoryValue findRelation(@Param("goodCategoryId") long goodCategoryId, @Param("goodsBrandId") long goodsBrandId);
 
+    /***
+     * 根据分类&品牌ID查询分类&品牌关联ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsBrandCategoryValue" +
+            " where categoryId in" +
+            "<foreach collection='goodCategoryId' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and brandId in" +
+            "<foreach collection='goodsBrandId' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<GoodsBrandCategoryValue> findBrandPropertys(@Param("goodCategoryId") String[] goodCategoryId, @Param("goodsBrandId") String[] goodsBrandId);
+
+    /***
+     * 查询商品属性名称
+     * @param goodCategoryId 商品分类id
+     * @param goodsBrandId 品牌id
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsBrandProperty " +
+            " where goodCategoryId in" +
+            "<foreach collection='goodCategoryId' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and goodsBrandId in" +
+            "<foreach collection='goodsBrandId' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<GoodsBrandProperty> findBrandPropertyss(@Param("goodCategoryId") String[] goodCategoryId, @Param("goodsBrandId") String[] goodsBrandId);
 }

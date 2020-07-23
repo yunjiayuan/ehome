@@ -186,6 +186,7 @@ public interface KitchenBookedDao {
     @Update("<script>" +
             "update KitchenReserve set" +
             " userId=#{userId}," +
+            " invitationCode=#{invitationCode}," +
             " healthyCard=#{healthyCard}," +
             " orderingPhone=#{orderingPhone}," +
             " realName=#{realName}," +

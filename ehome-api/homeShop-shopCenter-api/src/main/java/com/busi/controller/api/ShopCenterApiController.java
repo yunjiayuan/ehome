@@ -122,6 +122,16 @@ public interface ShopCenterApiController {
     @GetMapping("findGoodsCategoryId/{levelOne}/{levelTwo}/{levelThree}/{levelFour}/{levelFive}")
     ReturnData findGoodsCategoryId(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive);
 
+    /***
+     * 查询商品分类(新)
+     * @param levelOne 商品1级分类
+     * @param levelTwo 商品2级分类
+     * @param levelThree 商品3级分类
+     * @return
+     */
+    @GetMapping("findGoodsCategorys/{levelOne}/{levelTwo}/{levelThree}")
+    ReturnData findGoodsCategorys(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree);
+
 
     /***
      * 查询商品品牌
@@ -142,6 +152,16 @@ public interface ShopCenterApiController {
      */
     @GetMapping("findBrandProperty/{goodCategoryId}/{goodsBrandId}/{page}/{count}")
     ReturnData findBrandProperty(@PathVariable long goodCategoryId, @PathVariable long goodsBrandId, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 根据多个分类、品牌查询商品属性名称
+     * @param goodCategoryIds 商品分类ids
+     * @param goodsBrandIds 品牌ids
+     * @return
+     */
+    @GetMapping("findBrandPropertys/{goodCategoryIds}/{goodsBrandIds}")
+    ReturnData findBrandPropertys(@PathVariable String goodCategoryIds, @PathVariable String goodsBrandIds);
+
 
     /***
      * 查询商品属性值

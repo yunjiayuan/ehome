@@ -5,7 +5,7 @@ import lombok.Setter;
 
 /**
  * @program: ehome
- * @description: 品牌分类关系实体类
+ * @description: 品牌主键id与分类主键id关系实体类
  * @author: ZHaoJiaJie
  * @create: 2019-06-10 14:14
  */
