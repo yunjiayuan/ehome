@@ -189,6 +189,61 @@ public interface ShopCenterDao {
             "</script>")
     List<GoodsCategory> findList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
 
+    /***
+     * 查询商品分类
+     * @param levelOne 商品1级分类  默认为0, -2为不限:0图书、音像、电子书刊  1手机、数码  2家用电器  3家居家装  4电脑、办公  5厨具  6个护化妆  7服饰内衣  8钟表  9鞋靴  10母婴  11礼品箱包  12食品饮料、保健食品  13珠宝  14汽车用品  15运动健康  16玩具乐器  17彩票、旅行、充值、票务
+     * @param levelTwo 商品2级分类  默认为0, -2为不限
+     * @param levelThree 商品3级分类  默认为0, -2为不限
+     * @param levelFour 商品4级分类  默认为0, -2为不限
+     * @param levelFive 商品5级分类  默认为0, -2为不限
+     * @return
+     */
+    @Select("<script>" +
+            "select * from GoodsCategory" +
+            " where 1=1" +
+            "<if test=\"levelOne == -2 and levelTwo == -1\">" +
+            " and levelOne > -1" +
+            " and levelTwo = -1" +
+            " and levelThree = -1" +
+            " and levelFour = -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelOne >= 0 \">" +
+            " and levelOne = #{levelOne}" +
+                "<if test=\"levelTwo == -2 \">" +
+                " and levelTwo >= -1" +
+                " and levelThree = -1" +
+                " and levelFour = -1" +
+                " and levelFive = -1" +
+                "</if>" +
+                "<if test=\"levelTwo >= 0 \">" +
+                    " and levelTwo = #{levelTwo}" +
+                    "<if test=\"levelThree == -2 \">" +
+                        " and levelThree >= -1" +
+                        " and levelFour = -1" +
+                        " and levelFive = -1" +
+                    "</if>" +
+                    "<if test=\"levelThree >= -1 \">" +
+                        " and levelThree = #{levelThree}" +
+                        "<if test=\"levelFour == -2 \">" +
+                        " and levelFour >= -1" +
+                        " and levelFive = -1" +
+                        "</if>" +
+                        "<if test=\"levelFour >= -1 \">" +
+                        " and levelFour = #{levelFour}" +
+                            "<if test=\"levelFive == -2 \">" +
+                            " and levelFive >= -1" +
+                            "</if>" +
+                            "<if test=\"levelFive >= -1 \">" +
+                            " and levelFive = #{levelFive}" +
+                            "</if>" +
+                        "</if>" +
+                    "</if>" +
+                "</if>" +
+            "</if>" +
+            "</script>")
+    List<GoodsCategory> findList5(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
+
     @Select("<script>" +
             "select * from GoodsCategory" +
             " where 1=1" +
