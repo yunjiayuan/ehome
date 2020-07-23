@@ -500,7 +500,7 @@ public interface GoodsCenterDao {
             "</if>" +
             "</if>" +
 
-            "<if test=\"brandId != null and brandId !=''\">" +
+            "<if test=\"brandId != null and brandId.length > 0 and brandId !=''\">" +
             " and brandId in" +
             "<foreach collection='brandId' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
@@ -528,7 +528,7 @@ public interface GoodsCenterDao {
             " and pinkageType = #{pinkageType}" +
             "</if>" +
 
-            "<if test=\"propertyName != null and propertyName !=''\">" +
+            "<if test=\"propertyName != null and propertyName !='' and propertyName.length > 0\">" +
             " and " +
             "<foreach collection='propertyName' index='index' item='item' open='(' separator='or' close=')'>" +
             " propertyName like CONCAT('%',#{item},'%')" +

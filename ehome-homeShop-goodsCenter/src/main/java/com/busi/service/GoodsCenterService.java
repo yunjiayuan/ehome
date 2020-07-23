@@ -276,10 +276,17 @@ public class GoodsCenterService {
 
         List<HomeShopGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        if (CommonUtils.checkFull(brandId)) {
-            brandId = "";
+        String[] s = null;
+        String[] a = null;
+        if (!CommonUtils.checkFull(brandId)) {
+            s = brandId.split(",");
         }
-        list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId.split(","), pinkageType, minPrice, maxPrice, province, city, district, propertyName.split(","));
+        if (!CommonUtils.checkFull(propertyName)) {
+            a = propertyName.split(",");
+        }
+//        int d = s.length;//1
+//        int f = a.length;//1
+        list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, s, pinkageType, minPrice, maxPrice, province, city, district, a);
         return PageUtils.getPageBean(p, list);
     }
 
