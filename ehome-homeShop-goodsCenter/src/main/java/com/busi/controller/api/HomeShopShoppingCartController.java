@@ -47,13 +47,13 @@ public class HomeShopShoppingCartController extends BaseController implements Ho
     }
 
     /***
-     * 加购物车
+     * 更新购物车
      * @param shopFloorGoods
      * @param bindingResult
      * @return
      */
     @Override
-    public ReturnData addHShoppingCart(@Valid @RequestBody HomeShopShoppingCart shopFloorGoods, BindingResult bindingResult) {
+    public ReturnData changeHShoppingCart(@Valid @RequestBody HomeShopShoppingCart shopFloorGoods, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -85,13 +85,13 @@ public class HomeShopShoppingCartController extends BaseController implements Ho
     }
 
     /***
-     * 更新购物车
+     * 加购物车
      * @param shopFloorGoods
      * @param bindingResult
      * @return
      */
     @Override
-    public ReturnData changeHShoppingCart(@Valid @RequestBody HomeShopShoppingCart shopFloorGoods, BindingResult bindingResult) {
+    public ReturnData addHShoppingCart(@Valid @RequestBody HomeShopShoppingCart shopFloorGoods, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
