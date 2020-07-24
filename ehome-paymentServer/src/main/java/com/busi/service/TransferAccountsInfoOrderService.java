@@ -61,7 +61,7 @@ public class TransferAccountsInfoOrderService extends BaseController implements 
                 //更改状态 防止重复支付
                 redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_TRANSFERACCOUNTSINFO+pay.getOrderNumber() ,"payStatus",1);
                 //开始扣款支付
-                mqUtils.sendPurseMQ(pay.getUserId(),34,0,transferAccountsInfo.getTransferAccountsMoney()*-1);
+                mqUtils.sendPurseMQ(pay.getUserId(),3,0,transferAccountsInfo.getTransferAccountsMoney()*-1);
                 //回调业务 更新会员状态
                 transferAccountsInfo.setPayStatus(1);//已支付
                 transferAccountsInfoService.updateTransferAccountsInfoPayStatus(transferAccountsInfo);
@@ -95,7 +95,7 @@ public class TransferAccountsInfoOrderService extends BaseController implements 
                 //更改状态 防止重复接收
                 redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_TRANSFERACCOUNTSINFO+pay.getOrderNumber() ,"transferAccountsStatus",2);
                 //开始将转账金额放入账户
-                mqUtils.sendPurseMQ(pay.getUserId(),35,0,transferAccountsInfo.getTransferAccountsMoney());
+                mqUtils.sendPurseMQ(pay.getUserId(),2,0,transferAccountsInfo.getTransferAccountsMoney());
                 //回调业务
                 transferAccountsInfo.setTransferAccountsStatus(2);//已拆（已接收）
                 transferAccountsInfo.setReceiveTime(new Date());

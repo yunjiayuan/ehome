@@ -60,7 +60,7 @@ public class CashOutOrderService extends BaseController implements PayBaseServic
         //更改状态 防止重复支付
         redisUtils.hset(Constants.REDIS_KEY_PAY_ORDER_CASHOUT+pay.getOrderNumber() ,"payStatus",1);
         //开始扣款支付
-        mqUtils.sendPurseMQ(pay.getUserId(),37,0,cashOutOrder.getMoney()*-1);
+        mqUtils.sendPurseMQ(pay.getUserId(),1,0,cashOutOrder.getMoney()*-1);
         //回调业务 更新会员状态
         cashOutOrder.setPayStatus(1);//已支付
         cashOutService.addCashOutOrder(cashOutOrder);
