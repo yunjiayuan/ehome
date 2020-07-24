@@ -127,7 +127,7 @@ public class ShopCenterService {
 
     public List<GoodsCategory> findGoodsCategoryId(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive) {
         List<GoodsCategory> list;
-        list = shopCenterDao.findList(levelOne, levelTwo, levelThree, levelFour, levelFive);
+        list = shopCenterDao.findList5(levelOne, levelTwo, levelThree, levelFour, levelFive);
         return list;
     }
 
