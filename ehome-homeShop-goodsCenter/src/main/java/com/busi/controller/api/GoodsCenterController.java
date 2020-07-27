@@ -302,6 +302,28 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
     }
 
     /***
+     * 分页查询店铺推荐（用户）
+     * @param userId  发布者ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findRecommendList(@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<HomeShopGoods> pageBean = null;
+        pageBean = goodsCenterService.findRecommendList(userId, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
      * 分页查询商品(用户调用)
      * @param levelOne 商品1级分类  默认为0, -2为不限
      * @param levelTwo 商品2级分类  默认为0, -2为不限
@@ -317,12 +339,13 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
      * @param city  -1不限 发货地城市
      * @param district  -1不限 发货地区域
      * @param propertyName  属性值 多个属性之间","分隔
+     * @param letter 搜索商品名字
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
     @Override
-    public ReturnData findUserGoodsList(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable int sort, @PathVariable String brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findUserGoodsList(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable int sort, @PathVariable String brandId, @PathVariable int pinkageType, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable String propertyName, @PathVariable String letter, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -341,7 +364,7 @@ public class GoodsCenterController extends BaseController implements GoodsCenter
                 }
             }
         }
-        pageBean = goodsCenterService.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, tagArray, page, count);
+        pageBean = goodsCenterService.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, brandId, pinkageType, minPrice, maxPrice, province, city, district, tagArray, letter, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

@@ -358,6 +358,14 @@ public interface GoodsCenterDao {
             "</script>")
     List<HomeShopGoods> findDishesSortList2(@Param("sort") int sort, @Param("shopId") long shopId, @Param("time") int time, @Param("goodsSort") long goodsSort);
 
+    @Select("<script>" +
+            "select * from HomeShopGoods" +
+            " where userId = #{userId} and deleteType=0 and auditType = 1" +
+            " order by monthSales desc" +
+            "</script>")
+    List<HomeShopGoods> findRecommendList(@Param("userId") long userId);
+
+
     /***
      * 二货商城首页分类查询
      * @param sort  分类 0精选 1生活 2电器 3母婴 4时尚
@@ -565,4 +573,16 @@ public interface GoodsCenterDao {
             "</script>")
     List<HomeShopGoods> findUserGoodsList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive, @Param("sort") int sort, @Param("brandId") String[] brandId, @Param("pinkageType") int pinkageType, @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("propertyName") String[] propertyName);
 
+    /***
+     * 搜索商品名字
+     * @param letter 商品名字
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeShopGoods" +
+            " where 1=1" +
+            " and goodsTitle LIKE CONCAT('%',#{letter},'%')" +
+            " order by monthSales desc,refreshTime desc" +
+            "</script>")
+    List<HomeShopGoods> findUserGoodsList2(@Param("letter") String letter);
 }

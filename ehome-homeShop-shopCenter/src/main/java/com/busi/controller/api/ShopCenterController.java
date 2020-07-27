@@ -119,9 +119,9 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
     @Override
     public ReturnData findHomeShop(@PathVariable long userId) {
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOMESHOP + CommonUtils.getMyId());
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOMESHOP + userId);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            HomeShopCenter kitchen2 = shopCenterService.findByUserId(CommonUtils.getMyId());
+            HomeShopCenter kitchen2 = shopCenterService.findByUserId(userId);
             if (kitchen2 != null) {
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen2);

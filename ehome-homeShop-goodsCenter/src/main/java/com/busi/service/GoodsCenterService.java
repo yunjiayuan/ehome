@@ -252,6 +252,13 @@ public class GoodsCenterService {
         return PageUtils.getPageBean(p, list);
     }
 
+    public PageBean<HomeShopGoods> findRecommendList(long userId, int page, int count) {
+        List<HomeShopGoods> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = goodsCenterDao.findRecommendList(userId);
+        return PageUtils.getPageBean(p, list);
+    }
+
     /***
      * 分页查询商品(用户调用)
      * @param levelOne 商品1级分类  默认为0, -2为不限
@@ -268,25 +275,30 @@ public class GoodsCenterService {
      * @param city  -1不限 发货地城市
      * @param district  -1不限 发货地区域
      * @param propertyName  属性值 多个属性之间","分隔
+     * @param letter 搜索商品名字
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    public PageBean<HomeShopGoods> findUserGoodsList(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive, int sort, String brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String propertyName, int page, int count) {
+    public PageBean<HomeShopGoods> findUserGoodsList(int levelOne, int levelTwo, int levelThree, int levelFour, int levelFive, int sort, String brandId, int pinkageType, int minPrice, int maxPrice, int province, int city, int district, String propertyName, String letter, int page, int count) {
 
         List<HomeShopGoods> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        String[] s = null;
-        String[] a = null;
-        if (!CommonUtils.checkFull(brandId)) {
-            s = brandId.split(",");
-        }
-        if (!CommonUtils.checkFull(propertyName)) {
-            a = propertyName.split(",");
-        }
+        if (!CommonUtils.checkFull(letter)) {
+            list = goodsCenterDao.findUserGoodsList2(letter);
+        } else {
+            String[] s = null;
+            String[] a = null;
+            if (!CommonUtils.checkFull(brandId)) {
+                s = brandId.split(",");
+            }
+            if (!CommonUtils.checkFull(propertyName)) {
+                a = propertyName.split(",");
+            }
 //        int d = s.length;//1
 //        int f = a.length;//1
-        list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, s, pinkageType, minPrice, maxPrice, province, city, district, a);
+            list = goodsCenterDao.findUserGoodsList(levelOne, levelTwo, levelThree, levelFour, levelFive, sort, s, pinkageType, minPrice, maxPrice, province, city, district, a);
+        }
         return PageUtils.getPageBean(p, list);
     }
 
