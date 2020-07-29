@@ -23,7 +23,7 @@ public interface TravelDao {
      * @return
      */
     @Insert("insert into ScenicSpot(userId,businessStatus,deleteType,auditType,scenicSpotName,openTime,closeTime,licence,addTime,picture,tips,content,province,city,lat,lon," +
-            "district,videoUrl,videoCoverUrl,type,phone,claimTime)" +
+            "district,videoUrl,videoCoverUrl,type,phone)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{scenicSpotName},#{openTime},#{closeTime},#{licence},#{addTime},#{picture},#{tips},#{content},#{province},#{city},#{lat},#{lon}" +
             ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone})")
     @Options(useGeneratedKeys = true)
@@ -124,7 +124,10 @@ public interface TravelDao {
             "</if>" +
             "</if>" +
             "<if test=\"name == null or name == '' \">" +
-            " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " select *" +
+            "<if test=\"lat > 0 and lon > 0 \">" +
+            ", ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            "</if>" +
             " from ScenicSpot " +
             " where userId != #{userId}" +
             " and businessStatus=0 and deleteType = 0 and auditType=1" +
@@ -140,7 +143,12 @@ public interface TravelDao {
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
             "</if>" +
+            "<if test=\"lat > 0 and lon > 0 \">" +
             " order by juli asc" +
+            "</if>" +
+            "<if test=\"0 >= lat or 0 >= lon \">" +
+            " order by addTime desc,totalScore desc" +
+            "</if>" +
             "</if>" +
             "</script>")
     List<ScenicSpot> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("name") String name, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("lat") double lat, @Param("lon") double lon);

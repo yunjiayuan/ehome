@@ -215,14 +215,14 @@ public class TravelController extends BaseController implements TravelApiControl
                 ScenicSpot ik = (ScenicSpot) list.get(i);
                 int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLon(), ik.getLat(), lon, lat));
                 ik.setDistance(distance);//距离/m
-                UserInfo sendInfoCache = null;
-                sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
-                if (sendInfoCache != null) {
-                    ik.setName(sendInfoCache.getName());
-                    ik.setHead(sendInfoCache.getHead());
-                    ik.setProTypeId(sendInfoCache.getProType());
-                    ik.setHouseNumber(sendInfoCache.getHouseNumber());
-                }
+//                UserInfo sendInfoCache = null;
+//                sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
+//                if (sendInfoCache != null) {
+//                    ik.setName(sendInfoCache.getName());
+//                    ik.setHead(sendInfoCache.getHead());
+//                    ik.setProTypeId(sendInfoCache.getProType());
+//                    ik.setHouseNumber(sendInfoCache.getHouseNumber());
+//                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
