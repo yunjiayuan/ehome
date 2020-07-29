@@ -769,12 +769,12 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         Map<String, Object> collectionMap = new HashMap<>();
         List<Map<String, Object>> newList = new ArrayList<>();//最终组合后List
         //从缓存中获取菜品列表
-        collectionMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHENDISHESLIST + 1);
+        collectionMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + 1);
         if (collectionMap != null && collectionMap.size() > 0) {//缓存中存在 直接返回
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, collectionMap);
         }
         //清除缓存中的菜品信息  防止并发
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + 1, 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + 1, 0);
         //查询是否收藏过此厨房
         int collection = 0;//是否收藏过此厨房  0没有  1已收藏
         boolean flag = kitchenService.findWhether2(1, CommonUtils.getMyId(), kitchenId);
