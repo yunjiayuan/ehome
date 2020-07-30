@@ -17,19 +17,19 @@ public interface TravelOrderApiController {
 
     /***
      * 新增订单
-     * @param kitchenBookedOrders
+     * @param kitchenTravelOrders
      * @return
      */
-    @PostMapping("addBookedOrder")
-    ReturnData addBookedOrder(@Valid @RequestBody ScenicSpotOrder kitchenBookedOrders, BindingResult bindingResult);
+    @PostMapping("addTravelOrder")
+    ReturnData addTravelOrder(@Valid @RequestBody ScenicSpotOrder kitchenTravelOrders, BindingResult bindingResult);
 
     /***
      * 删除订单
      * @param id 订单ID
      * @return
      */
-    @DeleteMapping("delBookedOrder/{id}")
-    ReturnData delBookedOrder(@PathVariable long id);
+    @DeleteMapping("delTravelOrder/{id}")
+    ReturnData delTravelOrder(@PathVariable long id);
 
     /***
      * 更改订单状态
@@ -37,8 +37,8 @@ public interface TravelOrderApiController {
      * @param id  订单Id
      * @return
      */
-    @GetMapping("receiptBooked/{id}")
-    ReturnData receiptBooked(@PathVariable long id);
+    @GetMapping("receiptTravel/{id}")
+    ReturnData receiptTravel(@PathVariable long id);
 
     /***
      * 更改订单状态
@@ -46,24 +46,24 @@ public interface TravelOrderApiController {
      * @param id  订单Id
      * @return
      */
-    @GetMapping("upperTable/{id}")
-    ReturnData upperTable(@PathVariable long id);
+    @GetMapping("completeTravel/{id}")
+    ReturnData completeTravel(@PathVariable long id);
 
     /***
      * 查看订单详情
      * @param no  订单编号
      * @return
      */
-    @GetMapping("findBookedOrder/{no}")
-    ReturnData findBookedOrder(@PathVariable String no);
+    @GetMapping("findTravelOrder/{no}")
+    ReturnData findTravelOrder(@PathVariable String no);
 
     /***
      * 取消订单（更新订单类型）
      * @param id
      * @return
      */
-    @GetMapping("cancelBookedOrders/{id}")
-    ReturnData cancelBookedOrders(@PathVariable long id);
+    @GetMapping("cancelTravelOrders/{id}")
+    ReturnData cancelTravelOrders(@PathVariable long id);
 
     /***
      * 订单管理条件查询
@@ -73,7 +73,7 @@ public interface TravelOrderApiController {
      * @param count        每页的显示条数
      * @return
      */
-    @GetMapping("findBookedOrderList/{userId}/{identity}/{ordersType}/{page}/{count}")
-    ReturnData findBookedOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findTravelOrderList/{userId}/{identity}/{ordersType}/{page}/{count}")
+    ReturnData findTravelOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
 }
