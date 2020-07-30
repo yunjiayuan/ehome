@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.KitchenDishes;
 import com.busi.entity.ScenicSpot;
 import com.busi.entity.ScenicSpotTickets;
 import org.apache.ibatis.annotations.*;
@@ -226,4 +227,18 @@ public interface TravelDao {
             " and userId=#{userId}" +
             "</script>")
     int delScenicSpot(@Param("userId") long userId, @Param("id") long id);
+
+    /***
+     * 批量查询指定的门票
+     * @param ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ScenicSpotTickets" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<ScenicSpotTickets> findDishesList2(@Param("ids") String[] ids);
 }

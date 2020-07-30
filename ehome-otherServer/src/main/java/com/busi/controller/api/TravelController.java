@@ -26,7 +26,7 @@ import java.util.*;
 public class TravelController extends BaseController implements TravelApiController {
 
     @Autowired
-    TravelService kitchenBookedService;
+    TravelService travelService;
 
     @Autowired
     RedisUtils redisUtils;
@@ -56,7 +56,7 @@ public class TravelController extends BaseController implements TravelApiControl
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + scenicSpot.getUserId());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            ScenicSpot kitchen2 = kitchenBookedService.findReserve(scenicSpot.getUserId());
+            ScenicSpot kitchen2 = travelService.findReserve(scenicSpot.getUserId());
             if (kitchen2 != null) {
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen2);
@@ -70,7 +70,7 @@ public class TravelController extends BaseController implements TravelApiControl
         scenicSpot.setAuditType(1);
         scenicSpot.setBusinessStatus(1);//景区默认关闭
         scenicSpot.setAddTime(new Date());
-        kitchenBookedService.addKitchen(scenicSpot);
+        travelService.addKitchen(scenicSpot);
         Map<String, Object> map2 = new HashMap<>();
         map2.put("infoId", scenicSpot.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map2);
@@ -89,9 +89,9 @@ public class TravelController extends BaseController implements TravelApiControl
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         if (!CommonUtils.checkFull(scenicSpot.getLicence())) {//上传景区证照
-            kitchenBookedService.updateKitchen2(scenicSpot);
+            travelService.updateKitchen2(scenicSpot);
         } else {
-            kitchenBookedService.updateKitchen(scenicSpot);
+            travelService.updateKitchen(scenicSpot);
         }
         if (!CommonUtils.checkFull(scenicSpot.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
@@ -110,12 +110,12 @@ public class TravelController extends BaseController implements TravelApiControl
      */
     @Override
     public ReturnData delScenicSpot(@PathVariable long userId, @PathVariable long id) {
-        ScenicSpot io = kitchenBookedService.findById(id);
+        ScenicSpot io = travelService.findById(id);
         if (io != null) {
             io.setDeleteType(1);
-            kitchenBookedService.updateDel(io);
+            travelService.updateDel(io);
             //同时删除该景区的门票
-            kitchenBookedService.delScenicSpot(userId, id);
+            travelService.delScenicSpot(userId, id);
             //清除缓存
             redisUtils.expire(Constants.REDIS_KEY_TRAVEL + userId, 0);
         }
@@ -134,7 +134,7 @@ public class TravelController extends BaseController implements TravelApiControl
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + scenicSpot.getUserId());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            ScenicSpot kitchen2 = kitchenBookedService.findReserve(scenicSpot.getUserId());
+            ScenicSpot kitchen2 = travelService.findReserve(scenicSpot.getUserId());
             if (kitchen2 != null) {
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen2);
@@ -148,7 +148,7 @@ public class TravelController extends BaseController implements TravelApiControl
         if (CommonUtils.checkFull(ik.getLicence())) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该景区未上传景区证照", new JSONObject());
         }
-        kitchenBookedService.updateBusiness(scenicSpot);
+        travelService.updateBusiness(scenicSpot);
         //清除缓存
         redisUtils.expire(Constants.REDIS_KEY_TRAVEL + scenicSpot.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -164,7 +164,7 @@ public class TravelController extends BaseController implements TravelApiControl
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + userId);
         if (kitchenMap == null || kitchenMap.size() <= 0) {
-            ScenicSpot kitchen = kitchenBookedService.findReserve(userId);
+            ScenicSpot kitchen = travelService.findReserve(userId);
             if (kitchen == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
@@ -204,7 +204,7 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         //开始查询
         PageBean<ScenicSpot> pageBean = null;
-        pageBean = kitchenBookedService.findKitchenList(CommonUtils.getMyId(), watchVideos, name, province, city, district, lat, lon, page, count);
+        pageBean = travelService.findKitchenList(CommonUtils.getMyId(), watchVideos, name, province, city, district, lat, lon, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -241,7 +241,7 @@ public class TravelController extends BaseController implements TravelApiControl
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         tickets.setAddTime(new Date());
-        kitchenBookedService.addDishes(tickets);
+        travelService.addDishes(tickets);
         //清除缓存中的门票信息
         redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + tickets.getScenicSpotId(), 0);
         Map<String, Object> map = new HashMap<>();
@@ -261,7 +261,7 @@ public class TravelController extends BaseController implements TravelApiControl
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        kitchenBookedService.updateDishes(tickets);
+        travelService.updateDishes(tickets);
         //清除缓存中的门票信息
         redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + tickets.getScenicSpotId(), 0);
         Map<String, Object> map = new HashMap<>();
@@ -281,14 +281,14 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         String[] idss = ids.split(",");
         long id = Long.parseLong(idss[0]);
-        ScenicSpotTickets dishes = kitchenBookedService.disheSdetails(id);
+        ScenicSpotTickets dishes = travelService.disheSdetails(id);
         if (dishes == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         //清除缓存中的菜品信息
         redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + dishes.getScenicSpotId(), 0);
         //查询数据库
-        kitchenBookedService.delDishes(idss, CommonUtils.getMyId());
+        travelService.delDishes(idss, CommonUtils.getMyId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -306,7 +306,7 @@ public class TravelController extends BaseController implements TravelApiControl
         cartList = redisUtils.getList(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, 0, -1);
         if (cartList == null || cartList.size() <= 0) {
             //查询数据库
-            cartList = kitchenBookedService.findList(id);
+            cartList = travelService.findList(id);
             if (cartList != null && cartList.size() > 0) {
                 //更新到缓存
                 redisUtils.pushList(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, cartList);

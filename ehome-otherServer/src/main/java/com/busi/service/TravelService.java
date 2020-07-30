@@ -173,4 +173,15 @@ public class TravelService {
         list = kitchenBookedDao.findDishesList(kitchenId);
         return list;
     }
+
+    /***
+     * 批量查询指定的门票
+     * @param ids
+     * @return
+     */
+    public List<ScenicSpotTickets> findDishesList(String[] ids) {
+        List<ScenicSpotTickets> list;
+        list = kitchenBookedDao.findDishesList2(ids);
+        return list;
+    }
 }

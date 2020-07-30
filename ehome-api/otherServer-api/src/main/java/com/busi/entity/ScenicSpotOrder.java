@@ -61,6 +61,8 @@ public class ScenicSpotOrder {
 
     private String address_Phone;                // 联系人电话
 
+    private String voucherCode;                // 凭证码
+
     //与数据库无关字段
     private String ticketsIds;             //门票IDs
 

@@ -111,10 +111,10 @@ public interface KitchenBookedOrdersApiController {
 
     /***
      * 订单管理条件查询
-     * @param count       : 每页的显示条数
-     * @param page        : 当前查询数据的页码
-     * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2已接单,3已完成  4卖家取消订单 5用户取消订单 6付款超时 7接单超时
+     * @param count        每页的显示条数
+     * @param page         当前查询数据的页码
+     * @param identity     身份区分：1买家 2商家
+     * @param ordersType   订单类型:  订单类型:  0未付款（已下单未付款）1未接单(已付款未接单),2已接单,3已完成  4卖家取消订单 5用户取消订单 6付款超时 7接单超时
      * @return
      */
     @GetMapping("findBookedOrderList/{userId}/{identity}/{ordersType}/{page}/{count}")
