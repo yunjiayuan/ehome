@@ -50,7 +50,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * @return
      */
     @Override
-    public ReturnData addBookedOrder(@Valid @RequestBody ScenicSpotOrder scenicSpotOrder, BindingResult bindingResult) {
+    public ReturnData addTravelOrder(@Valid @RequestBody ScenicSpotOrder scenicSpotOrder, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -114,8 +114,6 @@ public class TravelOrderController extends BaseController implements TravelOrder
             }
             scenicSpotOrder.setDishameCost(dishes);//名称,数量,价格
             scenicSpotOrder.setMoney(money);//总价
-            scenicSpotOrder.setOrdersType(1);
-
             travelOrderService.addOrders(scenicSpotOrder);
             map.put("infoId", scenicSpotOrder.getNo());
 
@@ -132,7 +130,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * @return
      */
     @Override
-    public ReturnData delBookedOrder(@PathVariable long id) {
+    public ReturnData delTravelOrder(@PathVariable long id) {
         ScenicSpotOrder io = travelOrderService.findById(id, CommonUtils.getMyId(), 0);
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
@@ -156,7 +154,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * @return
      */
     @Override
-    public ReturnData receiptBooked(@PathVariable long id) {
+    public ReturnData receiptTravel(@PathVariable long id) {
         ScenicSpotOrder io = travelOrderService.findById(id, CommonUtils.getMyId(), 1);
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
@@ -183,7 +181,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * @return
      */
     @Override
-    public ReturnData upperTable(@PathVariable long id) {
+    public ReturnData completeTravel(@PathVariable long id) {
         ScenicSpotOrder io = travelOrderService.findById(id, CommonUtils.getMyId(), 2);
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
@@ -207,7 +205,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * @return
      */
     @Override
-    public ReturnData findBookedOrder(@PathVariable String no) {
+    public ReturnData findTravelOrder(@PathVariable String no) {
         //查询缓存 缓存中不存在 查询数据库
         ScenicSpotOrder io = null;
         Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVELORDERS + CommonUtils.getMyId() + "_" + no);
@@ -237,7 +235,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * @return
      */
     @Override
-    public ReturnData cancelBookedOrders(@PathVariable long id) {
+    public ReturnData cancelTravelOrders(@PathVariable long id) {
         ScenicSpotOrder ko = null;
         ko = travelOrderService.findById(id, CommonUtils.getMyId(), 4);
         if (ko == null) {
@@ -285,7 +283,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * @return
      */
     @Override
-    public ReturnData findBookedOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findTravelOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
