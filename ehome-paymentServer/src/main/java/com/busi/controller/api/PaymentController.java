@@ -84,6 +84,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private CashOutOrderService cashOutOrderService;
+
+    @Autowired
+    private TravelOrdersService travelOrdersService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -319,6 +322,15 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 24://提现到银行卡（预留）
                 payBaseService = cashOutOrderService;
+                break;
+            case 25://支付旅游订单
+                payBaseService = travelOrdersService;
+                break;
+            case 26://支付酒店民宿订单
+                payBaseService = null;
+                break;
+            case 27://支付买药订单
+                payBaseService = null;
                 break;
             default:
                 break;
