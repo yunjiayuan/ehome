@@ -1,6 +1,5 @@
 package com.busi.dao;
 
-import com.busi.entity.KitchenDishes;
 import com.busi.entity.ScenicSpot;
 import com.busi.entity.ScenicSpotTickets;
 import org.apache.ibatis.annotations.*;
@@ -24,9 +23,9 @@ public interface TravelDao {
      * @return
      */
     @Insert("insert into ScenicSpot(userId,businessStatus,deleteType,auditType,scenicSpotName,openTime,closeTime,licence,addTime,picture,tips,content,province,city,lat,lon," +
-            "district,videoUrl,videoCoverUrl,type,phone)" +
+            "district,videoUrl,videoCoverUrl,type,phone,levels)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{scenicSpotName},#{openTime},#{closeTime},#{licence},#{addTime},#{picture},#{tips},#{content},#{province},#{city},#{lat},#{lon}" +
-            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone})")
+            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels})")
     @Options(useGeneratedKeys = true)
     int addKitchen(ScenicSpot kitchen);
 
@@ -51,6 +50,7 @@ public interface TravelDao {
             " videoCoverUrl=#{videoCoverUrl}," +
             " district=#{district}," +
             " phone=#{phone}," +
+            " levels=#{levels}," +
             " type=#{type}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
             "</script>")
