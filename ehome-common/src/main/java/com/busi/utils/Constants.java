@@ -292,6 +292,9 @@ public class Constants {
     public static final String REDIS_KEY_TRAVEL = "travel_";//景区与userId关系对照
     public static final String REDIS_KEY_TRAVELTICKETSLIST = "travelTicketsList_";//景区门票信息对应关系
     public static final String REDIS_KEY_TRAVELORDERS = "travelOrders_";//userId与景区订单对象关系对照
+    public static final String REDIS_KEY_HOTEL = "hotel_";//酒店民宿与userId关系对照
+    public static final String REDIS_KEY_HOTELROOMLIST = "hotelRoomList_";//酒店民宿门票信息对应关系
+    public static final String REDIS_KEY_HOTELORDERS = "hotelOrders_";//userId与酒店民宿订单对象关系对照
     public static final String REDIS_KEY_KITCHENORDERS = "kitchenOrders_";//userId与厨房订单对象关系对照
     public static final String REDIS_KEY_KITCHENBOOKEDORDERS = "kitchenBookedOrders_";//userId与厨房订座订单对象关系对照
     public static final String REDIS_KEY_HOURLYWORKER = "hourlyWorker_";//小时工关系对照
