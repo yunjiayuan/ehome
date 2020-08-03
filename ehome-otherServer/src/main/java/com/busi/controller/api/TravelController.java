@@ -1,6 +1,5 @@
 package com.busi.controller.api;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
@@ -67,7 +66,7 @@ public class TravelController extends BaseController implements TravelApiControl
         if (ik != null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "入驻景区失败，景区已存在！", new JSONObject());
         }
-        scenicSpot.setAuditType(1);
+        scenicSpot.setAuditType(0);
         scenicSpot.setBusinessStatus(1);//景区默认关闭
         scenicSpot.setAddTime(new Date());
         travelService.addKitchen(scenicSpot);
@@ -89,6 +88,7 @@ public class TravelController extends BaseController implements TravelApiControl
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         if (!CommonUtils.checkFull(scenicSpot.getLicence())) {//上传景区证照
+            scenicSpot.setAuditType(1);
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);
@@ -145,7 +145,7 @@ public class TravelController extends BaseController implements TravelApiControl
         if (ik == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "景区不存在！", new JSONObject());
         }
-        if (CommonUtils.checkFull(ik.getLicence())) {
+        if (ik.getAuditType() != 1) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该景区未上传景区证照", new JSONObject());
         }
         travelService.updateBusiness(scenicSpot);
@@ -180,6 +180,15 @@ public class TravelController extends BaseController implements TravelApiControl
             kitchenMap = CommonUtils.objectToMap(kitchen);
             redisUtils.hmset(Constants.REDIS_KEY_TRAVEL + userId, kitchenMap, Constants.USER_TIME_OUT);
         }
+        int collection = 0;//是否收藏过此景区  0没有  1已收藏
+        if (kitchenMap != null && kitchenMap.size() > 0) {
+            //验证是否收藏过
+            boolean flag = travelService.findWhether(CommonUtils.getMyId(), userId);
+            if (flag) {
+                collection = 1;//1已收藏
+            }
+        }
+        kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
 
@@ -206,7 +215,7 @@ public class TravelController extends BaseController implements TravelApiControl
         PageBean<ScenicSpot> pageBean = null;
         pageBean = travelService.findKitchenList(CommonUtils.getMyId(), watchVideos, name, province, city, district, lat, lon, page, count);
         if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
         }
         List list = null;
         list = pageBean.getList();
@@ -313,5 +322,79 @@ public class TravelController extends BaseController implements TravelApiControl
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, cartList);
+    }
+
+    /***
+     * 新增收藏
+     * @param collect
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addScenicSpotCollect(@Valid @RequestBody ScenicSpotCollection collect, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //验证是否收藏过
+        boolean flag = travelService.findWhether(collect.getMyId(), collect.getUserId());
+        if (flag) {
+            return returnData(StatusCode.CODE_COLLECTED_HOURLY_ERROR.CODE_VALUE, "您已收藏过此景区", new JSONObject());
+        }
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + collect.getUserId());
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            ScenicSpot kitchen2 = travelService.findReserve(collect.getUserId());
+            if (kitchen2 == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，景区不存在！", new JSONObject());
+            }
+            //放入缓存
+            kitchenMap = CommonUtils.objectToMap(kitchen2);
+            redisUtils.hmset(Constants.REDIS_KEY_TRAVEL + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+        }
+        ScenicSpot io = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
+        if (io != null) {
+            //添加收藏记录
+            collect.setTime(new Date());
+            if (!CommonUtils.checkFull(io.getPicture())) {
+                String[] strings = io.getPicture().split(",");
+                collect.setPicture(strings[0]);
+            }
+            collect.setName(io.getScenicSpotName());
+            travelService.addCollect(collect);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 分页查询收藏列表
+     * @param userId   用户ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findScenicSpotCollectList(@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<ScenicSpotCollection> pageBean;
+        pageBean = travelService.findCollectionList(userId, page, count);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /**
+     * @param ids
+     * @Description: 删除收藏
+     * @return:
+     */
+    @Override
+    public ReturnData delScenicSpotCollect(@PathVariable String ids) {
+        //查询数据库
+        travelService.del(ids.split(","), CommonUtils.getMyId());
+
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

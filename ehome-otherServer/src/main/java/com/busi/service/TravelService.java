@@ -184,4 +184,54 @@ public class TravelService {
         list = kitchenBookedDao.findDishesList2(ids);
         return list;
     }
+
+    /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    public boolean findWhether(long userId, long id) {
+        ScenicSpotCollection kitchen = null;
+        kitchen = kitchenBookedDao.findWhether(userId, id);
+        if (kitchen == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /***
+     * 新增景区收藏
+     * @param hourlyWorkerCollection
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addCollect(ScenicSpotCollection hourlyWorkerCollection) {
+        return kitchenBookedDao.addCollect(hourlyWorkerCollection);
+    }
+
+    /***
+     * 查询景区收藏列表
+     * @param page     页码 第几页 起始值1
+     * @param count    每页条数
+     * @param userId  用户ID
+     * @return
+     */
+    public PageBean<ScenicSpotCollection> findCollectionList(long userId, int page, int count) {
+
+        List<ScenicSpotCollection> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenBookedDao.findCollectionList(userId);
+
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 删除景区收藏
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int del(String[] ids, long userId) {
+        return kitchenBookedDao.del(ids, userId);
+    }
 }

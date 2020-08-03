@@ -99,12 +99,15 @@ public class TravelOrderController extends BaseController implements TravelOrder
             }
         }
         if (kh != null) {
-            long time = new Date().getTime();
+            long time = date.getTime();
             String noTime = String.valueOf(time);
             String random = CommonUtils.getRandom(6, 1);
             String noRandom = CommonUtils.strToMD5(noTime + scenicSpotOrder.getMyId() + random, 16);
-
             scenicSpotOrder.setNo(noRandom);//订单编号【MD5】
+
+            String random2 = CommonUtils.getRandom(6, 1);
+            String noRandom2 = CommonUtils.strToMD5(noTime + scenicSpotOrder.getMyId() + random2, 16);
+            scenicSpotOrder.setVoucherCode(noRandom2);//凭证码【MD5】
             scenicSpotOrder.setAddTime(date);
             scenicSpotOrder.setScenicSpotId(kh.getId());
             scenicSpotOrder.setScenicSpotName(kh.getScenicSpotName());
@@ -151,16 +154,17 @@ public class TravelOrderController extends BaseController implements TravelOrder
      * 更改订单状态
      * 由未验票改为已验票
      * @param id  订单Id
+     * @param voucherCode  凭证码
      * @return
      */
     @Override
-    public ReturnData receiptTravel(@PathVariable long id) {
+    public ReturnData receiptTravel(@PathVariable long id, @PathVariable String voucherCode) {
         ScenicSpotOrder io = travelOrderService.findById(id, CommonUtils.getMyId(), 1);
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         //由由未验票改为已验票
-        if (io.getUserId() == CommonUtils.getMyId()) {
+        if (io.getUserId() == CommonUtils.getMyId() && io.getVoucherCode().equals(voucherCode)) {
             io.setOrdersType(1);
             io.setInspectTicketTime(new Date());
             io.setUpdateCategory(1);

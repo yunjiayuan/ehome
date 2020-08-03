@@ -30,7 +30,7 @@ public class ScenicSpot {
 
     private int auditType;            // 审核标志:0审核中,1通过,2未通过
 
-    @Length(max = 14, message = "景区名称不能超过14字")
+    @Length(max = 14, message = "景区名称不能超过30字")
     private String scenicSpotName;                //景区名称
 
     private String openTime;                // 景区开放时间

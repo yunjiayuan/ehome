@@ -35,10 +35,11 @@ public interface TravelOrderApiController {
      * 更改订单状态
      * 由未验票改为已验票
      * @param id  订单Id
+     * @param voucherCode  凭证码
      * @return
      */
-    @GetMapping("receiptTravel/{id}")
-    ReturnData receiptTravel(@PathVariable long id);
+    @GetMapping("receiptTravel/{id}/{voucherCode}")
+    ReturnData receiptTravel(@PathVariable long id, @PathVariable String voucherCode);
 
     /***
      * 更改订单状态

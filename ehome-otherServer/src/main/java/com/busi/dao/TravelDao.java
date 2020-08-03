@@ -1,7 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.ScenicSpot;
-import com.busi.entity.ScenicSpotTickets;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -36,6 +35,10 @@ public interface TravelDao {
      */
     @Update("<script>" +
             "update ScenicSpot set" +
+            "<if test=\"licence != null and licence != '' \">" +
+            " licence=#{licence}," +
+            " auditType=1," +
+            "</if>" +
             " lat=#{lat}," +
             " lon=#{lon}," +
             " scenicSpotName=#{scenicSpotName}," +
@@ -52,14 +55,15 @@ public interface TravelDao {
             " phone=#{phone}," +
             " levels=#{levels}," +
             " type=#{type}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen(ScenicSpot kitchen);
 
     @Update("<script>" +
             "update ScenicSpot set" +
-            " licence=#{licence}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
+            " licence=#{licence}," +
+            " auditType=#{auditType}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(ScenicSpot kitchen);
 
@@ -71,7 +75,7 @@ public interface TravelDao {
     @Update("<script>" +
             "update ScenicSpot set" +
             " deleteType=#{deleteType}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateDel(ScenicSpot kitchen);
 
@@ -80,7 +84,7 @@ public interface TravelDao {
      * @param userId
      * @return
      */
-    @Select("select * from ScenicSpot where userId=#{userId} and deleteType = 0 and auditType=1")
+    @Select("select * from ScenicSpot where userId=#{userId} and deleteType = 0")
     ScenicSpot findReserve(@Param("userId") long userId);
 
     /***
@@ -88,7 +92,7 @@ public interface TravelDao {
      * @param id
      * @return
      */
-    @Select("select * from ScenicSpot where id=#{id} and deleteType = 0 and auditType=1 ")
+    @Select("select * from ScenicSpot where id=#{id} and deleteType = 0 ")
     ScenicSpot findById(@Param("id") long id);
 
     /***
@@ -99,7 +103,7 @@ public interface TravelDao {
     @Update("<script>" +
             "update ScenicSpot set" +
             " businessStatus=#{businessStatus}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1 " +
+            " where id=#{id} and userId=#{userId} and deleteType = 0  " +
             "</script>")
     int updateBusiness(ScenicSpot kitchen);
 
@@ -159,8 +163,8 @@ public interface TravelDao {
      * @param dishes
      * @return
      */
-    @Insert("insert into ScenicSpotTickets(userId,scenicSpotId,cost,name,addTime) " +
-            "values (#{userId},#{scenicSpotId},#{cost},#{name},#{addTime})")
+    @Insert("insert into ScenicSpotTickets(userId,scenicSpotId,cost,name,addTime,describe) " +
+            "values (#{userId},#{scenicSpotId},#{cost},#{name},#{addTime},#{describe})")
     @Options(useGeneratedKeys = true)
     int addDishes(ScenicSpotTickets dishes);
 
@@ -172,6 +176,7 @@ public interface TravelDao {
     @Update("<script>" +
             "update ScenicSpotTickets set" +
             " cost=#{cost}," +
+            " describe=#{describe}," +
             " name=#{name}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
@@ -241,4 +246,50 @@ public interface TravelDao {
             "</foreach>" +
             "</script>")
     List<ScenicSpotTickets> findDishesList2(@Param("ids") String[] ids);
+
+    /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    @Select("select * from ScenicSpotCollection where myId=#{userId} and userId=#{id}")
+    ScenicSpotCollection findWhether(@Param("userId") long userId, @Param("id") long id);
+
+    /***
+     * 新增收藏
+     * @param ScenicSpotCollection
+     * @return
+     */
+    @Insert("insert into ScenicSpotCollection(myId,userId,name,picture,time) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time})")
+    @Options(useGeneratedKeys = true)
+    int addCollect(ScenicSpotCollection ScenicSpotCollection);
+
+    /***
+     * 查询景区收藏列表
+     * @param userId  用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ScenicSpotCollection" +
+            " where 1=1" +
+            " and myId=#{userId}" +
+            " order by time desc" +
+            "</script>")
+    List<ScenicSpotCollection> findCollectionList(@Param("userId") long userId);
+
+    /***
+     * 删除景区收藏
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from ScenicSpotCollection" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and myId=#{userId}" +
+            "</script>")
+    int del(@Param("ids") String[] ids, @Param("userId") long userId);
 }

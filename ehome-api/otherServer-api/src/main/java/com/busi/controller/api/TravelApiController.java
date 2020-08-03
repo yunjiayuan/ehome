@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.busi.entity.ScenicSpotCollection;
 import com.busi.entity.ScenicSpot;
 import com.busi.entity.ScenicSpotTickets;
 import com.busi.entity.ReturnData;
@@ -103,5 +104,30 @@ public interface TravelApiController {
      */
     @GetMapping("findTicketsList/{id}/{page}/{count}")
     ReturnData findTicketsList(@PathVariable long id, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 新增收藏
+     * @param hourlyWorkerCollection
+     * @return
+     */
+    @PostMapping("addScenicSpotCollect")
+    ReturnData addScenicSpotCollect(@Valid @RequestBody ScenicSpotCollection hourlyWorkerCollection, BindingResult bindingResult);
+
+    /***
+     * 分页查询收藏列表
+     * @param userId   用户ID
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findScenicSpotCollectList/{userId}/{page}/{count}")
+    ReturnData findScenicSpotCollectList(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
+
+    /**
+     * @Description: 删除收藏
+     * @return:
+     */
+    @DeleteMapping("delScenicSpotCollect/{ids}")
+    ReturnData delScenicSpotCollect(@PathVariable String ids);
 
 }
