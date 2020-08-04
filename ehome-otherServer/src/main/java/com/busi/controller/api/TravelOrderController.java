@@ -200,7 +200,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
             if (i > 0) {
                 io.setOrdersType(6);
                 //景区订单放入缓存
-                redisUtils.hmset(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
                 return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "门票已过期", new JSONObject());
             } else if (i < 0) {
                 return returnData(StatusCode.CODE_TRAVEL_ADVANCE.CODE_VALUE, "游玩日期未到", new JSONObject());
