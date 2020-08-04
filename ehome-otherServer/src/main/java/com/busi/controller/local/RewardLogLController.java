@@ -42,7 +42,7 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
             //检测之前是否已存在
             RewardLog rl = rewardLogService.findRewardLog(rewardLog.getUserId(),rewardLog.getRewardType(),rewardLog.getInfoId());
             if(rl!=null){//已存在
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "生活圈奖励红包记录已存在，不再新增", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "奖励记录已存在，不再新增", new JSONObject());
             }
         }
         rewardLog.setTime(new Date());
