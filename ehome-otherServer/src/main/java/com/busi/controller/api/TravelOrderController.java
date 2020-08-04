@@ -166,6 +166,9 @@ public class TravelOrderController extends BaseController implements TravelOrder
         if (io == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
+        if (io.getPaymentStatus() == 0) {//未付款
+            return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "订单未支付", new JSONObject());
+        }
         if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }

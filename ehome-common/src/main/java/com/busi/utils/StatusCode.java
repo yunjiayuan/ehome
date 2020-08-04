@@ -1,11 +1,11 @@
 package com.busi.utils;
-/** 
+/**
  * 状态码对照表
  *
- * @author SunTianJie 
+ * @author SunTianJie
  *
- * @version create time：2015-9-23 上午9:47:21 
- * 
+ * @version create time：2015-9-23 上午9:47:21
+ *
  */
 public enum StatusCode {
 
@@ -34,7 +34,7 @@ public enum StatusCode {
 	CODE_ACCOUNT_NOT_ACTIVE(121,"该账号未激活，暂时不能访问其他数据接口，自动跳转到登录界面"),
 	CODE_ACCOUNT_DEACTIVATED(122,"该账号已被停用，暂时不能访问其他数据接口，自动跳转到登录界面"),
 	/*-----------系统状态码------------*/
-	
+
 	/*-----------短信平台态码------------*/
 	CODE_SMS_IPOVER_ERROR(131,"该IP段发送短息验证码次数过多"),
 	CODE_SMS_USERBOUND_ERROR(132,"该用户已绑定手机"),
@@ -44,8 +44,8 @@ public enum StatusCode {
 	CODE_SMS_USEROVER_ERROR(136,"该账户发送短息验证码次数过多"),
 	CODE_SMS_PHONE_NOT_EXIST_ERROR(137,"该用户的手机号未注册过"),
 	/*-----------短信平台状态码------------*/
-	
-	
+
+
 	/*-----------支付系统态码------------*/
 	CODE_PAYKEY_LOSE_EFFECT_ERROR(151,"私钥过期或者失效"),
 	CODE_PAYKEY_ERROR(152,"私钥错误,不匹配"),
@@ -76,7 +76,7 @@ public enum StatusCode {
 	CODE_GROUP_BASE64ENCODER_ERROR(215,"群头像上传失败"),
 	CODE_GROUP_NOT(216,"未找到该群"),
 	CODE_GROUP_NOT_ADMIN(217,"管理员退出群,未指派新管理者"),
-	
+
 
 	//仓库及装修
 	CODE_DEPOT_NOT_FOUND(231,"仓库内没有这个物品"),
@@ -142,7 +142,7 @@ public enum StatusCode {
 	CODE_BRICK_TREE(312,"本日对该用户已经抛过了"),
 	CODE_BRICK_ENOUGH(313,"今日这位玩家收抛砖的次数已满"),
 	CODE_BRICK_AWARDYOU(314,"用户无权修改"),
-	
+
 	//家园相册影音剧
 	CODE_FOLDER_NOT_FOUND(321,"家园文件夹不存在"),
 	CODE_FOLDER_PASSWORD_ERROR(322,"家园文件夹密码错误"),
@@ -151,12 +151,12 @@ public enum StatusCode {
 	CODE_PIC_GIF_ERROR(325,"图片类型为GIF不能旋转"),
 	CODE_FOLDER_MAX(326,"文件夹创建达到上限"),
 	CODE_ROOM_LOCK(327,"房间已上锁"),
-	
+
 	//记事本
 	CODE_NOTEPAD_BASE64ENCODER_ERROR(331,"上传失败"),
 	CODE_NOTEPAD_REPEAT_ERROR(332,"今日已发表过记事"),
 	CODE_NOTEPAD_SCHEDULE_ERROR(333,"日程数量已达上限"),
-	
+
 	//公告置顶
 	CODE_IPS_COLLECTION(336,"你已经收藏过"),
 	CODE_SETTOP_UNQUALIFIED(337,"非会员没有置顶资格"),
@@ -174,10 +174,10 @@ public enum StatusCode {
 	CODE_RECRUIT_TOPLIMIT(348,"招聘数量已达上限"),
 	CODE_MATCHING_REPEAT(349,"您与要申请的职位不匹配，再看看其他的职位吧"),
 	CODE_DOWRESUME_TOPLIMIT(350,"您下载简历次数已达上限"),
-	
+
 	//钱包
-	CODE_PURSE_NOT_EXIST(351,"用户未开通钱包"),			
-	CODE_PURSE_COIN_NOT_ENOUGH(352,"钱包家币不够"),	
+	CODE_PURSE_NOT_EXIST(351,"用户未开通钱包"),
+	CODE_PURSE_COIN_NOT_ENOUGH(352,"钱包家币不够"),
 	CODE_PURSE_POINT_NOT_ENOUGH(353,"钱包家点不够"),
 	CODE_BANKCARD_CHECK_ERROR(354,"验证银行卡失败，银行卡信息不匹配，未通过"),
 	CODE_BANKCARD_IS_EXIST_ERROR(355,"该用户已绑定银行卡"),
@@ -185,48 +185,48 @@ public enum StatusCode {
 	CODE_PHONE_CODE_CHECK_ERROR(357,"短信验证码错误或者已过期失效"),
 	CODE_TIME_OUT_ERROR(358,"操作超时,请重新找回"),
 	CODE_CHECK_ERROR_TOO_MUCH(359,"验证错误次数过多,停止验证操作一天"),
-	
-	
+
+
 //	CODE_PURSE_BOUND_ERROR(354,"账户已经绑定过于此相同的银行卡"),
 //	CODE_PURSE_BANKPHONE_ERROR(355,"银行卡预留手机号校验失败"),
 //	CODE_PURSE_BANKCARD_ERROR(356,"银行卡号校验失败"),
 //	CODE_PURSE_BACKCODE_ERROR(357,"信用卡背面三位数字校验失败"),
 //	CODE_PURSE_EXPIRYDATE_ERROR(358,"信用卡有效期校验失败"),
 //	CODE_PURSE_CARDUSER_ERROR(359,"银行卡持卡用户名称校验失败"),
-	
+
 	//礼物
-	CODE_GIFT_NOT_EXIST(361,"用户暂时没有可拾取的礼物"),			
+	CODE_GIFT_NOT_EXIST(361,"用户暂时没有可拾取的礼物"),
 	CODE_GIFT_USER_PICKUP(362,"礼物已经拾取"),
 	CODE_GIFT_FULL(363,"今日赠送次数用完"),
 	CODE_GIFT_TREE(364,"今日对该用户已经赠送过了"),
 	CODE_GIFT_ENOUGH(365,"今日用户拾取礼物上限"),
-	
+
 	//评选活动
-	CODE_ALREADY_JOIN(381,"该用户已经参加该活动无需再参加"),			
+	CODE_ALREADY_JOIN(381,"该用户已经参加该活动无需再参加"),
 	CODE_ALREADY_VOTE(382,"今天已经对该用户进行过投票"),
 	CODE_NOT_AUTHORITY_VOTE(383,"无权限操作"),
 	CODE_NOT_REALNAME(384,"未实名"),
-	
+
 	//足迹
 	CODE_FOOTMARK_NOT_AUTHORITY(391,"用户无访问权限"),
-	
+
 	//红包
 	CODE_RED_PACKETS_NOT_AWARDYOU(401,"用户无权限操作"),
 	CODE_RED_PACKETS_OVERDUE(402,"红包已过期"),
-	
+
 	//设置
 	CODE_ACCOUNTSECURITY_CHECK_ERROR(421,"验证错误"),
-	
+
 	//推广红包 新人红包
 	CODE_ALREADY_RECEIVED_ERROR(431,"该用户已领新人红包,不能重复领取"),
 	CODE_NOT_BIND_PHONE_ERROR(432,"该用户未绑定手机号"),
 	CODE_SHARE_CODE_ERROR(433,"分享码有误,分享码用户不存在"),
 	CODE_SHARE_CODE_ERROR2(434,"分享码有误,分享码不能是自己的"),
-	
+
 	//随便走走、
 	CODE_WALK_FEED_FULL(441,"普通用户随便走走次数用完"),
 	CODE_MEMBER_WALK_FEED_FULL(442,"普通会员随便走走次数用完"),
-	
+
 	//厨房
 	CODE_COLLECTED_KITCHEN_ERROR(451,"用户已收藏过此厨房"),
 	CODE_DISHESSORT_KITCHEN_ERROR(452,"菜品分类已达上限"),
@@ -235,10 +235,10 @@ public enum StatusCode {
 	//小时工
 	CODE_COLLECTED_HOURLY_ERROR(461,"用户已收藏过此小时工"),
 	CODE_COLLECTED_HOURLY_TOPLIMIT(462,"工种类型已达上限"),
-	
+
 	//家族记事 今日问候
 	CODE_TADAY_GREET_ERROR(471,"今日已经问候过"),
-	
+
 	//家医馆
 	CODE_COLLECTED_HOSPITAL_ERROR(481,"用户家医馆已存在"),
 
@@ -262,8 +262,9 @@ public enum StatusCode {
 	CODE_TRAVEL_BE_OVERDUE(801,"门票已过期"),
 	CODE_TRAVEL_INVALID(802,"门票无效"),
 	CODE_TRAVEL_ADVANCE(803,"游玩日期未到"),
+	CODE_TRAVEL_NOPAYMENT(804,"订单未支付"),
 
-	//家门口旅游
+	//家门口酒店民宿
 	CODE_HOTEL_BE_OVERDUE(901,"房间已过期"),
 	CODE_HOTEL_INVALID(902,"房间凭证码无效"),
 	CODE_HOTEL_ADVANCE(903,"入住日期未到")
