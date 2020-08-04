@@ -21,9 +21,10 @@ public class RewardLog {
   private long userId;//用户ID
 
   @Min(value = 0, message = "rewardType参数有误，数值超出指定范围")
-  @Max(value = 10, message = "rewardType参数有误，数值超出指定范围")
+  @Max(value = 14, message = "rewardType参数有误，数值超出指定范围")
   private int rewardType;//奖励类型 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励
-                         // 7是一级稿费作品 8是二级稿费作品 9是三级稿费作品 10是四级稿费作品
+                         // 7是一级稿费作品 8是二级稿费作品 9是三级稿费作品 10是四级稿费作品 11邀请商家入驻奖励（订座） 12邀请商家入驻奖励（旅游）
+                         // 13邀请商家入驻奖励（酒店民宿） 14邀请商家入驻奖励（药店）
 
   @Min(value = 0, message = "rewardMoneyType参数有误，数值超出指定范围")
   @Max(value = 0, message = "rewardMoneyType参数有误，数值超出指定范围")
