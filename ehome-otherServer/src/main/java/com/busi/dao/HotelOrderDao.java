@@ -21,9 +21,9 @@ public interface HotelOrderDao {
      * @param kitchenBookedOrders
      * @return
      */
-    @Insert("insert into HotelOrder(userId,myId,hotelId,no,dishameCost,ordersType,ordersState,scenicSpotName,addTime,checkInTime,money,smallMap,inspectTicketTime," +
+    @Insert("insert into HotelOrder(userId,myId,hotelId,no,dishameCost,ordersType,ordersState,hotelName,addTime,checkInTime,money,smallMap,inspectTicketTime," +
             "completeTime,checkInNumber,address_Phone,address_Name,voucherCode,hotelType)" +
-            "values (#{userId},#{myId},#{hotelId},#{no},#{dishameCost},#{ordersType},#{ordersState},#{scenicSpotName},#{addTime},#{checkInTime},#{money},#{smallMap},#{inspectTicketTime}" +
+            "values (#{userId},#{myId},#{hotelId},#{no},#{dishameCost},#{ordersType},#{ordersState},#{hotelName},#{addTime},#{checkInTime},#{money},#{smallMap},#{inspectTicketTime}" +
             ",#{completeTime},#{checkInNumber},#{address_Phone},#{address_Name},#{voucherCode},#{hotelType})")
     @Options(useGeneratedKeys = true)
     int addOrders(HotelOrder kitchenBookedOrders);
@@ -41,7 +41,7 @@ public interface HotelOrderDao {
             " and ordersType >1 and ordersState!=3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0  and ordersType=0 and userId=#{userId} and paymentStatus = 1" +
+            " and ordersState=0 and paymentStatus = 1" +
             "</if>" +
             "<if test=\"type == 2\">" +
             " and ordersState=0 and ordersType=1 and myId=#{userId} and paymentStatus = 1" +
