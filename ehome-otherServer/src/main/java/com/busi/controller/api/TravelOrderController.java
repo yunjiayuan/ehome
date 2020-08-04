@@ -165,28 +165,34 @@ public class TravelOrderController extends BaseController implements TravelOrder
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         //由由未验票改为已验票
-        if (io.getUserId() == CommonUtils.getMyId() && io.getVoucherCode().equals(voucherCode)) {
-            if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-            }
-            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-            if (!fmt.format(io.getPlayTime()).equals(fmt.format(new Date()))) {//格式化为相同格式
-                io.setOrdersType(6);
-                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "门票已过期", new JSONObject());
-            } else {
-                io.setOrdersType(1);
-            }
-            io.setInspectTicketTime(new Date());
-            io.setUpdateCategory(1);
-            travelOrderService.updateOrders(io);
-            //商家入账
-            mqUtils.sendPurseMQ(io.getUserId(), 35, 0, io.getMoney());
-            //清除缓存中的景区 订单信息
-            redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
-            //景区订单放入缓存
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+        if (io.getUserId() != CommonUtils.getMyId()) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限验票", new JSONObject());
         }
+        if (!io.getVoucherCode().equals(voucherCode)) {
+            return returnData(StatusCode.CODE_TRAVEL_INVALID.CODE_VALUE, "门票无效", new JSONObject());
+        }
+        if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+        if (!fmt.format(io.getPlayTime()).equals(fmt.format(new Date()))) {//格式化为相同格式
+            io.setOrdersType(6);
+            //景区订单放入缓存
+            redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+            return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "门票已过期", new JSONObject());
+        } else {
+            io.setOrdersType(1);
+        }
+        io.setInspectTicketTime(new Date());
+        io.setUpdateCategory(1);
+        travelOrderService.updateOrders(io);
+        //商家入账
+        mqUtils.sendPurseMQ(io.getUserId(), 35, 0, io.getMoney());
+        //清除缓存中的景区 订单信息
+        redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
+        //景区订单放入缓存
+        redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
