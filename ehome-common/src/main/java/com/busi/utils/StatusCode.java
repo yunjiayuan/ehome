@@ -260,9 +260,11 @@ public enum StatusCode {
 
 	//家门口旅游
 	CODE_TRAVEL_BE_OVERDUE(801,"门票已过期"),
+	CODE_TRAVEL_INVALID(802,"门票无效"),
 
 	//家门口旅游
-	CODE_HOTEL_BE_OVERDUE(901,"房间已过期")
+	CODE_HOTEL_BE_OVERDUE(901,"房间已过期"),
+	CODE_HOTEL_INVALID(902,"未预定房间")
 
 	;
 	/*-----------业务状态码------------*/
