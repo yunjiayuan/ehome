@@ -1,6 +1,7 @@
 package com.busi.fegin;
 
-import com.busi.controller.local.TravelOrderLocalController;
+
+import com.busi.controller.local.HotelOrderLocalController;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 
@@ -11,10 +12,11 @@ import org.springframework.stereotype.Component;
  * 3、启动类需要添加@EnableFeignClients
  * 4、调用方法时，一般参数最多一个，可以传对象
  * 5、调用时必须保证参数一致
- * author：ZhaoJiaJie
- * create time：2020-07-30 13:35:16
+ * author：SunTianJie
+ * create time：2018/6/12 19:12
  */
 @FeignClient("otherServer")
 @Component
-public interface TravelOrderLControllerFegin extends TravelOrderLocalController {
+public interface HotelOrdersLControllerFegin extends HotelOrderLocalController {
+
 }
