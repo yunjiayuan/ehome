@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -165,10 +166,21 @@ public class TravelOrderController extends BaseController implements TravelOrder
         }
         //由由未验票改为已验票
         if (io.getUserId() == CommonUtils.getMyId() && io.getVoucherCode().equals(voucherCode)) {
-            io.setOrdersType(1);
+            if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+            if (!fmt.format(io.getPlayTime()).equals(fmt.format(new Date()))) {//格式化为相同格式
+                io.setOrdersType(6);
+                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "门票已过期", new JSONObject());
+            } else {
+                io.setOrdersType(1);
+            }
             io.setInspectTicketTime(new Date());
             io.setUpdateCategory(1);
             travelOrderService.updateOrders(io);
+            //商家入账
+            mqUtils.sendPurseMQ(io.getUserId(), 35, 0, io.getMoney());
             //清除缓存中的景区 订单信息
             redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
             //景区订单放入缓存
@@ -266,7 +278,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
         if ((ko.getOrdersType() == 4 || ko.getOrdersType() == 5) && ko.getPaymentStatus() == 1) {
             //更新缓存、钱包、账单
             if (ko.getMoney() > 0) {
-                mqUtils.sendPurseMQ(ko.getMyId(), 26, 0, ko.getMoney());
+                mqUtils.sendPurseMQ(ko.getMyId(), 35, 0, ko.getMoney());
             }
             //清除缓存中的景区 订单信息
             redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + ko.getMyId() + "_" + ko.getNo(), 0);

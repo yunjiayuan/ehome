@@ -256,7 +256,13 @@ public enum StatusCode {
 	CODE_PERSONALDATA_NOT_AC(601,"个人信息未认证"),
 
 	//楼店
-	CODE_BOND_NOT_AC(701,"未缴纳保证金")
+	CODE_BOND_NOT_AC(701,"未缴纳保证金"),
+
+	//家门口旅游
+	CODE_TRAVEL_BE_OVERDUE(801,"门票已过期"),
+
+	//家门口旅游
+	CODE_HOTEL_BE_OVERDUE(901,"房间已过期")
 
 	;
 	/*-----------业务状态码------------*/
