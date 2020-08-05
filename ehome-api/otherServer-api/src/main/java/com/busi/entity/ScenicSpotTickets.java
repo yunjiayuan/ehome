@@ -27,6 +27,8 @@ public class ScenicSpotTickets {
 
     private String describe;       //描述
 
+    private String picture;        //图片
+
     private double cost;                // 价格
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

@@ -176,8 +176,8 @@ public interface HotelDao {
      * @param dishes
      * @return
      */
-    @Insert("insert into HotelRoom(userId,hotelId,cost,name,addTime,describe,squareMetre) " +
-            "values (#{userId},#{hotelId},#{cost},#{name},#{addTime},#{describe},#{squareMetre})")
+    @Insert("insert into HotelRoom(userId,hotelId,cost,name,addTime,describe,squareMetre,picture) " +
+            "values (#{userId},#{hotelId},#{cost},#{name},#{addTime},#{describe},#{squareMetre},#{picture})")
     @Options(useGeneratedKeys = true)
     int addDishes(HotelRoom dishes);
 
@@ -189,6 +189,7 @@ public interface HotelDao {
     @Update("<script>" +
             "update HotelRoom set" +
             " cost=#{cost}," +
+            " picture=#{picture}," +
             " describe=#{describe}," +
             " squareMetre=#{squareMetre}," +
             " name=#{name}" +

@@ -26,6 +26,8 @@ public class HotelRoom {
 
     private String describe;       //描述
 
+    private String picture;        //图片
+
     private double cost;                // 价格
 
     private String squareMetre;                // 面积
