@@ -163,8 +163,8 @@ public interface TravelDao {
      * @param dishes
      * @return
      */
-    @Insert("insert into ScenicSpotTickets(userId,scenicSpotId,cost,name,addTime,describe,picture) " +
-            "values (#{userId},#{scenicSpotId},#{cost},#{name},#{addTime},#{describe},#{picture})")
+    @Insert("insert into ScenicSpotTickets(userId,scenicSpotId,cost,name,addTime,describes,picture) " +
+            "values (#{userId},#{scenicSpotId},#{cost},#{name},#{addTime},#{describes},#{picture})")
     @Options(useGeneratedKeys = true)
     int addDishes(ScenicSpotTickets dishes);
 
@@ -177,7 +177,7 @@ public interface TravelDao {
             "update ScenicSpotTickets set" +
             " cost=#{cost}," +
             " picture=#{picture}," +
-            " describe=#{describe}," +
+            " describes=#{describes}," +
             " name=#{name}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")

@@ -24,7 +24,7 @@ public class HotelRoom {
 
     private String name;       //名称
 
-    private String describe;       //描述
+    private String describes;       //描述
 
     private String picture;        //图片
 
