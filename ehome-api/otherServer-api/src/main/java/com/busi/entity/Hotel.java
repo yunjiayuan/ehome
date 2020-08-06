@@ -86,8 +86,6 @@ public class Hotel {
 
     private double cost;                    //房间最低价格
 
-    private int free;            // 是否免费入住：0收费  1免费
-
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 

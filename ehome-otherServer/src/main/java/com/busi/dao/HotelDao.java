@@ -24,9 +24,9 @@ public interface HotelDao {
      * @return
      */
     @Insert("insert into Hotel(userId,businessStatus,deleteType,auditType,hotelName,openTime,closeTime,licence,addTime,picture,tips,content,province,city,lat,lon," +
-            "district,videoUrl,videoCoverUrl,type,phone,levels,hotelType,openType,free)" +
+            "district,videoUrl,videoCoverUrl,type,phone,levels,hotelType,openType)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{hotelName},#{openTime},#{closeTime},#{licence},#{addTime},#{picture},#{tips},#{content},#{province},#{city},#{lat},#{lon}" +
-            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{hotelType},#{openType},#{free})")
+            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{hotelType},#{openType})")
     @Options(useGeneratedKeys = true)
     int addKitchen(Hotel kitchen);
 
@@ -43,7 +43,6 @@ public interface HotelDao {
             "</if>" +
             " lat=#{lat}," +
             " lon=#{lon}," +
-            " free=#{free}," +
             " hotelName=#{hotelName}," +
             " hotelType=#{hotelType}," +
             " openType=#{openType}," +
