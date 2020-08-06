@@ -245,8 +245,17 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        Hotel kitchen = travelService.findById(tickets.getHotelId());
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或民宿不存在", new JSONObject());
+        }
         tickets.setAddTime(new Date());
         travelService.addDishes(tickets);
+        if (tickets.getCost() < kitchen.getCost()) {
+            travelService.updateKitchen3(kitchen);
+            //清除景区缓存
+            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+        }
         //清除缓存中的酒店民宿房间信息
         redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId(), 0);
         Map<String, Object> map = new HashMap<>();
@@ -266,7 +275,16 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        Hotel kitchen = travelService.findById(tickets.getHotelId());
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或民宿不存在", new JSONObject());
+        }
         travelService.updateDishes(tickets);
+        if (tickets.getCost() < kitchen.getCost()) {
+            travelService.updateKitchen3(kitchen);
+            //清除景区缓存
+            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+        }
         //清除缓存中的酒店民宿房间信息
         redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId(), 0);
         Map<String, Object> map = new HashMap<>();

@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.HotelDao;
-import com.busi.entity.PageBean;
-import com.busi.entity.Hotel;
-import com.busi.entity.HotelCollection;
-import com.busi.entity.HotelRoom;
+import com.busi.entity.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -63,6 +60,11 @@ public class HotelService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateKitchen2(Hotel kitchen) {
         return kitchenBookedDao.updateKitchen2(kitchen);
+    }
+
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateKitchen3(Hotel kitchen) {
+        return kitchenBookedDao.updateKitchen3(kitchen);
     }
 
     /***

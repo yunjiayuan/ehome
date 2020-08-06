@@ -24,9 +24,9 @@ public interface HotelDao {
      * @return
      */
     @Insert("insert into Hotel(userId,businessStatus,deleteType,auditType,hotelName,openTime,closeTime,licence,addTime,picture,tips,content,province,city,lat,lon," +
-            "district,videoUrl,videoCoverUrl,type,phone,levels,hotelType,openType)" +
+            "district,videoUrl,videoCoverUrl,type,phone,levels,hotelType,openType,free)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{hotelName},#{openTime},#{closeTime},#{licence},#{addTime},#{picture},#{tips},#{content},#{province},#{city},#{lat},#{lon}" +
-            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{hotelType},#{openType})")
+            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{hotelType},#{openType},#{free})")
     @Options(useGeneratedKeys = true)
     int addKitchen(Hotel kitchen);
 
@@ -43,6 +43,7 @@ public interface HotelDao {
             "</if>" +
             " lat=#{lat}," +
             " lon=#{lon}," +
+            " free=#{free}," +
             " hotelName=#{hotelName}," +
             " hotelType=#{hotelType}," +
             " openType=#{openType}," +
@@ -72,6 +73,13 @@ public interface HotelDao {
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(Hotel kitchen);
+
+    @Update("<script>" +
+            "update Hotel set" +
+            " cost=#{cost}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int updateKitchen3(Hotel kitchen);
 
     /***
      * 更新酒店民宿删除状态

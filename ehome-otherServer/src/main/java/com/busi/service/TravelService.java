@@ -53,6 +53,11 @@ public class TravelService {
         return kitchenBookedDao.updateKitchen(kitchen);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateKitchen3(ScenicSpot kitchen) {
+        return kitchenBookedDao.updateKitchen3(kitchen);
+    }
+
     /***
      * 更新景区证照
      * @param kitchen

@@ -84,6 +84,10 @@ public class Hotel {
     //    @Pattern(regexp = "^\\s*$|^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号格式有误，请输入正确的手机号")
     private String phone;//酒店&民宿电话
 
+    private double cost;                    //房间最低价格
+
+    private int free;            // 是否免费入住：0收费  1免费
+
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 

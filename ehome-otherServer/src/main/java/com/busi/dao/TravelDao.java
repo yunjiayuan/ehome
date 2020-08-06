@@ -22,9 +22,9 @@ public interface TravelDao {
      * @return
      */
     @Insert("insert into ScenicSpot(userId,businessStatus,deleteType,auditType,scenicSpotName,openTime,closeTime,licence,addTime,picture,tips,content,province,city,lat,lon," +
-            "district,videoUrl,videoCoverUrl,type,phone,levels)" +
+            "district,videoUrl,videoCoverUrl,type,phone,levels,free)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{scenicSpotName},#{openTime},#{closeTime},#{licence},#{addTime},#{picture},#{tips},#{content},#{province},#{city},#{lat},#{lon}" +
-            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels})")
+            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{free})")
     @Options(useGeneratedKeys = true)
     int addKitchen(ScenicSpot kitchen);
 
@@ -41,6 +41,7 @@ public interface TravelDao {
             "</if>" +
             " lat=#{lat}," +
             " lon=#{lon}," +
+            " free=#{free}," +
             " scenicSpotName=#{scenicSpotName}," +
             " openTime=#{openTime}," +
             " closeTime=#{closeTime}," +
@@ -66,6 +67,13 @@ public interface TravelDao {
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(ScenicSpot kitchen);
+
+    @Update("<script>" +
+            "update ScenicSpot set" +
+            " cost=#{cost}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int updateKitchen3(ScenicSpot kitchen);
 
     /***
      * 更新景区删除状态

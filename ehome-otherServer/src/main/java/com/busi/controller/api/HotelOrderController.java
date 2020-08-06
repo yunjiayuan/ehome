@@ -71,42 +71,45 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             Hotel kitchen = travelService.findReserve(scenicSpotOrder.getUserId());
             if (kitchen == null) {
-//                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,酒店民宿不存在", new JSONObject());
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,酒店民宿不存在", new JSONObject());
             }
             //放入缓存
-//            kitchenMap = CommonUtils.objectToMap(kitchen);
-//            redisUtils.hmset(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+            kitchenMap = CommonUtils.objectToMap(kitchen);
+            redisUtils.hmset(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
         }
-//        Hotel kh = (Hotel) CommonUtils.mapToObject(kitchenMap, Hotel.class);
-//        if (kh == null) {
-//            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,酒店民宿不存在", new JSONObject());
-//        }
-//        if (CommonUtils.checkFull(scenicSpotOrder.getTicketsIds()) || CommonUtils.checkFull(scenicSpotOrder.getTicketsNumber())) {
-//            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,房间信息不可为空", new JSONObject());
-//        }
+        Hotel kh = (Hotel) CommonUtils.mapToObject(kitchenMap, Hotel.class);
+        if (kh == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,酒店民宿不存在", new JSONObject());
+        }
+        if (CommonUtils.checkFull(scenicSpotOrder.getTicketsIds()) || CommonUtils.checkFull(scenicSpotOrder.getTicketsNumber())) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,房间信息不可为空", new JSONObject());
+        }
         String[] sd = scenicSpotOrder.getTicketsIds().split(",");//房间ID
         String[] fn = scenicSpotOrder.getTicketsNumber().split(",");//房间数量
-//        if (sd != null && fn != null) {
-//            iup = travelService.findDishesList(sd);
-//            if (iup == null || iup.size() <= 0) {
-//                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,房间不存在", new JSONObject());
-//            }
-//            laf = (HotelRoom) iup.get(0);
-//            if (laf == null || scenicSpotOrder.getMyId() == laf.getUserId() || iup.size() != sd.length) {
-//                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,房间信息错误", new JSONObject());
-//            }
-//            for (int i = 0; i < iup.size(); i++) {
-//                dis = (HotelRoom) iup.get(i);
-//                for (int j = 0; j < sd.length; j++) {
-//                    if (dis.getId() == Long.parseLong(sd[j])) {//确认是当前房间ID
-//                        double cost = dis.getCost();//单价
-//                        dishame = dis.getName();//房间名称
-//                        dishes += dis.getId() + "," + dishame + "," + Integer.parseInt(fn[j]) + "," + cost + (i == iup.size() - 1 ? "" : ";");//房间ID,名称,数量,价格;
-//                        money += Integer.parseInt(fn[j]) * cost;//总价格
-//                    }
-//                }
-//            }
-//        }
+        if (sd != null && fn != null) {
+            iup = travelService.findDishesList(sd);
+            if (iup == null || iup.size() <= 0) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,房间不存在", new JSONObject());
+            }
+            laf = (HotelRoom) iup.get(0);
+            if (laf == null || scenicSpotOrder.getMyId() == laf.getUserId() || iup.size() != sd.length) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,房间信息错误", new JSONObject());
+            }
+            for (int i = 0; i < iup.size(); i++) {
+                dis = (HotelRoom) iup.get(i);
+                for (int j = 0; j < sd.length; j++) {
+                    if (dis.getId() == Long.parseLong(sd[j])) {//确认是当前房间ID
+                        double cost = dis.getCost();//单价
+                        dishame = dis.getName();//房间名称
+                        dishes += dis.getId() + "," + dishame + "," + Integer.parseInt(fn[j]) + "," + cost + (i == iup.size() - 1 ? "" : ";");//房间ID,名称,数量,价格;
+                        money += Integer.parseInt(fn[j]) * cost;//总价格
+                    }
+                }
+            }
+        }
+        if (money <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "订单总金额不能为0，请核实后重新下单！", new JSONObject());
+        }
         long time = date.getTime();
         String noTime = String.valueOf(time);
         String random = CommonUtils.getRandom(6, 1);
@@ -117,13 +120,13 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
         String noRandom2 = CommonUtils.strToMD5(noTime + scenicSpotOrder.getMyId() + random2, 16);
         scenicSpotOrder.setVoucherCode(noRandom2);//凭证码【MD5】
         scenicSpotOrder.setAddTime(date);
-//        scenicSpotOrder.setHotelId(kh.getId());
-//        scenicSpotOrder.setHotelName(kh.getHotelName());
-//        scenicSpotOrder.setHotelType(kh.getHotelType());
-//        if (!CommonUtils.checkFull(kh.getPicture())) {
-//            String[] strings = kh.getPicture().split(",");
-//            scenicSpotOrder.setSmallMap(strings[0]);
-//        }
+        scenicSpotOrder.setHotelId(kh.getId());
+        scenicSpotOrder.setHotelName(kh.getHotelName());
+        scenicSpotOrder.setHotelType(kh.getHotelType());
+        if (!CommonUtils.checkFull(kh.getPicture())) {
+            String[] strings = kh.getPicture().split(",");
+            scenicSpotOrder.setSmallMap(strings[0]);
+        }
         scenicSpotOrder.setDishameCost(dishes);//名称,数量,价格
         scenicSpotOrder.setMoney(money);//总价
         travelOrderService.addOrders(scenicSpotOrder);

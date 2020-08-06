@@ -97,6 +97,9 @@ public class TravelOrderController extends BaseController implements TravelOrder
                                 }
                             }
                         }
+                        if (money <= 0) {
+                            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "订单总金额不能为0，请核实后重新下单！", new JSONObject());
+                        }
                     }
                 }
             }
