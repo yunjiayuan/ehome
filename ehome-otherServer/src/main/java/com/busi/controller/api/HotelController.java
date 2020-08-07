@@ -316,6 +316,19 @@ public class HotelController extends BaseController implements HotelApiControlle
     }
 
     /***
+     * 查询房间详情
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findHotelRoom(@PathVariable long id) {
+        HotelRoom reserveData = travelService.disheSdetails(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
      * 分页查询酒店民宿房间列表
      * @param id   酒店民宿ID
      * @param page     页码

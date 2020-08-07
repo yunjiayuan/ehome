@@ -96,6 +96,14 @@ public interface TravelApiController {
     ReturnData delTickets(@PathVariable String ids);
 
     /***
+     * 查询门票详情
+     * @param id
+     * @return
+     */
+    @GetMapping("findTickets/{id}")
+    ReturnData findTickets(@PathVariable long id);
+
+    /***
      * 分页查询门票列表
      * @param id   景区ID
      * @param page     页码

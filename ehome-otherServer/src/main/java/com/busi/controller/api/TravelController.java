@@ -320,6 +320,19 @@ public class TravelController extends BaseController implements TravelApiControl
     }
 
     /***
+     * 查询门票详情
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findTickets(@PathVariable long id) {
+        ScenicSpotTickets reserveData = travelService.disheSdetails(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
      * 分页查询门票列表
      * @param id   景区ID
      * @param page     页码

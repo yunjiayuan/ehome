@@ -97,6 +97,15 @@ public interface HotelApiController {
     ReturnData delHotelRoom(@PathVariable String ids);
 
     /***
+     * 查询房间详情
+     * @param id
+     * @return
+     */
+    @GetMapping("findHotelRoom/{id}")
+    ReturnData findHotelRoom(@PathVariable long id);
+
+
+    /***
      * 分页查询房间列表
      * @param id   酒店民宿ID
      * @param page     页码
