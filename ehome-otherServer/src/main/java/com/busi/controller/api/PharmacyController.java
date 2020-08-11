@@ -348,6 +348,15 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         if (cartList == null || cartList.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
         }
+        //验证是否收藏过
+        PharmacyDrugs tickets = cartList.get(0);
+        if (tickets != null) {
+            //验证是否收藏过
+            boolean flag = travelService.findWhether(CommonUtils.getMyId(), tickets.getUserId());
+            if (flag) {
+                collection = 1;//1已收藏
+            }
+        }
         map.put("data", cartList);
         map.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);

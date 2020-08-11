@@ -345,20 +345,22 @@ public class TravelController extends BaseController implements TravelApiControl
         if (map == null || map.size() <= 0) {
             //查询数据库
             cartList = travelService.findList(id);
-            if (cartList != null && cartList.size() > 0) {
-                ScenicSpotTickets tickets = cartList.get(0);
-                if (tickets != null) {
-                    //验证是否收藏过
-                    boolean flag = travelService.findWhether(CommonUtils.getMyId(), tickets.getUserId());
-                    if (flag) {
-                        collection = 1;//1已收藏
-                    }
-                }
-                map.put("data", cartList);
+            map.put("data", cartList);
+            if (cartList == null || cartList.size() <= 0) {
                 map.put("collection", collection);
-                //更新到缓存
-                redisUtils.hmset(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, map, Constants.USER_TIME_OUT);
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
             }
+            ScenicSpotTickets tickets = cartList.get(0);
+            if (tickets != null) {
+                //验证是否收藏过
+                boolean flag = travelService.findWhether(CommonUtils.getMyId(), tickets.getUserId());
+                if (flag) {
+                    collection = 1;//1已收藏
+                }
+            }
+            map.put("collection", collection);
+            //更新到缓存
+            redisUtils.hmset(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, map, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }
