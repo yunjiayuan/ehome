@@ -339,28 +339,25 @@ public class HotelController extends BaseController implements HotelApiControlle
     public ReturnData findHotelRoomList(@PathVariable long id, @PathVariable int page, @PathVariable int count) {
         int collection = 0;//是否收藏过此景区  0没有  1已收藏
         List<HotelRoom> cartList = null;
-        //从缓存中获取门票列表
+        Hotel io = travelService.findById(id);
+        if (io == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或民宿不存在", new JSONObject());
+        }
+        //从缓存中获取房间列表
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_HOTELROOMLIST + id);
         if (map == null || map.size() <= 0) {
             //查询数据库
             cartList = travelService.findList(id);
             map.put("data", cartList);
-            if (cartList == null || cartList.size() <= 0) {
-                map.put("collection", collection);
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
-            }
-            HotelRoom tickets = cartList.get(0);
-            if (tickets != null) {
-                //验证是否收藏过
-                boolean flag = travelService.findWhether(CommonUtils.getMyId(), tickets.getUserId());
-                if (flag) {
-                    collection = 1;//1已收藏
-                }
-            }
-            map.put("collection", collection);
             //更新到缓存
             redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id, map, Constants.USER_TIME_OUT);
         }
+        //验证是否收藏过
+        boolean flag = travelService.findWhether(CommonUtils.getMyId(), io.getUserId());
+        if (flag) {
+            collection = 1;//1已收藏
+        }
+        map.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }
 
