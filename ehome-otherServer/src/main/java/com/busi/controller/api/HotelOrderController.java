@@ -308,8 +308,14 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             for (Field field : declaredFields) {
                 field.setAccessible(true);
                 if (field.get(obj) instanceof Date) {//判断是否为时间格式
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    String date = sdf.format(field.get(obj));
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+                    String date = "";
+                    if (field.getName().equals("checkInTime")) {
+                        date = sdf2.format(field.get(obj));
+                    } else {
+                        date = sdf.format(field.get(obj));
+                    }
                     map.put(field.getName(), date);
                 } else {
                     map.put(field.getName(), field.get(obj));
