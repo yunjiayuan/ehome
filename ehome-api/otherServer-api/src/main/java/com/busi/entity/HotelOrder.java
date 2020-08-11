@@ -42,7 +42,7 @@ public class HotelOrder {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date paymentTime;            // 付款时间
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date checkInTime;            // 入住日期
 
     private int paymentStatus;           //支付状态  0未付款 1已付款

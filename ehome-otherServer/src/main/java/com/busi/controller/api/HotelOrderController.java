@@ -187,7 +187,7 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             if (!io.getVoucherCode().equals(voucherCode)) {
                 return returnData(StatusCode.CODE_HOTEL_INVALID.CODE_VALUE, "房间凭证码无效", new JSONObject());
             }
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+
             //格式化为相同格式
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String DateStr1 = dateFormat.format(io.getCheckInTime());
@@ -210,7 +210,10 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             int i = dateTime1.compareTo(dateTime2);
             if (i > 0) {
                 io.setOrdersType(6);
+                io.setUpdateCategory(4);
+                travelOrderService.updateOrders(io);
                 //酒店民宿订单放入缓存
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
                 redisUtils.hmset(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
                 return returnData(StatusCode.CODE_HOTEL_BE_OVERDUE.CODE_VALUE, "房间已过期", new JSONObject());
             } else if (i < 0) {
@@ -227,6 +230,7 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             //清除缓存中的酒店民宿 订单信息
             redisUtils.expire(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), 0);
             //酒店民宿订单放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

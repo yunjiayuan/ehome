@@ -182,7 +182,6 @@ public class TravelOrderController extends BaseController implements TravelOrder
             if (!io.getVoucherCode().equals(voucherCode)) {
                 return returnData(StatusCode.CODE_TRAVEL_INVALID.CODE_VALUE, "门票无效", new JSONObject());
             }
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
             //格式化为相同格式
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String DateStr1 = dateFormat.format(io.getPlayTime());
@@ -205,7 +204,10 @@ public class TravelOrderController extends BaseController implements TravelOrder
             int i = dateTime1.compareTo(dateTime2);
             if (i > 0) {
                 io.setOrdersType(6);
+                io.setUpdateCategory(4);
+                travelOrderService.updateOrders(io);
                 //景区订单放入缓存
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
                 redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
                 return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "门票已过期", new JSONObject());
             } else if (i < 0) {
@@ -222,6 +224,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
             //清除缓存中的景区 订单信息
             redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
             //景区订单放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
