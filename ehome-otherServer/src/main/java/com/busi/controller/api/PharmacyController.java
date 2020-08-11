@@ -336,12 +336,21 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
+        Map<String, Object> map = new HashMap<>();
+        int collection = 0;//是否收藏过此药店  0没有  1已收藏
+        List<PharmacyDrugs> cartList = null;
         PageBean<PharmacyDrugs> pageBean = null;
         pageBean = travelService.findList(id, natureType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+        cartList = pageBean.getList();
+        if (cartList == null || cartList.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+        }
+        map.put("data", cartList);
+        map.put("collection", collection);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }
 
     /***

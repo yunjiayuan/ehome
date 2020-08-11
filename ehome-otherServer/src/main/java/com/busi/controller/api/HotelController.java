@@ -337,18 +337,29 @@ public class HotelController extends BaseController implements HotelApiControlle
      */
     @Override
     public ReturnData findHotelRoomList(@PathVariable long id, @PathVariable int page, @PathVariable int count) {
-        List<HotelRoom> cartList = new ArrayList<>();
-        //从缓存中获取酒店民宿房间列表
-        cartList = redisUtils.getList(Constants.REDIS_KEY_HOTELROOMLIST + id, 0, -1);
-        if (cartList == null || cartList.size() <= 0) {
+        int collection = 0;//是否收藏过此景区  0没有  1已收藏
+        List<HotelRoom> cartList = null;
+        //从缓存中获取门票列表
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_HOTELROOMLIST + id);
+        if (map == null || map.size() <= 0) {
             //查询数据库
             cartList = travelService.findList(id);
             if (cartList != null && cartList.size() > 0) {
+                HotelRoom tickets = cartList.get(0);
+                if (tickets != null) {
+                    //验证是否收藏过
+                    boolean flag = travelService.findWhether(CommonUtils.getMyId(), tickets.getUserId());
+                    if (flag) {
+                        collection = 1;//1已收藏
+                    }
+                }
+                map.put("data", cartList);
+                map.put("collection", collection);
                 //更新到缓存
-                redisUtils.pushList(Constants.REDIS_KEY_HOTELROOMLIST + id, cartList);
+                redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id, map, Constants.USER_TIME_OUT);
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, cartList);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }
 
     /***

@@ -111,6 +111,8 @@ public class TravelController extends BaseController implements TravelApiControl
             travelService.updateDel(io);
             //同时删除该景区的门票
             travelService.delScenicSpot(userId, id);
+            //清除缓存中的门票信息
+            redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, 0);
             //清除缓存
             redisUtils.expire(Constants.REDIS_KEY_TRAVEL + userId, 0);
         }
@@ -336,18 +338,29 @@ public class TravelController extends BaseController implements TravelApiControl
      */
     @Override
     public ReturnData findTicketsList(@PathVariable long id, @PathVariable int page, @PathVariable int count) {
-        List<ScenicSpotTickets> cartList = new ArrayList<>();
+        int collection = 0;//是否收藏过此景区  0没有  1已收藏
+        List<ScenicSpotTickets> cartList = null;
         //从缓存中获取门票列表
-        cartList = redisUtils.getList(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, 0, -1);
-        if (cartList == null || cartList.size() <= 0) {
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_TRAVELTICKETSLIST + id);
+        if (map == null || map.size() <= 0) {
             //查询数据库
             cartList = travelService.findList(id);
             if (cartList != null && cartList.size() > 0) {
+                ScenicSpotTickets tickets = cartList.get(0);
+                if (tickets != null) {
+                    //验证是否收藏过
+                    boolean flag = travelService.findWhether(CommonUtils.getMyId(), tickets.getUserId());
+                    if (flag) {
+                        collection = 1;//1已收藏
+                    }
+                }
+                map.put("data", cartList);
+                map.put("collection", collection);
                 //更新到缓存
-                redisUtils.pushList(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, cartList);
+                redisUtils.hmset(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, map, Constants.USER_TIME_OUT);
             }
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, cartList);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }
 
     /***
