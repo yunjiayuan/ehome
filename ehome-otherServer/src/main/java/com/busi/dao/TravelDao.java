@@ -39,34 +39,61 @@ public interface TravelDao {
             " licence=#{licence}," +
             " auditType=1," +
             "</if>" +
+            "<if test=\"lat > 0 \">" +
             " lat=#{lat}," +
+            "</if>" +
+            "<if test=\"lon > 0 \">" +
             " lon=#{lon}," +
+            "</if>" +
+            "<if test=\"free > 0 \">" +
             " free=#{free}," +
+            "</if>" +
+            "<if test=\"scenicSpotName != null and scenicSpotName != '' \">" +
             " scenicSpotName=#{scenicSpotName}," +
+            "</if>" +
+            "<if test=\"openTime != null and openTime != '' \">" +
             " openTime=#{openTime}," +
+            "</if>" +
+            "<if test=\"closeTime != null and closeTime != '' \">" +
             " closeTime=#{closeTime}," +
+            "</if>" +
+            "<if test=\"picture != null and picture != '' \">" +
             " picture=#{picture}," +
+            "</if>" +
+            "<if test=\"tips != null and tips != '' \">" +
             " tips=#{tips}," +
+            "</if>" +
+            "<if test=\"content != null and content != '' \">" +
             " content=#{content}," +
+            "</if>" +
+            "<if test=\"province >= 0 \">" +
             " province=#{province}," +
+            "</if>" +
+            "<if test=\"city >= 0 \">" +
             " city=#{city}," +
+            "</if>" +
+            "<if test=\"videoUrl != null and videoUrl != '' \">" +
             " videoUrl=#{videoUrl}," +
+            "</if>" +
+            "<if test=\"videoCoverUrl != null and videoCoverUrl != '' \">" +
             " videoCoverUrl=#{videoCoverUrl}," +
+            "</if>" +
+            "<if test=\"district >= 0 \">" +
             " district=#{district}," +
+            "</if>" +
+            "<if test=\"phone != null and phone != '' \">" +
             " phone=#{phone}," +
+            "</if>" +
+            "<if test=\"levels >= 0 \">" +
             " levels=#{levels}," +
-            " type=#{type}" +
+            "</if>" +
+            "<if test=\"type != null and type != '' \">" +
+            " type=#{type}," +
+            "</if>" +
+            " id=#{id}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen(ScenicSpot kitchen);
-
-    @Update("<script>" +
-            "update ScenicSpot set" +
-            " licence=#{licence}," +
-            " auditType=#{auditType}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0" +
-            "</script>")
-    int updateKitchen2(ScenicSpot kitchen);
 
     @Update("<script>" +
             "update ScenicSpot set" +

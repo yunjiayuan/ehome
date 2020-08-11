@@ -87,12 +87,7 @@ public class TravelController extends BaseController implements TravelApiControl
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        if (!CommonUtils.checkFull(scenicSpot.getLicence())) {//上传景区证照
-            scenicSpot.setAuditType(1);
-            travelService.updateKitchen2(scenicSpot);
-        } else {
-            travelService.updateKitchen(scenicSpot);
-        }
+        travelService.updateKitchen(scenicSpot);
         if (!CommonUtils.checkFull(scenicSpot.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(scenicSpot.getUserId(), scenicSpot.getDelImgUrls());
