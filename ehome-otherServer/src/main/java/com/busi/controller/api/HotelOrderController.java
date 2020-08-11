@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -276,15 +277,6 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
             }
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String DateStr1 = dateFormat.format(io.getCheckInTime());
-            Date dateTime1 = null;
-            try {
-                dateTime1 = dateFormat.parse(DateStr1);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            io.setCheckInTime(dateTime1);
 //            UserInfo userInfo = null;
 //            userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
 //            if (userInfo != null) {
@@ -294,10 +286,40 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
 //                io.setHouseNumber(userInfo.getHouseNumber());
 //            }
             //放入缓存
-            ordersMap = CommonUtils.objectToMap(io);
+            ordersMap = objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
+    }
+
+    /***
+     * 对象转map
+     * @param obj
+     * @return
+     * @throws Exception
+     */
+    public Map<String, Object> objectToMap(Object obj) {
+        Map<String, Object> map = new HashMap();
+        try {
+            if (obj == null) {
+                return null;
+            }
+            Field[] declaredFields = obj.getClass().getDeclaredFields();
+            for (Field field : declaredFields) {
+                field.setAccessible(true);
+                if (field.get(obj) instanceof Date) {//判断是否为时间格式
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    String date = sdf.format(field.get(obj));
+                    map.put(field.getName(), date);
+                } else {
+                    map.put(field.getName(), field.get(obj));
+                }
+            }
+            return map;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
     /***
@@ -367,21 +389,12 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
         }
         List list = null;
         list = pageBean.getList();
-        HotelOrder t = null;
+//        HotelOrder t = null;
 //        UserInfo userCache = null;
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                t = (HotelOrder) list.get(i);
-                if (t != null) {
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    String DateStr1 = dateFormat.format(t.getCheckInTime());
-                    Date dateTime1 = null;
-                    try {
-                        dateTime1 = dateFormat.parse(DateStr1);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    t.setCheckInTime(dateTime1);
+//        if (list != null && list.size() > 0) {
+//            for (int i = 0; i < list.size(); i++) {
+//                t = (HotelOrder) list.get(i);
+//                if (t != null) {
 //                    if (identity == 1) {
 //                        userCache = userInfoUtils.getUserInfo(t.getUserId());
 //                    } else {
@@ -393,9 +406,9 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
 //                        t.setProTypeId(userCache.getProType());
 //                        t.setHouseNumber(userCache.getHouseNumber());
 //                    }
-                }
-            }
-        }
+//                }
+//            }
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 }

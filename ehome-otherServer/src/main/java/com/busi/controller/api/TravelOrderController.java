@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -279,10 +280,40 @@ public class TravelOrderController extends BaseController implements TravelOrder
 //                io.setHouseNumber(userInfo.getHouseNumber());
 //            }
             //放入缓存
-            ordersMap = CommonUtils.objectToMap(io);
+            ordersMap = objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
+    }
+
+    /***
+     * 对象转map
+     * @param obj
+     * @return
+     * @throws Exception
+     */
+    public Map<String, Object> objectToMap(Object obj) {
+        Map<String, Object> map = new HashMap();
+        try {
+            if (obj == null) {
+                return null;
+            }
+            Field[] declaredFields = obj.getClass().getDeclaredFields();
+            for (Field field : declaredFields) {
+                field.setAccessible(true);
+                if (field.get(obj) instanceof Date) {//判断是否为时间格式
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    String date = sdf.format(field.get(obj));
+                    map.put(field.getName(), date);
+                } else {
+                    map.put(field.getName(), field.get(obj));
+                }
+            }
+            return map;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
     /***
