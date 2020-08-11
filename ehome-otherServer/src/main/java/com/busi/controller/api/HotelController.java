@@ -252,6 +252,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         tickets.setAddTime(new Date());
         travelService.addDishes(tickets);
         if (tickets.getCost() < kitchen.getCost()) {
+            kitchen.setCost(tickets.getCost());
             travelService.updateKitchen3(kitchen);
             //清除景区缓存
             redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
@@ -281,6 +282,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         travelService.updateDishes(tickets);
         if (tickets.getCost() < kitchen.getCost()) {
+            kitchen.setCost(tickets.getCost());
             travelService.updateKitchen3(kitchen);
             //清除景区缓存
             redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
