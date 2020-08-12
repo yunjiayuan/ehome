@@ -67,6 +67,11 @@ public class HotelService {
         return kitchenBookedDao.updateKitchen3(kitchen);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update(Hotel kitchen) {
+        return kitchenBookedDao.update(kitchen);
+    }
+
     /***
      * 根据ID查询
      * @param id

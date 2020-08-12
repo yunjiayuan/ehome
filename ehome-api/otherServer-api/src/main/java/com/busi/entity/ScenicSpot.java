@@ -58,6 +58,8 @@ public class ScenicSpot {
 
     private long totalScore;        // 总评分
 
+    private int averageScore;        // 平均评分
+
     @Min(value = 0, message = "province参数有误，超出指定范围")
     private int province; // 省
 
@@ -83,6 +85,10 @@ public class ScenicSpot {
     private double cost;       //门票最低价格
 
     private int free;            // 是否免费开放：0未设置  1免费  2收费
+
+    private long relationHotel;            // 关联酒店id
+
+    private long relationReservation;            // 关联订座id
 
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔

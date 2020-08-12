@@ -58,6 +58,21 @@ public class TravelService {
         return kitchenBookedDao.updateKitchen3(kitchen);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update(ScenicSpot kitchen) {
+        return kitchenBookedDao.update(kitchen);
+    }
+
+    /***
+     * 更新景区评分
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateScore(ScenicSpot kitchen) {
+        return kitchenBookedDao.updateScore(kitchen);
+    }
+
     /***
      * 根据ID查询
      * @param id

@@ -3,6 +3,8 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.HotelService;
+import com.busi.service.KitchenBookedService;
 import com.busi.service.TravelService;
 import com.busi.service.UserAccountSecurityService;
 import com.busi.utils.*;
@@ -38,6 +40,12 @@ public class TravelController extends BaseController implements TravelApiControl
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    KitchenBookedService kitchenBookedService;
+
+    @Autowired
+    HotelService hotelService;
 
     /***
      * 新增景区
@@ -435,6 +443,57 @@ public class TravelController extends BaseController implements TravelApiControl
         //查询数据库
         travelService.del(ids.split(","), CommonUtils.getMyId());
 
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 关联景区、酒店、订座
+     * @param type 关联类型： 0景区、1酒店、2景区关联订座、3酒店关联订座
+     * @param id 景区ID、酒店ID、订座ID
+     * @return
+     */
+    @Override
+    public ReturnData relationSet(@PathVariable int type, @PathVariable long id) {
+        if (type == 0) {
+            ScenicSpot io = travelService.findById(id);
+            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
+            }
+            Hotel hotel = new Hotel();
+            hotel.setUserId(io.getUserId());
+            hotel.setRelationTravel(id);
+            hotelService.update(hotel);
+        }
+        if (type == 1) {
+            Hotel io = hotelService.findById(id);
+            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
+            }
+            ScenicSpot hotel = new ScenicSpot();
+            hotel.setUserId(io.getUserId());
+            hotel.setRelationHotel(id);
+            travelService.update(hotel);
+        }
+        if (type == 2) {
+            KitchenReserve io = kitchenBookedService.findById(id);
+            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
+            }
+            ScenicSpot hotel = new ScenicSpot();
+            hotel.setUserId(io.getUserId());
+            hotel.setRelationReservation(id);
+            travelService.update(hotel);
+        }
+        if (type == 3) {
+            KitchenReserve io = kitchenBookedService.findById(id);
+            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
+            }
+            Hotel hotel = new Hotel();
+            hotel.setUserId(io.getUserId());
+            hotel.setRelationReservation(id);
+            hotelService.update(hotel);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
