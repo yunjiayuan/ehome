@@ -267,7 +267,10 @@ public enum StatusCode {
 	//家门口酒店民宿
 	CODE_HOTEL_BE_OVERDUE(901,"房间已过期"),
 	CODE_HOTEL_INVALID(902,"房间凭证码无效"),
-	CODE_HOTEL_ADVANCE(903,"入住日期未到")
+	CODE_HOTEL_ADVANCE(903,"入住日期未到"),
+
+	//家门口买药
+	CODE_PHARMACY_INVALID(1001,"取药凭证码无效")
 
 	;
 	/*-----------业务状态码------------*/
