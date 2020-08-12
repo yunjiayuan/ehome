@@ -90,6 +90,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private HotelOrdersService hotelOrdersService;
+
+    @Autowired
+    private PharmacyOrderService pharmacyOrderService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -333,7 +336,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 payBaseService = hotelOrdersService;
                 break;
             case 27://支付买药订单
-                payBaseService = null;
+                payBaseService = pharmacyOrderService;
                 break;
             default:
                 break;
