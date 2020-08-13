@@ -447,51 +447,29 @@ public class TravelController extends BaseController implements TravelApiControl
     }
 
     /***
-     * 关联景区、酒店、订座
-     * @param type 关联类型： 0景区、1酒店、2景区关联订座、3酒店关联订座
-     * @param id 景区ID、酒店ID、订座ID
+     * 更新景区、酒店、订座相关设置状态
+     * @param type 更新类型： 0景区酒店、1景区订座、2酒店订座
+     * @param relation 0开启  1关闭
      * @return
      */
     @Override
-    public ReturnData relationSet(@PathVariable int type, @PathVariable long id) {
+    public ReturnData relationSet(@PathVariable int type, @PathVariable int relation) {
         if (type == 0) {
-            ScenicSpot io = travelService.findById(id);
-            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
-            }
-            Hotel hotel = new Hotel();
-            hotel.setUserId(io.getUserId());
-            hotel.setRelationTravel(id);
-            hotelService.update(hotel);
+            ScenicSpot hotel = new ScenicSpot();
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationHotel(relation);
+            travelService.update(hotel);
         }
         if (type == 1) {
-            Hotel io = hotelService.findById(id);
-            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
-            }
             ScenicSpot hotel = new ScenicSpot();
-            hotel.setUserId(io.getUserId());
-            hotel.setRelationHotel(id);
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationReservation(relation);
             travelService.update(hotel);
         }
         if (type == 2) {
-            KitchenReserve io = kitchenBookedService.findById(id);
-            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
-            }
-            ScenicSpot hotel = new ScenicSpot();
-            hotel.setUserId(io.getUserId());
-            hotel.setRelationReservation(id);
-            travelService.update(hotel);
-        }
-        if (type == 3) {
-            KitchenReserve io = kitchenBookedService.findById(id);
-            if (io == null || io.getUserId() != CommonUtils.getMyId()) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "关联失败", new JSONObject());
-            }
             Hotel hotel = new Hotel();
-            hotel.setUserId(io.getUserId());
-            hotel.setRelationReservation(id);
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationReservation(relation);
             hotelService.update(hotel);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
