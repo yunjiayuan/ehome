@@ -86,9 +86,9 @@ public class ScenicSpot {
 
     private int free;            // 是否免费开放：0未设置  1免费  2收费
 
-    private long relationHotel;            // 关联酒店id
+    private int relationHotel;            // 酒店设置状态：0未设置  1已设置
 
-    private long relationReservation;            // 关联订座id
+    private int relationReservation;            // 订座设置状态：0未设置  1已设置
 
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔

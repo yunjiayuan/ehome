@@ -82,9 +82,6 @@ public interface HotelDao {
 
     @Update("<script>" +
             "update Hotel set" +
-            "<if test=\"relationTravel > 0\">" +
-            " relationTravel=#{relationTravel}" +
-            "</if>" +
             "<if test=\"relationReservation > 0\">" +
             " relationReservation=#{relationReservation}" +
             "</if>" +

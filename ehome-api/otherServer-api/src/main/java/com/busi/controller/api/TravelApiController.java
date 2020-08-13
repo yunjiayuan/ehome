@@ -139,12 +139,12 @@ public interface TravelApiController {
     ReturnData delScenicSpotCollect(@PathVariable String ids);
 
     /***
-     * 关联景区、酒店、订座
-     * @param type 0景区ID、1酒店ID、2订座ID
-     * @param id 景区ID、酒店ID、订座ID
+     * 更新景区、酒店、订座相关设置状态
+     * @param type 更新类型： 0酒店、1景区订座、2酒店订座
+     * @param relation 0开启  1关闭
      * @return
      */
-    @GetMapping("relationSet/{id}/{type}")
-    ReturnData relationSet(@PathVariable int type, @PathVariable long id);
+    @GetMapping("relationSet/{type}/{relation}")
+    ReturnData relationSet(@PathVariable int type, @PathVariable int relation);
 
 }

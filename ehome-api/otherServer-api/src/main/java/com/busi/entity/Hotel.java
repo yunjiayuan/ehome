@@ -88,9 +88,9 @@ public class Hotel {
 
     private double cost;                    //房间最低价格
 
-    private long relationReservation;        // 关联订座id
+    private int relationReservation;        // 订座设置状态：0未设置  1已设置
 
-    private long relationTravel;            // 关联景点id
+//    private long relationTravel;            // 景区设置状态：0未设置  1已设置
 
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
