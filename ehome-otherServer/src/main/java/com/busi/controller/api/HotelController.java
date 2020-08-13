@@ -105,7 +105,7 @@ public class HotelController extends BaseController implements HotelApiControlle
      */
     @Override
     public ReturnData delHotel(@PathVariable long userId, @PathVariable long id) {
-        Hotel io = travelService.findById(id);
+        Hotel io = travelService.findById(id, 0);
         if (io != null) {
             io.setDeleteType(1);
             travelService.updateDel(io);
@@ -245,21 +245,26 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        Hotel kitchen = travelService.findById(tickets.getHotelId());
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或民宿不存在", new JSONObject());
-        }
+        Map<String, Object> map = new HashMap<>();
         tickets.setAddTime(new Date());
-        travelService.addDishes(tickets);
+        Hotel kitchen = travelService.findById(tickets.getHotelId(), tickets.getType());
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
+        }
+        if (tickets.getType() == 1) { // 所属类型：0酒店 1景区
+            travelService.addDishes(tickets);
+            map.put("infoId", tickets.getId());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        }
         if (tickets.getCost() < kitchen.getCost()) {
             kitchen.setCost(tickets.getCost());
             travelService.updateKitchen3(kitchen);
-            //清除景区缓存
+            //清除酒店缓存
             redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
         }
         //清除缓存中的酒店民宿房间信息
-        redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId(), 0);
-        Map<String, Object> map = new HashMap<>();
+        redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId() + "_" + tickets.getType(), 0);
+
         map.put("infoId", tickets.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
@@ -276,20 +281,25 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        Hotel kitchen = travelService.findById(tickets.getHotelId());
+        Map<String, Object> map = new HashMap<>();
+        Hotel kitchen = travelService.findById(tickets.getHotelId(), tickets.getType());
         if (kitchen == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或民宿不存在", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
         }
-        travelService.updateDishes(tickets);
+        if (tickets.getType() == 1) { // 所属类型：0酒店 1景区
+            travelService.updateDishes(tickets);
+            map.put("infoId", tickets.getId());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        }
         if (tickets.getCost() < kitchen.getCost()) {
             kitchen.setCost(tickets.getCost());
             travelService.updateKitchen3(kitchen);
-            //清除景区缓存
+            //清除酒店缓存
             redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
         }
         //清除缓存中的酒店民宿房间信息
-        redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId(), 0);
-        Map<String, Object> map = new HashMap<>();
+        redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId() + "_" + tickets.getType(), 0);
+
         map.put("infoId", tickets.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
@@ -311,7 +321,7 @@ public class HotelController extends BaseController implements HotelApiControlle
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + dishes.getHotelId(), 0);
+        redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + dishes.getHotelId() + "_" + dishes.getType(), 0);
         //查询数据库
         travelService.delDishes(idss, CommonUtils.getMyId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -331,35 +341,39 @@ public class HotelController extends BaseController implements HotelApiControlle
     }
 
     /***
-     * 分页查询酒店民宿房间列表
-     * @param id   酒店民宿ID
+     * 分页查询房间列表
+     * @param type  查询类型; 0酒店 1景区
+     * @param id   酒店或景区ID
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findHotelRoomList(@PathVariable long id, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findHotelRoomList(@PathVariable int type, @PathVariable long id, @PathVariable int page, @PathVariable int count) {
+        Hotel io = null;
         int collection = 0;//是否收藏过此景区  0没有  1已收藏
         List<HotelRoom> cartList = null;
-        Hotel io = travelService.findById(id);
+        io = travelService.findById(id, type);
         if (io == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或民宿不存在", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
         }
         //从缓存中获取房间列表
-        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_HOTELROOMLIST + id);
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type);
         if (map == null || map.size() <= 0) {
             //查询数据库
             cartList = travelService.findList(id);
             map.put("data", cartList);
             //更新到缓存
-            redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id, map, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type, map, Constants.USER_TIME_OUT);
         }
-        //验证是否收藏过
-        boolean flag = travelService.findWhether(CommonUtils.getMyId(), io.getUserId());
-        if (flag) {
-            collection = 1;//1已收藏
+        if (type == 0) { // 所属类型：0酒店 1景区
+            //验证是否收藏过
+            boolean flag = travelService.findWhether(CommonUtils.getMyId(), io.getUserId());
+            if (flag) {
+                collection = 1;//1已收藏
+            }
+            map.put("collection", collection);
         }
-        map.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }
 

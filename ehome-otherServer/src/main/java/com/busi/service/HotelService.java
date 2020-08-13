@@ -77,8 +77,8 @@ public class HotelService {
      * @param id
      * @return
      */
-    public Hotel findById(long id) {
-        return kitchenBookedDao.findById(id);
+    public Hotel findById(long id, int type) {
+        return kitchenBookedDao.findById(id, type);
     }
 
     /***

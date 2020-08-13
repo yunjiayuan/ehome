@@ -20,7 +20,7 @@ public class HotelRoom {
 
     private long userId;                // 商家ID
 
-    private long hotelId;          // 酒店ID
+    private long hotelId;          // 酒店或景区ID
 
     private String name;       //名称
 
@@ -36,4 +36,6 @@ public class HotelRoom {
     private Date addTime;            // 添加时间
 
     private int deleteType;            // 删除标志:0未删除,1用户删除,2管理员删除
+
+    private int type;            // 所属类型：0酒店 1景区
 }

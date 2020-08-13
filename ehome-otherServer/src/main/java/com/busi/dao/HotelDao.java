@@ -114,8 +114,8 @@ public interface HotelDao {
      * @param id
      * @return
      */
-    @Select("select * from Hotel where id=#{id} and deleteType = 0 ")
-    Hotel findById(@Param("id") long id);
+    @Select("select * from Hotel where id=#{id} and deleteType = 0 and type=#{type}")
+    Hotel findById(@Param("id") long id, @Param("type") int type);
 
     /***
      * 更新酒店民宿营业状态
@@ -192,8 +192,8 @@ public interface HotelDao {
      * @param dishes
      * @return
      */
-    @Insert("insert into HotelRoom(userId,hotelId,cost,name,addTime,describes,squareMetre,picture) " +
-            "values (#{userId},#{hotelId},#{cost},#{name},#{addTime},#{describes},#{squareMetre},#{picture})")
+    @Insert("insert into HotelRoom(userId,hotelId,cost,name,addTime,describes,squareMetre,picture,type) " +
+            "values (#{userId},#{hotelId},#{cost},#{name},#{addTime},#{describes},#{squareMetre},#{picture},#{type})")
     @Options(useGeneratedKeys = true)
     int addDishes(HotelRoom dishes);
 

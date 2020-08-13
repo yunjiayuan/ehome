@@ -459,18 +459,24 @@ public class TravelController extends BaseController implements TravelApiControl
             hotel.setUserId(CommonUtils.getMyId());
             hotel.setRelationHotel(relation);
             travelService.update(hotel);
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + CommonUtils.getMyId(), 0);
         }
         if (type == 1) {
             ScenicSpot hotel = new ScenicSpot();
             hotel.setUserId(CommonUtils.getMyId());
             hotel.setRelationReservation(relation);
             travelService.update(hotel);
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + CommonUtils.getMyId(), 0);
         }
         if (type == 2) {
             Hotel hotel = new Hotel();
             hotel.setUserId(CommonUtils.getMyId());
             hotel.setRelationReservation(relation);
             hotelService.update(hotel);
+            //清除酒店缓存
+            redisUtils.expire(Constants.REDIS_KEY_HOTEL + CommonUtils.getMyId(), 0);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

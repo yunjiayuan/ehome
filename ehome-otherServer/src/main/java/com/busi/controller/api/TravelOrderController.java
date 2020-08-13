@@ -268,14 +268,14 @@ public class TravelOrderController extends BaseController implements TravelOrder
             if (io == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
             }
-//            UserInfo userInfo = null;
-//            userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
-//            if (userInfo != null) {
-//                io.setName(userInfo.getName());
-//                io.setHead(userInfo.getHead());
-//                io.setProTypeId(userInfo.getProType());
-//                io.setHouseNumber(userInfo.getHouseNumber());
-//            }
+            UserInfo userInfo = null;
+            userInfo = userInfoUtils.getUserInfo(io.getUserId() == CommonUtils.getMyId() ? io.getUserId() : io.getMyId());
+            if (userInfo != null) {
+                io.setName(userInfo.getName());
+                io.setHead(userInfo.getHead());
+                io.setProTypeId(userInfo.getProType());
+                io.setHouseNumber(userInfo.getHouseNumber());
+            }
             //放入缓存
             ordersMap = objectToMap(io);
             redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
@@ -386,26 +386,26 @@ public class TravelOrderController extends BaseController implements TravelOrder
         }
         List list = null;
         list = pageBean.getList();
-//        ScenicSpotOrder t = null;
-//        UserInfo userCache = null;
-//        if (list != null && list.size() > 0) {
-//            for (int i = 0; i < list.size(); i++) {
-//                t = (ScenicSpotOrder) list.get(i);
-//                if (t != null) {
-//                    if (identity == 1) {
-//                        userCache = userInfoUtils.getUserInfo(t.getUserId());
-//                    } else {
-//                        userCache = userInfoUtils.getUserInfo(t.getMyId());
-//                    }
-//                    if (userCache != null) {
-//                        t.setName(userCache.getName());
-//                        t.setHead(userCache.getHead());
-//                        t.setProTypeId(userCache.getProType());
-//                        t.setHouseNumber(userCache.getHouseNumber());
-//                    }
-//                }
-//            }
-//        }
+        ScenicSpotOrder t = null;
+        UserInfo userCache = null;
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                t = (ScenicSpotOrder) list.get(i);
+                if (t != null) {
+                    if (identity == 1) {
+                        userCache = userInfoUtils.getUserInfo(t.getUserId());
+                    } else {
+                        userCache = userInfoUtils.getUserInfo(t.getMyId());
+                    }
+                    if (userCache != null) {
+                        t.setName(userCache.getName());
+                        t.setHead(userCache.getHead());
+                        t.setProTypeId(userCache.getProType());
+                        t.setHouseNumber(userCache.getHouseNumber());
+                    }
+                }
+            }
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 

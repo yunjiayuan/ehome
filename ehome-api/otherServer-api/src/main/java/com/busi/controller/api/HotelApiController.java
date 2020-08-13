@@ -107,13 +107,14 @@ public interface HotelApiController {
 
     /***
      * 分页查询房间列表
-     * @param id   酒店民宿ID
+     * @param type   0酒店 1景区
+     * @param id   酒店或景区ID
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findHotelRoomList/{id}/{page}/{count}")
-    ReturnData findHotelRoomList(@PathVariable long id, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findHotelRoomList/{type}/{id}/{page}/{count}")
+    ReturnData findHotelRoomList(@PathVariable int type, @PathVariable long id, @PathVariable int page, @PathVariable int count);
 
     /***
      * 新增收藏
