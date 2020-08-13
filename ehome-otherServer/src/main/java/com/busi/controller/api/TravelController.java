@@ -3,6 +3,8 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.HotelService;
+import com.busi.service.KitchenBookedService;
 import com.busi.service.TravelService;
 import com.busi.service.UserAccountSecurityService;
 import com.busi.utils.*;
@@ -38,6 +40,12 @@ public class TravelController extends BaseController implements TravelApiControl
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    KitchenBookedService kitchenBookedService;
+
+    @Autowired
+    HotelService hotelService;
 
     /***
      * 新增景区
@@ -435,6 +443,35 @@ public class TravelController extends BaseController implements TravelApiControl
         //查询数据库
         travelService.del(ids.split(","), CommonUtils.getMyId());
 
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新景区、酒店、订座相关设置状态
+     * @param type 更新类型： 0景区酒店、1景区订座、2酒店订座
+     * @param relation 0开启  1关闭
+     * @return
+     */
+    @Override
+    public ReturnData relationSet(@PathVariable int type, @PathVariable int relation) {
+        if (type == 0) {
+            ScenicSpot hotel = new ScenicSpot();
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationHotel(relation);
+            travelService.update(hotel);
+        }
+        if (type == 1) {
+            ScenicSpot hotel = new ScenicSpot();
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationReservation(relation);
+            travelService.update(hotel);
+        }
+        if (type == 2) {
+            Hotel hotel = new Hotel();
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationReservation(relation);
+            hotelService.update(hotel);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

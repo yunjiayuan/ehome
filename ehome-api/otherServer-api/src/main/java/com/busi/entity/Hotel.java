@@ -62,6 +62,8 @@ public class Hotel {
 
     private long totalScore;        // 总评分
 
+    private int averageScore;        // 平均评分
+
     @Min(value = 0, message = "province参数有误，超出指定范围")
     private int province; // 省
 
@@ -85,6 +87,10 @@ public class Hotel {
     private String phone;//酒店&民宿电话
 
     private double cost;                    //房间最低价格
+
+    private int relationReservation;        // 订座设置状态：0未设置  1已设置
+
+//    private long relationTravel;            // 景区设置状态：0未设置  1已设置
 
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔

@@ -1,6 +1,8 @@
 package com.busi.service;
 
 import com.busi.dao.TravelOrderDao;
+import com.busi.entity.ScenicSpot;
+import com.busi.entity.ScenicSpotComment;
 import com.busi.entity.ScenicSpotOrder;
 import com.busi.entity.PageBean;
 import com.busi.utils.PageUtils;
@@ -78,5 +80,124 @@ public class TravelOrderService {
         list = travelOrderDao.findOrderList(identity, userId, ordersType);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 新增评论
+     * @param homeBlogComment
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addComment(ScenicSpotComment homeBlogComment) {
+        return travelOrderDao.addComment(homeBlogComment);
+    }
+
+    /***
+     * 查询指定评论
+     * @return
+     */
+    public ScenicSpotComment findById(long id) {
+        return travelOrderDao.find(id);
+    }
+
+    /***
+     * 更新评论回复数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateCommentNum(ScenicSpotComment homeBlogAccess) {
+        return travelOrderDao.updateCommentNum(homeBlogAccess);
+    }
+
+    /***
+     * 更新评论数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateBlogCounts(ScenicSpot homeBlogAccess) {
+        return travelOrderDao.updateBlogCounts(homeBlogAccess);
+    }
+
+
+    /***
+     * 更新评论删除状态
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update(ScenicSpotComment homeBlogAccess) {
+        return travelOrderDao.update(homeBlogAccess);
+    }
+
+    /***
+     * 查询评论列表
+     * @param goodsId  景区ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<ScenicSpotComment> findList(long goodsId, int page, int count) {
+
+        List<ScenicSpotComment> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = travelOrderDao.findList(goodsId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param contentId  评论ID
+     * @return
+     */
+    public PageBean<ScenicSpotComment> findReplyList(long contentId, int page, int count) {
+        List<ScenicSpotComment> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = travelOrderDao.findReplyList(contentId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param commentId  评论ID
+     * @return
+     */
+    public List<ScenicSpotComment> findMessList(long commentId) {
+
+        List<ScenicSpotComment> list;
+        list = travelOrderDao.findReplyList(commentId);
+        return list;
+    }
+
+    /***
+     * 查询指定用户评论
+     * @param id  指定景区ID
+     * @return
+     */
+    public List<ScenicSpotComment> findCommentList(long id) {
+
+        List<ScenicSpotComment> list;
+        list = travelOrderDao.findCommentList(id);
+        return list;
+    }
+
+    /***
+     * 更新回复删除状态
+     * @param ids
+     * @return
+     */
+    public int updateReplyState(String[] ids) {
+        return travelOrderDao.updateReplyState(ids);
+    }
+
+    /***
+     * 统计该评论下回复数量
+     * @param commentId  评论ID
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public long getReplayCount(long commentId) {
+        return travelOrderDao.getReplayCount(commentId);
     }
 }

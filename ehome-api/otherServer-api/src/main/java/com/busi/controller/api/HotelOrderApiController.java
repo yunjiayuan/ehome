@@ -2,6 +2,7 @@ package com.busi.controller.api;
 
 import com.busi.entity.ReturnData;
 import com.busi.entity.HotelOrder;
+import com.busi.entity.HotelComment;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,4 +77,40 @@ public interface HotelOrderApiController {
     @GetMapping("findHotelOrderList/{userId}/{identity}/{ordersType}/{page}/{count}")
     ReturnData findHotelOrderList(@PathVariable long userId, @PathVariable int identity, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 添加评论
+     * @param shopHotelComment
+     * @return
+     */
+    @PostMapping("addHotelComment")
+    ReturnData addHotelComment(@Valid @RequestBody HotelComment shopHotelComment, BindingResult bindingResult);
+
+    /***
+     * 删除评论
+     * @param id 评论ID
+     * @param goodsId 景区ID
+     * @return
+     */
+    @DeleteMapping("delHotelComment/{id}/{goodsId}")
+    ReturnData delHotelComment(@PathVariable long id, @PathVariable long goodsId);
+
+    /***
+     * 查询评论记录
+     * @param goodsId     景区ID
+     * @param page       页码 第几页 起始值1
+     * @param count      每页条数
+     * @return
+     */
+    @GetMapping("findHotelCommentList/{goodsId}/{page}/{count}")
+    ReturnData findHotelCommentList(@PathVariable long goodsId, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询指定评论下的回复记录接口
+     * @param contentId     评论ID
+     * @param page       页码 第几页 起始值1
+     * @param count      每页条数
+     * @return
+     */
+    @GetMapping("findHotelReplyList/{contentId}/{page}/{count}")
+    ReturnData findHotelReplyList(@PathVariable long contentId, @PathVariable int page, @PathVariable int count);
 }

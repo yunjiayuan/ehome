@@ -102,6 +102,31 @@ public interface TravelDao {
             "</script>")
     int updateKitchen3(ScenicSpot kitchen);
 
+    @Update("<script>" +
+            "update ScenicSpot set" +
+            "<if test=\"relationHotel > 0\">" +
+            " relationHotel=#{relationHotel}" +
+            "</if>" +
+            "<if test=\"relationReservation > 0\">" +
+            " relationReservation=#{relationReservation}" +
+            "</if>" +
+            " where userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int update(ScenicSpot kitchen);
+
+    /***
+     * 更新景区评分
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update ScenicSpot set" +
+            " totalScore=#{totalScore}," +
+            " averageScore=#{averageScore}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int updateScore(ScenicSpot kitchen);
+
     /***
      * 更新景区删除状态
      * @param kitchen

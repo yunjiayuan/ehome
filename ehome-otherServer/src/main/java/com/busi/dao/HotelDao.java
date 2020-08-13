@@ -80,6 +80,15 @@ public interface HotelDao {
             "</script>")
     int updateKitchen3(Hotel kitchen);
 
+    @Update("<script>" +
+            "update Hotel set" +
+            "<if test=\"relationReservation > 0\">" +
+            " relationReservation=#{relationReservation}" +
+            "</if>" +
+            " where userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int update(Hotel kitchen);
+
     /***
      * 更新酒店民宿删除状态
      * @param kitchen

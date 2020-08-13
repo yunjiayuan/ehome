@@ -229,17 +229,17 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         if (io.getPaymentStatus() == 0) {//未付款
-            return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "订单未支付", new JSONObject());
+            return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "订单未支付", io);
         }
         if (io.getVerificationType() == 1) {//防止多次验票成功后多次打款
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
         }
         if (io.getVerificationType() == 0 && io.getDistributionMode() == 1) {//买家自取、已付款未验票
             if (io.getUserId() != CommonUtils.getMyId()) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限核验", new JSONObject());
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限核验", io);
             }
             if (!io.getVoucherCode().equals(voucherCode)) {
-                return returnData(StatusCode.CODE_PHARMACY_INVALID.CODE_VALUE, "取药凭证码无效", new JSONObject());
+                return returnData(StatusCode.CODE_PHARMACY_INVALID.CODE_VALUE, "取药凭证码无效", io);
             }
 
             //格式化为相同格式
@@ -259,16 +259,16 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
 //                e.printStackTrace();
 //            }
 //            if (dateTime1 == null || dateTime2 == null) {
-//                return returnData(StatusCode.CODE_PHARMACY_BE_OVERDUE.CODE_VALUE, "凭证码已过期", new JSONObject());
+//                return returnData(StatusCode.CODE_PHARMACY_BE_OVERDUE.CODE_VALUE, "凭证码已过期", io);
 //            }
 //            int i = dateTime1.compareTo(dateTime2);
 //            if (i > 0) {
 //                io.setOrdersType(6);
 //                //药店订单放入缓存
 //                redisUtils.hmset(Constants.REDIS_KEY_PHARMACYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
-//                return returnData(StatusCode.CODE_PHARMACY_BE_OVERDUE.CODE_VALUE, "凭证码已过期", new JSONObject());
+//                return returnData(StatusCode.CODE_PHARMACY_BE_OVERDUE.CODE_VALUE, "凭证码已过期", io);
 //            } else if (i < 0) {
-//                return returnData(StatusCode.CODE_PHARMACY_ADVANCE.CODE_VALUE, "入住日期未到", new JSONObject());
+//                return returnData(StatusCode.CODE_PHARMACY_ADVANCE.CODE_VALUE, "入住日期未到", io);
 //            } else {
 //                io.setOrdersType(1);
 //            }
@@ -287,7 +287,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             //药店订单放入缓存
             redisUtils.hmset(Constants.REDIS_KEY_PHARMACYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
     }
 
     /***
