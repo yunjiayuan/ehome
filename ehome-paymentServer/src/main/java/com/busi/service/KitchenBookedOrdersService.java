@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * 厨房支付业务
+ * 订座支付业务
  * author：SunTianJie
  * create time：2019/3/22 16:17
  */
