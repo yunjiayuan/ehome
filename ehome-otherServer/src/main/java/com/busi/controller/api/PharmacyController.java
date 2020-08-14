@@ -250,26 +250,19 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         tickets.setAddTime(new Date());
         travelService.addDishes(tickets);
-        if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
+        List list = null;
+        list = travelService.findList(tickets.getPharmacyId());
+        if (list != null && list.size() > 0) {
+            PharmacyDrugs tickets1 = (PharmacyDrugs) list.get(0);
+            if (tickets1 != null) {
+                kitchen.setCost(tickets1.getCost());
+            }
+        } else {
             kitchen.setCost(tickets.getCost());
         }
-        List list = null;
-        if (tickets.getCost() < kitchen.getCost()) {
-            list = travelService.findList(tickets.getPharmacyId());
-            if (list != null && list.size() > 0) {
-                PharmacyDrugs tickets1 = (PharmacyDrugs) list.get(0);
-                if (tickets1 != null) {
-                    kitchen.setCost(tickets1.getCost());
-                }
-            } else {
-                kitchen.setCost(tickets.getCost());
-            }
-        }
-        if (tickets.getCost() != kitchen.getCost()) {
-            travelService.updateKitchen3(kitchen);
-            //清除景区缓存
-            redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
-        }
+        travelService.updateKitchen3(kitchen);
+        //清除景区缓存
+        redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", tickets.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
@@ -292,28 +285,21 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "药店不存在", new JSONObject());
         }
         travelService.updateDishes(tickets);
-        if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
+        List list = null;
+        list = travelService.findList(tickets.getPharmacyId());
+        if (list != null && list.size() > 0) {
+            PharmacyDrugs tickets1 = (PharmacyDrugs) list.get(0);
+            if (tickets1 != null) {
+                if (tickets.getCost() < tickets1.getCost()) {
+                    kitchen.setCost(tickets1.getCost());
+                }
+            }
+        } else {
             kitchen.setCost(tickets.getCost());
         }
-        List list = null;
-        if (tickets.getCost() < kitchen.getCost()) {
-            list = travelService.findList(tickets.getPharmacyId());
-            if (list != null && list.size() > 0) {
-                PharmacyDrugs tickets1 = (PharmacyDrugs) list.get(0);
-                if (tickets1 != null) {
-                    if (tickets.getCost() < tickets1.getCost()) {
-                        kitchen.setCost(tickets1.getCost());
-                    }
-                }
-            } else {
-                kitchen.setCost(tickets.getCost());
-            }
-        }
-        if (tickets.getCost() != kitchen.getCost()) {
-            travelService.updateKitchen3(kitchen);
-            //清除景区缓存
-            redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
-        }
+        travelService.updateKitchen3(kitchen);
+        //清除景区缓存
+        redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", tickets.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);

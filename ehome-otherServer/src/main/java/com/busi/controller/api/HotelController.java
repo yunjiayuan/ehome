@@ -253,26 +253,19 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         travelService.addDishes(tickets);
         if (tickets.getType() == 0) { // 所属类型：0酒店 1景区
-            if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
+            List list = null;
+            list = travelService.findList(tickets.getHotelId(), tickets.getType());
+            if (list != null && list.size() > 0) {
+                HotelRoom tickets1 = (HotelRoom) list.get(0);
+                if (tickets1 != null) {
+                    kitchen.setCost(tickets1.getCost());
+                }
+            } else {
                 kitchen.setCost(tickets.getCost());
             }
-            List list = null;
-            if (tickets.getCost() < kitchen.getCost()) {
-                list = travelService.findList(tickets.getHotelId(), tickets.getType());
-                if (list != null && list.size() > 0) {
-                    HotelRoom tickets1 = (HotelRoom) list.get(0);
-                    if (tickets1 != null) {
-                        kitchen.setCost(tickets1.getCost());
-                    }
-                } else {
-                    kitchen.setCost(tickets.getCost());
-                }
-            }
-            if (tickets.getCost() != kitchen.getCost()) {
-                travelService.updateKitchen3(kitchen);
-                //清除酒店缓存
-                redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
-            }
+            travelService.updateKitchen3(kitchen);
+            //清除酒店缓存
+            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
         }
         //清除缓存中的酒店民宿房间信息
         redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId() + "_" + tickets.getType(), 0);
@@ -300,26 +293,19 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         travelService.updateDishes(tickets);
         if (tickets.getType() == 0) { // 所属类型：0酒店 1景区
-            if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
+            List list = null;
+            list = travelService.findList(tickets.getHotelId(), tickets.getType());
+            if (list != null && list.size() > 0) {
+                HotelRoom tickets1 = (HotelRoom) list.get(0);
+                if (tickets1 != null) {
+                    kitchen.setCost(tickets1.getCost());
+                }
+            } else {
                 kitchen.setCost(tickets.getCost());
             }
-            List list = null;
-            if (tickets.getCost() < kitchen.getCost()) {
-                list = travelService.findList(tickets.getHotelId(), tickets.getType());
-                if (list != null && list.size() > 0) {
-                    HotelRoom tickets1 = (HotelRoom) list.get(0);
-                    if (tickets1 != null) {
-                        kitchen.setCost(tickets1.getCost());
-                    }
-                } else {
-                    kitchen.setCost(tickets.getCost());
-                }
-            }
-            if (tickets.getCost() != kitchen.getCost()) {
-                travelService.updateKitchen3(kitchen);
-                //清除酒店缓存
-                redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
-            }
+            travelService.updateKitchen3(kitchen);
+            //清除酒店缓存
+            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
         }
         //清除缓存中的酒店民宿房间信息
         redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId() + "_" + tickets.getType(), 0);
