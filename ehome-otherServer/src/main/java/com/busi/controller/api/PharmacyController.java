@@ -259,9 +259,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
             if (list != null && list.size() > 0) {
                 PharmacyDrugs tickets1 = (PharmacyDrugs) list.get(0);
                 if (tickets1 != null) {
-                    if (tickets.getCost() < tickets1.getCost()) {
-                        kitchen.setCost(tickets.getCost());
-                    }
+                    kitchen.setCost(tickets1.getCost());
                 }
             } else {
                 kitchen.setCost(tickets.getCost());
@@ -304,7 +302,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
                 PharmacyDrugs tickets1 = (PharmacyDrugs) list.get(0);
                 if (tickets1 != null) {
                     if (tickets.getCost() < tickets1.getCost()) {
-                        kitchen.setCost(tickets.getCost());
+                        kitchen.setCost(tickets1.getCost());
                     }
                 }
             } else {

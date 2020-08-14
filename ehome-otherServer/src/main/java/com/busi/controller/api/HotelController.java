@@ -262,9 +262,7 @@ public class HotelController extends BaseController implements HotelApiControlle
                 if (list != null && list.size() > 0) {
                     HotelRoom tickets1 = (HotelRoom) list.get(0);
                     if (tickets1 != null) {
-                        if (tickets.getCost() < tickets1.getCost()) {
-                            kitchen.setCost(tickets.getCost());
-                        }
+                        kitchen.setCost(tickets1.getCost());
                     }
                 } else {
                     kitchen.setCost(tickets.getCost());
@@ -311,9 +309,7 @@ public class HotelController extends BaseController implements HotelApiControlle
                 if (list != null && list.size() > 0) {
                     HotelRoom tickets1 = (HotelRoom) list.get(0);
                     if (tickets1 != null) {
-                        if (tickets.getCost() < tickets1.getCost()) {
-                            kitchen.setCost(tickets.getCost());
-                        }
+                        kitchen.setCost(tickets1.getCost());
                     }
                 } else {
                     kitchen.setCost(tickets.getCost());

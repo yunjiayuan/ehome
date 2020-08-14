@@ -269,9 +269,7 @@ public class TravelController extends BaseController implements TravelApiControl
             if (list != null && list.size() > 0) {
                 ScenicSpotTickets tickets1 = (ScenicSpotTickets) list.get(0);
                 if (tickets1 != null) {
-                    if (tickets.getCost() < tickets1.getCost()) {
-                        kitchen.setCost(tickets.getCost());
-                    }
+                    kitchen.setCost(tickets1.getCost());
                 }
             } else {
                 kitchen.setCost(tickets.getCost());
@@ -315,9 +313,7 @@ public class TravelController extends BaseController implements TravelApiControl
             if (list != null && list.size() > 0) {
                 ScenicSpotTickets tickets1 = (ScenicSpotTickets) list.get(0);
                 if (tickets1 != null) {
-                    if (tickets.getCost() < tickets1.getCost()) {
-                        kitchen.setCost(tickets.getCost());
-                    }
+                    kitchen.setCost(tickets1.getCost());
                 }
             } else {
                 kitchen.setCost(tickets.getCost());
