@@ -508,9 +508,10 @@ public interface KitchenBookedDao {
             "select * from KitchenReserveDishes" +
             " where deleteType = 0" +
             " and kitchenId=#{kitchenId}" +
+            " and type=#{type}" +
             " order by addTime desc" +
             "</script>")
-    List<KitchenReserveDishes> findDishesList(@Param("kitchenId") long kitchenId);
+    List<KitchenReserveDishes> findDishesList(@Param("kitchenId") long kitchenId, @Param("type") int type);
 
     /***
      * 统计该用户上菜时间数量
