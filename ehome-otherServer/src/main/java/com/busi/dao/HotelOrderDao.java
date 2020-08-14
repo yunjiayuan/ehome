@@ -41,7 +41,7 @@ public interface HotelOrderDao {
             " and ordersType >1 and ordersState!=3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0" +
+            " and ordersState=0 and (ordersType =1 or ordersType=0)" +
             "</if>" +
             "<if test=\"type == 2\">" +
             " and ordersState=0 and ordersType=1 and myId=#{userId} and paymentStatus = 1" +

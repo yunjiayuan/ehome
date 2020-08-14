@@ -168,7 +168,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         if (io.getPaymentStatus() == 0) {//未付款
-            return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "订单未支付", io);
+            return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "您的订单尚未支付，请尽快支付再扫码", io);
         }
         if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
@@ -197,7 +197,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
                 e.printStackTrace();
             }
             if (dateTime1 == null || dateTime2 == null) {
-                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "门票已过期", io);
+                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
             }
             int i = dateTime1.compareTo(dateTime2);
             if (i > 0) {
@@ -207,9 +207,9 @@ public class TravelOrderController extends BaseController implements TravelOrder
                 //景区订单放入缓存
                 Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
                 redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
-                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "门票已过期", io);
+                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
             } else if (i < 0) {
-                return returnData(StatusCode.CODE_TRAVEL_ADVANCE.CODE_VALUE, "游玩日期未到", io);
+                return returnData(StatusCode.CODE_TRAVEL_ADVANCE.CODE_VALUE, "您还没到游玩时间 ", io);
             } else {
                 io.setOrdersType(1);
             }

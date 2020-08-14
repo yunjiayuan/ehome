@@ -142,4 +142,14 @@ public class HotelTourismService {
         return kitchenBookedDao.findUpperTime(kitchenId, type);
     }
 
+    /***
+     * 新增分类
+     * @param kitchenDishesSort
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addSort(KitchenDishesSort kitchenDishesSort) {
+        return kitchenBookedDao.addSort(kitchenDishesSort);
+    }
+
 }

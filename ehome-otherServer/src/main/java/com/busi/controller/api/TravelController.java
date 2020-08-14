@@ -95,7 +95,12 @@ public class TravelController extends BaseController implements TravelApiControl
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        travelService.updateKitchen(scenicSpot);
+        if (CommonUtils.checkFull(scenicSpot.getScenicSpotName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {
+            scenicSpot.setAuditType(1);
+            travelService.updateKitchen2(scenicSpot);
+        } else {
+            travelService.updateKitchen(scenicSpot);
+        }
         if (!CommonUtils.checkFull(scenicSpot.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(scenicSpot.getUserId(), scenicSpot.getDelImgUrls());
@@ -474,38 +479,4 @@ public class TravelController extends BaseController implements TravelApiControl
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /***
-     * 更新景区、酒店、订座相关设置状态
-     * @param type 更新类型： 0景区酒店、1景区订座、2酒店订座
-     * @param relation 0开启  1关闭
-     * @return
-     */
-    @Override
-    public ReturnData relationSet(@PathVariable int type, @PathVariable int relation) {
-        if (type == 0) {
-            ScenicSpot hotel = new ScenicSpot();
-            hotel.setUserId(CommonUtils.getMyId());
-            hotel.setRelationHotel(relation);
-            travelService.update(hotel);
-            //清除缓存
-            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + CommonUtils.getMyId(), 0);
-        }
-        if (type == 1) {
-            ScenicSpot hotel = new ScenicSpot();
-            hotel.setUserId(CommonUtils.getMyId());
-            hotel.setRelationReservation(relation);
-            travelService.update(hotel);
-            //清除缓存
-            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + CommonUtils.getMyId(), 0);
-        }
-        if (type == 2) {
-            Hotel hotel = new Hotel();
-            hotel.setUserId(CommonUtils.getMyId());
-            hotel.setRelationReservation(relation);
-            hotelService.update(hotel);
-            //清除酒店缓存
-            redisUtils.expire(Constants.REDIS_KEY_HOTEL + CommonUtils.getMyId(), 0);
-        }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-    }
 }

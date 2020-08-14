@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.HotelService;
 import com.busi.service.HotelTourismService;
+import com.busi.service.TravelService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -32,6 +34,12 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     @Autowired
     MqUtils mqUtils;
+
+    @Autowired
+    TravelService travelService;
+
+    @Autowired
+    HotelService hotelService;
 
     /***
      * 新增订座设置信息
@@ -272,5 +280,56 @@ public class HotelTourismController extends BaseController implements HotelTouri
         //开始查询
         KitchenReserveServingTime servingTime = kitchenBookedService.findUpperTime(kitchenId, type);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", servingTime);
+    }
+
+    /***
+     * 更新景区、酒店、订座相关设置状态
+     * @param type 更新类型： 0酒店、1景区订座、2酒店订座
+     * @param relation 0开启  1关闭
+     * @param id   景区、酒店ID
+     * @return
+     */
+    @Override
+    public ReturnData relationSet(@PathVariable int type, @PathVariable int relation, @PathVariable long id) {
+        if (type == 0) {
+            ScenicSpot hotel = new ScenicSpot();
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationHotel(relation);
+            travelService.update(hotel);
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + CommonUtils.getMyId(), 0);
+        }
+        if (type == 1) {
+            ScenicSpot hotel = new ScenicSpot();
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationReservation(relation);
+            travelService.update(hotel);
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + CommonUtils.getMyId(), 0);
+        }
+        if (type == 2) {
+            Hotel hotel = new Hotel();
+            hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationReservation(relation);
+            hotelService.update(hotel);
+            //清除酒店缓存
+            redisUtils.expire(Constants.REDIS_KEY_HOTEL + CommonUtils.getMyId(), 0);
+        }
+        if (type == 2 || type == 1) {
+            if (type == 1) {
+                type = 3;
+            }
+            //新增默认菜品分类
+            String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
+            for (int i = 0; i < strings.length; i++) {
+                KitchenDishesSort sort = new KitchenDishesSort();
+                sort.setName(strings[i]);
+                sort.setUserId(CommonUtils.getMyId());
+                sort.setKitchenId(id);
+                sort.setBookedState(type);
+                kitchenBookedService.addSort(sort);
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

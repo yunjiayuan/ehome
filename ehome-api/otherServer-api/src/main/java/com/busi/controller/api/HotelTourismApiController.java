@@ -108,4 +108,13 @@ public interface HotelTourismApiController {
     @GetMapping("findHotelTourismTime/{type}/{kitchenId}")
     ReturnData findHotelTourismTime(@PathVariable int type, @PathVariable long kitchenId);
 
+    /***
+     * 更新景区、酒店、订座相关设置状态
+     * @param type 更新类型： 0酒店、1景区订座、2酒店订座
+     * @param relation 0开启  1关闭
+     * @param id   景区、酒店ID
+     * @return
+     */
+    @GetMapping("relationSet/{type}/{relation}/{id}")
+    ReturnData relationSet(@PathVariable int type, @PathVariable int relation, @PathVariable long id);
 }

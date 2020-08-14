@@ -35,10 +35,6 @@ public interface TravelDao {
      */
     @Update("<script>" +
             "update ScenicSpot set" +
-            "<if test=\"licence != null and licence != '' \">" +
-            " licence=#{licence}," +
-            " auditType=1," +
-            "</if>" +
             "<if test=\"lat > 0 \">" +
             " lat=#{lat}," +
             "</if>" +
@@ -101,6 +97,15 @@ public interface TravelDao {
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen3(ScenicSpot kitchen);
+
+    @Update("<script>" +
+            "update ScenicSpot set" +
+            " licence=#{licence}," +
+            " auditType=1" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int updateKitchen2(ScenicSpot kitchen);
+
 
     @Update("<script>" +
             "update ScenicSpot set" +

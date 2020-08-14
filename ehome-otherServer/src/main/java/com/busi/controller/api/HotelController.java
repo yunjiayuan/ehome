@@ -82,7 +82,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        if (!CommonUtils.checkFull(scenicSpot.getLicence())) {//上传酒店民宿证照
+        if (CommonUtils.checkFull(scenicSpot.getHotelName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {//上传酒店民宿证照
             scenicSpot.setAuditType(1);
             travelService.updateKitchen2(scenicSpot);
         } else {

@@ -37,10 +37,6 @@ public interface PharmacyDao {
      */
     @Update("<script>" +
             "update Pharmacy set" +
-            "<if test=\"licence != null and licence != '' \">" +
-            " licence=#{licence}," +
-            " auditType=1," +
-            "</if>" +
             " lat=#{lat}," +
             " lon=#{lon}," +
             " pharmacyName=#{pharmacyName}," +

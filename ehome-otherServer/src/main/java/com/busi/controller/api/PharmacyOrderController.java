@@ -229,7 +229,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
         }
         if (io.getPaymentStatus() == 0) {//未付款
-            return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "订单未支付", io);
+            return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "您的订单尚未支付，请尽快支付再扫码", io);
         }
         if (io.getVerificationType() == 1) {//防止多次验票成功后多次打款
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);

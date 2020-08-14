@@ -37,10 +37,6 @@ public interface HotelDao {
      */
     @Update("<script>" +
             "update Hotel set" +
-            "<if test=\"licence != null and licence != '' \">" +
-            " licence=#{licence}," +
-            " auditType=1," +
-            "</if>" +
             " lat=#{lat}," +
             " lon=#{lon}," +
             " hotelName=#{hotelName}," +
@@ -247,7 +243,7 @@ public interface HotelDao {
             " where deleteType = 0" +
             " and hotelId=#{kitchenId}" +
             " and type=#{type}" +
-            " order by addTime asc" +
+            " order by cost asc" +
             "</script>")
     List<HotelRoom> findDishesList(@Param("kitchenId") long kitchenId, @Param("type") int type);
 

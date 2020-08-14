@@ -59,6 +59,11 @@ public class TravelService {
     }
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateKitchen2(ScenicSpot kitchen) {
+        return kitchenBookedDao.updateKitchen2(kitchen);
+    }
+
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int update(ScenicSpot kitchen) {
         return kitchenBookedDao.update(kitchen);
     }

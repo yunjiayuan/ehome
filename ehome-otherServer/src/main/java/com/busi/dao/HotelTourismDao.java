@@ -160,4 +160,13 @@ public interface HotelTourismDao {
             "</script>")
     KitchenReserveServingTime findUpperTime(@Param("kitchenId") long kitchenId, @Param("type") int type);
 
+    /***
+     * 新增菜品分类
+     * @param dishes
+     * @return
+     */
+    @Insert("insert into KitchenDishesSort(userId,kitchenId,name,bookedState) " +
+            "values (#{userId},#{kitchenId},#{name},#{bookedState})")
+    @Options(useGeneratedKeys = true)
+    int addSort(KitchenDishesSort dishes);
 }

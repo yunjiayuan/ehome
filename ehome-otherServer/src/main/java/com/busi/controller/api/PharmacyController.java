@@ -82,7 +82,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        if (!CommonUtils.checkFull(scenicSpot.getLicence())) {//上传药店证照
+        if (CommonUtils.checkFull(scenicSpot.getPharmacyName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {//上传药店证照
             scenicSpot.setAuditType(1);
             travelService.updateKitchen2(scenicSpot);
         } else {
