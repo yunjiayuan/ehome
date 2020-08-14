@@ -347,6 +347,17 @@ public interface KitchenDao {
     List<KitchenReserve> findKitchenList5(@Param("ids") String[] ids);
 
     /***
+     * 查询指定的厨房评论
+     * @param id
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenEvaluate" +
+            " where id = #{id} and state =0 and bookedState=#{type}" +
+            "</script>")
+    List<KitchenEvaluate> findKitchenList6(@Param("id") long id, @Param("type") int type);
+
+    /***
      * 批量查询指定的厨房菜品
      * @param ids
      * @return
