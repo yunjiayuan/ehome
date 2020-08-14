@@ -183,6 +183,17 @@ public class PharmacyService {
     }
 
     /***
+     * 查询药店药品列表
+     * @param kitchenId  药店ID
+     * @return
+     */
+    public List<PharmacyDrugs> findList(long kitchenId) {
+        List<PharmacyDrugs> list;
+        list = kitchenBookedDao.findDishesList(kitchenId, -1);
+        return list;
+    }
+
+    /***
      * 批量查询指定的药品
      * @param ids
      * @return

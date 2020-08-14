@@ -695,7 +695,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         kitchenDishes.setAddTime(new Date());
         kitchenBookedService.addDishes(kitchenDishes);
         //清除缓存中的菜品信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenDishes.getKitchenId() + "_" + 1, 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenDishes.getKitchenId() + "_" + kitchenDishes.getType() + 2, 0);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", kitchenDishes.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
@@ -718,7 +718,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             mqUtils.sendDeleteImageMQ(kitchenDishes.getUserId(), kitchenDishes.getDelImgUrls());
         }
         //清除缓存中的菜品信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenDishes.getKitchenId() + "_" + 1, 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenDishes.getKitchenId() + "_" + kitchenDishes.getType() + 2, 0);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", kitchenDishes.getId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
@@ -740,7 +740,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         //清除缓存中的菜品信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + dishes.getKitchenId() + "_" + 1, 0);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + dishes.getKitchenId() + "_" + dishes.getType() + 2, 0);
         //查询数据库
         kitchenBookedService.delDishes(idss, CommonUtils.getMyId());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -759,42 +759,36 @@ public class KitchenBookedController extends BaseController implements KitchenBo
 
     /***
      * 分页查询菜品列表
-     * @param kitchenId   厨房ID
+     * @param type  查询入口： 0酒店 1景区
+     * @param kitchenId   酒店或景区ID
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findReserveDishesList(@PathVariable long kitchenId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findReserveDishesList(@PathVariable int type, @PathVariable long kitchenId, @PathVariable int page, @PathVariable int count) {
         Map<String, Object> collectionMap = new HashMap<>();
         List<Map<String, Object>> newList = new ArrayList<>();//最终组合后List
         //从缓存中获取菜品列表
-        collectionMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + 1);
+        collectionMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + type + 2);
         if (collectionMap != null && collectionMap.size() > 0) {//缓存中存在 直接返回
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, collectionMap);
         }
         //清除缓存中的菜品信息  防止并发
-        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + 1, 0);
-        //查询是否收藏过此厨房
-        int collection = 0;//是否收藏过此厨房  0没有  1已收藏
-        boolean flag = kitchenService.findWhether2(1, CommonUtils.getMyId(), kitchenId);
-        if (flag) {
-            collection = 1;//1已收藏
-        }
-        collectionMap.put("collection", collection);
+        redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + type + 2, 0);
         //查询菜品
         List list = null;
-        list = kitchenBookedService.findDishesList2(kitchenId);//全部返回
+        list = kitchenBookedService.findDishesList2(kitchenId, type);//全部返回
         if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, collectionMap);
         }
         //查询菜品分类
         List sortList = null;
-        sortList = kitchenService.findDishesSortList2(1, kitchenId);
+        sortList = kitchenService.findDishesSortList2(type + 2, kitchenId);
         if (sortList == null || sortList.size() <= 0) {
             collectionMap.put("list", list);
             //更新到缓存
-            redisUtils.hmset(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + 1, collectionMap);
+            redisUtils.hmset(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + type + 2, collectionMap);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", collectionMap);
         }
         //组合数据
@@ -821,7 +815,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         }
         collectionMap.put("newList", newList);
         //更新到缓存
-        redisUtils.hmset(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + 1, collectionMap);
+        redisUtils.hmset(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenId + "_" + type + 2, collectionMap);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", collectionMap);
     }
 

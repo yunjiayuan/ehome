@@ -113,4 +113,14 @@ public class HourlyWorkerOrdersService {
         list = hourlyWorkerOrdersDao.findIdentity(identity, userId);
         return list;
     }
+
+    /***
+     * 查询指定小时工评价
+     * @return
+     */
+    public List<HourlyWorkerEvaluate> findEvaluate(long id) {
+        List<HourlyWorkerEvaluate> list;
+        list = hourlyWorkerOrdersDao.findEvaluate(id);
+        return list;
+    }
 }

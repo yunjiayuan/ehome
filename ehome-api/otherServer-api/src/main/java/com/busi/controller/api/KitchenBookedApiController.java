@@ -216,13 +216,14 @@ public interface KitchenBookedApiController {
 
     /***
      * 分页查询菜品列表
+     * @param type  查询入口： 0酒店 1景区
      * @param kitchenId   厨房ID
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findReserveDishesList/{kitchenId}/{page}/{count}")
-    ReturnData findReserveDishesList(@PathVariable long kitchenId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findReserveDishesList/{type}/{kitchenId}/{page}/{count}")
+    ReturnData findReserveDishesList(@PathVariable int type, @PathVariable long kitchenId, @PathVariable int page, @PathVariable int count);
 
     /***
      * 新增上菜时间

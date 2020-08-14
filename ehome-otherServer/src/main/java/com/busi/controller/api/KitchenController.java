@@ -709,10 +709,6 @@ public class KitchenController extends BaseController implements KitchenApiContr
 
         //清除缓存中的菜品信息
         redisUtils.expire(Constants.REDIS_KEY_KITCHENDISHESLIST + kitchenDishesSort.getKitchenId() + "_" + kitchenDishesSort.getBookedState(), 0);
-
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("infoId", kitchenDishesSort.getId());
-//        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -741,8 +737,8 @@ public class KitchenController extends BaseController implements KitchenApiContr
 
     /***
      * 查询分类列表
+     * @param bookedState    0厨房  1订座  2酒店  3景区
      * @param kitchenId   厨房ID
-     * @param bookedState    0厨房  1订座
      * @param page     页码
      * @param count    条数
      * @return

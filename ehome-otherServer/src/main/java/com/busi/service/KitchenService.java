@@ -230,6 +230,16 @@ public class KitchenService {
     }
 
     /***
+     * 查询指定的厨房评论
+     * @return
+     */
+    public List<KitchenEvaluate> findKitchenList6(long id, int type) {
+        List<KitchenEvaluate> list;
+        list = kitchenDao.findKitchenList6(id, type);
+        return list;
+    }
+
+    /***
      * 批量查询指定的菜品
      * @param ids
      * @return

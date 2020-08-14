@@ -21,11 +21,11 @@ public class KitchenDishesSort {
     @Min(value = 1, message = "userId参数有误")
     private long userId;                // 用户
 
-    private long kitchenId;             // 厨房ID
+    private long kitchenId;             // 厨房、景区、酒店ID
 
     @Length(max = 8, message = "分类名称不能超过8字")
     private String name;                // 分类名
 
-    private int bookedState;            //   0厨房  1订座
+    private int bookedState;            //   0厨房  1订座  2酒店  3景区
 
 }

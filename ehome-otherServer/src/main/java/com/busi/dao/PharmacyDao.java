@@ -235,8 +235,10 @@ public interface PharmacyDao {
             "select * from PharmacyDrugs" +
             " where deleteType = 0" +
             " and pharmacyId=#{kitchenId}" +
+            "<if test=\"natureType >= 0\">" +
             " and natureType=#{natureType}" +
-            " order by addTime desc" +
+            "</if>" +
+            " order by cost asc" +
             "</script>")
     List<PharmacyDrugs> findDishesList(@Param("kitchenId") long kitchenId, @Param("natureType") int natureType);
 

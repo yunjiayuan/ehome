@@ -340,9 +340,9 @@ public class KitchenBookedService {
      * @param kitchenId  厨房ID
      * @return
      */
-    public List<KitchenReserveDishes> findDishesList2(long kitchenId) {
+    public List<KitchenReserveDishes> findDishesList2(long kitchenId, int type) {
         List<KitchenReserveDishes> list;
-        list = kitchenBookedDao.findDishesList(kitchenId);
+        list = kitchenBookedDao.findDishesList(kitchenId, type);
         return list;
     }
 

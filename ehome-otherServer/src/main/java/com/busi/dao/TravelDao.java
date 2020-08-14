@@ -276,7 +276,7 @@ public interface TravelDao {
             "select * from ScenicSpotTickets" +
             " where deleteType = 0" +
             " and scenicSpotId=#{kitchenId}" +
-            " order by addTime desc" +
+            " order by cost asc" +
             "</script>")
     List<ScenicSpotTickets> findDishesList(@Param("kitchenId") long kitchenId);
 

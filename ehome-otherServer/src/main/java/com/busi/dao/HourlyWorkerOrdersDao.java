@@ -178,4 +178,16 @@ public interface HourlyWorkerOrdersDao {
             " and ordersState != 3" +
             "</script>")
     HourlyWorkerOrders findByNo(@Param("no") String no);
+
+    /***
+     * 查询指定小时工评价
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HourlyWorkerEvaluate" +
+            " where 1=1 " +
+            " and workerId = #{id}" +
+            " and state = 0" +
+            "</script>")
+    List<HourlyWorkerEvaluate> findEvaluate(@Param("id") long id);
 }

@@ -246,7 +246,7 @@ public interface HotelDao {
             "select * from HotelRoom" +
             " where deleteType = 0" +
             " and hotelId=#{kitchenId}" +
-            " order by addTime desc" +
+            " order by addTime asc" +
             "</script>")
     List<HotelRoom> findDishesList(@Param("kitchenId") long kitchenId);
 

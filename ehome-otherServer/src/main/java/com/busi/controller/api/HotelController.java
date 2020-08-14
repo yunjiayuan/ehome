@@ -251,16 +251,29 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (kitchen == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
         }
-        if (tickets.getType() == 1) { // 所属类型：0酒店 1景区
-            travelService.addDishes(tickets);
-            map.put("infoId", tickets.getId());
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
-        }
-        if (tickets.getCost() < kitchen.getCost()) {
-            kitchen.setCost(tickets.getCost());
-            travelService.updateKitchen3(kitchen);
-            //清除酒店缓存
-            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+        travelService.addDishes(tickets);
+        if (tickets.getType() == 0) { // 所属类型：0酒店 1景区
+            if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
+                kitchen.setCost(tickets.getCost());
+                travelService.updateKitchen3(kitchen);
+                //清除酒店缓存
+                redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+            }
+            List list = null;
+            if (tickets.getCost() < kitchen.getCost()) {
+                list = travelService.findList(tickets.getHotelId());
+                if (list != null && list.size() > 0) {
+                    HotelRoom tickets1 = (HotelRoom) list.get(0);
+                    if (tickets1 != null) {
+                        if (tickets.getCost() < tickets1.getCost()) {
+                            kitchen.setCost(tickets.getCost());
+                            travelService.updateKitchen3(kitchen);
+                            //清除酒店缓存
+                            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+                        }
+                    }
+                }
+            }
         }
         //清除缓存中的酒店民宿房间信息
         redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId() + "_" + tickets.getType(), 0);
@@ -286,16 +299,29 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (kitchen == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
         }
-        if (tickets.getType() == 1) { // 所属类型：0酒店 1景区
-            travelService.updateDishes(tickets);
-            map.put("infoId", tickets.getId());
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
-        }
-        if (tickets.getCost() < kitchen.getCost()) {
-            kitchen.setCost(tickets.getCost());
-            travelService.updateKitchen3(kitchen);
-            //清除酒店缓存
-            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+        travelService.updateDishes(tickets);
+        if (tickets.getType() == 0) { // 所属类型：0酒店 1景区
+            if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
+                kitchen.setCost(tickets.getCost());
+                travelService.updateKitchen3(kitchen);
+                //清除酒店缓存
+                redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+            }
+            List list = null;
+            if (tickets.getCost() < kitchen.getCost()) {
+                list = travelService.findList(tickets.getHotelId());
+                if (list != null && list.size() > 0) {
+                    HotelRoom tickets1 = (HotelRoom) list.get(0);
+                    if (tickets1 != null) {
+                        if (tickets.getCost() < tickets1.getCost()) {
+                            kitchen.setCost(tickets.getCost());
+                            travelService.updateKitchen3(kitchen);
+                            //清除酒店缓存
+                            redisUtils.expire(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), 0);
+                        }
+                    }
+                }
+            }
         }
         //清除缓存中的酒店民宿房间信息
         redisUtils.expire(Constants.REDIS_KEY_HOTELROOMLIST + tickets.getHotelId() + "_" + tickets.getType(), 0);

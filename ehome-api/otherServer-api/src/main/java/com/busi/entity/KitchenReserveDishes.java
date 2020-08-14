@@ -9,9 +9,9 @@ import java.util.Date;
 
 /**
  * @program: ehome
- * @description: 厨房订座菜品
+ * @description: 酒店景区订座菜品
  * @author: ZHaoJiaJie
- * @create: 2019-08-12 14:11
+ * @create: 2020-08-13 12:32:41
  */
 @Setter
 @Getter
@@ -22,7 +22,7 @@ public class KitchenReserveDishes {
     @Min(value = 1, message = "userId参数有误")
     private long userId;                // 用户
 
-    private long kitchenId;                // 厨房ID
+    private long kitchenId;                // 景区、酒店ID
 
     private long sales;                    //销量
 
@@ -44,6 +44,8 @@ public class KitchenReserveDishes {
     private String imgUrl;            // 图片
 
     private long sortId;            // 分类ID
+
+    private int type;            // 所属类型：0酒店 1景区
 
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
