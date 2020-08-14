@@ -252,9 +252,6 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         travelService.addDishes(tickets);
         if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
             kitchen.setCost(tickets.getCost());
-            travelService.updateKitchen3(kitchen);
-            //清除药店缓存
-            redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         }
         List list = null;
         if (tickets.getCost() < kitchen.getCost()) {
@@ -264,12 +261,16 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
                 if (tickets1 != null) {
                     if (tickets.getCost() < tickets1.getCost()) {
                         kitchen.setCost(tickets.getCost());
-                        travelService.updateKitchen3(kitchen);
-                        //清除药店缓存
-                        redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
                     }
                 }
+            } else {
+                kitchen.setCost(tickets.getCost());
             }
+        }
+        if (tickets.getCost() != kitchen.getCost()) {
+            travelService.updateKitchen3(kitchen);
+            //清除景区缓存
+            redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         }
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", tickets.getId());
@@ -295,9 +296,6 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         travelService.updateDishes(tickets);
         if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
             kitchen.setCost(tickets.getCost());
-            travelService.updateKitchen3(kitchen);
-            //清除药店缓存
-            redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         }
         List list = null;
         if (tickets.getCost() < kitchen.getCost()) {
@@ -307,12 +305,16 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
                 if (tickets1 != null) {
                     if (tickets.getCost() < tickets1.getCost()) {
                         kitchen.setCost(tickets.getCost());
-                        travelService.updateKitchen3(kitchen);
-                        //清除药店缓存
-                        redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
                     }
                 }
+            } else {
+                kitchen.setCost(tickets.getCost());
             }
+        }
+        if (tickets.getCost() != kitchen.getCost()) {
+            travelService.updateKitchen3(kitchen);
+            //清除景区缓存
+            redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         }
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", tickets.getId());
@@ -337,6 +339,20 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         //查询数据库
         travelService.delDishes(idss, CommonUtils.getMyId());
+        List list = null;
+        Pharmacy kitchen = new Pharmacy();
+        list = travelService.findList(dishes.getPharmacyId());
+        if (list != null && list.size() > 0) {
+            PharmacyDrugs tickets1 = (PharmacyDrugs) list.get(0);
+            kitchen.setCost(tickets1.getCost());
+        } else {
+            kitchen.setCost(0);
+        }
+        kitchen.setUserId(dishes.getUserId());
+        kitchen.setId(dishes.getPharmacyId());
+        travelService.updateKitchen3(kitchen);
+        //清除药店缓存
+        redisUtils.expire(Constants.REDIS_KEY_PHARMACY + dishes.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

@@ -262,9 +262,6 @@ public class TravelController extends BaseController implements TravelApiControl
         travelService.addDishes(tickets);
         if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
             kitchen.setCost(tickets.getCost());
-            travelService.updateKitchen3(kitchen);
-            //清除景区缓存
-            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + kitchen.getUserId(), 0);
         }
         List list = null;
         if (tickets.getCost() < kitchen.getCost()) {
@@ -274,12 +271,16 @@ public class TravelController extends BaseController implements TravelApiControl
                 if (tickets1 != null) {
                     if (tickets.getCost() < tickets1.getCost()) {
                         kitchen.setCost(tickets.getCost());
-                        travelService.updateKitchen3(kitchen);
-                        //清除景区缓存
-                        redisUtils.expire(Constants.REDIS_KEY_TRAVEL + kitchen.getUserId(), 0);
                     }
                 }
+            } else {
+                kitchen.setCost(tickets.getCost());
             }
+        }
+        if (tickets.getCost() != kitchen.getCost()) {
+            travelService.updateKitchen3(kitchen);
+            //清除景区缓存
+            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + kitchen.getUserId(), 0);
         }
         //清除缓存中的门票信息
         redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + tickets.getScenicSpotId(), 0);
@@ -307,9 +308,6 @@ public class TravelController extends BaseController implements TravelApiControl
         travelService.updateDishes(tickets);
         if (kitchen.getCost() <= 0 && tickets.getCost() > 0) {
             kitchen.setCost(tickets.getCost());
-            travelService.updateKitchen3(kitchen);
-            //清除景区缓存
-            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + kitchen.getUserId(), 0);
         }
         List list = null;
         if (tickets.getCost() < kitchen.getCost()) {
@@ -319,12 +317,16 @@ public class TravelController extends BaseController implements TravelApiControl
                 if (tickets1 != null) {
                     if (tickets.getCost() < tickets1.getCost()) {
                         kitchen.setCost(tickets.getCost());
-                        travelService.updateKitchen3(kitchen);
-                        //清除景区缓存
-                        redisUtils.expire(Constants.REDIS_KEY_TRAVEL + kitchen.getUserId(), 0);
                     }
                 }
+            } else {
+                kitchen.setCost(tickets.getCost());
             }
+        }
+        if (tickets.getCost() != kitchen.getCost()) {
+            travelService.updateKitchen3(kitchen);
+            //清除景区缓存
+            redisUtils.expire(Constants.REDIS_KEY_TRAVEL + kitchen.getUserId(), 0);
         }
         //清除缓存中的门票信息
         redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + tickets.getScenicSpotId(), 0);
@@ -349,10 +351,24 @@ public class TravelController extends BaseController implements TravelApiControl
         if (dishes == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + dishes.getScenicSpotId(), 0);
         //查询数据库
         travelService.delDishes(idss, CommonUtils.getMyId());
+        List list = null;
+        ScenicSpot kitchen = new ScenicSpot();
+        list = travelService.findList(dishes.getScenicSpotId());
+        if (list != null && list.size() > 0) {
+            ScenicSpotTickets tickets1 = (ScenicSpotTickets) list.get(0);
+            kitchen.setCost(tickets1.getCost());
+        } else {
+            kitchen.setCost(0);
+        }
+        kitchen.setUserId(dishes.getUserId());
+        kitchen.setId(dishes.getScenicSpotId());
+        travelService.updateKitchen3(kitchen);
+        //清除景区缓存
+        redisUtils.expire(Constants.REDIS_KEY_TRAVEL + dishes.getUserId(), 0);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_TRAVELTICKETSLIST + dishes.getScenicSpotId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

@@ -246,9 +246,10 @@ public interface HotelDao {
             "select * from HotelRoom" +
             " where deleteType = 0" +
             " and hotelId=#{kitchenId}" +
+            " and type=#{type}" +
             " order by addTime asc" +
             "</script>")
-    List<HotelRoom> findDishesList(@Param("kitchenId") long kitchenId);
+    List<HotelRoom> findDishesList(@Param("kitchenId") long kitchenId, @Param("type") int type);
 
     /***
      * 删除指定酒店民宿下房间

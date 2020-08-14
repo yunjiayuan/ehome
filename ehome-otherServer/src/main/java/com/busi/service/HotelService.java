@@ -178,9 +178,9 @@ public class HotelService {
      * @param kitchenId  酒店民宿ID
      * @return
      */
-    public List<HotelRoom> findList(long kitchenId) {
+    public List<HotelRoom> findList(long kitchenId, int type) {
         List<HotelRoom> list;
-        list = kitchenBookedDao.findDishesList(kitchenId);
+        list = kitchenBookedDao.findDishesList(kitchenId, type);
         return list;
     }
 
