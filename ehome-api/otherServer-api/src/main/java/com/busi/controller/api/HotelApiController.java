@@ -1,9 +1,6 @@
 package com.busi.controller.api;
 
-import com.busi.entity.HotelRoom;
-import com.busi.entity.ReturnData;
-import com.busi.entity.Hotel;
-import com.busi.entity.HotelCollection;
+import com.busi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -140,5 +137,42 @@ public interface HotelApiController {
      */
     @DeleteMapping("delHotelCollect/{ids}")
     ReturnData delHotelCollect(@PathVariable String ids);
+
+    /***
+     * 新增酒店数据
+     * @param hotelData
+     * @return
+     */
+    @PostMapping("addHotelData")
+    ReturnData addHotelData(@Valid @RequestBody HotelData hotelData, BindingResult bindingResult);
+
+    /***
+     * 查询酒店数据详情
+     * @param id
+     * @return
+     */
+    @GetMapping("findHotelData/{id}")
+    ReturnData findHotelData(@PathVariable long id);
+
+    /***
+     * 认领酒店
+     * @param hotel
+     * @return
+     */
+    @PutMapping("claimHotel")
+    ReturnData claimHotel(@Valid @RequestBody Hotel hotel, BindingResult bindingResult);
+
+    /***
+     * 查询酒店数据列表
+     * @param hotelType    0酒店 1民宿
+     * @param name    酒店名称
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findHotelDataList/{hotelType}/{name}/{lat}/{lon}/{page}/{count}")
+    ReturnData findHotelDataList(@PathVariable int hotelType, @PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
 }

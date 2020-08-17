@@ -1,9 +1,6 @@
 package com.busi.controller.api;
 
-import com.busi.entity.Pharmacy;
-import com.busi.entity.PharmacyCollection;
-import com.busi.entity.PharmacyDrugs;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -139,5 +136,43 @@ public interface PharmacyApiController {
      */
     @DeleteMapping("delPharmacyCollect/{ids}")
     ReturnData delPharmacyCollect(@PathVariable String ids);
+
+    /***
+     * 新增药店数据
+     * @param hotelData
+     * @return
+     */
+    @PostMapping("addPharmacyData")
+    ReturnData addPharmacyData(@Valid @RequestBody PharmacyData hotelData, BindingResult bindingResult);
+
+    /***
+     * 查询药店数据详情
+     * @param id
+     * @return
+     */
+    @GetMapping("findPharmacyData/{id}")
+    ReturnData findPharmacyData(@PathVariable long id);
+
+    /***
+     * 入驻药店
+     * @param hotel
+     * @return
+     */
+    @PutMapping("claimPharmacy")
+    ReturnData claimPharmacy(@Valid @RequestBody Pharmacy hotel, BindingResult bindingResult);
+
+    /***
+     * 查询药店数据列表
+     * @param name    药店名称
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findPharmacyDataList/{name}/{lat}/{lon}/{page}/{count}")
+    ReturnData findPharmacyDataList(@PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+
+
 
 }

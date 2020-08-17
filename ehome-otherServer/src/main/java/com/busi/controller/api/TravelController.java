@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
@@ -479,4 +480,125 @@ public class TravelController extends BaseController implements TravelApiControl
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
+    /***
+     * 新增景区数据
+     * @param kitchenData
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addTravelData(@Valid @RequestBody ScenicSpotData kitchenData, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        if (CommonUtils.checkFull(kitchenData.getName())) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        ScenicSpotData reserveData = travelService.findReserveDataId(kitchenData.getUid());
+        ScenicSpot reserve = new ScenicSpot();
+        reserve.setAddTime(new Date());
+        reserve.setAddress(kitchenData.getAddress());
+        reserve.setClaimId(kitchenData.getUid());
+        reserve.setScenicSpotName(kitchenData.getName());
+        reserve.setLat(kitchenData.getLatitude());
+        reserve.setLon(kitchenData.getLongitude());
+        reserve.setPhone(kitchenData.getPhone());
+        reserve.setTotalScore(kitchenData.getOverallRating());
+        reserve.setAuditType(1);
+//        reserve.setBusinessStatus(1);//景区默认关闭
+        if (reserveData == null) {//新增
+            //新增景区数据表
+            kitchenData.setAddTime(new Date());
+            travelService.addReserveData(kitchenData);
+            //新增景区表
+            travelService.addKitchen(reserve);
+        } else {//更新
+            //更新景区数据表
+            travelService.updateReserveData(kitchenData);
+            //更新景区表
+            travelService.updateKitchen(reserve);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询景区数据详情
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findTravelData(@PathVariable long id) {
+        ScenicSpotData reserveData = travelService.findReserveData(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 入驻景区民宿
+     * @param kitchenReserve
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData claimTravel(@Valid @RequestBody ScenicSpot kitchenReserve, BindingResult bindingResult) {
+        ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区民宿不存在", new JSONObject());
+        }
+        if (kitchen.getClaimStatus() == 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区民宿不存在", new JSONObject());
+        }
+        //更新景区数据
+        kitchen.setClaimStatus(1);
+        kitchen.setClaimTime(new Date());
+        kitchen.setUserId(CommonUtils.getMyId());
+        travelService.claimKitchen(kitchen);
+        //更新景区
+        ScenicSpot reserve = new ScenicSpot();
+        reserve.setPhone(kitchen.getPhone());
+        reserve.setLicence(kitchenReserve.getLicence());
+        reserve.setClaimId(kitchen.getUid());
+        reserve.setClaimStatus(1);
+        reserve.setClaimTime(kitchen.getClaimTime());
+        reserve.setUserId(CommonUtils.getMyId());
+        travelService.claimKitchen2(reserve);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询景区数据列表
+     * @param name    景区名称
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findTravelDataList(@PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<ScenicSpotData> pageBean = null;
+        pageBean = travelService.findReserveDataList(name, lat, lon, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        if (list != null && list.size() > 0) {
+            if (CommonUtils.checkFull(name) && lat > 0) {//距离最近
+                for (int i = 0; i < list.size(); i++) {
+                    ScenicSpotData ik = (ScenicSpotData) list.get(i);
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLongitude(), ik.getLatitude(), lon, lat));
+                    ik.setDistance(distance);//距离/m
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+    }
 }

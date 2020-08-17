@@ -1,9 +1,6 @@
 package com.busi.controller.api;
 
-import com.busi.entity.ScenicSpotCollection;
-import com.busi.entity.ScenicSpot;
-import com.busi.entity.ScenicSpotTickets;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -137,5 +134,42 @@ public interface TravelApiController {
      */
     @DeleteMapping("delScenicSpotCollect/{ids}")
     ReturnData delScenicSpotCollect(@PathVariable String ids);
+
+    /***
+     * 新增景区数据
+     * @param hotelData
+     * @return
+     */
+    @PostMapping("addTravelData")
+    ReturnData addTravelData(@Valid @RequestBody ScenicSpotData hotelData, BindingResult bindingResult);
+
+    /***
+     * 查询景区数据详情
+     * @param id
+     * @return
+     */
+    @GetMapping("findTravelData/{id}")
+    ReturnData findTravelData(@PathVariable long id);
+
+    /***
+     * 入驻景区
+     * @param hotel
+     * @return
+     */
+    @PutMapping("claimTravel")
+    ReturnData claimTravel(@Valid @RequestBody ScenicSpot hotel, BindingResult bindingResult);
+
+    /***
+     * 查询景区数据列表
+     * @param name    景区名称
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findTravelDataList/{name}/{lat}/{lon}/{page}/{count}")
+    ReturnData findTravelDataList(@PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+
 
 }

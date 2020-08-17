@@ -1,8 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.Hotel;
-import com.busi.entity.HotelCollection;
-import com.busi.entity.HotelRoom;
+import com.busi.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -24,9 +22,9 @@ public interface HotelDao {
      * @return
      */
     @Insert("insert into Hotel(userId,businessStatus,deleteType,auditType,hotelName,openTime,closeTime,licence,addTime,picture,tips,content,province,city,lat,lon," +
-            "district,videoUrl,videoCoverUrl,type,phone,levels,hotelType,openType)" +
+            "district,videoUrl,videoCoverUrl,type,phone,levels,hotelType,openType,address,claimId,claimStatus,claimTime,totalScore)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{hotelName},#{openTime},#{closeTime},#{licence},#{addTime},#{picture},#{tips},#{content},#{province},#{city},#{lat},#{lon}" +
-            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{hotelType},#{openType})")
+            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{hotelType},#{openType},#{address},#{claimId},#{claimStatus},#{claimTime},#{totalScore})")
     @Options(useGeneratedKeys = true)
     int addKitchen(Hotel kitchen);
 
@@ -51,6 +49,7 @@ public interface HotelDao {
             " content=#{content}," +
             " province=#{province}," +
             " city=#{city}," +
+            " address=#{address}," +
             " videoUrl=#{videoUrl}," +
             " videoCoverUrl=#{videoCoverUrl}," +
             " district=#{district}," +
@@ -98,7 +97,7 @@ public interface HotelDao {
     int updateDel(Hotel kitchen);
 
     /***
-     * 根据userId查询预定
+     * 根据userId查询酒店民宿
      * @param userId
      * @return
      */
@@ -106,7 +105,7 @@ public interface HotelDao {
     Hotel findReserve(@Param("userId") long userId);
 
     /***
-     * 根据Id查询预定
+     * 根据Id查询酒店民宿
      * @param id
      * @return
      */
@@ -320,4 +319,133 @@ public interface HotelDao {
             " and myId=#{userId}" +
             "</script>")
     int del(@Param("ids") String[] ids, @Param("userId") long userId);
+
+    /***
+     * 根据Id查询酒店民宿
+     * @param id
+     * @return
+     */
+    @Select("select * from HotelData where id=#{id}")
+    HotelData findReserveData(@Param("id") long id);
+
+    /***
+     * 条件查询酒店民宿
+     * @return
+     */
+    @Select("<script>" +
+            "<if test=\"kitchenName != null and kitchenName != '' \">" +
+            "select * from HotelData where claimStatus=0 " +
+            " and name LIKE CONCAT('%',#{kitchenName},'%')" +
+            "<if test=\"hotelType >= 0 \">" +
+            " and hotelType=#{hotelType}" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"kitchenName == null and latitude > 0 \">" +
+            " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-longitude*PI()/180)/2),2)))*1000) AS juli " +
+            " from HotelData " +
+            " where claimStatus=0" +
+            " and latitude > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算
+            " and latitude &lt; #{latitude}+1" +
+            " and longitude > #{longitude}-1" +
+            " and longitude &lt; #{longitude}+1" +
+            "<if test=\"hotelType >= 0 \">" +
+            " and hotelType=#{hotelType}" +
+            "</if>" +
+            " order by juli asc,overallRating desc" +
+            "</if>" +
+            "</script>")
+    List<HotelData> findReserveDataList(@Param("hotelType") int hotelType, @Param("kitchenName") String kitchenName, @Param("latitude") double latitude, @Param("longitude") double longitude);
+
+    /***
+     * 更新酒店民宿认领状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update HotelData set" +
+            " userId=#{userId}," +
+            " claimTime=#{claimTime}," +
+            " claimStatus=#{claimStatus}" +
+            " where id=#{id}" +
+            "</script>")
+    int claimKitchen(HotelData kitchen);
+
+    /***
+     * 更新酒店民宿认领状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update Hotel set" +
+            " userId=#{userId}," +
+            " invitationCode=#{invitationCode}," +
+            " licence=#{licence}," +
+            " phone=#{phone}," +
+            " claimTime=#{claimTime}," +
+            " claimStatus=#{claimStatus}" +
+            " where claimId=#{claimId}" +
+            "</script>")
+    int claimKitchen2(Hotel kitchen);
+
+    /***
+     * 根据uid查询酒店民宿
+     * @param uid
+     * @return
+     */
+    @Select("select * from HotelData where uid=#{uid}")
+    HotelData findReserveDataId(@Param("uid") String uid);
+
+    /***
+     * 新增酒店民宿数据
+     * @param kitchen
+     * @return
+     */
+    @Insert("insert into HotelData(userId,uid,streetID,name,addTime,province,city,area,latitude,longitude,hotelType," +
+            "address,distance,claimStatus,claimTime,type,phone,tag,detailURL,price,openingHours,overallRating,tasteRating," +
+            "serviceRating,environmentRating,hygieneRating,technologyRating,facilityRating,imageNumber,grouponNumber,discountNumber,commentNumber,favoriteNumber,checkInNumber)" +
+            "values (#{userId},#{uid},#{streetID},#{name},#{addTime},#{province},#{city},#{area},#{latitude},#{longitude},#{hotelType}" +
+            ",#{address},#{distance},#{claimStatus},#{claimTime},#{type},#{phone},#{tag},#{detailURL},#{price},#{openingHours},#{overallRating},#{tasteRating},#{serviceRating},#{environmentRating},#{hygieneRating}" +
+            ",#{technologyRating},#{facilityRating},#{imageNumber},#{grouponNumber},#{discountNumber},#{commentNumber},#{favoriteNumber},#{checkInNumber})")
+    @Options(useGeneratedKeys = true)
+    int addReserveData(HotelData kitchen);
+
+    /***
+     * 更新酒店民宿数据
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update HotelData set" +
+            " province=#{province}," +
+            " city=#{city}," +
+            " area=#{area}," +
+            " name=#{name}," +
+            " latitude=#{latitude}," +
+            " longitude=#{longitude}," +
+            " address=#{address}," +
+            " phone=#{phone}," +
+            " distance=#{distance}," +
+            " type=#{type}," +
+            " tag=#{tag}," +
+            " detailURL=#{detailURL}," +
+            " price=#{price}," +
+            " openingHours=#{openingHours}," +
+            " imageNumber=#{imageNumber}," +
+            " grouponNumber=#{grouponNumber}," +
+            " discountNumber=#{discountNumber}," +
+            " overallRating=#{overallRating}," +
+            " commentNumber=#{commentNumber}," +
+            " tasteRating=#{tasteRating}," +
+            " serviceRating=#{serviceRating}," +
+            " environmentRating=#{environmentRating}," +
+            " hygieneRating=#{hygieneRating}," +
+            " technologyRating=#{technologyRating}," +
+            " facilityRating=#{facilityRating}," +
+            " favoriteNumber=#{favoriteNumber}," +
+            " checkInNumber=#{checkInNumber}," +
+            " userId=#{userId}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateReserveData(HotelData kitchen);
+
 }
