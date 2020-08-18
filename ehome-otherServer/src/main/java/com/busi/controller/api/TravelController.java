@@ -77,6 +77,7 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         scenicSpot.setAuditType(0);
         scenicSpot.setBusinessStatus(1);//景区默认关闭
+        scenicSpot.setClaimStatus(1);//默认自己新增为已入驻
         scenicSpot.setAddTime(new Date());
         travelService.addKitchen(scenicSpot);
         Map<String, Object> map2 = new HashMap<>();

@@ -64,6 +64,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         scenicSpot.setAuditType(0);
         scenicSpot.setBusinessStatus(1);//药店默认关闭
+        scenicSpot.setClaimStatus(1);//默认自己新增为已入驻
         scenicSpot.setAddTime(new Date());
         travelService.addKitchen(scenicSpot);
         Map<String, Object> map = new HashMap<>();

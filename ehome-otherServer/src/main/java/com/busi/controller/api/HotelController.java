@@ -64,6 +64,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         scenicSpot.setAuditType(0);
         scenicSpot.setBusinessStatus(1);//酒店民宿默认关闭
+        scenicSpot.setClaimStatus(1);//默认自己新增为已入驻
         scenicSpot.setAddTime(new Date());
         travelService.addKitchen(scenicSpot);
         Map<String, Object> map = new HashMap<>();
@@ -526,9 +527,9 @@ public class HotelController extends BaseController implements HotelApiControlle
     @Override
     public ReturnData findHotelData(@PathVariable long id) {
         HotelData reserveData = travelService.findReserveData(id);
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", reserveData);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", reserveData);
     }
 
     /***
