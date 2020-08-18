@@ -109,8 +109,8 @@ public interface HotelDao {
      * @param id
      * @return
      */
-    @Select("select * from Hotel where id=#{id} and deleteType = 0 and type=#{type}")
-    Hotel findById(@Param("id") long id, @Param("type") int type);
+    @Select("select * from Hotel where id=#{id} and deleteType = 0")
+    Hotel findById(@Param("id") long id);
 
     /***
      * 更新酒店民宿营业状态

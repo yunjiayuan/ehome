@@ -107,7 +107,7 @@ public class HotelController extends BaseController implements HotelApiControlle
      */
     @Override
     public ReturnData delHotel(@PathVariable long userId, @PathVariable long id) {
-        Hotel io = travelService.findById(id, 0);
+        Hotel io = travelService.findById(id);
         if (io != null) {
             io.setDeleteType(1);
             travelService.updateDel(io);
@@ -249,12 +249,12 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         Map<String, Object> map = new HashMap<>();
         tickets.setAddTime(new Date());
-        Hotel kitchen = travelService.findById(tickets.getHotelId(), tickets.getType());
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
-        }
         travelService.addDishes(tickets);
         if (tickets.getType() == 0) { // 所属类型：0酒店 1景区
+            Hotel kitchen = travelService.findById(tickets.getHotelId());
+            if (kitchen == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店不存在", new JSONObject());
+            }
             List list = null;
             list = travelService.findList(tickets.getHotelId(), tickets.getType());
             if (list != null && list.size() > 0) {
@@ -289,12 +289,12 @@ public class HotelController extends BaseController implements HotelApiControlle
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         Map<String, Object> map = new HashMap<>();
-        Hotel kitchen = travelService.findById(tickets.getHotelId(), tickets.getType());
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
-        }
         travelService.updateDishes(tickets);
         if (tickets.getType() == 0) { // 所属类型：0酒店 1景区
+            Hotel kitchen = travelService.findById(tickets.getHotelId());
+            if (kitchen == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店不存在", new JSONObject());
+            }
             List list = null;
             list = travelService.findList(tickets.getHotelId(), tickets.getType());
             if (list != null && list.size() > 0) {
@@ -379,26 +379,26 @@ public class HotelController extends BaseController implements HotelApiControlle
         Hotel io = null;
         int collection = 0;//是否收藏过此景区  0没有  1已收藏
         List<HotelRoom> cartList = null;
-        io = travelService.findById(id, type);
-        if (io == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店或景区不存在", new JSONObject());
-        }
         //从缓存中获取房间列表
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type);
-        if (map == null || map.size() <= 0) {
-            //查询数据库
-            cartList = travelService.findList(id, type);
-            map.put("data", cartList);
-            //更新到缓存
-            redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type, map, Constants.USER_TIME_OUT);
-        }
         if (type == 0) { // 所属类型：0酒店 1景区
+            io = travelService.findById(id);
+            if (io == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店不存在", new JSONObject());
+            }
             //验证是否收藏过
             boolean flag = travelService.findWhether(CommonUtils.getMyId(), io.getUserId());
             if (flag) {
                 collection = 1;//1已收藏
             }
             map.put("collection", collection);
+        }
+        if (map == null || map.size() <= 0) {
+            //查询数据库
+            cartList = travelService.findList(id, type);
+            map.put("data", cartList);
+            //更新到缓存
+            redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type, map, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }

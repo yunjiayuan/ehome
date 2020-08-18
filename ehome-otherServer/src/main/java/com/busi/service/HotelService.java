@@ -77,8 +77,8 @@ public class HotelService {
      * @param id
      * @return
      */
-    public Hotel findById(long id, int type) {
-        return kitchenBookedDao.findById(id, type);
+    public Hotel findById(long id) {
+        return kitchenBookedDao.findById(id);
     }
 
     /***
@@ -321,4 +321,6 @@ public class HotelService {
     public int updateReserveData(HotelData kitchen) {
         return kitchenBookedDao.updateReserveData(kitchen);
     }
+
+
 }
