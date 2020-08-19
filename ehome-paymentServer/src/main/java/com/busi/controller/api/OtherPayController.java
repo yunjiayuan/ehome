@@ -156,7 +156,7 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
                             +"&timestamp="+time
                             +"&sign="+newSign;
                 }else{
-                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"服务端对用户[\"+myId+\"]“微信”充值数据加签请求失败，微信签名出现异常！",new JSONObject());
+                    return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"服务端对用户["+myId+"]“微信”充值数据加签请求失败，微信签名出现异常:"+wsb.toString(),new JSONObject());
                 }
             }
         }else if(platformType==3){//银联
