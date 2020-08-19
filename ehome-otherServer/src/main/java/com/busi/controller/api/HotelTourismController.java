@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.HotelService;
 import com.busi.service.HotelTourismService;
+import com.busi.service.KitchenService;
 import com.busi.service.TravelService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     @Autowired
     MqUtils mqUtils;
+
+    @Autowired
+    KitchenService kitchenService;
 
     @Autowired
     TravelService travelService;
@@ -321,15 +325,21 @@ public class HotelTourismController extends BaseController implements HotelTouri
             if (type == 1) {
                 type = 3;
             }
-            //新增默认菜品分类
-            String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
-            for (int i = 0; i < strings.length; i++) {
-                KitchenDishesSort sort = new KitchenDishesSort();
-                sort.setName(strings[i]);
-                sort.setUserId(CommonUtils.getMyId());
-                sort.setKitchenId(id);
-                sort.setBookedState(type);
-                kitchenBookedService.addSort(sort);
+            if (relation == 1) {
+                //新增默认菜品分类
+                //判断该用户是否有初始分类
+                int num = kitchenService.findNum(type, id);
+                if (num <= 0) {
+                    String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
+                    for (int i = 0; i < strings.length; i++) {
+                        KitchenDishesSort sort = new KitchenDishesSort();
+                        sort.setName(strings[i]);
+                        sort.setUserId(CommonUtils.getMyId());
+                        sort.setKitchenId(id);
+                        sort.setBookedState(type);
+                        kitchenBookedService.addSort(sort);
+                    }
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
