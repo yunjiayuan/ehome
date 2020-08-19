@@ -53,5 +53,28 @@ public class WeixinSignBean {
 
 	private String transaction_id;
 
-	
+	@Override
+	public String toString() {
+		return "WeixinSignBean{" +
+				"return_code='" + return_code + '\'' +
+				", appid='" + appid + '\'' +
+				", mch_id='" + mch_id + '\'' +
+				", nonce_str='" + nonce_str + '\'' +
+				", sign='" + sign + '\'' +
+				", result_code='" + result_code + '\'' +
+				", attach='" + attach + '\'' +
+				", trade_type='" + trade_type + '\'' +
+				", return_msg='" + return_msg + '\'' +
+				", prepay_id='" + prepay_id + '\'' +
+				", total_fee='" + total_fee + '\'' +
+				", out_trade_no='" + out_trade_no + '\'' +
+				", bank_type='" + bank_type + '\'' +
+				", cash_fee='" + cash_fee + '\'' +
+				", fee_type='" + fee_type + '\'' +
+				", is_subscribe='" + is_subscribe + '\'' +
+				", openid='" + openid + '\'' +
+				", time_end='" + time_end + '\'' +
+				", transaction_id='" + transaction_id + '\'' +
+				'}';
+	}
 }
