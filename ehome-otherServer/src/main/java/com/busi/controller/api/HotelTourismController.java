@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.HotelService;
 import com.busi.service.HotelTourismService;
+import com.busi.service.KitchenService;
 import com.busi.service.TravelService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     @Autowired
     MqUtils mqUtils;
+
+    @Autowired
+    KitchenService kitchenService;
 
     @Autowired
     TravelService travelService;
@@ -284,8 +288,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     /***
      * 更新景区、酒店、订座相关设置状态
-     * @param type 更新类型： 0酒店、1景区订座、2酒店订座
-     * @param relation 0开启  1关闭
+     * @param type 更新类型： 0景区订房、1景区订座、2酒店订座
+     * @param relation 0关闭  1开启
      * @param id   景区、酒店ID
      * @return
      */
@@ -293,6 +297,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
     public ReturnData relationSet(@PathVariable int type, @PathVariable int relation, @PathVariable long id) {
         if (type == 0) {
             ScenicSpot hotel = new ScenicSpot();
+            hotel.setRelationReservation(-1);
             hotel.setUserId(CommonUtils.getMyId());
             hotel.setRelationHotel(relation);
             travelService.update(hotel);
@@ -302,6 +307,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
         if (type == 1) {
             ScenicSpot hotel = new ScenicSpot();
             hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationHotel(-1);
             hotel.setRelationReservation(relation);
             travelService.update(hotel);
             //清除缓存
@@ -319,15 +325,21 @@ public class HotelTourismController extends BaseController implements HotelTouri
             if (type == 1) {
                 type = 3;
             }
-            //新增默认菜品分类
-            String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
-            for (int i = 0; i < strings.length; i++) {
-                KitchenDishesSort sort = new KitchenDishesSort();
-                sort.setName(strings[i]);
-                sort.setUserId(CommonUtils.getMyId());
-                sort.setKitchenId(id);
-                sort.setBookedState(type);
-                kitchenBookedService.addSort(sort);
+            if (relation == 1) {
+                //新增默认菜品分类
+                //判断该用户是否有初始分类
+                int num = kitchenService.findNum(type, id);
+                if (num <= 0) {
+                    String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
+                    for (int i = 0; i < strings.length; i++) {
+                        KitchenDishesSort sort = new KitchenDishesSort();
+                        sort.setName(strings[i]);
+                        sort.setUserId(CommonUtils.getMyId());
+                        sort.setKitchenId(id);
+                        sort.setBookedState(type);
+                        kitchenBookedService.addSort(sort);
+                    }
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

@@ -77,8 +77,8 @@ public class HotelService {
      * @param id
      * @return
      */
-    public Hotel findById(long id, int type) {
-        return kitchenBookedDao.findById(id, type);
+    public Hotel findById(long id) {
+        return kitchenBookedDao.findById(id);
     }
 
     /***
@@ -244,4 +244,83 @@ public class HotelService {
     public int del(String[] ids, long userId) {
         return kitchenBookedDao.del(ids, userId);
     }
+
+    /***
+     * 根据ID查询数据
+     * @param id
+     * @return
+     */
+    public HotelData findReserveData(long id) {
+        return kitchenBookedDao.findReserveData(id);
+    }
+
+    /***
+     * 根据唯一标识符查询
+     * @param uid
+     * @return
+     */
+    public HotelData findReserveDataId(String uid) {
+        return kitchenBookedDao.findReserveDataId(uid);
+    }
+
+    /***
+     * 更新酒店民宿入驻状态
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int claimKitchen(HotelData kitchen) {
+        return kitchenBookedDao.claimKitchen(kitchen);
+    }
+
+    /***
+     * 更新酒店民宿入驻状态
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int claimKitchen2(Hotel kitchen) {
+        return kitchenBookedDao.claimKitchen2(kitchen);
+    }
+
+    /***
+     * 条件查询酒店民宿
+     * @param lat 纬度
+     * @param lon 经度
+     * @param kitchenName  酒店民宿名字
+     * @param page 页码
+     * @param count  条数
+     * @return
+     */
+    public PageBean<HotelData> findReserveDataList(int hotelType, String kitchenName, double lat, double lon, int page, int count) {
+        List<HotelData> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (CommonUtils.checkFull(kitchenName)) {
+            kitchenName = null;
+        }
+        list = kitchenBookedDao.findReserveDataList(hotelType, kitchenName, lat, lon);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 新建酒店民宿
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addReserveData(HotelData kitchen) {
+        return kitchenBookedDao.addReserveData(kitchen);
+    }
+
+    /***
+     * 更新酒店民宿
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateReserveData(HotelData kitchen) {
+        return kitchenBookedDao.updateReserveData(kitchen);
+    }
+
+
 }

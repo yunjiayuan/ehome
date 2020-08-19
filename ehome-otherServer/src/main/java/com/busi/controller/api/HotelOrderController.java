@@ -176,7 +176,9 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "您的订单尚未支付，请尽快支付再扫码", io);
         }
         if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time = dateFormat.format(io.getInspectTicketTime());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已于" + time + "扫码入住成功", io);
         }
         if (io.getOrdersType() == 0) {//已付款未验票
             if (io.getUserId() != CommonUtils.getMyId()) {

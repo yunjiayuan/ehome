@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.PharmacyDao;
-import com.busi.entity.Pharmacy;
-import com.busi.entity.PharmacyCollection;
-import com.busi.entity.PharmacyDrugs;
-import com.busi.entity.PageBean;
+import com.busi.entity.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -252,5 +249,82 @@ public class PharmacyService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int del(String[] ids, long userId) {
         return kitchenBookedDao.del(ids, userId);
+    }
+
+    /***
+     * 根据ID查询数据
+     * @param id
+     * @return
+     */
+    public PharmacyData findReserveData(long id) {
+        return kitchenBookedDao.findReserveData(id);
+    }
+
+    /***
+     * 根据唯一标识符查询
+     * @param uid
+     * @return
+     */
+    public PharmacyData findReserveDataId(String uid) {
+        return kitchenBookedDao.findReserveDataId(uid);
+    }
+
+    /***
+     * 更新药店入驻状态
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int claimKitchen(PharmacyData kitchen) {
+        return kitchenBookedDao.claimKitchen(kitchen);
+    }
+
+    /***
+     * 更新药店入驻状态
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int claimKitchen2(Pharmacy kitchen) {
+        return kitchenBookedDao.claimKitchen2(kitchen);
+    }
+
+    /***
+     * 条件查询药店
+     * @param lat 纬度
+     * @param lon 经度
+     * @param kitchenName  药店名字
+     * @param page 页码
+     * @param count  条数
+     * @return
+     */
+    public PageBean<PharmacyData> findReserveDataList(String kitchenName, double lat, double lon, int page, int count) {
+        List<PharmacyData> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (CommonUtils.checkFull(kitchenName)) {
+            kitchenName = null;
+        }
+        list = kitchenBookedDao.findReserveDataList(kitchenName, lat, lon);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 新建药店
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addReserveData(PharmacyData kitchen) {
+        return kitchenBookedDao.addReserveData(kitchen);
+    }
+
+    /***
+     * 更新药店
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateReserveData(PharmacyData kitchen) {
+        return kitchenBookedDao.updateReserveData(kitchen);
     }
 }

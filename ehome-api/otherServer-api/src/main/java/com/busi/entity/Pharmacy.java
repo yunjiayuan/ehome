@@ -90,6 +90,17 @@ public class Pharmacy {
 
     private double initialCost;                    //起送价格
 
+    private String address;            // 详细地址
+
+    private String claimId;        // 认领数据唯一标识符
+
+    private int claimStatus;        // 入驻状态:0待入驻 1已入驻
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date claimTime;        // 入驻时间
+
+    private String invitationCode;//邀请码
+
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔
 

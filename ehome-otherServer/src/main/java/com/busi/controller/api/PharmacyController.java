@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
@@ -63,6 +64,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         scenicSpot.setAuditType(0);
         scenicSpot.setBusinessStatus(1);//药店默认关闭
+        scenicSpot.setClaimStatus(1);//默认自己新增为已入驻
         scenicSpot.setAddTime(new Date());
         travelService.addKitchen(scenicSpot);
         Map<String, Object> map = new HashMap<>();
@@ -261,7 +263,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
             kitchen.setCost(tickets.getCost());
         }
         travelService.updateKitchen3(kitchen);
-        //清除景区缓存
+        //清除药店缓存
         redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", tickets.getId());
@@ -298,7 +300,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
             kitchen.setCost(tickets.getCost());
         }
         travelService.updateKitchen3(kitchen);
-        //清除景区缓存
+        //清除药店缓存
         redisUtils.expire(Constants.REDIS_KEY_PHARMACY + kitchen.getUserId(), 0);
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", tickets.getId());
@@ -466,5 +468,127 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         travelService.del(ids.split(","), CommonUtils.getMyId());
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 新增药店数据
+     * @param kitchenData
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addPharmacyData(@Valid @RequestBody PharmacyData kitchenData, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        if (CommonUtils.checkFull(kitchenData.getName())) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        PharmacyData reserveData = travelService.findReserveDataId(kitchenData.getUid());
+        Pharmacy reserve = new Pharmacy();
+        reserve.setAddTime(new Date());
+        reserve.setAddress(kitchenData.getAddress());
+        reserve.setClaimId(kitchenData.getUid());
+        reserve.setPharmacyName(kitchenData.getName());
+        reserve.setLat(kitchenData.getLatitude());
+        reserve.setLon(kitchenData.getLongitude());
+        reserve.setPhone(kitchenData.getPhone());
+        reserve.setTotalScore(kitchenData.getOverallRating());
+        reserve.setAuditType(1);
+//        reserve.setBusinessStatus(1);//药店默认关闭
+        if (reserveData == null) {//新增
+            //新增药店数据表
+            kitchenData.setAddTime(new Date());
+            travelService.addReserveData(kitchenData);
+            //新增药店表
+            travelService.addKitchen(reserve);
+        } else {//更新
+            //更新药店数据表
+            travelService.updateReserveData(kitchenData);
+            //更新药店表
+            travelService.updateKitchen(reserve);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询药店数据详情
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findPharmacyData(@PathVariable long id) {
+        PharmacyData reserveData = travelService.findReserveData(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 入驻药店
+     * @param kitchenReserve
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData claimPharmacy(@Valid @RequestBody Pharmacy kitchenReserve, BindingResult bindingResult) {
+        PharmacyData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻药店不存在", new JSONObject());
+        }
+        if (kitchen.getClaimStatus() == 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻药店不存在", new JSONObject());
+        }
+        //更新药店数据
+        kitchen.setClaimStatus(1);
+        kitchen.setClaimTime(new Date());
+        kitchen.setUserId(CommonUtils.getMyId());
+        travelService.claimKitchen(kitchen);
+        //更新药店
+        Pharmacy reserve = new Pharmacy();
+        reserve.setPhone(kitchen.getPhone());
+        reserve.setLicence(kitchenReserve.getLicence());
+        reserve.setClaimId(kitchen.getUid());
+        reserve.setClaimStatus(1);
+        reserve.setClaimTime(kitchen.getClaimTime());
+        reserve.setUserId(CommonUtils.getMyId());
+        travelService.claimKitchen2(reserve);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询药店数据列表
+     * @param name    药店名称
+     * @param lat      纬度
+     * @param lon      经度
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findPharmacyDataList(@PathVariable String name, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<PharmacyData> pageBean = null;
+        pageBean = travelService.findReserveDataList(name, lat, lon, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = null;
+        list = pageBean.getList();
+        if (list != null && list.size() > 0) {
+            if (CommonUtils.checkFull(name) && lat > 0) {//距离最近
+                for (int i = 0; i < list.size(); i++) {
+                    PharmacyData ik = (PharmacyData) list.get(i);
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLongitude(), ik.getLatitude(), lon, lat));
+                    ik.setDistance(distance);//距离/m
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 }

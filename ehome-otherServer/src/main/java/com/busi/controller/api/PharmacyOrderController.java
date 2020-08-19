@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -232,7 +234,9 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             return returnData(StatusCode.CODE_TRAVEL_NOPAYMENT.CODE_VALUE, "您的订单尚未支付，请尽快支付再扫码", io);
         }
         if (io.getVerificationType() == 1) {//防止多次验票成功后多次打款
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time = dateFormat.format(io.getInspectTicketTime());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已于" + time + "扫码取药成功", io);
         }
         if (io.getVerificationType() == 0 && io.getDistributionMode() == 1) {//买家自取、已付款未验票
             if (io.getUserId() != CommonUtils.getMyId()) {

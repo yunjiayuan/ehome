@@ -22,9 +22,9 @@ public interface TravelDao {
      * @return
      */
     @Insert("insert into ScenicSpot(userId,businessStatus,deleteType,auditType,scenicSpotName,openTime,closeTime,licence,addTime,picture,tips,content,province,city,lat,lon," +
-            "district,videoUrl,videoCoverUrl,type,phone,levels,free)" +
+            "district,videoUrl,videoCoverUrl,type,phone,levels,free,address,claimId,claimStatus,claimTime,totalScore)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{scenicSpotName},#{openTime},#{closeTime},#{licence},#{addTime},#{picture},#{tips},#{content},#{province},#{city},#{lat},#{lon}" +
-            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{free})")
+            ",#{district},#{videoUrl},#{videoCoverUrl},#{type},#{phone},#{levels},#{free},#{address},#{claimId},#{claimStatus},#{claimTime},#{totalScore})")
     @Options(useGeneratedKeys = true)
     int addKitchen(ScenicSpot kitchen);
 
@@ -86,6 +86,9 @@ public interface TravelDao {
             "<if test=\"type != null and type != '' \">" +
             " type=#{type}," +
             "</if>" +
+            "<if test=\"address != null and address != '' \">" +
+            " address=#{address}," +
+            "</if>" +
             " id=#{id}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
@@ -109,10 +112,10 @@ public interface TravelDao {
 
     @Update("<script>" +
             "update ScenicSpot set" +
-            "<if test=\"relationHotel > 0\">" +
+            "<if test=\"relationHotel >= 0\">" +
             " relationHotel=#{relationHotel}" +
             "</if>" +
-            "<if test=\"relationReservation > 0\">" +
+            "<if test=\"relationReservation >= 0\">" +
             " relationReservation=#{relationReservation}" +
             "</if>" +
             " where userId=#{userId} and deleteType = 0" +
@@ -358,4 +361,127 @@ public interface TravelDao {
             " and myId=#{userId}" +
             "</script>")
     int del(@Param("ids") String[] ids, @Param("userId") long userId);
+
+    /***
+     * 根据Id查询酒店民宿
+     * @param id
+     * @return
+     */
+    @Select("select * from ScenicSpotData where id=#{id}")
+    ScenicSpotData findReserveData(@Param("id") long id);
+
+    /***
+     * 条件查询酒店民宿
+     * @return
+     */
+    @Select("<script>" +
+            "<if test=\"kitchenName != null and kitchenName != '' \">" +
+            "select * from ScenicSpotData where claimStatus=0 " +
+            " and name LIKE CONCAT('%',#{kitchenName},'%')" +
+            "</if>" +
+            "<if test=\"kitchenName == null and latitude > 0 \">" +
+            " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-longitude*PI()/180)/2),2)))*1000) AS juli " +
+            " from ScenicSpotData " +
+            " where claimStatus=0" +
+            " and latitude > #{latitude}-1" +  //只对于经度和纬度大于或小于该用户1度(111公里)范围内的用户进行距离计算
+            " and latitude &lt; #{latitude}+1" +
+            " and longitude > #{longitude}-1" +
+            " and longitude &lt; #{longitude}+1" +
+            " order by juli asc,overallRating desc" +
+            "</if>" +
+            "</script>")
+    List<ScenicSpotData> findReserveDataList(@Param("kitchenName") String kitchenName, @Param("latitude") double latitude, @Param("longitude") double longitude);
+
+    /***
+     * 更新酒店民宿认领状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update ScenicSpotData set" +
+            " userId=#{userId}," +
+            " claimTime=#{claimTime}," +
+            " claimStatus=#{claimStatus}" +
+            " where id=#{id}" +
+            "</script>")
+    int claimKitchen(ScenicSpotData kitchen);
+
+    /***
+     * 更新酒店民宿认领状态
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update ScenicSpot set" +
+            " userId=#{userId}," +
+            " invitationCode=#{invitationCode}," +
+            " licence=#{licence}," +
+            " phone=#{phone}," +
+            " claimTime=#{claimTime}," +
+            " claimStatus=#{claimStatus}" +
+            " where claimId=#{claimId}" +
+            "</script>")
+    int claimKitchen2(ScenicSpot kitchen);
+
+    /***
+     * 根据uid查询酒店民宿
+     * @param uid
+     * @return
+     */
+    @Select("select * from ScenicSpotData where uid=#{uid}")
+    ScenicSpotData findReserveDataId(@Param("uid") String uid);
+
+    /***
+     * 新增酒店民宿数据
+     * @param kitchen
+     * @return
+     */
+    @Insert("insert into ScenicSpotData(userId,uid,streetID,name,addTime,province,city,area,latitude,longitude," +
+            "address,distance,claimStatus,claimTime,type,phone,tag,detailURL,price,openingHours,overallRating,tasteRating," +
+            "serviceRating,environmentRating,hygieneRating,technologyRating,facilityRating,imageNumber,grouponNumber,discountNumber,commentNumber,favoriteNumber,checkInNumber)" +
+            "values (#{userId},#{uid},#{streetID},#{name},#{addTime},#{province},#{city},#{area},#{latitude},#{longitude}" +
+            ",#{address},#{distance},#{claimStatus},#{claimTime},#{type},#{phone},#{tag},#{detailURL},#{price},#{openingHours},#{overallRating},#{tasteRating},#{serviceRating},#{environmentRating},#{hygieneRating}" +
+            ",#{technologyRating},#{facilityRating},#{imageNumber},#{grouponNumber},#{discountNumber},#{commentNumber},#{favoriteNumber},#{checkInNumber})")
+    @Options(useGeneratedKeys = true)
+    int addReserveData(ScenicSpotData kitchen);
+
+    /***
+     * 更新酒店民宿数据
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update ScenicSpotData set" +
+            " province=#{province}," +
+            " city=#{city}," +
+            " area=#{area}," +
+            " name=#{name}," +
+            " latitude=#{latitude}," +
+            " longitude=#{longitude}," +
+            " address=#{address}," +
+            " phone=#{phone}," +
+            " distance=#{distance}," +
+            " type=#{type}," +
+            " tag=#{tag}," +
+            " detailURL=#{detailURL}," +
+            " price=#{price}," +
+            " openingHours=#{openingHours}," +
+            " imageNumber=#{imageNumber}," +
+            " grouponNumber=#{grouponNumber}," +
+            " discountNumber=#{discountNumber}," +
+            " overallRating=#{overallRating}," +
+            " commentNumber=#{commentNumber}," +
+            " tasteRating=#{tasteRating}," +
+            " serviceRating=#{serviceRating}," +
+            " environmentRating=#{environmentRating}," +
+            " hygieneRating=#{hygieneRating}," +
+            " technologyRating=#{technologyRating}," +
+            " facilityRating=#{facilityRating}," +
+            " favoriteNumber=#{favoriteNumber}," +
+            " checkInNumber=#{checkInNumber}," +
+            " userId=#{userId}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateReserveData(ScenicSpotData kitchen);
+
 }
