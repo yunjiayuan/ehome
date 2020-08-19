@@ -284,8 +284,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     /***
      * 更新景区、酒店、订座相关设置状态
-     * @param type 更新类型： 0酒店、1景区订座、2酒店订座
-     * @param relation 0开启  1关闭
+     * @param type 更新类型： 0景区订房、1景区订座、2酒店订座
+     * @param relation 0关闭  1开启
      * @param id   景区、酒店ID
      * @return
      */
@@ -293,6 +293,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
     public ReturnData relationSet(@PathVariable int type, @PathVariable int relation, @PathVariable long id) {
         if (type == 0) {
             ScenicSpot hotel = new ScenicSpot();
+            hotel.setRelationReservation(-1);
             hotel.setUserId(CommonUtils.getMyId());
             hotel.setRelationHotel(relation);
             travelService.update(hotel);
@@ -302,6 +303,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
         if (type == 1) {
             ScenicSpot hotel = new ScenicSpot();
             hotel.setUserId(CommonUtils.getMyId());
+            hotel.setRelationHotel(-1);
             hotel.setRelationReservation(relation);
             travelService.update(hotel);
             //清除缓存

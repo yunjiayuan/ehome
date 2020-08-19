@@ -77,7 +77,7 @@ public interface HotelDao {
 
     @Update("<script>" +
             "update Hotel set" +
-            "<if test=\"relationReservation > 0\">" +
+            "<if test=\"relationReservation >= 0\">" +
             " relationReservation=#{relationReservation}" +
             "</if>" +
             " where userId=#{userId} and deleteType = 0" +

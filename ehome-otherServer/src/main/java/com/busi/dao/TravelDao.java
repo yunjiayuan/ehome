@@ -112,10 +112,10 @@ public interface TravelDao {
 
     @Update("<script>" +
             "update ScenicSpot set" +
-            "<if test=\"relationHotel > 0\">" +
+            "<if test=\"relationHotel >= 0\">" +
             " relationHotel=#{relationHotel}" +
             "</if>" +
-            "<if test=\"relationReservation > 0\">" +
+            "<if test=\"relationReservation >= 0\">" +
             " relationReservation=#{relationReservation}" +
             "</if>" +
             " where userId=#{userId} and deleteType = 0" +
