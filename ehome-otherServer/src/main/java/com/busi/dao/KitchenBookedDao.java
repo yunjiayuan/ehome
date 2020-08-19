@@ -453,8 +453,8 @@ public interface KitchenBookedDao {
      * @param dishes
      * @return
      */
-    @Insert("insert into KitchenReserveDishes(userId,kitchenId,dishame,cuisine,cost,ingredients,addTime,imgUrl,sortId) " +
-            "values (#{userId},#{kitchenId},#{dishame},#{cuisine},#{cost},#{ingredients},#{addTime},#{imgUrl},#{sortId})")
+    @Insert("insert into KitchenReserveDishes(userId,kitchenId,dishame,cuisine,cost,ingredients,addTime,imgUrl,sortId,type) " +
+            "values (#{userId},#{kitchenId},#{dishame},#{cuisine},#{cost},#{ingredients},#{addTime},#{imgUrl},#{sortId},#{type})")
     @Options(useGeneratedKeys = true)
     int addDishes(KitchenReserveDishes dishes);
 
