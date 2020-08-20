@@ -756,8 +756,17 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      */
     @Override
     public ReturnData detailsDishes(@PathVariable long id) {
+        Map<String, Object> map = new HashMap<>();
         KitchenReserveDishes dishes = kitchenBookedService.disheSdetails(id);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", dishes);
+        if (dishes == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        KitchenDishesSort dishesSort = kitchenService.findDishesSort(dishes.getSortId());
+        if (dishesSort != null) {
+            map.put("sortName", dishesSort.getName());
+        }
+        map.put("data", dishes);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***
