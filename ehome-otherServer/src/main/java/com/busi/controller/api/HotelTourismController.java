@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
-import com.busi.service.HotelService;
-import com.busi.service.HotelTourismService;
-import com.busi.service.KitchenService;
-import com.busi.service.TravelService;
+import com.busi.service.*;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -16,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -44,6 +43,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     @Autowired
     HotelService hotelService;
+
+    @Autowired
+    HotelTourismBookedOrdersService hotelTourismBookedOrdersService;
 
     /***
      * 新增订座设置信息
@@ -161,6 +163,58 @@ public class HotelTourismController extends BaseController implements HotelTouri
         if (list == null && list.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
+        if (CommonUtils.checkFull(eatTime)) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = sdf.parse(eatTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //查询订单中已订餐桌（用来判断是否可预订，PS:有可能不同时段不同人预定）
+        List ordersList = null;
+        ordersList = hotelTourismBookedOrdersService.findOrdersList(type, userId, date, bookedType);
+        if (ordersList == null && ordersList.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
+        }
+        for (int i = 0; i < list.size(); i++) {
+            KitchenPrivateRoom privateRoom = (KitchenPrivateRoom) list.get(i);
+            if (privateRoom == null) {
+                continue;
+            }
+            for (int j = 0; j < ordersList.size(); j++) {
+                KitchenBookedOrders kh = (KitchenBookedOrders) ordersList.get(j);
+                if (kh == null) {
+                    continue;
+                }
+                if (kh.getPositionId() == privateRoom.getId()) {
+                    privateRoom.setReserveState(1);//已预定
+                    continue;
+                }
+            }
+        }
+        //按是否预定正序排序
+        Collections.sort(list, new Comparator<KitchenPrivateRoom>() {
+            /*
+             * int compare(Person o1, Person o2) 返回一个基本类型的整型，
+             * 返回负数表示：o1 小于o2，
+             * 返回0 表示：o1和p2相等，
+             * 返回正数表示：o1大于o2
+             */
+            @Override
+            public int compare(KitchenPrivateRoom o1, KitchenPrivateRoom o2) {
+                // 按照预定与否进行正序排列
+                if (o1.getReserveState() > o2.getReserveState()) {
+                    return 1;
+                }
+                if (o1.getReserveState() == o2.getReserveState()) {
+                    return 0;
+                }
+                return -1;
+            }
+        });
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
     }
 

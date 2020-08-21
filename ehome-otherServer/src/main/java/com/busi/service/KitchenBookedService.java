@@ -346,6 +346,19 @@ public class KitchenBookedService {
         return list;
     }
 
+
+    /***
+     * 批量查询指定的菜品
+     * @param ids
+     * @return
+     */
+    public List<KitchenReserveDishes> findDishesList(String[] ids, int type) {
+        List<KitchenReserveDishes> list;
+        list = kitchenBookedDao.findDishesList2(ids, type);
+        return list;
+    }
+
+
     /***
      * 新增上菜时间
      * @param kitchenDishes

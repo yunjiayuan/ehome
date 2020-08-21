@@ -303,6 +303,7 @@ public class Constants {
     public static final String REDIS_KEY_PHARMACYORDERS = "pharmacyOrders_";//userId与药店订单对象关系对照
     public static final String REDIS_KEY_PHARMACY_COMMENT = "pharmacy_comment_list_";//药店评论关系对照
     public static final String REDIS_KEY_PHARMACY_REPLY = "pharmacy_reply_list_";//药店评论回复关系对照
+    public static final String REDIS_KEY_HOTELTOURISMBOOKEDORDERS = "hotelTourismBookedOrders_";//userId与酒店景区订座订单对象关系对照
     public static final String REDIS_KEY_KITCHENORDERS = "kitchenOrders_";//userId与厨房订单对象关系对照
     public static final String REDIS_KEY_KITCHENBOOKEDORDERS = "kitchenBookedOrders_";//userId与厨房订座订单对象关系对照
     public static final String REDIS_KEY_HOURLYWORKER = "hourlyWorker_";//小时工关系对照

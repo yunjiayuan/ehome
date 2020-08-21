@@ -24,7 +24,7 @@ public class HotelService {
     private HotelDao kitchenBookedDao;
 
     /***
-     * 根据用户ID查询预定
+     * 根据用户ID查询酒店
      * @param userId
      * @return
      */
