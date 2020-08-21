@@ -514,6 +514,21 @@ public interface KitchenBookedDao {
     List<KitchenReserveDishes> findDishesList(@Param("kitchenId") long kitchenId, @Param("type") int type);
 
     /***
+     * 批量查询指定的厨房菜品
+     * @param ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenReserveDishes" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            " and type=#{type} and deleteType =0" +
+            "</script>")
+    List<KitchenReserveDishes> findDishesList2(@Param("ids") String[] ids, @Param("type") int type);
+
+    /***
      * 统计该用户上菜时间数量
      * @param kitchenId
      * @return
