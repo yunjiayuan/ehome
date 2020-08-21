@@ -156,7 +156,7 @@ public interface HotelTourismDao {
     @Select("<script>" +
             "select * from KitchenReserveServingTime" +
             " where kitchenId=#{kitchenId}" +
-            " where type=#{type}" +
+            " and type=#{type}" +
             "</script>")
     KitchenReserveServingTime findUpperTime(@Param("kitchenId") long kitchenId, @Param("type") int type);
 

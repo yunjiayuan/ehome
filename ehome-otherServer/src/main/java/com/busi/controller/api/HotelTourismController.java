@@ -328,7 +328,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
     }
 
     /***
-     * 查询上菜时间列表
+     * 查询上菜时间
      * @param type  0酒店 1景区
      * @param kitchenId   酒店景区ID
      * @return
