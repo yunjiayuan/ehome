@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -443,5 +440,372 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
+    }
+
+    /***
+     * 添加评论
+     * @param shopPharmacyComment
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addPharmacyComment(@Valid @RequestBody PharmacyComment shopPharmacyComment, BindingResult bindingResult) {
+        //查询该景区信息
+        //查询缓存 缓存中不存在 查询数据库
+        Pharmacy posts = travelService.findById(shopPharmacyComment.getMasterId());
+        if (posts == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "评价景区失败，景区不存在！", new JSONObject());
+        }
+        //处理特殊字符
+        String content = shopPharmacyComment.getContent();
+        if (!CommonUtils.checkFull(content)) {
+            String filteringContent = CommonUtils.filteringContent(content);
+            if (CommonUtils.checkFull(filteringContent)) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "评论内容不能为空并且不能包含非法字符！", new JSONArray());
+            }
+            shopPharmacyComment.setContent(filteringContent);
+        }
+        if (!CommonUtils.checkFull(posts.getPicture())) {
+            String[] strings = posts.getPicture().split(",");
+            shopPharmacyComment.setImgUrls(strings[0]);
+        }
+        shopPharmacyComment.setTime(new Date());
+        travelOrderService.addComment(shopPharmacyComment);
+        if (shopPharmacyComment.getReplyType() == 0) {//新增评论
+            //查询该景区订单信息
+            PharmacyOrder io = travelOrderService.findById(shopPharmacyComment.getOrderId(), CommonUtils.getMyId(), -1);
+            if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getOrdersType() != 1 || io.getOrdersType() != 2) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
+            }
+            //更新订单状态为已评价
+            io.setOrdersType(3);
+            io.setUpdateCategory(4);
+            travelOrderService.updateOrders(io);
+            //清除缓存中的景区 订单信息
+            redisUtils.expire(Constants.REDIS_KEY_PHARMACYORDERS + io.getMyId() + "_" + io.getNo(), 0);
+            //订单信息放入缓存
+            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+            redisUtils.hmset(Constants.REDIS_KEY_PHARMACYORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
+            //放入缓存(七天失效)
+            redisUtils.addListLeft(Constants.REDIS_KEY_PHARMACY_COMMENT + posts.getId(), shopPharmacyComment, Constants.USER_TIME_OUT);
+        } else {//新增回复
+            List list = null;
+            //先添加到缓存集合(七天失效)
+            redisUtils.addListLeft(Constants.REDIS_KEY_PHARMACY_REPLY + shopPharmacyComment.getFatherId(), shopPharmacyComment, Constants.USER_TIME_OUT);
+            //再保证5条数据
+            list = redisUtils.getList(Constants.REDIS_KEY_PHARMACY_REPLY + shopPharmacyComment.getFatherId(), 0, -1);
+            //清除缓存中的回复信息
+            redisUtils.expire(Constants.REDIS_KEY_PHARMACY_REPLY + shopPharmacyComment.getFatherId(), 0);
+            if (list != null && list.size() > 5) {//限制五条回复
+                //缓存中获取最新五条回复
+                PharmacyComment message = null;
+                List<PharmacyComment> messageList = new ArrayList<>();
+                for (int j = 0; j < list.size(); j++) {
+                    if (j < 5) {
+                        message = (PharmacyComment) list.get(j);
+                        if (message != null) {
+                            messageList.add(message);
+                        }
+                    }
+                }
+                if (messageList.size() == 5) {
+                    redisUtils.pushList(Constants.REDIS_KEY_PHARMACY_REPLY + shopPharmacyComment.getFatherId(), messageList, 0);
+                }
+            }
+            //更新回复数
+            PharmacyComment num = travelOrderService.findById(shopPharmacyComment.getFatherId());
+            if (num != null) {
+                shopPharmacyComment.setReplyNumber(num.getReplyNumber() + 1);
+                travelOrderService.updateCommentNum(shopPharmacyComment);
+            }
+        }
+        //更新评论数
+        posts.setTotalEvaluate(posts.getTotalEvaluate() + 1);
+        travelOrderService.updateBlogCounts(posts);
+        //更新评论总分、平均分
+        List list1 = travelOrderService.findCommentList(shopPharmacyComment.getMasterId());
+        if (list1 != null && list1.size() > 0) {
+            long score = 0;//总分
+            double averageScore = 0;   // 平均评分
+            for (int i = 0; i < list1.size(); i++) {
+                PharmacyComment kitchenEvaluate = (PharmacyComment) list1.get(i);
+                if (kitchenEvaluate == null) {
+                    continue;
+                }
+                score += kitchenEvaluate.getScore();
+            }
+            //更新总评分
+            posts.setTotalScore(score);
+            //更新评论平均分
+            averageScore = score / list1.size();
+            posts.setAverageScore((int) Math.round(averageScore));
+            travelOrderService.updateScore(posts);
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_PHARMACY + posts.getUserId(), 0);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 删除评论
+     * @param id 评论ID
+     * @param goodsId 景区ID
+     * @return
+     */
+    @Override
+    public ReturnData delPharmacyComment(@PathVariable long id, @PathVariable long goodsId) {
+        List list = null;
+        List list2 = null;
+        List messList = null;
+        PharmacyComment comment = travelOrderService.findById(id);
+        if (comment == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "评论不存在", new JSONArray());
+        }
+        //查询该景区信息
+        Pharmacy posts = travelService.findById(goodsId);
+        if (posts == null) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "删除评价失败，景区不存在！", new JSONObject());
+        }
+        //判断操作人权限
+        long myId = CommonUtils.getMyId();//操作者ID
+        long userId = comment.getUserId();//被删除者ID
+        if (myId != userId) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "参数有误，当前用户[" + myId + "]无权限删除用户[" + userId + "]的评价", new JSONObject());
+        }
+        comment.setReplyStatus(1);//1删除
+        travelOrderService.update(comment);
+        //同时删除此评论下回复
+        String ids = "";
+        messList = travelOrderService.findMessList(id);
+        if (messList != null && messList.size() > 0) {
+            for (int i = 0; i < messList.size(); i++) {
+                PharmacyComment message = null;
+                message = (PharmacyComment) messList.get(i);
+                if (message != null) {
+                    ids += message.getId() + ",";
+                }
+            }
+            //更新回复删除状态
+            travelOrderService.updateReplyState(ids.split(","));
+        }
+        //更新景区评论数
+        int num = messList.size();
+        posts.setTotalScore(posts.getTotalScore() - num - 1);
+        travelOrderService.updateBlogCounts(posts);
+        if (comment.getReplyType() == 0) {
+            //获取缓存中评论列表
+            list = redisUtils.getList(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId, 0, -1);
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    PharmacyComment comment2 = (PharmacyComment) list.get(i);
+                    if (comment2.getId() == id) {
+                        //更新评论缓存
+                        redisUtils.removeList(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId, 1, comment2);
+                        //更新此评论下的回复缓存
+                        redisUtils.expire(Constants.REDIS_KEY_PHARMACY_REPLY + comment.getFatherId(), 0);
+                        break;
+                    }
+                }
+            }
+        } else {
+            List<PharmacyComment> messageList = new ArrayList<>();
+            //清除缓存中的回复信息
+            redisUtils.expire(Constants.REDIS_KEY_PHARMACY_REPLY + comment.getFatherId(), 0);
+            //清除缓存中评论列表
+            redisUtils.expire(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId, 0);
+            //数据库获取最新五条回复
+            list2 = travelOrderService.findMessList(comment.getFatherId());
+            if (list2 != null && list2.size() > 0) {
+                PharmacyComment message = null;
+                for (int j = 0; j < list2.size(); j++) {
+                    if (j < 5) {
+                        message = (PharmacyComment) list2.get(j);
+                        if (message != null) {
+                            messageList.add(message);
+                        }
+                    }
+                }
+                redisUtils.pushList(Constants.REDIS_KEY_PHARMACY_REPLY + comment.getFatherId(), messageList, 0);
+            }
+            //更新回复数
+            PharmacyComment floorComment = travelOrderService.findById(comment.getFatherId());
+            if (floorComment != null) {
+                floorComment.setReplyNumber(floorComment.getReplyNumber() - 1);
+                travelOrderService.updateCommentNum(floorComment);
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询评论记录
+     * @param goodsId     景区ID
+     * @param page       页码 第几页 起始值1
+     * @param count      每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findPharmacyCommentList(@PathVariable long goodsId, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //获取缓存中评论列表
+        List list = null;
+        List list2 = null;
+        List commentList = null;
+        List commentList2 = null;
+        List<PharmacyComment> messageArrayList = new ArrayList<>();
+        PageBean<PharmacyComment> pageBean = null;
+        long countTotal = redisUtils.getListSize(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId);
+        int pageCount = page * count;
+        if (pageCount > countTotal) {
+            pageCount = -1;
+        } else {
+            pageCount = pageCount - 1;
+        }
+        commentList = redisUtils.getList(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId, (page - 1) * count, pageCount);
+        //获取数据库中评论列表
+        if (commentList == null || commentList.size() < count) {
+            pageBean = travelOrderService.findList(goodsId, page, count);
+            commentList2 = pageBean.getList();
+            if (commentList2 != null && commentList2.size() > 0) {
+                for (int i = 0; i < commentList2.size(); i++) {
+                    PharmacyComment comment = null;
+                    comment = (PharmacyComment) commentList2.get(i);
+                    if (comment != null) {
+                        for (int j = 0; j < commentList.size(); j++) {
+                            PharmacyComment comment2 = null;
+                            comment2 = (PharmacyComment) commentList.get(j);
+                            if (comment2 != null) {
+                                if (comment.getId() == comment2.getId()) {
+                                    redisUtils.removeList(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId, 1, comment2);
+                                }
+                            }
+                        }
+                    }
+                }
+                //更新缓存
+                redisUtils.pushList(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId, commentList2, Constants.USER_TIME_OUT);
+                //获取最新缓存
+                commentList = redisUtils.getList(Constants.REDIS_KEY_PHARMACY_COMMENT + goodsId, (page - 1) * count, page * count);
+            }
+        }
+        if (commentList == null) {
+            commentList = new ArrayList();
+        }
+        for (int j = 0; j < commentList.size(); j++) {//评论
+            UserInfo userInfo = null;
+            PharmacyComment comment = null;
+            comment = (PharmacyComment) commentList.get(j);
+            if (comment != null) {
+                userInfo = userInfoUtils.getUserInfo(comment.getUserId());
+                if (userInfo != null) {
+                    comment.setUserHead(userInfo.getHead());
+                    comment.setUserName(userInfo.getName());
+                    comment.setHouseNumber(userInfo.getHouseNumber());
+                    comment.setProTypeId(userInfo.getProType());
+                }
+                //获取缓存中回复列表
+                list = redisUtils.getList(Constants.REDIS_KEY_PHARMACY_REPLY + comment.getId(), 0, -1);
+                if (list != null && list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {//回复
+                        PharmacyComment message = null;
+                        message = (PharmacyComment) list.get(i);
+                        if (message != null) {
+                            userInfo = userInfoUtils.getUserInfo(message.getReplayId());
+                            if (userInfo != null) {
+                                message.setReplayName(userInfo.getName());
+                            }
+                            userInfo = userInfoUtils.getUserInfo(message.getUserId());
+                            if (userInfo != null) {
+                                message.setUserName(userInfo.getName());
+                            }
+                        }
+                    }
+                    comment.setMessageList(list);
+                } else {
+                    //查询数据库 （获取最新五条回复）
+                    list2 = travelOrderService.findMessList(comment.getId());
+                    if (list2 != null && list2.size() > 0) {
+                        PharmacyComment message = null;
+                        for (int l = 0; l < list2.size(); l++) {
+                            if (l < 5) {
+                                message = (PharmacyComment) list2.get(l);
+                                if (message != null) {
+                                    userInfo = userInfoUtils.getUserInfo(message.getReplayId());
+                                    if (userInfo != null) {
+                                        message.setReplayName(userInfo.getName());
+                                    }
+                                    userInfo = userInfoUtils.getUserInfo(message.getUserId());
+                                    if (userInfo != null) {
+                                        message.setUserName(userInfo.getName());
+                                    }
+                                    messageArrayList.add(message);
+                                }
+                            }
+                        }
+                        comment.setMessageList(messageArrayList);
+                        //更新缓存
+                        redisUtils.pushList(Constants.REDIS_KEY_PHARMACY_REPLY + comment.getId(), messageArrayList, 0);
+                    }
+                }
+            }
+        }
+        pageBean = new PageBean<>();
+        pageBean.setSize(commentList.size());
+        pageBean.setPageNum(page);
+        pageBean.setPageSize(count);
+        pageBean.setList(commentList);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 查询指定评论下的回复记录接口
+     * @param contentId     评论ID
+     * @param page       页码 第几页 起始值1
+     * @param count      每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findPharmacyReplyList(@PathVariable long contentId, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        List list = null;
+        PageBean<PharmacyComment> pageBean = null;
+        pageBean = travelOrderService.findReplyList(contentId, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        long num = 0;
+        UserInfo userInfo = null;
+        list = pageBean.getList();
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {//回复
+                PharmacyComment message = null;
+                message = (PharmacyComment) list.get(i);
+                if (message != null) {
+                    userInfo = userInfoUtils.getUserInfo(message.getReplayId());
+                    if (userInfo != null) {
+                        message.setReplayName(userInfo.getName());
+                    }
+                    userInfo = userInfoUtils.getUserInfo(message.getUserId());
+                    if (userInfo != null) {
+                        message.setUserHead(userInfo.getHead());
+                        message.setUserName(userInfo.getName());
+                        message.setProTypeId(userInfo.getProType());
+                        message.setHouseNumber(userInfo.getHouseNumber());
+                    }
+                }
+            }
+            //消息
+            num = travelOrderService.getReplayCount(contentId);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("num", num);
+        map.put("list", list);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

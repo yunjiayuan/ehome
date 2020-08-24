@@ -1,5 +1,7 @@
 package com.busi.dao;
 
+import com.busi.entity.Pharmacy;
+import com.busi.entity.PharmacyComment;
 import com.busi.entity.PharmacyOrder;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -141,4 +143,135 @@ public interface PharmacyOrderDao {
             "</script>")
     List<PharmacyOrder> findOrderList(@Param("identity") int identity, @Param("userId") long userId, @Param("ordersType") int ordersType);
 
+    /***
+     * 更新评分
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update Pharmacy set" +
+            " totalScore=#{totalScore}," +
+            " averageScore=#{averageScore}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int updateScore(Pharmacy kitchen);
+
+    /***
+     * 新增评论
+     * @param homeBlogComment
+     * @return
+     */
+    @Insert("insert into PharmacyComment(userId,masterId,replayId,content,time,replyType,replyStatus,fatherId,secondFatherId,replyNumber,orderId,imgUrls,score,anonymousType) " +
+            "values (#{userId},#{masterId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId},#{replyNumber},#{orderId},#{imgUrls},#{score},#{anonymousType})")
+    @Options(useGeneratedKeys = true)
+    int addComment(PharmacyComment homeBlogComment);
+
+    /***
+     * 根据ID查询
+     * @param id
+     */
+    @Select("select * from PharmacyComment where id = #{id} and replyStatus=0")
+    PharmacyComment find(@Param("id") long id);
+
+    /***
+     * 更新删除状态
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update PharmacyComment set" +
+            " replyStatus=#{replyStatus}" +
+            " where id=#{id}" +
+            "</script>")
+    int update(PharmacyComment homeBlogComment);
+
+    /***
+     * 更新回复数
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update PharmacyComment set" +
+            " replyNumber=#{replyNumber}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateCommentNum(PharmacyComment homeBlogComment);
+
+    /***
+     * 更新评论数
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update Pharmacy set" +
+            " totalEvaluate=#{totalEvaluate}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateBlogCounts(Pharmacy homeBlogComment);
+
+    /***
+     * 查询评论列表(只查评论replyType = 0)
+     * @param masterId  景区ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PharmacyComment" +
+            " where 1=1" +
+            " and masterId=#{masterId} and replyStatus=0 and replyType = 0" +
+            " order by time desc" +
+            "</script>")
+    List<PharmacyComment> findList(@Param("masterId") long masterId);
+
+    /***
+     * 查询回复列表(只查回复replyType = 1)
+     * @param contentId  评论ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PharmacyComment" +
+            " where 1=1" +
+            " and fatherId=#{contentId} and replyStatus=0 and replyType = 1" +
+            " order by time desc" +
+            "</script>")
+    List<PharmacyComment> findReplyList(@Param("contentId") long contentId);
+
+    /***
+     * 查询指定用户评论
+     * @param id  指定景区ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PharmacyComment" +
+            " where 1=1" +
+            " and masterId=#{id} and replyStatus=0 and replyType = 0" +
+            " order by time desc" +
+            "</script>")
+    List<PharmacyComment> findCommentList(@Param("id") long id);
+
+    /***
+     * 更新回复删除状态
+     * @param ids
+     * @return
+     */
+    @Update("<script>" +
+            "update PharmacyComment set" +
+            " replyStatus=1" +
+            " where replyType=1" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int updateReplyState(@Param("ids") String[] ids);
+
+    /***
+     * 统计该评论下回复数量
+     * @param commentId  评论ID
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from PharmacyComment" +
+            " where fatherId=#{commentId} and replyStatus=0 and replyType=1" +
+            "</script>")
+    int getReplayCount(@Param("commentId") long commentId);
 }
