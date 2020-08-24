@@ -434,12 +434,16 @@ public class TravelOrderController extends BaseController implements TravelOrder
             }
             shopTravelComment.setContent(filteringContent);
         }
+        if (!CommonUtils.checkFull(posts.getPicture())) {
+            String[] strings = posts.getPicture().split(",");
+            shopTravelComment.setImgUrls(strings[0]);
+        }
         shopTravelComment.setTime(new Date());
         travelOrderService.addComment(shopTravelComment);
         if (shopTravelComment.getReplyType() == 0) {//新增评论
             //查询该景区订单信息
             ScenicSpotOrder io = travelOrderService.findById(shopTravelComment.getOrderId(), CommonUtils.getMyId(), -1);
-            if (io == null || io.getMyId() != CommonUtils.getMyId()) {
+            if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getOrdersType() != 1 || io.getOrdersType() != 2) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
             }
             //更新订单状态为已评价

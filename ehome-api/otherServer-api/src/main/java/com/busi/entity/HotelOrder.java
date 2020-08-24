@@ -22,9 +22,9 @@ public class HotelOrder {
 
     private long userId;                // 商家ID
 
-    private long hotelId;          // 酒店&民宿ID
+    private long hotelId;          // 酒店&民宿&景区ID
 
-    private int hotelType;          // 0酒店 1民宿
+    private int hotelType;          //订单所属类别： 0酒店 1民宿  2景区
 
     private String no;                    //订单编号
 
