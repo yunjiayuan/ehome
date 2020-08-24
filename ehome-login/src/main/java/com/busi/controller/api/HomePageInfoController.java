@@ -237,26 +237,33 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         homePageInfo.setWelcomeInfoStatus(Integer.parseInt(userMap.get("welcomeInfoStatus").toString()));//系统欢迎消息状态 0表示未发送  1表示已发送
         homePageInfo.setIsGoodNumber(Integer.parseInt(userMap.get("isGoodNumber").toString()));//设置靓号情况
         homePageInfo.setUser_ce(Integer.parseInt(userMap.get("user_ce").toString()));//设置大V用户状态
-        int homepageinfoFlag = 0;//“屏蔽主界面部分功能按钮”状态  0默认关闭  1开启
+        int homepageinfoFlag = 0;//苹果“屏蔽主界面部分功能按钮”状态  0默认关闭  1开启
         Object obj = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG);
         if(obj!=null){
             homepageinfoFlag = Integer.parseInt(obj.toString());
         }
-        homePageInfo.setFlag(homepageinfoFlag);//临时参数 1禁止查看会员中心 方便IOS平台审核
+        homePageInfo.setFlag(homepageinfoFlag);//临时参数 1禁止查看苹果部分功能 方便IOS平台审核
         int videoshootType = 0;//“生活圈拍摄视频时的拍摄类型” 0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
         Object videoshootObj = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_VIDEOSHOOT_TYPE);
         if(videoshootObj!=null){
             videoshootType = Integer.parseInt(videoshootObj.toString());
         }
+        int homepageinfoFlagByAndroid = 0;//安卓“屏蔽主界面部分功能按钮”状态  0默认关闭  1开启
+        Object obj2 = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG_ANDROID);
+        if(obj2!=null){
+            homepageinfoFlagByAndroid = Integer.parseInt(obj2.toString());
+        }
+        homePageInfo.setFlagByAndroid(homepageinfoFlagByAndroid);//临时参数 1禁止安卓部分功能 方便安卓平台审核
         homePageInfo.setVideoshootType(videoshootType);//临时参数 1禁止查看会员中心 方便IOS平台审核
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",homePageInfo);
     }
 
     /***
      * 更新管理员权限中的相关操作
-     * @param type   设置类型 type=0 修改“屏蔽主界面部分功能按钮”状态
+     * @param type   设置类型 type=0 修改苹果“屏蔽主界面部分功能按钮”状态
      *                         type=1 修改“生活圈拍摄视频时的拍摄类型”
-     * @param status type=0时 status为状态值 0默认关闭  1开启
+     *                         type=2 修改安卓“屏蔽主界面部分功能按钮”状态
+     * @param status type=0或者2时 status为状态值 0默认关闭  1开启
      *                type=1时 status：0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
      * @return
      */
@@ -274,6 +281,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
                 break;
             case 1://修改“生活圈拍摄视频时的拍摄类型”
                 redisUtils.set(Constants.REDIS_KEY_ADMINI_VIDEOSHOOT_TYPE,status+"",0);//永不失效
+                break;
+            case 2://修改安卓“屏蔽主界面部分功能按钮”状态
+                redisUtils.set(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG_ANDROID,status+"",0);//永不失效
                 break;
             default:
                 break;

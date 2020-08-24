@@ -36,7 +36,9 @@ public class HomePageInfo {
 
     private int isFriend;//0不是好友  1是好友
 
-    private int flag;//临时参数 1禁止查看会员中心 方便IOS平台审核
+    private int flag;//临时参数 1禁止查看苹果部分功能 方便IOS平台审核
+
+    private int flagByAndroid;//临时参数 1禁止查看安卓部分功能 方便安卓平台审核
 
     private int videoshootType;//临时参数 “生活圈拍摄视频时的拍摄类型” 0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
 
