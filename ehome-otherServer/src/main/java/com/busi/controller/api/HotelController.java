@@ -439,6 +439,8 @@ public class HotelController extends BaseController implements HotelApiControlle
                 String[] strings = io.getPicture().split(",");
                 collect.setPicture(strings[0]);
             }
+            collect.setType(io.getType());
+            collect.setLevels(io.getLevels());
             collect.setName(io.getHotelName());
             travelService.addCollect(collect);
         }

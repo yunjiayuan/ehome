@@ -443,6 +443,8 @@ public class TravelController extends BaseController implements TravelApiControl
                 String[] strings = io.getPicture().split(",");
                 collect.setPicture(strings[0]);
             }
+            collect.setType(io.getType());
+            collect.setLevels(io.getLevels());
             collect.setName(io.getScenicSpotName());
             travelService.addCollect(collect);
         }

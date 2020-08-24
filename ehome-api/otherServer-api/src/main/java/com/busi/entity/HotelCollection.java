@@ -28,4 +28,8 @@ public class HotelCollection {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;        //收藏时间
+
+    private String type;            // 类型
+
+    private int levels;            // 级别
 }

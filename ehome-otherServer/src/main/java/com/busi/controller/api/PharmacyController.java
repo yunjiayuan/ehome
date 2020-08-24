@@ -432,6 +432,8 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
                 String[] strings = io.getPicture().split(",");
                 collect.setPicture(strings[0]);
             }
+            collect.setType(io.getType());
+            collect.setLevels(io.getLevels());
             collect.setName(io.getPharmacyName());
             travelService.addCollect(collect);
         }

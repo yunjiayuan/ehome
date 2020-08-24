@@ -278,8 +278,8 @@ public interface PharmacyDao {
      * @param PharmacyCollection
      * @return
      */
-    @Insert("insert into PharmacyCollection(myId,userId,name,picture,time) " +
-            "values (#{myId},#{userId},#{name},#{picture},#{time})")
+    @Insert("insert into PharmacyCollection(myId,userId,name,picture,time,type,levels) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{levels})")
     @Options(useGeneratedKeys = true)
     int addCollect(PharmacyCollection PharmacyCollection);
 

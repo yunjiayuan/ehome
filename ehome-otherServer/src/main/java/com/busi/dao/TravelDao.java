@@ -329,8 +329,8 @@ public interface TravelDao {
      * @param ScenicSpotCollection
      * @return
      */
-    @Insert("insert into ScenicSpotCollection(myId,userId,name,picture,time) " +
-            "values (#{myId},#{userId},#{name},#{picture},#{time})")
+    @Insert("insert into ScenicSpotCollection(myId,userId,name,picture,time,type,levels) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{levels})")
     @Options(useGeneratedKeys = true)
     int addCollect(ScenicSpotCollection ScenicSpotCollection);
 
