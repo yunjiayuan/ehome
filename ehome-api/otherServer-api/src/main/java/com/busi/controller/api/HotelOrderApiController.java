@@ -88,7 +88,7 @@ public interface HotelOrderApiController {
     /***
      * 删除评论
      * @param id 评论ID
-     * @param goodsId 景区ID
+     * @param goodsId 酒店ID
      * @return
      */
     @DeleteMapping("delHotelComment/{id}/{goodsId}")
@@ -96,7 +96,7 @@ public interface HotelOrderApiController {
 
     /***
      * 查询评论记录
-     * @param goodsId     景区ID
+     * @param goodsId     酒店ID
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
      * @return
