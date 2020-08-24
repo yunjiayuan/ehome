@@ -64,7 +64,7 @@ public class KitchenBookedOrdersService extends BaseController implements PayBas
             return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行支付订单操作",new JSONObject());
         }
         //更改状态 防止重复支付
-        redisUtils.hset(Constants.REDIS_KEY_KITCHENBOOKEDORDERS+pay.getUserId()+"_"+pay.getOrderNumber(),"ordersType",1);
+        redisUtils.hset(Constants.REDIS_KEY_KITCHENBOOKEDORDERS+pay.getUserId()+"_"+pay.getOrderNumber(),"paymentStatus",1);
         kitchenBookedOrders.setPaymentStatus(1);
         kitchenBookedOrders.setPaymentTime(new Date());
         kitchenBookedOrders.setAddToFoodMoney(0);//将会根据这个字段来来判断是否为加菜支付
