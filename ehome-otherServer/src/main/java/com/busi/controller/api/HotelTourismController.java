@@ -180,7 +180,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
         }
         for (int i = 0; i < list.size(); i++) {
-            KitchenPrivateRoom privateRoom = (KitchenPrivateRoom) list.get(i);
+            KitchenReserveRoom privateRoom = (KitchenReserveRoom) list.get(i);
             if (privateRoom == null) {
                 continue;
             }
@@ -196,7 +196,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
             }
         }
         //按是否预定正序排序
-        Collections.sort(list, new Comparator<KitchenPrivateRoom>() {
+        Collections.sort(list, new Comparator<KitchenReserveRoom>() {
             /*
              * int compare(Person o1, Person o2) 返回一个基本类型的整型，
              * 返回负数表示：o1 小于o2，
@@ -204,7 +204,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
              * 返回正数表示：o1大于o2
              */
             @Override
-            public int compare(KitchenPrivateRoom o1, KitchenPrivateRoom o2) {
+            public int compare(KitchenReserveRoom o1, KitchenReserveRoom o2) {
                 // 按照预定与否进行正序排列
                 if (o1.getReserveState() > o2.getReserveState()) {
                     return 1;
