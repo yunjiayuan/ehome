@@ -35,7 +35,7 @@ public class Hotel {
     @Length(max = 14, message = "酒店&民宿名称不能超过30字")
     private String hotelName;                //酒店&民宿名称
 
-    private String openType;                // 酒店&民宿开放类型:0全天 1时间段
+    private int openType;                // 酒店&民宿开放类型:0全天 1时间段
 
     private String openTime;                // 酒店&民宿开放时间 openType=1时有效
 
