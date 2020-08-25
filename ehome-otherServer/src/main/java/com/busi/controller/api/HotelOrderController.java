@@ -474,11 +474,10 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             shopHotelComment.setImgUrls(strings[0]);
         }
         shopHotelComment.setTime(new Date());
-        travelOrderService.addComment(shopHotelComment);
         if (shopHotelComment.getReplyType() == 0) {//新增评论
             //查询该酒店订单信息
             HotelOrder io = travelOrderService.findById(shopHotelComment.getOrderId(), CommonUtils.getMyId(), -1);
-            if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getOrdersType() != 1 || io.getOrdersType() != 2) {
+            if (io == null || io.getMyId() != CommonUtils.getMyId() || (io.getOrdersType() != 1 && io.getOrdersType() != 2)) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
             }
             //更新订单状态为已评价
@@ -523,6 +522,7 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
                 travelOrderService.updateCommentNum(shopHotelComment);
             }
         }
+        travelOrderService.addComment(shopHotelComment);
         //更新评论数
         posts.setTotalEvaluate(posts.getTotalEvaluate() + 1);
         travelOrderService.updateBlogCounts(posts);

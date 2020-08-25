@@ -470,11 +470,10 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             shopPharmacyComment.setImgUrls(strings[0]);
         }
         shopPharmacyComment.setTime(new Date());
-        travelOrderService.addComment(shopPharmacyComment);
         if (shopPharmacyComment.getReplyType() == 0) {//新增评论
             //查询该景区订单信息
             PharmacyOrder io = travelOrderService.findById(shopPharmacyComment.getOrderId(), CommonUtils.getMyId(), -1);
-            if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getOrdersType() != 1 || io.getOrdersType() != 2) {
+            if (io == null || io.getMyId() != CommonUtils.getMyId() || (io.getOrdersType() != 1 && io.getOrdersType() != 2)) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
             }
             //更新订单状态为已评价
@@ -519,6 +518,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
                 travelOrderService.updateCommentNum(shopPharmacyComment);
             }
         }
+        travelOrderService.addComment(shopPharmacyComment);
         //更新评论数
         posts.setTotalEvaluate(posts.getTotalEvaluate() + 1);
         travelOrderService.updateBlogCounts(posts);

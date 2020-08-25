@@ -287,8 +287,8 @@ public interface HotelDao {
      * @param HotelCollection
      * @return
      */
-    @Insert("insert into HotelCollection(myId,userId,name,picture,time,type,levels) " +
-            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{levels})")
+    @Insert("insert into HotelCollection(myId,userId,name,picture,time,type,levels,hotelType) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{levels},#{hotelType})")
     @Options(useGeneratedKeys = true)
     int addCollect(HotelCollection HotelCollection);
 

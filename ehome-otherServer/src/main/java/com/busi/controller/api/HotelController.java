@@ -442,6 +442,7 @@ public class HotelController extends BaseController implements HotelApiControlle
             collect.setType(io.getType());
             collect.setLevels(io.getLevels());
             collect.setName(io.getHotelName());
+            collect.setHotelType(io.getHotelType());
             travelService.addCollect(collect);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -542,11 +543,12 @@ public class HotelController extends BaseController implements HotelApiControlle
      */
     @Override
     public ReturnData claimHotel(@Valid @RequestBody Hotel kitchenReserve, BindingResult bindingResult) {
-        HotelData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻酒店民宿不存在", new JSONObject());
+        Hotel hotel = travelService.findReserve(CommonUtils.getMyId());
+        if (hotel == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻失败，您已经入驻过酒店或民宿了", new JSONObject());
         }
-        if (kitchen.getClaimStatus() == 1) {
+        HotelData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
+        if (kitchen == null || kitchen.getClaimStatus() == 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻酒店民宿不存在", new JSONObject());
         }
         //更新酒店数据

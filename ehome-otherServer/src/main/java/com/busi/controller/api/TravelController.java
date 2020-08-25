@@ -539,19 +539,20 @@ public class TravelController extends BaseController implements TravelApiControl
     }
 
     /***
-     * 入驻景区民宿
+     * 入驻景区
      * @param kitchenReserve
      * @param bindingResult
      * @return
      */
     @Override
     public ReturnData claimTravel(@Valid @RequestBody ScenicSpot kitchenReserve, BindingResult bindingResult) {
-        ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区民宿不存在", new JSONObject());
+        ScenicSpot hotel = travelService.findReserve(CommonUtils.getMyId());
+        if (hotel == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻失败，您已经入驻过景区了", new JSONObject());
         }
-        if (kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区民宿不存在", new JSONObject());
+        ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
+        if (kitchen == null || kitchen.getClaimStatus() == 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区不存在", new JSONObject());
         }
         //更新景区数据
         kitchen.setClaimStatus(1);

@@ -32,4 +32,6 @@ public class HotelCollection {
     private String type;            // 类型
 
     private int levels;            // 级别
+
+    private int hotelType;          // 0酒店 1民宿
 }
