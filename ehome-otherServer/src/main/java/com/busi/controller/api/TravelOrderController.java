@@ -173,7 +173,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
         if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = dateFormat.format(io.getInspectTicketTime());
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已于" + time + "扫码验票成功", io);
+            return returnData(StatusCode.CODE_TRAVEL_REPEAT.CODE_VALUE, "您已于" + time + "扫码验票成功", io);
         }
         if (io.getOrdersType() == 0) {//已付款未验票
             if (io.getUserId() != CommonUtils.getMyId()) {

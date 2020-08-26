@@ -448,4 +448,17 @@ public interface HotelDao {
             "</script>")
     int updateReserveData(HotelData kitchen);
 
+    /***
+     * 批量查询指定的酒店
+     * @param ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Hotel" +
+            " where userId in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<Hotel> findKitchenList4(@Param("ids") String[] ids);
 }

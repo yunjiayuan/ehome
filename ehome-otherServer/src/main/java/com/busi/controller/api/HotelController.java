@@ -381,6 +381,13 @@ public class HotelController extends BaseController implements HotelApiControlle
         List<HotelRoom> cartList = null;
         //从缓存中获取房间列表
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type);
+        if (map == null || map.size() <= 0) {
+            //查询数据库
+            cartList = travelService.findList(id, type);
+            map.put("data", cartList);
+            //更新到缓存
+            redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type, map, Constants.USER_TIME_OUT);
+        }
         if (type == 0) { // 所属类型：0酒店 1景区
             io = travelService.findById(id);
             if (io == null) {
@@ -392,13 +399,6 @@ public class HotelController extends BaseController implements HotelApiControlle
                 collection = 1;//1已收藏
             }
             map.put("collection", collection);
-        }
-        if (map == null || map.size() <= 0) {
-            //查询数据库
-            cartList = travelService.findList(id, type);
-            map.put("data", cartList);
-            //更新到缓存
-            redisUtils.hmset(Constants.REDIS_KEY_HOTELROOMLIST + id + "_" + type, map, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, map);
     }
@@ -451,12 +451,14 @@ public class HotelController extends BaseController implements HotelApiControlle
     /***
      * 分页查询收藏列表
      * @param userId   用户ID
+     * @param lat      纬度
+     * @param lon      经度
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findHotelCollectList(@PathVariable long userId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findHotelCollectList(@PathVariable long userId, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -464,6 +466,46 @@ public class HotelController extends BaseController implements HotelApiControlle
         //开始查询
         PageBean<HotelCollection> pageBean;
         pageBean = travelService.findCollectionList(userId, page, count);
+        List list = null;
+        List ktchenList = null;
+        list = pageBean.getList();
+        String kitchendIds = "";
+        if (list == null || list.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            HotelCollection kc = (HotelCollection) list.get(i);
+            if (i == 0) {
+                kitchendIds = kc.getUserId() + "";//酒店创建者ID
+            } else {
+                kitchendIds += "," + kc.getUserId();
+            }
+        }
+        //查詢酒店
+        ktchenList = travelService.findKitchenList4(kitchendIds.split(","));
+        if (ktchenList == null || ktchenList.size() <= 0) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        for (int i = 0; i < ktchenList.size(); i++) {
+            Hotel ik = (Hotel) ktchenList.get(i);
+            for (int j = 0; j < list.size(); j++) {
+                HotelCollection kc = (HotelCollection) list.get(j);
+                if (ik != null && kc != null) {
+                    if (ik.getUserId() == kc.getUserId()) {
+                        double userlon = Double.valueOf(ik.getLon() + "");
+                        double userlat = Double.valueOf(ik.getLat() + "");
+                        //计算距离
+                        int distance = (int) Math.round(CommonUtils.getShortestDistance(userlon, userlat, lon, lat));
+                        kc.setDistance(distance);//距离/m
+                    }
+                }
+            }
+        }
+        pageBean = new PageBean<>();
+        pageBean.setSize(list.size());
+        pageBean.setPageNum(page);
+        pageBean.setPageSize(count);
+        pageBean.setList(list);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 

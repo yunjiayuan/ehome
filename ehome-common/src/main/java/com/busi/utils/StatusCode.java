@@ -263,6 +263,7 @@ public enum StatusCode {
 	CODE_TRAVEL_INVALID(802,"门票无效"),
 	CODE_TRAVEL_ADVANCE(803,"游玩日期未到"),
 	CODE_TRAVEL_NOPAYMENT(804,"订单未支付"),
+	CODE_TRAVEL_REPEAT(805,"多次扫码成功"),
 
 	//家门口酒店民宿
 	CODE_HOTEL_BE_OVERDUE(901,"房间已过期"),

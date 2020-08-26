@@ -34,4 +34,7 @@ public class HotelCollection {
     private int levels;            // 级别
 
     private int hotelType;          // 0酒店 1民宿
+
+    //与数据库无关字段
+    private int distance;            //距离
 }

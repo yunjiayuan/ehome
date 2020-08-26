@@ -233,7 +233,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         if (io.getVerificationType() == 1) {//防止多次验票成功后多次打款
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = dateFormat.format(io.getInspectTicketTime());
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已于" + time + "扫码取药成功", io);
+            return returnData(StatusCode.CODE_TRAVEL_REPEAT.CODE_VALUE, "您已于" + time + "扫码取药成功", io);
         }
         if (io.getVerificationType() == 0 && io.getDistributionMode() == 1) {//买家自取、已付款未验票
             if (io.getUserId() != CommonUtils.getMyId()) {

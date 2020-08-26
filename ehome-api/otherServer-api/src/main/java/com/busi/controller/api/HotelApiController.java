@@ -124,12 +124,14 @@ public interface HotelApiController {
     /***
      * 分页查询收藏列表
      * @param userId   用户ID
+     * @param lat      纬度
+     * @param lon      经度
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findHotelCollectList/{userId}/{page}/{count}")
-    ReturnData findHotelCollectList(@PathVariable long userId, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findHotelCollectList/{userId}/{lat}/{lon}/{page}/{count}")
+    ReturnData findHotelCollectList(@PathVariable long userId, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /**
      * @Description: 删除收藏
