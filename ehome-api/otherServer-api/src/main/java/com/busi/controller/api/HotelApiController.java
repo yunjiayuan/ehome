@@ -54,6 +54,14 @@ public interface HotelApiController {
     ReturnData findHotel(@PathVariable long userId);
 
     /***
+     * 查询酒店民宿信息
+     * @param id
+     * @return
+     */
+    @GetMapping("findHotelId/{id}")
+    ReturnData findHotelId(@PathVariable long id);
+
+    /***
      * 条件查询酒店民宿
      * @param watchVideos 筛选视频：0否 1是
      * @param hotelType 筛选：-1全部 0酒店 1民宿

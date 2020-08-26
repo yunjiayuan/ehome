@@ -17,6 +17,8 @@ import java.util.Date;
 public class HotelCollection {
     private long id;        //主键ID
 
+    private long hotelId;        //酒店ID
+
     @Min(value = 1, message = "myId参数有误")
     private long myId;        //用户ID
 

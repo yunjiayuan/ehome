@@ -199,7 +199,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
                 e.printStackTrace();
             }
             if (dateTime1 == null || dateTime2 == null) {
-                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
+                return returnData(StatusCode.CODE_TRAVEL_INVALID.CODE_VALUE, "门票无效", io);
             }
             int i = dateTime1.compareTo(dateTime2);
             if (i > 0) {
@@ -209,23 +209,23 @@ public class TravelOrderController extends BaseController implements TravelOrder
                 //景区订单放入缓存
                 Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
                 redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
-                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
-            } else if (i < 0) {
                 return returnData(StatusCode.CODE_TRAVEL_ADVANCE.CODE_VALUE, "您还没到游玩时间 ", io);
+            } else if (i < 0) {
+                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
             } else {
                 io.setOrdersType(1);
+                //由未验票改为已验票
+                io.setInspectTicketTime(new Date());
+                io.setUpdateCategory(1);
+                travelOrderService.updateOrders(io);
+                //商家入账
+                mqUtils.sendPurseMQ(io.getUserId(), 35, 0, io.getMoney());
+                //清除缓存中的景区 订单信息
+                redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
+                //景区订单放入缓存
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+                redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
             }
-            //由未验票改为已验票
-            io.setInspectTicketTime(new Date());
-            io.setUpdateCategory(1);
-            travelOrderService.updateOrders(io);
-            //商家入账
-            mqUtils.sendPurseMQ(io.getUserId(), 35, 0, io.getMoney());
-            //清除缓存中的景区 订单信息
-            redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
-            //景区订单放入缓存
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
     }

@@ -274,6 +274,14 @@ public interface PharmacyDao {
     PharmacyCollection findWhether(@Param("userId") long userId, @Param("id") long id);
 
     /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    @Select("select * from PharmacyCollection where myId=#{userId} and pharmacyId=#{id}")
+    PharmacyCollection findWhether2(@Param("userId") long userId, @Param("id") long id);
+
+    /***
      * 新增收藏
      * @param PharmacyCollection
      * @return

@@ -210,6 +210,20 @@ public class HotelService {
     }
 
     /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    public boolean findWhether2(long userId, long id) {
+        HotelCollection kitchen = null;
+        kitchen = kitchenBookedDao.findWhether2(userId, id);
+        if (kitchen == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /***
      * 新增酒店民宿收藏
      * @param hourlyWorkerCollection
      * @return

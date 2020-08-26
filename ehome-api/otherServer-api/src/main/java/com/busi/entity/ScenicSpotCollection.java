@@ -18,6 +18,8 @@ public class ScenicSpotCollection {
 
     private long id;        //主键ID
 
+    private long scenicSpotId;        //景区ID
+
     @Min(value = 1, message = "myId参数有误")
     private long myId;        //用户ID
 

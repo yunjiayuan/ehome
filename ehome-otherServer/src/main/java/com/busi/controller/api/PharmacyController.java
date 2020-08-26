@@ -190,6 +190,28 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
     }
 
     /***
+     * 查询药店信息(收藏列表)
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findPharmacyId(@PathVariable long id) {
+        Map<String, Object> kitchenMap = null;
+        Pharmacy kitchen = travelService.findById(id);
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        int collection = 0;//是否收藏过此药店  0没有  1已收藏
+        //验证是否收藏过
+        boolean flag = travelService.findWhether2(CommonUtils.getMyId(), id);
+        if (flag) {
+            collection = 1;//1已收藏
+        }
+        kitchenMap.put("collection", collection);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+    }
+
+    /***
      * 条件查询药店
      * @param watchVideos 筛选视频：0否 1是
      * @param name    模糊搜索
@@ -386,7 +408,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         PharmacyDrugs tickets = cartList.get(0);
         if (tickets != null) {
             //验证是否收藏过
-            boolean flag = travelService.findWhether(CommonUtils.getMyId(), tickets.getUserId());
+            boolean flag = travelService.findWhether2(CommonUtils.getMyId(), tickets.getPharmacyId());
             if (flag) {
                 collection = 1;//1已收藏
             }
@@ -409,22 +431,23 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证是否收藏过
-        boolean flag = travelService.findWhether(collect.getMyId(), collect.getUserId());
+        boolean flag = travelService.findWhether2(collect.getMyId(), collect.getPharmacyId());
         if (flag) {
-            return returnData(StatusCode.CODE_COLLECTED_HOURLY_ERROR.CODE_VALUE, "您已收藏过此药店", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已收藏过此药店", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_PHARMACY + collect.getUserId());
-        if (kitchenMap == null || kitchenMap.size() <= 0) {
-            Pharmacy kitchen2 = travelService.findReserve(collect.getUserId());
-            if (kitchen2 == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，药店不存在！", new JSONObject());
-            }
-            //放入缓存
-            kitchenMap = CommonUtils.objectToMap(kitchen2);
-            redisUtils.hmset(Constants.REDIS_KEY_PHARMACY + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
-        }
-        Pharmacy io = (Pharmacy) CommonUtils.mapToObject(kitchenMap, Pharmacy.class);
+//        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_PHARMACY + collect.getUserId());
+//        if (kitchenMap == null || kitchenMap.size() <= 0) {
+//            Pharmacy kitchen2 = travelService.findReserve(collect.getUserId());
+//            if (kitchen2 == null) {
+//                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，药店不存在！", new JSONObject());
+//            }
+//            //放入缓存
+//            kitchenMap = CommonUtils.objectToMap(kitchen2);
+//            redisUtils.hmset(Constants.REDIS_KEY_PHARMACY + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+//        }
+//        Pharmacy io = (Pharmacy) CommonUtils.mapToObject(kitchenMap, Pharmacy.class);
+        Pharmacy io = travelService.findById(collect.getPharmacyId());
         if (io != null) {
             //添加收藏记录
             collect.setTime(new Date());
@@ -432,6 +455,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
                 String[] strings = io.getPicture().split(",");
                 collect.setPicture(strings[0]);
             }
+            collect.setUserId(io.getUserId());
             collect.setType(io.getType());
             collect.setLevels(io.getLevels());
             collect.setName(io.getPharmacyName());

@@ -180,10 +180,32 @@ public class HotelController extends BaseController implements HotelApiControlle
         int collection = 0;//是否收藏过此酒店民宿  0没有  1已收藏
         if (kitchenMap != null && kitchenMap.size() > 0) {
             //验证是否收藏过
-            boolean flag = travelService.findWhether(CommonUtils.getMyId(), userId);
+            boolean flag = travelService.findWhether2(CommonUtils.getMyId(), userId);
             if (flag) {
                 collection = 1;//1已收藏
             }
+        }
+        kitchenMap.put("collection", collection);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+    }
+
+    /***
+     * 查询酒店民宿信息(收藏列表)
+     * @param id
+     * @return
+     */
+    @Override
+    public ReturnData findHotelId(@PathVariable long id) {
+        Map<String, Object> kitchenMap = null;
+        Hotel kitchen = travelService.findById(id);
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        int collection = 0;//是否收藏过此酒店民宿  0没有  1已收藏
+        //验证是否收藏过
+        boolean flag = travelService.findWhether(CommonUtils.getMyId(), id);
+        if (flag) {
+            collection = 1;//1已收藏
         }
         kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
@@ -394,7 +416,7 @@ public class HotelController extends BaseController implements HotelApiControlle
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店不存在", new JSONObject());
             }
             //验证是否收藏过
-            boolean flag = travelService.findWhether(CommonUtils.getMyId(), io.getUserId());
+            boolean flag = travelService.findWhether(CommonUtils.getMyId(), io.getId());
             if (flag) {
                 collection = 1;//1已收藏
             }
@@ -416,22 +438,23 @@ public class HotelController extends BaseController implements HotelApiControlle
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证是否收藏过
-        boolean flag = travelService.findWhether(collect.getMyId(), collect.getUserId());
+        boolean flag = travelService.findWhether(collect.getMyId(), collect.getHotelId());
         if (flag) {
-            return returnData(StatusCode.CODE_COLLECTED_HOURLY_ERROR.CODE_VALUE, "您已收藏过此酒店民宿", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已收藏过此酒店民宿", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOTEL + collect.getUserId());
-        if (kitchenMap == null || kitchenMap.size() <= 0) {
-            Hotel kitchen2 = travelService.findReserve(collect.getUserId());
-            if (kitchen2 == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，酒店民宿不存在！", new JSONObject());
-            }
-            //放入缓存
-            kitchenMap = CommonUtils.objectToMap(kitchen2);
-            redisUtils.hmset(Constants.REDIS_KEY_HOTEL + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
-        }
-        Hotel io = (Hotel) CommonUtils.mapToObject(kitchenMap, Hotel.class);
+//        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_HOTEL + collect.getUserId());
+//        if (kitchenMap == null || kitchenMap.size() <= 0) {
+//        Hotel kitchen2 = travelService.findReserve(collect.getUserId());
+//            if (kitchen2 == null) {
+//                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，酒店民宿不存在！", new JSONObject());
+//            }
+//            //放入缓存
+//            kitchenMap = CommonUtils.objectToMap(kitchen2);
+//            redisUtils.hmset(Constants.REDIS_KEY_HOTEL + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+//        }
+//        Hotel io = (Hotel) CommonUtils.mapToObject(kitchenMap, Hotel.class);
+        Hotel io = travelService.findById(collect.getHotelId());
         if (io != null) {
             //添加收藏记录
             collect.setTime(new Date());
@@ -439,6 +462,7 @@ public class HotelController extends BaseController implements HotelApiControlle
                 String[] strings = io.getPicture().split(",");
                 collect.setPicture(strings[0]);
             }
+            collect.setUserId(io.getUserId());
             collect.setType(io.getType());
             collect.setLevels(io.getLevels());
             collect.setName(io.getHotelName());
@@ -476,12 +500,12 @@ public class HotelController extends BaseController implements HotelApiControlle
         for (int i = 0; i < list.size(); i++) {
             HotelCollection kc = (HotelCollection) list.get(i);
             if (i == 0) {
-                kitchendIds = kc.getUserId() + "";//酒店创建者ID
+                kitchendIds = kc.getId() + "";//酒店ID
             } else {
-                kitchendIds += "," + kc.getUserId();
+                kitchendIds += "," + kc.getId();
             }
         }
-        //查詢酒店
+        //查询酒店
         ktchenList = travelService.findKitchenList4(kitchendIds.split(","));
         if (ktchenList == null || ktchenList.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -491,7 +515,7 @@ public class HotelController extends BaseController implements HotelApiControlle
             for (int j = 0; j < list.size(); j++) {
                 HotelCollection kc = (HotelCollection) list.get(j);
                 if (ik != null && kc != null) {
-                    if (ik.getUserId() == kc.getUserId()) {
+                    if (ik.getId() == kc.getId()) {
                         double userlon = Double.valueOf(ik.getLon() + "");
                         double userlat = Double.valueOf(ik.getLat() + "");
                         //计算距离

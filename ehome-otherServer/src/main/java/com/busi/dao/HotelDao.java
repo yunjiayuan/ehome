@@ -279,8 +279,17 @@ public interface HotelDao {
      * @param userId
      * @return
      */
-    @Select("select * from HotelCollection where myId=#{userId} and userId=#{id}")
+    @Select("select * from HotelCollection where myId=#{userId} and hotelId=#{id}")
     HotelCollection findWhether(@Param("userId") long userId, @Param("id") long id);
+
+    /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    @Select("select * from HotelCollection where myId=#{userId} and userId=#{id}")
+    HotelCollection findWhether2(@Param("userId") long userId, @Param("id") long id);
+
 
     /***
      * 新增收藏
@@ -455,7 +464,7 @@ public interface HotelDao {
      */
     @Select("<script>" +
             "select * from Hotel" +
-            " where userId in" +
+            " where id in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +

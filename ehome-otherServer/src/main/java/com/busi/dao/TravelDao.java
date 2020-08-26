@@ -325,6 +325,14 @@ public interface TravelDao {
     ScenicSpotCollection findWhether(@Param("userId") long userId, @Param("id") long id);
 
     /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    @Select("select * from ScenicSpotCollection where myId=#{userId} and scenicSpotId=#{id}")
+    ScenicSpotCollection findWhether2(@Param("userId") long userId, @Param("id") long id);
+
+    /***
      * 新增收藏
      * @param ScenicSpotCollection
      * @return
