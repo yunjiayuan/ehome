@@ -57,6 +57,8 @@ public class Kitchen {
 
     private long totalScore;        // 总评分
 
+    private int averageScore;        // 平均评分
+
     private double lat;                    //纬度
 
     private double lon;                    //经度

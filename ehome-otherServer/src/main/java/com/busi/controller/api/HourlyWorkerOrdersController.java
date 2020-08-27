@@ -451,9 +451,25 @@ public class HourlyWorkerOrdersController extends BaseController implements Hour
 
                 hourlyWorkerOrdersService.addEvaluate(ev);
 
-                kh.setTotalScore(ev.getScore() + kh.getTotalScore());
-                hourlyWorkerService.updateScore(kh);//更新小时工总评分
-
+                //更新评论平均分
+                List list1 = hourlyWorkerOrdersService.findEvaluate(io.getShopId());
+                if (list1 != null && list1.size() > 0) {
+                    long score = 0;//总分
+                    double averageScore = 0;   // 平均评分
+                    for (int i = 0; i < list1.size(); i++) {
+                        HourlyWorkerEvaluate kitchenEvaluate = (HourlyWorkerEvaluate) list1.get(i);
+                        if (kitchenEvaluate == null) {
+                            continue;
+                        }
+                        score += kitchenEvaluate.getScore();
+                    }
+                    //更新总评分
+                    kh.setTotalScore(score);
+                    //更新评论平均分
+                    averageScore = score / list1.size();
+                    kh.setAverageScore((int) Math.round(averageScore));
+                    hourlyWorkerService.updateScore(kh);
+                }
                 io.setOrdersType(6);//更新订单状态为已评价
                 io.setUpdateCategory(4);
                 hourlyWorkerOrdersService.updateOrders(io);

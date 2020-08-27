@@ -282,7 +282,8 @@ public interface KitchenBookedDao {
      */
     @Update("<script>" +
             "update KitchenReserve set" +
-            " totalScore=#{totalScore}" +
+            " totalScore=#{totalScore}," +
+            " averageScore=#{averageScore}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1 " +
             "</script>")
     int updateScore(KitchenReserve kitchen);

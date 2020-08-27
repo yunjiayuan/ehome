@@ -351,33 +351,34 @@ public class KitchenController extends BaseController implements KitchenApiContr
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证是否收藏过
-        boolean flag = kitchenService.findWhether(collect.getUserId(), collect.getBeUserId(), collect.getBookedState());
+        boolean flag = kitchenService.findWhether2(collect.getBookedState(), collect.getUserId(), collect.getKitchend());
         if (flag) {
             return returnData(StatusCode.CODE_COLLECTED_KITCHEN_ERROR.CODE_VALUE, "您已收藏过此厨房", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + collect.getBeUserId() + "_" + collect.getBookedState());
-        if (kitchenMap == null || kitchenMap.size() <= 0) {
-            if (collect.getBookedState() == 0) {
-                Kitchen kitchen = kitchenService.findByUserId(collect.getBeUserId());
-                if (kitchen == null) {
-                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，厨房不存在！", new JSONObject());
-                }
-                //放入缓存
-                kitchenMap = CommonUtils.objectToMap(kitchen);
-                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 0, kitchenMap, Constants.USER_TIME_OUT);
-            } else {
-                KitchenReserve kitchen = kitchenBookedService.findReserve(collect.getBeUserId());
-                if (kitchen == null) {
-                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，预定厨房不存在！", new JSONObject());
-                }
-                //放入缓存
-                kitchenMap = CommonUtils.objectToMap(kitchen);
-                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 1, kitchenMap, Constants.USER_TIME_OUT);
-            }
-        }
+//        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_KITCHEN + collect.getBeUserId() + "_" + collect.getBookedState());
+//        if (kitchenMap == null || kitchenMap.size() <= 0) {
+//            if (collect.getBookedState() == 0) {
+//                Kitchen kitchen = kitchenService.findByUserId(collect.getBeUserId());
+//                if (kitchen == null) {
+//                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，厨房不存在！", new JSONObject());
+//                }
+//                //放入缓存
+//                kitchenMap = CommonUtils.objectToMap(kitchen);
+//                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 0, kitchenMap, Constants.USER_TIME_OUT);
+//            } else {
+//                KitchenReserve kitchen = kitchenBookedService.findReserve(collect.getBeUserId());
+//                if (kitchen == null) {
+//                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，预定厨房不存在！", new JSONObject());
+//                }
+//                //放入缓存
+//                kitchenMap = CommonUtils.objectToMap(kitchen);
+//                redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + kitchen.getUserId() + "_" + 1, kitchenMap, Constants.USER_TIME_OUT);
+//            }
+//        }
         if (collect.getBookedState() == 0) {
-            Kitchen io = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
+            Kitchen io = kitchenService.findById(collect.getKitchend());
+//            Kitchen io = (Kitchen) CommonUtils.mapToObject(kitchenMap, Kitchen.class);
             if (io != null) {
                 //添加收藏记录
                 collect.setCuisine(io.getCuisine());
@@ -391,7 +392,8 @@ public class KitchenController extends BaseController implements KitchenApiContr
                 kitchenService.addCollect(collect);
             }
         } else {
-            KitchenReserve io = (KitchenReserve) CommonUtils.mapToObject(kitchenMap, KitchenReserve.class);
+            KitchenReserve io = kitchenBookedService.findById(collect.getKitchend());
+//            KitchenReserve io = (KitchenReserve) CommonUtils.mapToObject(kitchenMap, KitchenReserve.class);
             if (io != null) {
                 //添加收藏记录
                 collect.setCuisine(io.getCuisine());

@@ -137,7 +137,8 @@ public interface KitchenDao {
      */
     @Update("<script>" +
             "update kitchen set" +
-            " totalScore=#{totalScore}" +
+            " totalScore=#{totalScore}," +
+            " averageScore=#{averageScore}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateScore(Kitchen kitchen);
