@@ -196,7 +196,7 @@ public class HotelController extends BaseController implements HotelApiControlle
      */
     @Override
     public ReturnData findHotelId(@PathVariable long id) {
-        Map<String, Object> kitchenMap = null;
+        Map<String, Object> kitchenMap = new HashMap<>();
         Hotel kitchen = travelService.findById(id);
         if (kitchen == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -207,6 +207,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         if (flag) {
             collection = 1;//1已收藏
         }
+        kitchenMap = CommonUtils.objectToMap(kitchen);
         kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }

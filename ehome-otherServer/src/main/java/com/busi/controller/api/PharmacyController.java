@@ -196,7 +196,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
      */
     @Override
     public ReturnData findPharmacyId(@PathVariable long id) {
-        Map<String, Object> kitchenMap = null;
+        Map<String, Object> kitchenMap = new HashMap<>();
         Pharmacy kitchen = travelService.findById(id);
         if (kitchen == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -207,6 +207,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         if (flag) {
             collection = 1;//1已收藏
         }
+        kitchenMap = CommonUtils.objectToMap(kitchen);
         kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
