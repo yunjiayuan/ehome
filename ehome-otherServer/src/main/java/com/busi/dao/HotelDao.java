@@ -142,9 +142,9 @@ public interface HotelDao {
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             " and hotelName LIKE CONCAT('%',#{name},'%')" +
-            "<if test=\"watchVideos == 1\">" +
-            " and videoUrl != ''" +
-            "</if>" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl != ''" +
+//            "</if>" +
             "<if test=\"hotelType >= 0\">" +
             " and hotelType = #{hotelType}" +
             "</if>" +

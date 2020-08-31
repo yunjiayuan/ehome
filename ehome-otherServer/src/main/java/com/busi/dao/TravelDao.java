@@ -192,9 +192,9 @@ public interface TravelDao {
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             " and scenicSpotName LIKE CONCAT('%',#{name},'%')" +
-            "<if test=\"watchVideos == 1\">" +
-            " and videoUrl != ''" +
-            "</if>" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl != ''" +
+//            "</if>" +
             "</if>" +
             "<if test=\"name == null or name == '' \">" +
             " select *" +
