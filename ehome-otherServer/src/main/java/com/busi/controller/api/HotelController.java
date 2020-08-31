@@ -611,7 +611,7 @@ public class HotelController extends BaseController implements HotelApiControlle
     @Override
     public ReturnData claimHotel(@Valid @RequestBody Hotel kitchenReserve, BindingResult bindingResult) {
         Hotel hotel = travelService.findReserve(CommonUtils.getMyId());
-        if (hotel == null) {
+        if (hotel != null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻失败，您已经入驻过酒店或民宿了", new JSONObject());
         }
         HotelData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());

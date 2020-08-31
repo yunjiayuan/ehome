@@ -34,7 +34,7 @@ public class HotelTourismBookedOrders {
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
-    private int ordersType;            //订单类型: 1未接单,2已接单,3进餐中，5进餐完成（客户、未评价）, 7接单超时,8卖家取消订单,9用户取消订单 ,10已评价
+    private int ordersType;            //订单类型: 1未接单,2已接单,3进餐中，5进餐完成（客户、未评价）, 7接单超时,8卖家取消订单,9用户取消订单 ,10已评价 11付款超时
 
     private String kitchenName;                //酒店或景区名称
 

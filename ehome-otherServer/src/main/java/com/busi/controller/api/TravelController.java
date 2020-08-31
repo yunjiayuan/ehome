@@ -226,7 +226,7 @@ public class TravelController extends BaseController implements TravelApiControl
         kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
-    
+
     /***
      * 条件查询景区
      * @param watchVideos 筛选视频：0否 1是
@@ -572,7 +572,7 @@ public class TravelController extends BaseController implements TravelApiControl
     @Override
     public ReturnData claimTravel(@Valid @RequestBody ScenicSpot kitchenReserve, BindingResult bindingResult) {
         ScenicSpot hotel = travelService.findReserve(CommonUtils.getMyId());
-        if (hotel == null) {
+        if (hotel != null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻失败，您已经入驻过景区了", new JSONObject());
         }
         ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());

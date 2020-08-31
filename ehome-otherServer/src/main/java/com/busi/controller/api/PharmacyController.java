@@ -561,7 +561,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
     @Override
     public ReturnData claimPharmacy(@Valid @RequestBody Pharmacy kitchenReserve, BindingResult bindingResult) {
         Pharmacy hotel = travelService.findReserve(CommonUtils.getMyId());
-        if (hotel == null) {
+        if (hotel != null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻失败，您已经入驻过药店了", new JSONObject());
         }
         PharmacyData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
