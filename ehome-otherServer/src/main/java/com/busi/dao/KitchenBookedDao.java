@@ -118,9 +118,9 @@ public interface KitchenBookedDao {
      * @return
      */
     @Insert("insert into KitchenReserve(userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon," +
-            "address,videoUrl,videoCoverUrl,claimId,claimStatus,claimTime,realName,phone,orderingPhone)" +
+            "address,videoUrl,videoCoverUrl,claimId,claimStatus,claimTime,realName,phone,orderingPhone,invitationCode)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{cuisine},#{goodFood},#{kitchenName},#{startingTime},#{addTime},#{healthyCard},#{kitchenCover},#{content},#{totalSales},#{totalScore},#{lat},#{lon}" +
-            ",#{address},#{videoUrl},#{videoCoverUrl},#{claimId},#{claimStatus},#{claimTime},#{realName},#{phone},#{orderingPhone})")
+            ",#{address},#{videoUrl},#{videoCoverUrl},#{claimId},#{claimStatus},#{claimTime},#{realName},#{phone},#{orderingPhone},#{invitationCode})")
     @Options(useGeneratedKeys = true)
     int addKitchen(KitchenReserve kitchen);
 
@@ -525,9 +525,9 @@ public interface KitchenBookedDao {
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
-            " and type=#{type} and deleteType =0" +
+            " and deleteType =0" +
             "</script>")
-    List<KitchenReserveDishes> findDishesList2(@Param("ids") String[] ids, @Param("type") int type);
+    List<KitchenReserveDishes> findDishesList2(@Param("ids") String[] ids);
 
     /***
      * 统计该用户上菜时间数量

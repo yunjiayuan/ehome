@@ -80,7 +80,7 @@ public class HotelTourismBookedOrdersController extends BaseController implement
         if (sd == null || fn == null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
-        iup = kitchenBookedService.findDishesList(sd, type);
+        iup = kitchenBookedService.findDishesList(sd);
         if (iup == null || iup.size() <= 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,菜品不存在", new JSONObject());
         }
@@ -216,7 +216,7 @@ public class HotelTourismBookedOrdersController extends BaseController implement
         if (sd == null || fn == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        List iup = hotelService.findDishesList(sd);
+        List iup = kitchenBookedService.findDishesList(sd);
         if (iup == null || iup.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
