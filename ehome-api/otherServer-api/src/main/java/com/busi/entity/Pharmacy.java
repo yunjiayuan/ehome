@@ -33,7 +33,7 @@ public class Pharmacy {
     @Length(max = 14, message = "药房名称不能超过30字")
     private String pharmacyName;                //药房名称
 
-    private String openType;                // 药房开放类型:0全天 1时间段
+    private int openType;                // 药房开放类型:0全天 1时间段
 
     private String openTime;                // 药房开放时间 openType=1时有效
 
