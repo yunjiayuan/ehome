@@ -272,7 +272,7 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         if(CommonUtils.getMyId()!=10076){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限操作管理员设置",new JSONObject());
         }
-        if(type<0||type>1||status<0||status>1){
+        if(type<0||type>2||status<0||status>1){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误",new JSONObject());
         }
         switch (type) {
