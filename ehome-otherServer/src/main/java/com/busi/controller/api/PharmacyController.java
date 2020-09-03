@@ -373,9 +373,9 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
     @Override
     public ReturnData findPharmacyDrugs(@PathVariable long id) {
         PharmacyDrugs reserveData = travelService.disheSdetails(id);
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", reserveData);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", reserveData);
     }
 
     /***
