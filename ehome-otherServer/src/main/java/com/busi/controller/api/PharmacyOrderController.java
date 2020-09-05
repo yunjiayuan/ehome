@@ -87,7 +87,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,药品信息不可为空", new JSONObject());
         }
         ShippingAddress s = shippingAddressService.findUserById(scenicSpotOrder.getAddressId());
-        if (s == null) {
+        if (s == null && scenicSpotOrder.getDistributionMode() == 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,收货地址有误", new JSONObject());
         }
         String[] sd = scenicSpotOrder.getTicketsIds().split(",");//药品ID
