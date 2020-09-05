@@ -26,7 +26,7 @@ public class PharmacyOrder {
 
     private String no;                    //订单编号
 
-    private String dishameCost;        //药品  药品ID,名称,数量,价格【格式：12,儿童药,5,24;儿童药,4,32】
+    private String dishameCost;        //药品  药品ID,名称,数量,价格,图片,规格【格式：12,儿童药,5,24,图片,规格;儿童药,4,32,图片,规格】
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 

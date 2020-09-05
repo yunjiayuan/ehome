@@ -61,6 +61,8 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         String dishame = "";
         String dishes = "";
         double money = 0.0;
+        String imgUrl = "";   //图片
+        String specs = "";    //规格
         Date date = new Date();
         PharmacyDrugs laf = null;
         PharmacyDrugs dis = null;
@@ -105,7 +107,12 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
                     if (dis.getId() == Long.parseLong(sd[j])) {//确认是当前药品ID
                         double cost = dis.getCost();//单价
                         dishame = dis.getName();//药品名称
-                        dishes += dis.getId() + "," + dishame + "," + Integer.parseInt(fn[j]) + "," + cost + (i == iup.size() - 1 ? "" : ";");//药品ID,名称,数量,价格;
+                        if (!CommonUtils.checkFull(dis.getPicture())) {
+                            String[] img = dis.getPicture().split(",");
+                            imgUrl = img[0];//用第一张图做封面
+                        }
+                        specs = dis.getSpecifications();//规格
+                        dishes += dis.getId() + "," + dishame + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + (i == iup.size() - 1 ? "" : ";");//药品ID,名称,数量,价格,图片,规格;
                         money += Integer.parseInt(fn[j]) * cost;//总价格
                     }
                 }
@@ -130,7 +137,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             String[] strings = kh.getPicture().split(",");
             scenicSpotOrder.setSmallMap(strings[0]);
         }
-        scenicSpotOrder.setDishameCost(dishes);//名称,数量,价格
+        scenicSpotOrder.setDishameCost(dishes);//名称,数量,价格,图片,规格
         scenicSpotOrder.setMoney(money);//总价
         scenicSpotOrder.setAddress(s.getAddress());
         scenicSpotOrder.setAddress_Name(s.getContactsName());
