@@ -87,21 +87,24 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         }
         kitchenBookedService.addKitchen(kitchenReserve);
         //新增默认菜品分类
-        String[] strings = null;
-        switch (kitchenReserve.getMerchantsType()) {
-            case 0:
-                strings = new String[]{"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
-            case 1:
-                strings = new String[]{"洋酒", "红酒", "鸡尾酒", "啤酒", "饮料", "小吃", "其他"};
-            case 2:
-                strings = new String[]{"洋酒", "红酒", "鸡尾酒", "啤酒", "饮料", "水果", "小吃", "其他"};
-            case 3:
-                strings = new String[]{"绿茶", "黄茶", "白茶", "青茶/乌龙茶", "红茶", "黑茶", "水果", "小吃", "其他"};
-            case 4:
-                strings = new String[]{"浓缩咖啡", "马琪雅朵", "美式咖啡", "白咖啡", "拿铁咖啡", "康宝蓝", "卡布奇诺", "摩卡咖啡", "焦糖玛琪朵", "维也纳咖啡", "爱尔兰咖啡", "其他咖啡", "奶茶", "冰激淋", "汁果", "糕点", "小吃", "其他"};
-            case 5:
-                strings = null;
+        String string = "";
+        int merchantsType = kitchenReserve.getMerchantsType();
+        if (merchantsType == 0) {
+            string = "特色菜,凉菜,热菜,主食,白酒,红酒,啤酒,洋酒,黄酒,饮料,水";
         }
+        if (merchantsType == 1) {
+            string = "洋酒,红酒,鸡尾酒,啤酒,饮料,小吃,其他";
+        }
+        if (merchantsType == 2) {
+            string = "洋酒,红酒,鸡尾酒,啤酒,饮料,水果,小吃,其他";
+        }
+        if (merchantsType == 3) {
+            string = "绿茶,黄茶,白茶,青茶/乌龙茶,红茶,黑茶,水果,小吃,其他";
+        }
+        if (merchantsType == 4) {
+            string = "浓缩咖啡,马琪雅朵,美式咖啡,白咖啡,拿铁咖啡,康宝蓝,卡布奇诺,摩卡咖啡,焦糖玛琪朵,维也纳咖啡,爱尔兰咖啡,其他咖啡,奶茶,冰激淋,汁果,糕点,小吃,其他";
+        }
+        String[] strings = string.split(",");
         if (strings != null && strings.length > 0) {
             for (int i = 0; i < strings.length; i++) {
                 KitchenDishesSort sort = new KitchenDishesSort();
