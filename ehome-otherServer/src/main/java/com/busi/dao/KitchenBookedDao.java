@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @program: ehome
- * @description: 厨房订座设置
+ * @description: 订座设置
  * @author: ZHaoJiaJie
  * @create: 2019-06-27 10:09
  */
@@ -118,9 +118,9 @@ public interface KitchenBookedDao {
      * @return
      */
     @Insert("insert into KitchenReserve(userId,businessStatus,deleteType,auditType,cuisine,goodFood,kitchenName,startingTime,addTime,healthyCard,kitchenCover,content,totalSales,totalScore,lat,lon," +
-            "address,videoUrl,videoCoverUrl,claimId,claimStatus,claimTime,realName,phone,orderingPhone,invitationCode)" +
+            "address,videoUrl,videoCoverUrl,claimId,claimStatus,claimTime,realName,phone,orderingPhone,invitationCode,merchantsType)" +
             "values (#{userId},#{businessStatus},#{deleteType},#{auditType},#{cuisine},#{goodFood},#{kitchenName},#{startingTime},#{addTime},#{healthyCard},#{kitchenCover},#{content},#{totalSales},#{totalScore},#{lat},#{lon}" +
-            ",#{address},#{videoUrl},#{videoCoverUrl},#{claimId},#{claimStatus},#{claimTime},#{realName},#{phone},#{orderingPhone},#{invitationCode})")
+            ",#{address},#{videoUrl},#{videoCoverUrl},#{claimId},#{claimStatus},#{claimTime},#{realName},#{phone},#{orderingPhone},#{invitationCode},#{merchantsType})")
     @Options(useGeneratedKeys = true)
     int addKitchen(KitchenReserve kitchen);
 

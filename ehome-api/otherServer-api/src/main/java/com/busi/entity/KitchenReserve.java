@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  * @program: ehome
- * @description: 厨房订座实体
+ * @description: 订座实体
  * @author: ZHaoJiaJie
  * @create: 2019-07-31 14:06
  */
@@ -45,7 +45,9 @@ public class KitchenReserve {
     @Length(max = 14, message = "厨房名称不能超过14字")
     private String kitchenName;                //厨房名称
 
-    private int startingTime;                // 起送时间
+    private int startingTime;                // 平均等候上菜时长
+
+    private int merchantsType;                // 商户类型:0餐馆、1酒吧、2KTV、3茶馆、4咖啡厅、5其他，默认餐馆
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;            // 添加时间
