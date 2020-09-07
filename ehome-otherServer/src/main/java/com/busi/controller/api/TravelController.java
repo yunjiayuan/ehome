@@ -579,20 +579,6 @@ public class TravelController extends BaseController implements TravelApiControl
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区不存在", new JSONObject());
         }
-        //更新景区数据
-        kitchen.setClaimStatus(1);
-        kitchen.setClaimTime(new Date());
-        kitchen.setUserId(CommonUtils.getMyId());
-        travelService.claimKitchen(kitchen);
-        //更新景区
-        ScenicSpot reserve = new ScenicSpot();
-        reserve.setPhone(kitchen.getPhone());
-        reserve.setLicence(kitchenReserve.getLicence());
-        reserve.setClaimId(kitchen.getUid());
-        reserve.setClaimStatus(1);
-        reserve.setClaimTime(kitchen.getClaimTime());
-        reserve.setUserId(CommonUtils.getMyId());
-        travelService.claimKitchen2(reserve);
         //判断是否有邀请码
         long myId = CommonUtils.getMyId();
         double redPacketsMoney = 10;
@@ -627,6 +613,20 @@ public class TravelController extends BaseController implements TravelApiControl
             //新增邀请者奖励记录
             mqUtils.addRewardLog(userId, 12, 0, redPacketsMoney, 0);
         }
+        //更新景区数据
+        kitchen.setClaimStatus(1);
+        kitchen.setClaimTime(new Date());
+        kitchen.setUserId(CommonUtils.getMyId());
+        travelService.claimKitchen(kitchen);
+        //更新景区
+        ScenicSpot reserve = new ScenicSpot();
+        reserve.setPhone(kitchen.getPhone());
+        reserve.setLicence(kitchenReserve.getLicence());
+        reserve.setClaimId(kitchen.getUid());
+        reserve.setClaimStatus(1);
+        reserve.setClaimTime(kitchen.getClaimTime());
+        reserve.setUserId(CommonUtils.getMyId());
+        travelService.claimKitchen2(reserve);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

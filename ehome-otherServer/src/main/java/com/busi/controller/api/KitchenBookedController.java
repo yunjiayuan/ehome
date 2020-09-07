@@ -329,32 +329,6 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻店铺不存在", new JSONObject());
         }
-        //更新订座数据
-        kitchen.setClaimStatus(1);
-        kitchen.setClaimTime(new Date());
-        kitchen.setUserId(CommonUtils.getMyId());
-        kitchenBookedService.claimKitchen(kitchen);
-        //更新订座厨房
-        KitchenReserve reserve = new KitchenReserve();
-        reserve.setRealName(kitchenReserve.getRealName());
-        reserve.setPhone(kitchenReserve.getPhone());
-        reserve.setOrderingPhone(kitchenReserve.getOrderingPhone());
-        reserve.setHealthyCard(kitchenReserve.getHealthyCard());
-        reserve.setClaimId(kitchen.getUid());
-        reserve.setClaimStatus(1);
-        reserve.setClaimTime(kitchen.getClaimTime());
-        reserve.setUserId(CommonUtils.getMyId());
-        kitchenBookedService.claimKitchen2(reserve);
-        //新增默认菜品分类
-        String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
-        for (int i = 0; i < strings.length; i++) {
-            KitchenDishesSort sort = new KitchenDishesSort();
-            sort.setName(strings[i]);
-            sort.setUserId(CommonUtils.getMyId());
-            sort.setKitchenId(reserve.getId());
-            sort.setBookedState(1);
-            kitchenService.addSort(sort);
-        }
         //判断是否有邀请码
         double redPacketsMoney = 10;
         String proId = "";
@@ -387,6 +361,32 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             }
             //新增邀请者奖励记录
             mqUtils.addRewardLog(userId, 11, 0, redPacketsMoney, 0);
+        }
+        //更新订座数据
+        kitchen.setClaimStatus(1);
+        kitchen.setClaimTime(new Date());
+        kitchen.setUserId(CommonUtils.getMyId());
+        kitchenBookedService.claimKitchen(kitchen);
+        //更新订座厨房
+        KitchenReserve reserve = new KitchenReserve();
+        reserve.setRealName(kitchenReserve.getRealName());
+        reserve.setPhone(kitchenReserve.getPhone());
+        reserve.setOrderingPhone(kitchenReserve.getOrderingPhone());
+        reserve.setHealthyCard(kitchenReserve.getHealthyCard());
+        reserve.setClaimId(kitchen.getUid());
+        reserve.setClaimStatus(1);
+        reserve.setClaimTime(kitchen.getClaimTime());
+        reserve.setUserId(CommonUtils.getMyId());
+        kitchenBookedService.claimKitchen2(reserve);
+        //新增默认菜品分类
+        String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
+        for (int i = 0; i < strings.length; i++) {
+            KitchenDishesSort sort = new KitchenDishesSort();
+            sort.setName(strings[i]);
+            sort.setUserId(CommonUtils.getMyId());
+            sort.setKitchenId(reserve.getId());
+            sort.setBookedState(1);
+            kitchenService.addSort(sort);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
