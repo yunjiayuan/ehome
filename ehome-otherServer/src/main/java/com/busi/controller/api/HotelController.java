@@ -60,7 +60,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         Hotel ik = (Hotel) CommonUtils.mapToObject(kitchenMap, Hotel.class);
         if (ik != null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "入驻酒店民宿失败，酒店民宿已存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
         }
         scenicSpot.setAuditType(0);
         scenicSpot.setBusinessStatus(1);//酒店民宿默认关闭
@@ -612,7 +612,7 @@ public class HotelController extends BaseController implements HotelApiControlle
     public ReturnData claimHotel(@Valid @RequestBody Hotel kitchenReserve, BindingResult bindingResult) {
         Hotel hotel = travelService.findReserve(CommonUtils.getMyId());
         if (hotel != null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻失败，您已经入驻过酒店或民宿了", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
         }
         HotelData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
@@ -632,6 +632,40 @@ public class HotelController extends BaseController implements HotelApiControlle
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         travelService.claimKitchen2(reserve);
+        //判断是否有邀请码
+        long myId = CommonUtils.getMyId();
+        double redPacketsMoney = 10;
+        String proId = "";
+        String shareCode = kitchenReserve.getInvitationCode();
+        if (!CommonUtils.checkFull(shareCode)) {
+            //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+            if (shareCode.indexOf("0") != 0) {
+                proId = shareCode.substring(0, 2);
+            } else {
+                proId = shareCode.substring(1, 2);
+            }
+            long userId = 0;
+            Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+            if (userIdMap == null || userIdMap.size() <= 0) {
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在!", new JSONObject());
+            }
+            for (String key : userIdMap.keySet()) {
+                Object object = key;
+                if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                    userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                    break;
+                }
+            }
+            if (userId <= 0) {
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在!", new JSONObject());
+            }
+            //验证参数
+            if (myId == userId) {
+                return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+            }
+            //新增邀请者奖励记录
+            mqUtils.addRewardLog(userId, 13, 0, redPacketsMoney, 0);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
