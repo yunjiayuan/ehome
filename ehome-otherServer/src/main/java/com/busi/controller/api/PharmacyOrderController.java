@@ -67,6 +67,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         PharmacyDrugs laf = null;
         PharmacyDrugs dis = null;
         List iup = null;
+        ShippingAddress s = null;
         Map<String, Object> map = new HashMap<>();
         //查询药店 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_PHARMACY + scenicSpotOrder.getUserId());
@@ -86,9 +87,14 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         if (CommonUtils.checkFull(scenicSpotOrder.getTicketsIds()) || CommonUtils.checkFull(scenicSpotOrder.getTicketsNumber())) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,药品信息不可为空", new JSONObject());
         }
-        ShippingAddress s = shippingAddressService.findUserById(scenicSpotOrder.getAddressId());
-        if (s == null && scenicSpotOrder.getDistributionMode() == 0) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,收货地址有误", new JSONObject());
+        if (scenicSpotOrder.getDistributionMode() == 0) {
+            s = shippingAddressService.findUserById(scenicSpotOrder.getAddressId());
+            if (s == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,收货地址有误", new JSONObject());
+            }
+            scenicSpotOrder.setAddress(s.getAddress());
+            scenicSpotOrder.setAddress_Name(s.getContactsName());
+            scenicSpotOrder.setAddress_Phone(s.getContactsPhone());
         }
         String[] sd = scenicSpotOrder.getTicketsIds().split(",");//药品ID
         String[] fn = scenicSpotOrder.getTicketsNumber().split(",");//药品数量
@@ -139,9 +145,6 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         }
         scenicSpotOrder.setDishameCost(dishes);//名称,数量,价格,图片,规格
         scenicSpotOrder.setMoney(money);//总价
-        scenicSpotOrder.setAddress(s.getAddress());
-        scenicSpotOrder.setAddress_Name(s.getContactsName());
-        scenicSpotOrder.setAddress_Phone(s.getContactsPhone());
         travelOrderService.addOrders(scenicSpotOrder);
         map.put("infoId", scenicSpotOrder.getNo());
 
@@ -242,7 +245,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             String time = dateFormat.format(io.getInspectTicketTime());
             return returnData(StatusCode.CODE_TRAVEL_REPEAT.CODE_VALUE, "您已于" + time + "扫码取药成功", io);
         }
-        if (io.getVerificationType() == 0 && io.getDistributionMode() == 1) {//买家自取、已付款未验票
+        if (io.getVerificationType() == 0) {
             if (io.getUserId() != CommonUtils.getMyId()) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限核验", io);
             }
@@ -284,7 +287,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             io.setCompleteTime(new Date());
             io.setInspectTicketTime(new Date());
             io.setVerificationType(1);
-            io.setOrdersType(3);
+//            io.setOrdersType(3);
             io.setUpdateCategory(6);
             travelOrderService.updateOrders(io);
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
@@ -366,30 +369,18 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         }
         //商家取消订单
         if (ko.getUserId() == CommonUtils.getMyId()) {
-            if (ko.getDistributionMode() == 1) {//可以取消用户未验票状态的单子
-                if (ko.getVerificationType() == 0) {
-                    ko.setOrdersType(4);
-                }
-            } else {
-                if (ko.getOrdersType() < 3) {//未完成的
-                    ko.setOrdersType(4);
-                }
+            if (ko.getVerificationType() == 0) {//可以取消用户未验票状态的单子
+                ko.setVerificationType(3);
             }
         }
         if (ko.getMyId() == CommonUtils.getMyId()) {
-            if (ko.getDistributionMode() == 1) {//用户可以取消商家未验票状态的单子
-                if (ko.getVerificationType() == 0) {
-                    ko.setOrdersType(5);
-                }
-            } else {
-                if (ko.getOrdersType() == 0) {
-                    ko.setOrdersType(5);
-                }
+            if (ko.getVerificationType() == 0) {//用户可以取消商家未验票状态的单子
+                ko.setVerificationType(4);
             }
         }
         ko.setUpdateCategory(5);
         travelOrderService.updateOrders(ko);//更新订单
-        if ((ko.getOrdersType() == 4 || ko.getOrdersType() == 5) && ko.getPaymentStatus() == 1) {
+        if (ko.getVerificationType() == 1 && ko.getPaymentStatus() == 1) {
             //更新缓存、钱包、账单
             if (ko.getMoney() > 0) {
                 mqUtils.sendPurseMQ(ko.getMyId(), 40, 0, ko.getMoney());
@@ -407,7 +398,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
      * 订单管理条件查询
      * @param userId
      * @param identity     身份区分：1买家 2商家
-     * @param ordersType   订单类型: -1全部 0待支付 1待验证, 2待评价
+     * @param ordersType   订单类型: -1全部 0待验证,1已验证 2已评价
      * @param page         当前查询数据的页码
      * @param count        每页的显示条数
      * @return
@@ -480,12 +471,12 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         if (shopPharmacyComment.getReplyType() == 0) {//新增评论
             //查询该景区订单信息
             PharmacyOrder io = travelOrderService.findById(shopPharmacyComment.getOrderId(), CommonUtils.getMyId(), -1);
-            if (io == null || io.getMyId() != CommonUtils.getMyId() || (io.getOrdersType() != 1 && io.getOrdersType() != 2)) {
+            if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getVerificationType() != 1) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
             }
             //更新订单状态为已评价
-            io.setOrdersType(3);
-            io.setUpdateCategory(4);
+            io.setVerificationType(2);
+            io.setUpdateCategory(5);
             travelOrderService.updateOrders(io);
             //清除缓存中的景区 订单信息
             redisUtils.expire(Constants.REDIS_KEY_PHARMACYORDERS + io.getMyId() + "_" + io.getNo(), 0);

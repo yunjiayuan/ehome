@@ -233,7 +233,7 @@ public interface PharmacyDao {
             "<if test=\"natureType >= 0\">" +
             " and natureType=#{natureType}" +
             "</if>" +
-            " order by cost asc" +
+            " order by addTime asc" +
             "</script>")
     List<PharmacyDrugs> findDishesList(@Param("kitchenId") long kitchenId, @Param("natureType") int natureType);
 

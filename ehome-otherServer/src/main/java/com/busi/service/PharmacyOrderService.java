@@ -69,7 +69,7 @@ public class PharmacyOrderService {
     /***
      * 订单管理条件查询
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型: -1全部 0待支付 1待验证, 2待评价
+     * @param ordersType  : 订单类型: -1全部 0待验证,1已验证
      * @param count       : 每页的显示条数
      * @param page        : 当前查询数据的页码
      * @return

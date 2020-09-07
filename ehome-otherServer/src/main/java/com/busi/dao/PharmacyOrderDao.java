@@ -23,10 +23,10 @@ public interface PharmacyOrderDao {
      * @param kitchenBookedOrders
      * @return
      */
-    @Insert("insert into PharmacyOrder(userId,myId,pharmacyId,no,dishameCost,ordersType,ordersState,pharmacyName,addTime,distributionMode,money,smallMap,inspectTicketTime," +
-            "completeTime,address,address_Phone,address_Name,voucherCode,serviceTime,addressId)" +
-            "values (#{userId},#{myId},#{pharmacyId},#{no},#{dishameCost},#{ordersType},#{ordersState},#{pharmacyName},#{addTime},#{distributionMode},#{money},#{smallMap},#{inspectTicketTime}" +
-            ",#{completeTime},#{address},#{address_Phone},#{address_Name},#{voucherCode},#{serviceTime},#{addressId})")
+    @Insert("insert into PharmacyOrder(userId,myId,pharmacyId,no,dishameCost,ordersState,pharmacyName,addTime,distributionMode,money,smallMap,inspectTicketTime," +
+            "completeTime,address,address_Phone,address_Name,voucherCode,serviceTime,addressId,verificationType)" +
+            "values (#{userId},#{myId},#{pharmacyId},#{no},#{dishameCost},#{ordersState},#{pharmacyName},#{addTime},#{distributionMode},#{money},#{smallMap},#{inspectTicketTime}" +
+            ",#{completeTime},#{address},#{address_Phone},#{address_Name},#{voucherCode},#{serviceTime},#{addressId},#{verificationType})")
     @Options(useGeneratedKeys = true)
     int addOrders(PharmacyOrder kitchenBookedOrders);
 
@@ -40,19 +40,19 @@ public interface PharmacyOrderDao {
             "select * from PharmacyOrder" +
             " where id = #{id}" +
             "<if test=\"type == 0\">" +
-            " and ordersType > 2 and ordersState != 3" +
+            " and verificationType > 1 and ordersState != 3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0 and ordersType=0 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
+            " and ordersState=0 and verificationType=0 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
             "</if>" +
             "<if test=\"type == 2\">" +
-            " and ordersState=0 and ordersType=1 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
+            " and ordersState=0 and verificationType=1 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
             "</if>" +
             "<if test=\"type == 3\">" +
             " and ordersState=0 " +
             "</if>" +
             "<if test=\"type == 4\">" +
-            " and ordersState = 0 and ordersType=2 and paymentStatus = 1 and distributionMode = 0" +
+            " and ordersState = 0 and verificationType=2 and paymentStatus = 1 and distributionMode = 0" +
             "</if>" +
             "<if test=\"type == 5\">" +
             " and ordersState = 0" +
@@ -84,15 +84,15 @@ public interface PharmacyOrderDao {
             " ordersState =#{ordersState}" +
             "</if>" +
             "<if test=\"updateCategory == 1\">" +
-            " ordersType =#{ordersType}," +
+            " verificationType =#{verificationType}," +
             " orderTime =#{orderTime}" +
             "</if>" +
             "<if test=\"updateCategory == 2\">" +
-            " ordersType =#{ordersType}," +
+            " verificationType =#{verificationType}," +
             " deliveryTime =#{deliveryTime}" +
             "</if>" +
             "<if test=\"updateCategory == 3\">" +
-            " ordersType =#{ordersType}," +
+            " verificationType =#{verificationType}," +
             " completeTime =#{completeTime}" +
             "</if>" +
             "<if test=\"updateCategory == 4\">" +
@@ -100,10 +100,9 @@ public interface PharmacyOrderDao {
             " paymentTime=#{paymentTime}" +
             "</if>" +
             "<if test=\"updateCategory == 5\">" +
-            " ordersType =#{ordersType}" +
+            " verificationType =#{verificationType}" +
             "</if>" +
             "<if test=\"updateCategory == 6\">" +
-            " ordersType =#{ordersType}," +
             " verificationType =#{verificationType}," +
             " inspectTicketTime =#{inspectTicketTime}," +
             " completeTime =#{completeTime}" +
@@ -115,7 +114,7 @@ public interface PharmacyOrderDao {
     /***
      * 订单管理条件查询
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  -1全部 0待支付 1待验证, 2待评价
+     * @param verificationType  : 订单类型:  -1全部 0待验证,1已验证
      * @return
      */
     @Select("<script>" +
@@ -127,21 +126,19 @@ public interface PharmacyOrderDao {
             "<if test=\"identity == 2 \">" +
             " and userId = #{userId}" +
             "</if>" +
-            "<if test=\"ordersType == 0\">" +
-            " and paymentStatus = 0" +
-            " and ordersType = 0" +
-            "</if>" +
-            "<if test=\"ordersType == 1\">" +
-            " and paymentStatus = 1" +
+            "<if test=\"verificationType == 0\">" +
             " and verificationType = 0" +
-            " and distributionMode = 1" +
             "</if>" +
-            "<if test=\"ordersType == 2\">" +
-            " and ordersType = 3" +
+            "<if test=\"verificationType == 1\">" +
+            " and paymentStatus = 1" +
+            " and verificationType = 1" +
+            "</if>" +
+            "<if test=\"verificationType == 2\">" +
+            " and verificationType = 2" +
             "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<PharmacyOrder> findOrderList(@Param("identity") int identity, @Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<PharmacyOrder> findOrderList(@Param("identity") int identity, @Param("userId") long userId, @Param("verificationType") int verificationType);
 
     /***
      * 更新评分
