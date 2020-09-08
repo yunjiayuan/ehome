@@ -75,7 +75,7 @@ public class WeixinUtils {
 			return null;
 		}
 		String result = WeixinUtils.httpsRequest(WeixinConfig.WEIXIN_URL, "POST", requestXml);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+result);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+result);
 		WeixinSignBean wsb = null;
 		if(!CommonUtils.checkFull(result)){			
 			wsb = parse(result);			
