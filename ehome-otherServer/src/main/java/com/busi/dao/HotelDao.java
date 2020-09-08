@@ -142,9 +142,9 @@ public interface HotelDao {
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             " and hotelName LIKE CONCAT('%',#{name},'%')" +
-            "<if test=\"watchVideos == 1\">" +
-            " and videoUrl != ''" +
-            "</if>" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl != ''" +
+//            "</if>" +
             "<if test=\"hotelType >= 0\">" +
             " and hotelType = #{hotelType}" +
             "</if>" +
@@ -279,16 +279,25 @@ public interface HotelDao {
      * @param userId
      * @return
      */
-    @Select("select * from HotelCollection where myId=#{userId} and userId=#{id}")
+    @Select("select * from HotelCollection where myId=#{userId} and hotelId=#{id}")
     HotelCollection findWhether(@Param("userId") long userId, @Param("id") long id);
+
+    /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    @Select("select * from HotelCollection where myId=#{userId} and userId=#{id}")
+    HotelCollection findWhether2(@Param("userId") long userId, @Param("id") long id);
+
 
     /***
      * 新增收藏
      * @param HotelCollection
      * @return
      */
-    @Insert("insert into HotelCollection(myId,userId,name,picture,time) " +
-            "values (#{myId},#{userId},#{name},#{picture},#{time})")
+    @Insert("insert into HotelCollection(myId,userId,name,picture,time,type,levels,hotelType,hotelId) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{levels},#{hotelType},#{hotelId})")
     @Options(useGeneratedKeys = true)
     int addCollect(HotelCollection HotelCollection);
 
@@ -448,4 +457,17 @@ public interface HotelDao {
             "</script>")
     int updateReserveData(HotelData kitchen);
 
+    /***
+     * 批量查询指定的酒店
+     * @param ids
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Hotel" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    List<Hotel> findKitchenList4(@Param("ids") String[] ids);
 }

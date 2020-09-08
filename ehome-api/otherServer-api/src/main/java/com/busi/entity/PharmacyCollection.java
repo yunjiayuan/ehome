@@ -18,6 +18,8 @@ public class PharmacyCollection {
 
     private long id;        //主键ID
 
+    private long pharmacyId;        //药店ID
+
     @Min(value = 1, message = "myId参数有误")
     private long myId;        //用户ID
 
@@ -29,4 +31,8 @@ public class PharmacyCollection {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;        //收藏时间
+
+    private String type;            // 类型
+
+    private int levels;            // 级别
 }

@@ -525,12 +525,27 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
                     ev.setUserId(CommonUtils.getMyId());
                     ev.setKitchenCover(kh.getKitchenCover());
                     ev.setTime(new Date());
-
                     kitchenOrdersService.addEvaluate(ev);
 
-                    kh.setTotalScore(ev.getScore() + kh.getTotalScore());
-                    kitchenService.updateScore(kh);//更新厨房总评分
-
+                    //更新评论平均分
+                    List list1 = kitchenService.findKitchenList6(io.getKitchenId(), 0);
+                    if (list1 != null && list1.size() > 0) {
+                        long score = 0;//总分
+                        double averageScore = 0;   // 平均评分
+                        for (int i = 0; i < list1.size(); i++) {
+                            KitchenEvaluate kitchenEvaluate = (KitchenEvaluate) list1.get(i);
+                            if (kitchenEvaluate == null) {
+                                continue;
+                            }
+                            score += kitchenEvaluate.getScore();
+                        }
+                        //更新厨房总评分
+                        kh.setTotalScore(score);
+                        //更新评论平均分
+                        averageScore = score / list1.size();
+                        kh.setAverageScore((int) Math.round(averageScore));
+                        kitchenService.updateScore(kh);
+                    }
                     io.setOrdersType(10);//更新订单状态为已评价
                     io.setUpdateCategory(5);
                     kitchenOrdersService.updateOrders(io);
@@ -597,9 +612,25 @@ public class KitchenOrdersController extends BaseController implements KitchenOr
 
                     kitchenOrdersService.addEvaluate(ev);
 
-                    kh.setTotalScore(ev.getScore() + kh.getTotalScore());
-                    kitchenBookedService.updateScore(kh);//更新厨房总评分
-
+                    //更新评论平均分
+                    List list1 = kitchenService.findKitchenList6(io.getKitchenId(), 1);
+                    if (list1 != null && list1.size() > 0) {
+                        long score = 0;//总分
+                        double averageScore = 0;   // 平均评分
+                        for (int i = 0; i < list1.size(); i++) {
+                            KitchenEvaluate kitchenEvaluate = (KitchenEvaluate) list1.get(i);
+                            if (kitchenEvaluate == null) {
+                                continue;
+                            }
+                            score += kitchenEvaluate.getScore();
+                        }
+                        //更新总评分
+                        kh.setTotalScore(score);
+                        //更新评论平均分
+                        averageScore = score / list1.size();
+                        kh.setAverageScore((int) Math.round(averageScore));
+                        kitchenBookedService.updateScore(kh);
+                    }
                     io.setOrdersType(10);//更新订单状态为已评价
                     io.setUpdateCategory(6);
                     kitchenBookedOrdersService.updateOrders(io);

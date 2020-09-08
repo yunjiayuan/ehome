@@ -72,7 +72,8 @@ public interface HourlyWorkerDao {
      */
     @Update("<script>" +
             "update HourlyWorker set" +
-            " totalScore=#{totalScore}" +
+            " totalScore=#{totalScore}," +
+            " averageScore=#{averageScore}" +
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateScore(HourlyWorker hourlyWorker);

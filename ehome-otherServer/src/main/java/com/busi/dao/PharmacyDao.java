@@ -133,9 +133,9 @@ public interface PharmacyDao {
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             " and pharmacyName LIKE CONCAT('%',#{name},'%')" +
-            "<if test=\"watchVideos == 1\">" +
-            " and videoUrl != ''" +
-            "</if>" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl != ''" +
+//            "</if>" +
             "</if>" +
             "<if test=\"name == null or name == '' \">" +
             " select *" +
@@ -233,7 +233,7 @@ public interface PharmacyDao {
             "<if test=\"natureType >= 0\">" +
             " and natureType=#{natureType}" +
             "</if>" +
-            " order by cost asc" +
+            " order by addTime asc" +
             "</script>")
     List<PharmacyDrugs> findDishesList(@Param("kitchenId") long kitchenId, @Param("natureType") int natureType);
 
@@ -274,12 +274,20 @@ public interface PharmacyDao {
     PharmacyCollection findWhether(@Param("userId") long userId, @Param("id") long id);
 
     /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    @Select("select * from PharmacyCollection where myId=#{userId} and pharmacyId=#{id}")
+    PharmacyCollection findWhether2(@Param("userId") long userId, @Param("id") long id);
+
+    /***
      * 新增收藏
      * @param PharmacyCollection
      * @return
      */
-    @Insert("insert into PharmacyCollection(myId,userId,name,picture,time) " +
-            "values (#{myId},#{userId},#{name},#{picture},#{time})")
+    @Insert("insert into PharmacyCollection(myId,userId,name,picture,time,type,levels,pharmacyId) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{levels},#{pharmacyId})")
     @Options(useGeneratedKeys = true)
     int addCollect(PharmacyCollection PharmacyCollection);
 

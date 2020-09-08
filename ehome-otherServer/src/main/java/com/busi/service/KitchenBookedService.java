@@ -352,9 +352,9 @@ public class KitchenBookedService {
      * @param ids
      * @return
      */
-    public List<KitchenReserveDishes> findDishesList(String[] ids, int type) {
+    public List<KitchenReserveDishes> findDishesList(String[] ids) {
         List<KitchenReserveDishes> list;
-        list = kitchenBookedDao.findDishesList2(ids, type);
+        list = kitchenBookedDao.findDishesList2(ids);
         return list;
     }
 

@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  * @program: ehome
- * @description: 厨房订座设置
+ * @description: 订座设置
  * @author: ZHaoJiaJie
  * @create: 2019-06-26 17:51
  */
@@ -74,10 +74,10 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         }
         KitchenReserve ik = (KitchenReserve) CommonUtils.mapToObject(kitchenMap, KitchenReserve.class);
         if (ik != null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增可预订厨房失败，厨房已存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
         }
         kitchenReserve.setAuditType(1);
-        kitchenReserve.setClaimStatus(1);//默认自己新增店铺为已认领
+        kitchenReserve.setClaimStatus(1);//默认自己新增店铺为已入驻
         kitchenReserve.setBusinessStatus(1);//厨房默认关闭
         kitchenReserve.setAddTime(new Date());
         //菜系最多选四个
@@ -87,14 +87,33 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         }
         kitchenBookedService.addKitchen(kitchenReserve);
         //新增默认菜品分类
-        String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
-        for (int i = 0; i < strings.length; i++) {
-            KitchenDishesSort sort = new KitchenDishesSort();
-            sort.setName(strings[i]);
-            sort.setUserId(kitchenReserve.getUserId());
-            sort.setKitchenId(kitchenReserve.getId());
-            sort.setBookedState(1);
-            kitchenService.addSort(sort);
+        String string = "";
+        int merchantsType = kitchenReserve.getMerchantsType();
+        if (merchantsType == 0) {
+            string = "特色菜,凉菜,热菜,主食,白酒,红酒,啤酒,洋酒,黄酒,饮料,水";
+        }
+        if (merchantsType == 1) {
+            string = "洋酒,红酒,鸡尾酒,啤酒,饮料,小吃,其他";
+        }
+        if (merchantsType == 2) {
+            string = "洋酒,红酒,鸡尾酒,啤酒,饮料,水果,小吃,其他";
+        }
+        if (merchantsType == 3) {
+            string = "绿茶,黄茶,白茶,青茶/乌龙茶,红茶,黑茶,水果,小吃,其他";
+        }
+        if (merchantsType == 4) {
+            string = "浓缩咖啡,马琪雅朵,美式咖啡,白咖啡,拿铁咖啡,康宝蓝,卡布奇诺,摩卡咖啡,焦糖玛琪朵,维也纳咖啡,爱尔兰咖啡,其他咖啡,奶茶,冰激淋,汁果,糕点,小吃,其他";
+        }
+        String[] strings = string.split(",");
+        if (strings != null && strings.length > 0) {
+            for (int i = 0; i < strings.length; i++) {
+                KitchenDishesSort sort = new KitchenDishesSort();
+                sort.setName(strings[i]);
+                sort.setUserId(kitchenReserve.getUserId());
+                sort.setKitchenId(kitchenReserve.getId());
+                sort.setBookedState(1);
+                kitchenService.addSort(sort);
+            }
         }
         Map<String, Object> map2 = new HashMap<>();
         map2.put("infoId", kitchenReserve.getId());
@@ -108,7 +127,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData addReserveData(@Valid @RequestBody KitchenReserveData kitchenReserve, BindingResult bindingResult) {
+    public ReturnData addReserveData(@Valid @RequestBody KitchenReserveData kitchenReserve, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -193,7 +213,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData updReserveStatus(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult) {
+    public ReturnData updReserveStatus(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult
+            bindingResult) {
         //判断该用户是否实名
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + kitchenReserve.getUserId());
         if (map == null || map.size() <= 0) {
@@ -292,19 +313,54 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     }
 
     /***
-     * 认领店铺
+     * 入驻店铺
      * @param kitchenReserve
      * @param bindingResult
      * @return
      */
     @Override
     public ReturnData claimKitchen(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult) {
-        KitchenReserveData kitchen = kitchenBookedService.findReserveDataId(kitchenReserve.getClaimId());
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领店铺不存在", new JSONObject());
+        long myId = CommonUtils.getMyId();
+        KitchenReserve serviceReserve = kitchenBookedService.findReserve(CommonUtils.getMyId());
+        if (serviceReserve != null) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
         }
-        if (kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "认领店铺不存在", new JSONObject());
+        KitchenReserveData kitchen = kitchenBookedService.findReserveDataId(kitchenReserve.getClaimId());
+        if (kitchen == null || kitchen.getClaimStatus() == 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻店铺不存在", new JSONObject());
+        }
+        //判断是否有邀请码
+        double redPacketsMoney = 10;
+        String proId = "";
+        String shareCode = kitchenReserve.getInvitationCode();
+        if (!CommonUtils.checkFull(shareCode)) {
+            //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+            if (shareCode.indexOf("0") != 0) {
+                proId = shareCode.substring(0, 2);
+            } else {
+                proId = shareCode.substring(1, 2);
+            }
+            long userId = 0;
+            Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+            if (userIdMap == null || userIdMap.size() <= 0) {
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在!", new JSONObject());
+            }
+            for (String key : userIdMap.keySet()) {
+                Object object = key;
+                if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                    userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                    break;
+                }
+            }
+            if (userId <= 0) {
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在!", new JSONObject());
+            }
+            //验证参数
+            if (myId == userId) {
+                return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+            }
+            //新增邀请者奖励记录
+            mqUtils.addRewardLog(userId, 11, 0, redPacketsMoney, 0);
         }
         //更新订座数据
         kitchen.setClaimStatus(1);
@@ -324,15 +380,11 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         kitchenBookedService.claimKitchen2(reserve);
         //新增默认菜品分类
         String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
-        KitchenReserve kitchen2 = kitchenBookedService.findReserveId(kitchen.getUid());
-        if (kitchen2 == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
-        }
         for (int i = 0; i < strings.length; i++) {
             KitchenDishesSort sort = new KitchenDishesSort();
             sort.setName(strings[i]);
             sort.setUserId(CommonUtils.getMyId());
-            sort.setKitchenId(kitchen2.getId());
+            sort.setKitchenId(reserve.getId());
             sort.setBookedState(1);
             kitchenService.addSort(sort);
         }
@@ -349,7 +401,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData findReserveDataList(@PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findReserveDataList(@PathVariable String kitchenName, @PathVariable double lat,
+                                          @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -406,7 +459,9 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData findReserveList(@PathVariable String cuisine, @PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findReserveList(@PathVariable String cuisine, @PathVariable int watchVideos,
+                                      @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat,
+                                      @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -500,7 +555,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData changeKitchenBooked(@Valid @RequestBody KitchenBooked kitchenBooked, BindingResult bindingResult) {
+    public ReturnData changeKitchenBooked(@Valid @RequestBody KitchenBooked kitchenBooked, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -515,7 +571,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData addPrivateRoom(@Valid @RequestBody KitchenPrivateRoom kitchenPrivateRoom, BindingResult bindingResult) {
+    public ReturnData addPrivateRoom(@Valid @RequestBody KitchenPrivateRoom kitchenPrivateRoom, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -562,7 +619,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData findPrivateRoom(@PathVariable String eatTime, @PathVariable long userId, @PathVariable int bookedType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findPrivateRoom(@PathVariable String eatTime, @PathVariable long userId,
+                                      @PathVariable int bookedType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -638,7 +696,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData changePrivateRoom(@Valid @RequestBody KitchenPrivateRoom kitchenPrivateRoom, BindingResult bindingResult) {
+    public ReturnData changePrivateRoom(@Valid @RequestBody KitchenPrivateRoom kitchenPrivateRoom, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -708,7 +767,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData updateDishes(@Valid @RequestBody KitchenReserveDishes kitchenDishes, BindingResult bindingResult) {
+    public ReturnData updateDishes(@Valid @RequestBody KitchenReserveDishes kitchenDishes, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -778,7 +838,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData findReserveDishesList(@PathVariable int type, @PathVariable long kitchenId, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findReserveDishesList(@PathVariable int type, @PathVariable long kitchenId,
+                                            @PathVariable int page, @PathVariable int count) {
         Map<String, Object> collectionMap = new HashMap<>();
         List<Map<String, Object>> newList = new ArrayList<>();//最终组合后List
         //从缓存中获取菜品列表
@@ -838,7 +899,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData addUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult bindingResult) {
+    public ReturnData addUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult
+            bindingResult) {
         //开始查询
         KitchenServingTime servingTime = kitchenBookedService.findUpperTime(kitchenServingTime.getKitchenId());
         if (servingTime != null) {
@@ -871,7 +933,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @return
      */
     @Override
-    public ReturnData updateUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult bindingResult) {
+    public ReturnData updateUpperTime(@Valid @RequestBody KitchenServingTime kitchenServingTime, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());

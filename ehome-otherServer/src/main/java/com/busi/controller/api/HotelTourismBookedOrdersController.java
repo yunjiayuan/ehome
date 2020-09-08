@@ -80,7 +80,7 @@ public class HotelTourismBookedOrdersController extends BaseController implement
         if (sd == null || fn == null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
-        iup = kitchenBookedService.findDishesList(sd, type);
+        iup = kitchenBookedService.findDishesList(sd);
         if (iup == null || iup.size() <= 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,菜品不存在", new JSONObject());
         }
@@ -97,7 +97,7 @@ public class HotelTourismBookedOrdersController extends BaseController implement
                 redisUtils.hmset(Constants.REDIS_KEY_HOTEL + kitchen.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
             }
             Hotel kh = (Hotel) CommonUtils.mapToObject(kitchenMap, Hotel.class);
-            if (kh != null) {
+            if (kh == null) {
                 return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,酒店不存在", new JSONObject());
             }
             laf = (KitchenReserveDishes) iup.get(0);
@@ -145,15 +145,15 @@ public class HotelTourismBookedOrdersController extends BaseController implement
             if (kitchenMap == null || kitchenMap.size() <= 0) {
                 ScenicSpot kitchen = travelService.findReserve(tourismBookedOrders.getUserId());
                 if (kitchen == null) {
-                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,酒店不存在", new JSONObject());
+                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,景区不存在", new JSONObject());
                 }
                 //放入缓存
                 kitchenMap = CommonUtils.objectToMap(kitchen);
                 redisUtils.hmset(Constants.REDIS_KEY_TRAVEL + kitchen.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
             }
             ScenicSpot kh = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
-            if (kh != null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,酒店不存在", new JSONObject());
+            if (kh == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增订单失败,景区不存在", new JSONObject());
             }
             laf = (KitchenReserveDishes) iup.get(0);
             if (laf == null || tourismBookedOrders.getMyId() == laf.getUserId() || iup.size() != sd.length) {
@@ -216,7 +216,7 @@ public class HotelTourismBookedOrdersController extends BaseController implement
         if (sd == null || fn == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        List iup = hotelService.findDishesList(sd);
+        List iup = kitchenBookedService.findDishesList(sd);
         if (iup == null || iup.size() <= 0) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }

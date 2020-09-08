@@ -192,9 +192,9 @@ public interface TravelDao {
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             " and scenicSpotName LIKE CONCAT('%',#{name},'%')" +
-            "<if test=\"watchVideos == 1\">" +
-            " and videoUrl != ''" +
-            "</if>" +
+//            "<if test=\"watchVideos == 1\">" +
+//            " and videoUrl != ''" +
+//            "</if>" +
             "</if>" +
             "<if test=\"name == null or name == '' \">" +
             " select *" +
@@ -325,12 +325,20 @@ public interface TravelDao {
     ScenicSpotCollection findWhether(@Param("userId") long userId, @Param("id") long id);
 
     /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    @Select("select * from ScenicSpotCollection where myId=#{userId} and scenicSpotId=#{id}")
+    ScenicSpotCollection findWhether2(@Param("userId") long userId, @Param("id") long id);
+
+    /***
      * 新增收藏
      * @param ScenicSpotCollection
      * @return
      */
-    @Insert("insert into ScenicSpotCollection(myId,userId,name,picture,time) " +
-            "values (#{myId},#{userId},#{name},#{picture},#{time})")
+    @Insert("insert into ScenicSpotCollection(myId,userId,name,picture,time,type,levels,scenicSpotId) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{levels},#{scenicSpotId})")
     @Options(useGeneratedKeys = true)
     int addCollect(ScenicSpotCollection ScenicSpotCollection);
 

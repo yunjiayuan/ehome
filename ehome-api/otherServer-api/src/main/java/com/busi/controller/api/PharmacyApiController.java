@@ -8,14 +8,14 @@ import javax.validation.Valid;
 
 /**
  * @program: ehome
- * @description: 药房相关接口
+ * @description: 药店相关接口
  * @author: ZhaoJiaJie
  * @create: 2020-08-10 15:00:38
  */
 public interface PharmacyApiController {
 
     /***
-     * 新增药房
+     * 新增药店
      * @param scenicSpot
      * @return
      */
@@ -23,7 +23,7 @@ public interface PharmacyApiController {
     ReturnData addPharmacy(@Valid @RequestBody Pharmacy scenicSpot, BindingResult bindingResult);
 
     /***
-     * 更新药房
+     * 更新药店
      * @param scenicSpot
      * @return
      */
@@ -31,14 +31,14 @@ public interface PharmacyApiController {
     ReturnData changePharmacy(@Valid @RequestBody Pharmacy scenicSpot, BindingResult bindingResult);
 
     /**
-     * @Description: 删除药房
+     * @Description: 删除药店
      * @return:
      */
     @DeleteMapping("delPharmacy/{userId}/{id}")
     ReturnData delPharmacy(@PathVariable long userId, @PathVariable long id);
 
     /***
-     * 更新药房营业状态
+     * 更新药店营业状态
      * @param scenicSpot
      * @return
      */
@@ -46,7 +46,7 @@ public interface PharmacyApiController {
     ReturnData updPharmacyStatus(@Valid @RequestBody Pharmacy scenicSpot, BindingResult bindingResult);
 
     /***
-     * 查询药房信息
+     * 查询药店信息
      * @param userId
      * @return
      */
@@ -54,7 +54,15 @@ public interface PharmacyApiController {
     ReturnData findPharmacy(@PathVariable long userId);
 
     /***
-     * 条件查询药房
+     * 查询药店信息
+     * @param id
+     * @return
+     */
+    @GetMapping("findPharmacyId/{id}")
+    ReturnData findPharmacyId(@PathVariable long id);
+
+    /***
+     * 条件查询药店
      * @param watchVideos 筛选视频：0否 1是
      * @param name    模糊搜索
      * @param province     省
@@ -103,7 +111,7 @@ public interface PharmacyApiController {
 
     /***
      * 分页查询药品列表
-     * @param id   药房ID
+     * @param id   药店ID
      * @param natureType   药品性质id  -1不限
      * @param page     页码
      * @param count    条数

@@ -26,13 +26,13 @@ public class PharmacyOrder {
 
     private String no;                    //订单编号
 
-    private String dishameCost;        //药品  药品ID,名称,数量,价格【格式：12,儿童药,5,24;儿童药,4,32】
+    private String dishameCost;        //药品  药品ID,名称,数量,价格,图片,规格【格式：12,儿童药,5,24,图片,规格;儿童药,4,32,图片,规格】
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
-    private int verificationType;            //验证类型:仅买家自取时有效 0未验证 1已验证
+    private int verificationType;            //订单状态: 0待验证 1已验证 2已评价 3卖家取消订单 4用户取消订单 5付款超时
 
-    private int ordersType;            //订单类型: 0未接单,1待配送 2配送中,3已送达(已收货未评价), 4卖家取消订单 5用户取消订单 6付款超时  7接单超时 8发货超时 9已评价
+    private int ordersType;            // 【此字段暂时无效！！！】  订单类型: 0未接单,1待配送 2配送中,3已送达(已收货未评价), 4卖家取消订单 5用户取消订单 6付款超时  7接单超时 8发货超时 9已评价 10收货超时
 
     private String pharmacyName;                //药房名称
 

@@ -216,6 +216,20 @@ public class PharmacyService {
     }
 
     /***
+     * 验证用户是否收藏过
+     * @param userId
+     * @return
+     */
+    public boolean findWhether2(long userId, long id) {
+        PharmacyCollection kitchen = null;
+        kitchen = kitchenBookedDao.findWhether2(userId, id);
+        if (kitchen == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /***
      * 新增药店收藏
      * @param hourlyWorkerCollection
      * @return

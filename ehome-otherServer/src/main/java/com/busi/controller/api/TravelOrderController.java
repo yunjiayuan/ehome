@@ -173,7 +173,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
         if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = dateFormat.format(io.getInspectTicketTime());
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已于" + time + "扫码验票成功", io);
+            return returnData(StatusCode.CODE_TRAVEL_REPEAT.CODE_VALUE, "您已于" + time + "扫码验票成功", io);
         }
         if (io.getOrdersType() == 0) {//已付款未验票
             if (io.getUserId() != CommonUtils.getMyId()) {
@@ -199,7 +199,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
                 e.printStackTrace();
             }
             if (dateTime1 == null || dateTime2 == null) {
-                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
+                return returnData(StatusCode.CODE_TRAVEL_INVALID.CODE_VALUE, "门票无效", io);
             }
             int i = dateTime1.compareTo(dateTime2);
             if (i > 0) {
@@ -209,23 +209,23 @@ public class TravelOrderController extends BaseController implements TravelOrder
                 //景区订单放入缓存
                 Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
                 redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
-                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
-            } else if (i < 0) {
                 return returnData(StatusCode.CODE_TRAVEL_ADVANCE.CODE_VALUE, "您还没到游玩时间 ", io);
+            } else if (i < 0) {
+                return returnData(StatusCode.CODE_TRAVEL_BE_OVERDUE.CODE_VALUE, "您的门票已过期", io);
             } else {
                 io.setOrdersType(1);
+                //由未验票改为已验票
+                io.setInspectTicketTime(new Date());
+                io.setUpdateCategory(1);
+                travelOrderService.updateOrders(io);
+                //商家入账
+                mqUtils.sendPurseMQ(io.getUserId(), 35, 0, io.getMoney());
+                //清除缓存中的景区 订单信息
+                redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
+                //景区订单放入缓存
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+                redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
             }
-            //由未验票改为已验票
-            io.setInspectTicketTime(new Date());
-            io.setUpdateCategory(1);
-            travelOrderService.updateOrders(io);
-            //商家入账
-            mqUtils.sendPurseMQ(io.getUserId(), 35, 0, io.getMoney());
-            //清除缓存中的景区 订单信息
-            redisUtils.expire(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), 0);
-            //景区订单放入缓存
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_TRAVELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
     }
@@ -439,11 +439,10 @@ public class TravelOrderController extends BaseController implements TravelOrder
             shopTravelComment.setImgUrls(strings[0]);
         }
         shopTravelComment.setTime(new Date());
-        travelOrderService.addComment(shopTravelComment);
         if (shopTravelComment.getReplyType() == 0) {//新增评论
             //查询该景区订单信息
             ScenicSpotOrder io = travelOrderService.findById(shopTravelComment.getOrderId(), CommonUtils.getMyId(), -1);
-            if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getOrdersType() != 1 || io.getOrdersType() != 2) {
+            if (io == null || io.getMyId() != CommonUtils.getMyId() || (io.getOrdersType() != 1 && io.getOrdersType() != 2)) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
             }
             //更新订单状态为已评价
@@ -488,6 +487,7 @@ public class TravelOrderController extends BaseController implements TravelOrder
                 travelOrderService.updateCommentNum(shopTravelComment);
             }
         }
+        travelOrderService.addComment(shopTravelComment);
         //更新评论数
         posts.setTotalEvaluate(posts.getTotalEvaluate() + 1);
         travelOrderService.updateBlogCounts(posts);

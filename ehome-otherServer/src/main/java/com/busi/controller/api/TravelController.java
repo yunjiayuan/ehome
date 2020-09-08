@@ -73,7 +73,7 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         ScenicSpot ik = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
         if (ik != null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "入驻景区失败，景区已存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
         }
         scenicSpot.setAuditType(0);
         scenicSpot.setBusinessStatus(1);//景区默认关闭
@@ -200,6 +200,29 @@ public class TravelController extends BaseController implements TravelApiControl
                 collection = 1;//1已收藏
             }
         }
+        kitchenMap.put("collection", collection);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
+    }
+
+    /***
+     * 查询景区信息(收藏列表)
+     * @param id 景区ID
+     * @return
+     */
+    @Override
+    public ReturnData findScenicSpotId(@PathVariable long id) {
+        Map<String, Object> kitchenMap = new HashMap<>();
+        ScenicSpot kitchen = travelService.findById(id);
+        if (kitchen == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        int collection = 0;//是否收藏过此景区  0没有  1已收藏
+        //验证是否收藏过
+        boolean flag = travelService.findWhether2(CommonUtils.getMyId(), id);
+        if (flag) {
+            collection = 1;//1已收藏
+        }
+        kitchenMap = CommonUtils.objectToMap(kitchen);
         kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
@@ -399,7 +422,7 @@ public class TravelController extends BaseController implements TravelApiControl
             redisUtils.hmset(Constants.REDIS_KEY_TRAVELTICKETSLIST + id, map, Constants.USER_TIME_OUT);
         }
         //验证是否收藏过
-        boolean flag = travelService.findWhether(CommonUtils.getMyId(), io.getUserId());
+        boolean flag = travelService.findWhether2(CommonUtils.getMyId(), io.getId());
         if (flag) {
             collection = 1;//1已收藏
         }
@@ -420,22 +443,23 @@ public class TravelController extends BaseController implements TravelApiControl
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //验证是否收藏过
-        boolean flag = travelService.findWhether(collect.getMyId(), collect.getUserId());
+        boolean flag = travelService.findWhether2(collect.getMyId(), collect.getScenicSpotId());
         if (flag) {
-            return returnData(StatusCode.CODE_COLLECTED_HOURLY_ERROR.CODE_VALUE, "您已收藏过此景区", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已收藏过此景区", new JSONObject());
         }
         //查询缓存 缓存中不存在 查询数据库
-        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + collect.getUserId());
-        if (kitchenMap == null || kitchenMap.size() <= 0) {
-            ScenicSpot kitchen2 = travelService.findReserve(collect.getUserId());
-            if (kitchen2 == null) {
-                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，景区不存在！", new JSONObject());
-            }
-            //放入缓存
-            kitchenMap = CommonUtils.objectToMap(kitchen2);
-            redisUtils.hmset(Constants.REDIS_KEY_TRAVEL + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
-        }
-        ScenicSpot io = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
+//        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + collect.getUserId());
+//        if (kitchenMap == null || kitchenMap.size() <= 0) {
+//            ScenicSpot kitchen2 = travelService.findReserve(collect.getUserId());
+//            if (kitchen2 == null) {
+//                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "收藏失败，景区不存在！", new JSONObject());
+//            }
+//            //放入缓存
+//            kitchenMap = CommonUtils.objectToMap(kitchen2);
+//            redisUtils.hmset(Constants.REDIS_KEY_TRAVEL + kitchen2.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+//        }
+//        ScenicSpot io = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
+        ScenicSpot io = travelService.findById(collect.getScenicSpotId());
         if (io != null) {
             //添加收藏记录
             collect.setTime(new Date());
@@ -443,6 +467,9 @@ public class TravelController extends BaseController implements TravelApiControl
                 String[] strings = io.getPicture().split(",");
                 collect.setPicture(strings[0]);
             }
+            collect.setUserId(io.getUserId());
+            collect.setType(io.getType());
+            collect.setLevels(io.getLevels());
             collect.setName(io.getScenicSpotName());
             travelService.addCollect(collect);
         }
@@ -537,19 +564,54 @@ public class TravelController extends BaseController implements TravelApiControl
     }
 
     /***
-     * 入驻景区民宿
+     * 入驻景区
      * @param kitchenReserve
      * @param bindingResult
      * @return
      */
     @Override
     public ReturnData claimTravel(@Valid @RequestBody ScenicSpot kitchenReserve, BindingResult bindingResult) {
-        ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
-        if (kitchen == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区民宿不存在", new JSONObject());
+        ScenicSpot hotel = travelService.findReserve(CommonUtils.getMyId());
+        if (hotel != null) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
         }
-        if (kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区民宿不存在", new JSONObject());
+        ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
+        if (kitchen == null || kitchen.getClaimStatus() == 1) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区不存在", new JSONObject());
+        }
+        //判断是否有邀请码
+        long myId = CommonUtils.getMyId();
+        double redPacketsMoney = 10;
+        String proId = "";
+        String shareCode = kitchenReserve.getInvitationCode();
+        if (!CommonUtils.checkFull(shareCode)) {
+            //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+            if (shareCode.indexOf("0") != 0) {
+                proId = shareCode.substring(0, 2);
+            } else {
+                proId = shareCode.substring(1, 2);
+            }
+            long userId = 0;
+            Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+            if (userIdMap == null || userIdMap.size() <= 0) {
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在!", new JSONObject());
+            }
+            for (String key : userIdMap.keySet()) {
+                Object object = key;
+                if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                    userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                    break;
+                }
+            }
+            if (userId <= 0) {
+                return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "用户不存在!", new JSONObject());
+            }
+            //验证参数
+            if (myId == userId) {
+                return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+            }
+            //新增邀请者奖励记录
+            mqUtils.addRewardLog(userId, 12, 0, redPacketsMoney, 0);
         }
         //更新景区数据
         kitchen.setClaimStatus(1);

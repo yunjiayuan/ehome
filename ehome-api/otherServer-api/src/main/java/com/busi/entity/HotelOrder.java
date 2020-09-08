@@ -32,7 +32,7 @@ public class HotelOrder {
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2商家删除 3全部删除
 
-    private int ordersType;            //订单类型:0未入住（验票） 1已入住（验票）,2已完成（未评价）,3已评价，4商家取消订单,5用户取消订单 ,6已过期
+    private int ordersType;            //订单类型:0未入住（验票） 1已入住（验票）,2已完成（未评价）,3已评价，4商家取消订单,5用户取消订单 ,6已过期 7付款超时
 
     private String hotelName;                //酒店&民宿名称
 

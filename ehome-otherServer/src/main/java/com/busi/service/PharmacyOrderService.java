@@ -1,6 +1,8 @@
 package com.busi.service;
 
 import com.busi.dao.PharmacyOrderDao;
+import com.busi.entity.Pharmacy;
+import com.busi.entity.PharmacyComment;
 import com.busi.entity.PharmacyOrder;
 import com.busi.entity.PageBean;
 import com.busi.utils.PageUtils;
@@ -67,7 +69,7 @@ public class PharmacyOrderService {
     /***
      * 订单管理条件查询
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型: -1全部 0待支付 1待验证, 2待评价
+     * @param ordersType  : 订单类型: -1全部 0待验证,1已验证
      * @param count       : 每页的显示条数
      * @param page        : 当前查询数据的页码
      * @return
@@ -79,5 +81,134 @@ public class PharmacyOrderService {
         list = travelOrderDao.findOrderList(identity, userId, ordersType);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 新增评论
+     * @param homeBlogComment
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addComment(PharmacyComment homeBlogComment) {
+        return travelOrderDao.addComment(homeBlogComment);
+    }
+
+    /***
+     * 查询指定评论
+     * @return
+     */
+    public PharmacyComment findById(long id) {
+        return travelOrderDao.find(id);
+    }
+
+    /***
+     * 更新评论回复数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateCommentNum(PharmacyComment homeBlogAccess) {
+        return travelOrderDao.updateCommentNum(homeBlogAccess);
+    }
+
+    /***
+     * 更新评论数
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateBlogCounts(Pharmacy homeBlogAccess) {
+        return travelOrderDao.updateBlogCounts(homeBlogAccess);
+    }
+
+
+    /***
+     * 更新评论删除状态
+     * @param homeBlogAccess
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update(PharmacyComment homeBlogAccess) {
+        return travelOrderDao.update(homeBlogAccess);
+    }
+
+    /***
+     * 查询评论列表
+     * @param goodsId  景区ID
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<PharmacyComment> findList(long goodsId, int page, int count) {
+
+        List<PharmacyComment> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = travelOrderDao.findList(goodsId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param contentId  评论ID
+     * @return
+     */
+    public PageBean<PharmacyComment> findReplyList(long contentId, int page, int count) {
+        List<PharmacyComment> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = travelOrderDao.findReplyList(contentId);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 查询回复列表
+     * @param commentId  评论ID
+     * @return
+     */
+    public List<PharmacyComment> findMessList(long commentId) {
+
+        List<PharmacyComment> list;
+        list = travelOrderDao.findReplyList(commentId);
+        return list;
+    }
+
+    /***
+     * 查询指定用户评论
+     * @param id  指定景区ID
+     * @return
+     */
+    public List<PharmacyComment> findCommentList(long id) {
+
+        List<PharmacyComment> list;
+        list = travelOrderDao.findCommentList(id);
+        return list;
+    }
+
+    /***
+     * 更新回复删除状态
+     * @param ids
+     * @return
+     */
+    public int updateReplyState(String[] ids) {
+        return travelOrderDao.updateReplyState(ids);
+    }
+
+    /***
+     * 统计该评论下回复数量
+     * @param commentId  评论ID
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public long getReplayCount(long commentId) {
+        return travelOrderDao.getReplayCount(commentId);
+    }
+
+    /***
+     * 更新评分
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateScore(Pharmacy kitchen) {
+        return travelOrderDao.updateScore(kitchen);
     }
 }

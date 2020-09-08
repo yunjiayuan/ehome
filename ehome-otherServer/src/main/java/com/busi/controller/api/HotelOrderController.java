@@ -207,7 +207,7 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
         if (io.getOrdersType() == 1) {//防止多次验票成功后多次打款
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = dateFormat.format(io.getInspectTicketTime());
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您已于" + time + "扫码入住成功", io);
+            return returnData(StatusCode.CODE_TRAVEL_REPEAT.CODE_VALUE, "您已于" + time + "扫码入住成功", io);
         }
         if (io.getOrdersType() == 0) {//已付款未验票
             if (io.getUserId() != CommonUtils.getMyId()) {
@@ -216,11 +216,10 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             if (!io.getVoucherCode().equals(voucherCode)) {
                 return returnData(StatusCode.CODE_HOTEL_INVALID.CODE_VALUE, "房间凭证码无效", io);
             }
-
             //格式化为相同格式
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String DateStr1 = dateFormat.format(io.getCheckInTime());
-            String DateStr2 = dateFormat.format(new Date());
+            String DateStr1 = dateFormat.format(io.getCheckInTime());//下单时的入住时间
+            String DateStr2 = dateFormat.format(new Date());//扫码时间
             Date dateTime1 = null;
             try {
                 dateTime1 = dateFormat.parse(DateStr1);
@@ -234,7 +233,7 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
                 e.printStackTrace();
             }
             if (dateTime1 == null || dateTime2 == null) {
-                return returnData(StatusCode.CODE_HOTEL_BE_OVERDUE.CODE_VALUE, "您已经过了入住时间", io);
+                return returnData(StatusCode.CODE_HOTEL_INVALID.CODE_VALUE, "房间凭证码无效", io);
             }
             int i = dateTime1.compareTo(dateTime2);
             if (i > 0) {
@@ -244,23 +243,23 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
                 //酒店民宿订单放入缓存
                 Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
                 redisUtils.hmset(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
-                return returnData(StatusCode.CODE_HOTEL_BE_OVERDUE.CODE_VALUE, "您已经过了入住时间", io);
-            } else if (i < 0) {
                 return returnData(StatusCode.CODE_HOTEL_ADVANCE.CODE_VALUE, " 您还没到入住时间", io);
+            } else if (i < 0) {
+                return returnData(StatusCode.CODE_HOTEL_BE_OVERDUE.CODE_VALUE, "您已经过了入住时间", io);
             } else {
+                //由未验票改为已验票
                 io.setOrdersType(1);
+                io.setInspectTicketTime(new Date());
+                io.setUpdateCategory(1);
+                travelOrderService.updateOrders(io);
+                //商家入账
+                mqUtils.sendPurseMQ(io.getUserId(), 38, 0, io.getMoney());
+                //清除缓存中的酒店民宿 订单信息
+                redisUtils.expire(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), 0);
+                //酒店民宿订单放入缓存
+                Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
+                redisUtils.hmset(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
             }
-            //由未验票改为已验票
-            io.setInspectTicketTime(new Date());
-            io.setUpdateCategory(1);
-            travelOrderService.updateOrders(io);
-            //商家入账
-            mqUtils.sendPurseMQ(io.getUserId(), 38, 0, io.getMoney());
-            //清除缓存中的酒店民宿 订单信息
-            redisUtils.expire(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), 0);
-            //酒店民宿订单放入缓存
-            Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_HOTELORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", io);
     }
@@ -474,11 +473,10 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
             shopHotelComment.setImgUrls(strings[0]);
         }
         shopHotelComment.setTime(new Date());
-        travelOrderService.addComment(shopHotelComment);
         if (shopHotelComment.getReplyType() == 0) {//新增评论
             //查询该酒店订单信息
             HotelOrder io = travelOrderService.findById(shopHotelComment.getOrderId(), CommonUtils.getMyId(), -1);
-            if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getOrdersType() != 1 || io.getOrdersType() != 2) {
+            if (io == null || io.getMyId() != CommonUtils.getMyId() || (io.getOrdersType() != 1 && io.getOrdersType() != 2)) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
             }
             //更新订单状态为已评价
@@ -523,6 +521,7 @@ public class HotelOrderController extends BaseController implements HotelOrderAp
                 travelOrderService.updateCommentNum(shopHotelComment);
             }
         }
+        travelOrderService.addComment(shopHotelComment);
         //更新评论数
         posts.setTotalEvaluate(posts.getTotalEvaluate() + 1);
         travelOrderService.updateBlogCounts(posts);

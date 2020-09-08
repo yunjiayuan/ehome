@@ -54,6 +54,14 @@ public interface TravelApiController {
     ReturnData findScenicSpot(@PathVariable long userId);
 
     /***
+     * 查询景区信息
+     * @param id
+     * @return
+     */
+    @GetMapping("findScenicSpotId/{id}")
+    ReturnData findScenicSpotId(@PathVariable long id);
+
+    /***
      * 条件查询景区
      * @param watchVideos 筛选视频：0否 1是
      * @param name    模糊搜索

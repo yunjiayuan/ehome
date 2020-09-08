@@ -1,5 +1,7 @@
 package com.busi.dao;
 
+import com.busi.entity.Pharmacy;
+import com.busi.entity.PharmacyComment;
 import com.busi.entity.PharmacyOrder;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -21,10 +23,10 @@ public interface PharmacyOrderDao {
      * @param kitchenBookedOrders
      * @return
      */
-    @Insert("insert into PharmacyOrder(userId,myId,pharmacyId,no,dishameCost,ordersType,ordersState,pharmacyName,addTime,distributionMode,money,smallMap,inspectTicketTime," +
-            "completeTime,address,address_Phone,address_Name,voucherCode,serviceTime,addressId)" +
-            "values (#{userId},#{myId},#{pharmacyId},#{no},#{dishameCost},#{ordersType},#{ordersState},#{pharmacyName},#{addTime},#{distributionMode},#{money},#{smallMap},#{inspectTicketTime}" +
-            ",#{completeTime},#{address},#{address_Phone},#{address_Name},#{voucherCode},#{serviceTime},#{addressId})")
+    @Insert("insert into PharmacyOrder(userId,myId,pharmacyId,no,dishameCost,ordersState,pharmacyName,addTime,distributionMode,money,smallMap,inspectTicketTime," +
+            "completeTime,address,address_Phone,address_Name,voucherCode,serviceTime,addressId,verificationType)" +
+            "values (#{userId},#{myId},#{pharmacyId},#{no},#{dishameCost},#{ordersState},#{pharmacyName},#{addTime},#{distributionMode},#{money},#{smallMap},#{inspectTicketTime}" +
+            ",#{completeTime},#{address},#{address_Phone},#{address_Name},#{voucherCode},#{serviceTime},#{addressId},#{verificationType})")
     @Options(useGeneratedKeys = true)
     int addOrders(PharmacyOrder kitchenBookedOrders);
 
@@ -38,19 +40,19 @@ public interface PharmacyOrderDao {
             "select * from PharmacyOrder" +
             " where id = #{id}" +
             "<if test=\"type == 0\">" +
-            " and ordersType > 2 and ordersState != 3" +
+            " and verificationType > 1 and ordersState != 3" +
             "</if>" +
             "<if test=\"type == 1\">" +
-            " and ordersState=0 and ordersType=0 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
+            " and ordersState=0 and verificationType=0 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
             "</if>" +
             "<if test=\"type == 2\">" +
-            " and ordersState=0 and ordersType=1 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
+            " and ordersState=0 and verificationType=1 and userId=#{userId} and paymentStatus = 1 and distributionMode = 0" +
             "</if>" +
             "<if test=\"type == 3\">" +
             " and ordersState=0 " +
             "</if>" +
             "<if test=\"type == 4\">" +
-            " and ordersState = 0 and ordersType=2 and paymentStatus = 1 and distributionMode = 0" +
+            " and ordersState = 0 and verificationType=2 and paymentStatus = 1 and distributionMode = 0" +
             "</if>" +
             "<if test=\"type == 5\">" +
             " and ordersState = 0" +
@@ -82,15 +84,15 @@ public interface PharmacyOrderDao {
             " ordersState =#{ordersState}" +
             "</if>" +
             "<if test=\"updateCategory == 1\">" +
-            " ordersType =#{ordersType}," +
+            " verificationType =#{verificationType}," +
             " orderTime =#{orderTime}" +
             "</if>" +
             "<if test=\"updateCategory == 2\">" +
-            " ordersType =#{ordersType}," +
+            " verificationType =#{verificationType}," +
             " deliveryTime =#{deliveryTime}" +
             "</if>" +
             "<if test=\"updateCategory == 3\">" +
-            " ordersType =#{ordersType}," +
+            " verificationType =#{verificationType}," +
             " completeTime =#{completeTime}" +
             "</if>" +
             "<if test=\"updateCategory == 4\">" +
@@ -98,10 +100,9 @@ public interface PharmacyOrderDao {
             " paymentTime=#{paymentTime}" +
             "</if>" +
             "<if test=\"updateCategory == 5\">" +
-            " ordersType =#{ordersType}" +
+            " verificationType =#{verificationType}" +
             "</if>" +
             "<if test=\"updateCategory == 6\">" +
-            " ordersType =#{ordersType}," +
             " verificationType =#{verificationType}," +
             " inspectTicketTime =#{inspectTicketTime}," +
             " completeTime =#{completeTime}" +
@@ -113,7 +114,7 @@ public interface PharmacyOrderDao {
     /***
      * 订单管理条件查询
      * @param identity    : 身份区分：1买家 2商家
-     * @param ordersType  : 订单类型:  -1全部 0待支付 1待验证, 2待评价
+     * @param verificationType  : 订单类型:  -1全部 0待验证,1已验证
      * @return
      */
     @Select("<script>" +
@@ -125,20 +126,149 @@ public interface PharmacyOrderDao {
             "<if test=\"identity == 2 \">" +
             " and userId = #{userId}" +
             "</if>" +
-            "<if test=\"ordersType == 0\">" +
-            " and paymentStatus = 0" +
-            " and ordersType = 0" +
-            "</if>" +
-            "<if test=\"ordersType == 1\">" +
-            " and paymentStatus = 1" +
+            "<if test=\"verificationType == 0\">" +
             " and verificationType = 0" +
-            " and distributionMode = 1" +
             "</if>" +
-            "<if test=\"ordersType == 2\">" +
-            " and ordersType = 3" +
+            "<if test=\"verificationType == 1\">" +
+            " and paymentStatus = 1" +
+            " and verificationType = 1" +
+            "</if>" +
+            "<if test=\"verificationType == 2\">" +
+            " and verificationType = 2" +
             "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<PharmacyOrder> findOrderList(@Param("identity") int identity, @Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<PharmacyOrder> findOrderList(@Param("identity") int identity, @Param("userId") long userId, @Param("verificationType") int verificationType);
 
+    /***
+     * 更新评分
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update Pharmacy set" +
+            " totalScore=#{totalScore}," +
+            " averageScore=#{averageScore}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int updateScore(Pharmacy kitchen);
+
+    /***
+     * 新增评论
+     * @param homeBlogComment
+     * @return
+     */
+    @Insert("insert into PharmacyComment(userId,masterId,replayId,content,time,replyType,replyStatus,fatherId,secondFatherId,replyNumber,orderId,imgUrls,score,anonymousType) " +
+            "values (#{userId},#{masterId},#{replayId},#{content},#{time},#{replyType},#{replyStatus},#{fatherId},#{secondFatherId},#{replyNumber},#{orderId},#{imgUrls},#{score},#{anonymousType})")
+    @Options(useGeneratedKeys = true)
+    int addComment(PharmacyComment homeBlogComment);
+
+    /***
+     * 根据ID查询
+     * @param id
+     */
+    @Select("select * from PharmacyComment where id = #{id} and replyStatus=0")
+    PharmacyComment find(@Param("id") long id);
+
+    /***
+     * 更新删除状态
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update PharmacyComment set" +
+            " replyStatus=#{replyStatus}" +
+            " where id=#{id}" +
+            "</script>")
+    int update(PharmacyComment homeBlogComment);
+
+    /***
+     * 更新回复数
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update PharmacyComment set" +
+            " replyNumber=#{replyNumber}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateCommentNum(PharmacyComment homeBlogComment);
+
+    /***
+     * 更新评论数
+     * @param homeBlogComment
+     * @return
+     */
+    @Update("<script>" +
+            "update Pharmacy set" +
+            " totalEvaluate=#{totalEvaluate}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateBlogCounts(Pharmacy homeBlogComment);
+
+    /***
+     * 查询评论列表(只查评论replyType = 0)
+     * @param masterId  景区ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PharmacyComment" +
+            " where 1=1" +
+            " and masterId=#{masterId} and replyStatus=0 and replyType = 0" +
+            " order by time desc" +
+            "</script>")
+    List<PharmacyComment> findList(@Param("masterId") long masterId);
+
+    /***
+     * 查询回复列表(只查回复replyType = 1)
+     * @param contentId  评论ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PharmacyComment" +
+            " where 1=1" +
+            " and fatherId=#{contentId} and replyStatus=0 and replyType = 1" +
+            " order by time desc" +
+            "</script>")
+    List<PharmacyComment> findReplyList(@Param("contentId") long contentId);
+
+    /***
+     * 查询指定用户评论
+     * @param id  指定景区ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from PharmacyComment" +
+            " where 1=1" +
+            " and masterId=#{id} and replyStatus=0 and replyType = 0" +
+            " order by time desc" +
+            "</script>")
+    List<PharmacyComment> findCommentList(@Param("id") long id);
+
+    /***
+     * 更新回复删除状态
+     * @param ids
+     * @return
+     */
+    @Update("<script>" +
+            "update PharmacyComment set" +
+            " replyStatus=1" +
+            " where replyType=1" +
+            " and id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int updateReplyState(@Param("ids") String[] ids);
+
+    /***
+     * 统计该评论下回复数量
+     * @param commentId  评论ID
+     * @return
+     */
+    @Select("<script>" +
+            "select count(id) from PharmacyComment" +
+            " where fatherId=#{commentId} and replyStatus=0 and replyType=1" +
+            "</script>")
+    int getReplayCount(@Param("commentId") long commentId);
 }
