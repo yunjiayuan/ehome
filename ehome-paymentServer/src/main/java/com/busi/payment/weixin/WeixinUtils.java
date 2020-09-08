@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -74,6 +75,7 @@ public class WeixinUtils {
 			return null;
 		}
 		String result = WeixinUtils.httpsRequest(WeixinConfig.WEIXIN_URL, "POST", requestXml);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+result);
 		WeixinSignBean wsb = null;
 		if(!CommonUtils.checkFull(result)){			
 			wsb = parse(result);			
