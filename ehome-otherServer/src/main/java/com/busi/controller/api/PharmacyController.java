@@ -457,6 +457,10 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
                 collect.setPicture(strings[0]);
             }
             collect.setUserId(io.getUserId());
+            collect.setOpenType(io.getOpenType());
+            collect.setOpenTime(io.getOpenTime());
+            collect.setCloseTime(io.getCloseTime());
+            collect.setDistributionMode(io.getDistributionMode());
             collect.setType(io.getType());
             collect.setLevels(io.getLevels());
             collect.setName(io.getPharmacyName());

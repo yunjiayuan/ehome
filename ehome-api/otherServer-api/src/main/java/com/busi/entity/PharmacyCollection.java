@@ -35,4 +35,12 @@ public class PharmacyCollection {
     private String type;            // 类型
 
     private int levels;            // 级别
+
+    private int distributionMode;            // 配送方式 0免费配送  1满额配送
+
+    private int openType;                // 药房开放类型:0全天 1时间段
+
+    private String openTime;                // 药房开放时间 openType=1时有效
+
+    private String closeTime;                // 药房关闭时间 openType=1时有效
 }
