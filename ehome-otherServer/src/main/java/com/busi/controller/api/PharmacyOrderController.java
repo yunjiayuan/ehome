@@ -448,11 +448,11 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
      */
     @Override
     public ReturnData addPharmacyComment(@Valid @RequestBody PharmacyComment shopPharmacyComment, BindingResult bindingResult) {
-        //查询该景区信息
+        //查询该药店信息
         //查询缓存 缓存中不存在 查询数据库
         Pharmacy posts = travelService.findById(shopPharmacyComment.getMasterId());
         if (posts == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "评价景区失败，景区不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "评价药店失败，药店不存在！", new JSONObject());
         }
         //处理特殊字符
         String content = shopPharmacyComment.getContent();
@@ -469,16 +469,16 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         }
         shopPharmacyComment.setTime(new Date());
         if (shopPharmacyComment.getReplyType() == 0) {//新增评论
-            //查询该景区订单信息
+            //查询该药店订单信息
             PharmacyOrder io = travelOrderService.findById(shopPharmacyComment.getOrderId(), CommonUtils.getMyId(), -1);
             if (io == null || io.getMyId() != CommonUtils.getMyId() || io.getVerificationType() != 1) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "订单不存在！", new JSONObject());
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "订单不存在！", new JSONObject());
             }
             //更新订单状态为已评价
             io.setVerificationType(2);
             io.setUpdateCategory(5);
             travelOrderService.updateOrders(io);
-            //清除缓存中的景区 订单信息
+            //清除缓存中的药店 订单信息
             redisUtils.expire(Constants.REDIS_KEY_PHARMACYORDERS + io.getMyId() + "_" + io.getNo(), 0);
             //订单信息放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
@@ -547,7 +547,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
     /***
      * 删除评论
      * @param id 评论ID
-     * @param goodsId 景区ID
+     * @param goodsId 药店ID
      * @return
      */
     @Override
@@ -559,10 +559,10 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         if (comment == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "评论不存在", new JSONArray());
         }
-        //查询该景区信息
+        //查询该药店信息
         Pharmacy posts = travelService.findById(goodsId);
         if (posts == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "删除评价失败，景区不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "删除评价失败，药店不存在！", new JSONObject());
         }
         //判断操作人权限
         long myId = CommonUtils.getMyId();//操作者ID
@@ -586,7 +586,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             //更新回复删除状态
             travelOrderService.updateReplyState(ids.split(","));
         }
-        //更新景区评论数
+        //更新药店评论数
         int num = messList.size();
         posts.setTotalScore(posts.getTotalScore() - num - 1);
         travelOrderService.updateBlogCounts(posts);
@@ -637,7 +637,7 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
 
     /***
      * 查询评论记录
-     * @param goodsId     景区ID
+     * @param goodsId     药店ID
      * @param page       页码 第几页 起始值1
      * @param count      每页条数
      * @return
