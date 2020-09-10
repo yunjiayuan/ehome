@@ -19,7 +19,7 @@ public class WeixinConfig {
 	/*商户生成签名字符串所使用的签名算法类型*/
 	public static final String SIGN_TYPE = "MD5";  
 	/*微信私钥*/
-	public static final String PARTNER_KEY = "ad0a7f04730737233175a98958d1db4e";  
+	public static final String PARTNER_KEY = "a3ece05030d973cbad8b8943732960bf";
 	/*微信 充值支付 同步回调服务端接口地址*/
 	public static final String RECHARGE_NOTIFY_URL = "http://ehome.lichengwang.com:8760/paymentServer-api/checkWeixinSign";
 }

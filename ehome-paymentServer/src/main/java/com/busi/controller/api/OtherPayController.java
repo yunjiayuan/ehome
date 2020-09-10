@@ -136,25 +136,24 @@ public class OtherPayController extends BaseController implements OtherPayApiCon
             signParams.put("attach", myId+"");//附加数据 用户参数传递
             sign = WeixinUtils.dataSign(signParams);//生成签名
             wsb = WeixinUtils.getWeixinSignBean(sign, signParams);
-            log.info("+++++++++++++++++>>>>"+wsb.toString());
             if(wsb!=null){
                 if("SUCCESS".equals(wsb.getResult_code())&&"SUCCESS".equals(wsb.getReturn_code())){
                     //第二次加签
                     long time = System.currentTimeMillis()/1000;
                     SortedMap<String, String> signParams2 = new TreeMap<String, String>();
-                    signParams2.put("appId", WeixinConfig.APP_ID);//app_id
-                    signParams2.put("partnerId", WeixinConfig.MCH_ID);//微信商户账号
-                    signParams2.put("prepayId", wsb.getPrepay_id());//微信商户账号
-                    signParams2.put("nonceStr", wsb.getNonce_str());//回调页面
-                    signParams2.put("timeStamp", time+"");//时间戳
+                    signParams2.put("appid", WeixinConfig.APP_ID);//app_id
+                    signParams2.put("partnerid", WeixinConfig.MCH_ID);//微信商户账号
+                    signParams2.put("prepayid", wsb.getPrepay_id());//微信商户账号
+                    signParams2.put("noncestr", wsb.getNonce_str());//回调页面
+                    signParams2.put("timestamp", time+"");//时间戳
                     signParams2.put("package", "Sign=WXPay");//
                     newSign = WeixinUtils.dataSign( signParams2);//生成签名
-                    signData = "appId="+wsb.getAppid()
-                            +"&partnerId="+wsb.getMch_id()
-                            +"&prepayId="+wsb.getPrepay_id()
-                            +"&package='Sign=WXPay'"
-                            +"&nonceStr="+wsb.getNonce_str()
-                            +"&timeStamp="+time
+                    signData = "appid="+wsb.getAppid()
+                            +"&partnerid="+wsb.getMch_id()
+                            +"&prepayid="+wsb.getPrepay_id()
+                            +"&package=Sign=WXPay"
+                            +"&noncestr="+wsb.getNonce_str()
+                            +"&timestamp="+time
                             +"&sign="+newSign;
                 }else{
                     return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"服务端对用户["+myId+"]“微信”充值数据加签请求失败，微信签名出现异常:"+wsb.toString(),new JSONObject());
