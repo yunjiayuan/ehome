@@ -36,13 +36,13 @@ public interface PurseInfoDao {
      */
     @Update("<script>" +
             "update purse set"+
-            "<if test=\"homeCoin != 0 \">"+
+            "<if test=\"homeCoin >= 0 \">"+
             " homeCoin=#{homeCoin}," +
             "</if>" +
-            "<if test=\"homePoint != 0 \">"+
+            "<if test=\"homePoint >= 0 \">"+
             " homePoint=#{homePoint}," +
             "</if>" +
-            "<if test=\"spareMoney != 0 \">"+
+            "<if test=\"spareMoney >= 0 \">"+
             " spareMoney=#{spareMoney}," +
             "</if>" +
             " userId=#{userId}" +

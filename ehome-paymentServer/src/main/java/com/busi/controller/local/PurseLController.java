@@ -70,9 +70,21 @@ public class PurseLController extends BaseController implements PurseLocalContro
         }
         //缓存中存在 则更新
 //        purse.setTime(new Date());
-        purse.setHomePoint(Long.parseLong(purseMap.get("homePoint").toString())+purse.getHomePoint());
-        purse.setHomeCoin(Long.parseLong(purseMap.get("homeCoin").toString())+purse.getHomeCoin());
-        purse.setSpareMoney(Double.parseDouble(purseMap.get("spareMoney").toString())+purse.getSpareMoney());
+        long  homePoint = Long.parseLong(purseMap.get("homePoint").toString())+purse.getHomePoint();
+        if(homePoint<0){
+            homePoint = 0;
+        }
+        purse.setHomePoint(homePoint);
+        long homeCoin = Long.parseLong(purseMap.get("homeCoin").toString())+purse.getHomeCoin();
+        if(homeCoin<0){
+            homeCoin = 0;
+        }
+        purse.setHomeCoin(homeCoin);
+        double spareMoney = Double.parseDouble(purseMap.get("spareMoney").toString())+purse.getSpareMoney();
+        if(spareMoney<0){
+            spareMoney = 0;
+        }
+        purse.setSpareMoney(spareMoney);
         purseInfoService.updatePurseInfo(purse);
         //使缓存中的用户钱包信息失效  查询时会重新加载
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PURSEINFO+purse.getUserId(),0);
