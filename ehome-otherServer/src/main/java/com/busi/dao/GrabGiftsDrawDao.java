@@ -18,6 +18,18 @@ import java.util.List;
 public interface GrabGiftsDrawDao {
 
     /***
+     * 新增数据
+     * @param prizesLuckyDraw
+     * @return
+     */
+    @Insert("insert into Drawings(signNum,sign,allusionName,goodOrBad,poeticFlavour,heSaid,immortalMachine,whole," +
+            "quintessence,allusion,cause,business,investment,love,work,travelFar,seek,lawsuit,prayForAson,examination,transaction,changes,healthy) " +
+            "values (#{signNum},#{sign},#{allusionName},#{goodOrBad},#{poeticFlavour},#{heSaid},#{immortalMachine},#{whole}," +
+            "#{quintessence},#{allusion},#{cause},#{business},#{investment},#{love},#{work},#{travelFar},#{seek},#{lawsuit},#{prayForAson},#{examination},#{transaction},#{changes},#{healthy})")
+    @Options(useGeneratedKeys = true)
+    int addDrawings(Drawings prizesLuckyDraw);
+
+    /***
      * 统计该用户当天次数
      * @param userId
      * @return

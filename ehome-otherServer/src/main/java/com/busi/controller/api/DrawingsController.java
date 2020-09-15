@@ -34,6 +34,22 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
     DrawingsService grabGiftsService;
 
     /***
+     * 新增抽签数据
+     * @param drawings
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addDrawings(@Valid @RequestBody Drawings drawings, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        grabGiftsService.addDrawings(drawings);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 抽签
      * @param grabMedium
      * @param bindingResult
@@ -52,20 +68,19 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         }
         //开始抽
         Random rand = new Random();
-//        long id = rand.nextInt(100) + 1;//等对接数据，目前先固定一条数据
-        long id = 1;
+        long id = rand.nextInt(100) + 1;
         Drawings gifts = grabGiftsService.findGifts(id);
         if (gifts == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "抽签数据异常", new JSONObject());
+            gifts = grabGiftsService.findGifts(1);//目前数据还在补充阶段
         }
         grabMedium.setTime(new Date());
-        grabMedium.setDrawingId(gifts.getId());
-        grabMedium.setSignature(gifts.getName());
+        grabMedium.setDrawingId(id);
+        grabMedium.setSignature(gifts.getAllusionName());
         grabMedium.setUserId(CommonUtils.getMyId());
         grabGiftsService.add(grabMedium);
         Map<String, Object> map = new HashMap<>();
-        map.put("id", grabMedium.getDrawingId());//签子ID
-        map.put("grade", gifts.getGrade());//签子等级
+        map.put("id", id);//签子ID
+        map.put("number", gifts.getSign());//中文签号
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 

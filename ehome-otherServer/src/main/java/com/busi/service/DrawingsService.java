@@ -26,6 +26,16 @@ public class DrawingsService {
     private GrabGiftsDrawDao giftsDrawDao;
 
     /***
+     * 新增数据
+     * @param prizesLuckyDraw
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addDrawings(Drawings prizesLuckyDraw) {
+        return giftsDrawDao.addDrawings(prizesLuckyDraw);
+    }
+
+    /***
      * 统计该用户当日次数
      * @param userId
      * @return

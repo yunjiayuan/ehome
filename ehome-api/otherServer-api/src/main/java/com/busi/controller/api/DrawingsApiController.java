@@ -19,6 +19,14 @@ import javax.validation.Valid;
 public interface DrawingsApiController {
 
     /***
+     * 新增抽签数据
+     * @param grabMedium
+     * @return
+     */
+    @PostMapping("addDrawings")
+    ReturnData addDrawings(@Valid @RequestBody Drawings grabMedium, BindingResult bindingResult);
+
+    /***
      * 抽签
      * @param grabMedium
      * @return
