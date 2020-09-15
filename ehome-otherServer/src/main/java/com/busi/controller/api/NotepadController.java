@@ -301,17 +301,17 @@ public class NotepadController extends BaseController implements NotepadApiContr
             if (CommonUtils.checkFull(almanac.getDressing())) {
                 Random r = new Random();
                 String[] strings = "宜/缓".split("/");
-                String[] colour = "红，橙，黄，绿，青，蓝，紫，灰，粉，黑，白，棕".split(",");
-                int nextInt = r.nextInt(1);
+                String[] colour = "红，橙，黄，绿，青，蓝，紫，灰，粉，黑，白，棕".split("，");
+                int nextInt = r.nextInt(2) + 0;
                 almanac.setFriends(strings[nextInt]);
-                nextInt = r.nextInt(1);
+                nextInt = r.nextInt(2) + 0;
                 almanac.setPartner(strings[nextInt]);
-                nextInt = r.nextInt(1);
+                nextInt = r.nextInt(2) + 0;
                 almanac.setParty(strings[nextInt]);
-                nextInt = r.nextInt(1);
+                nextInt = r.nextInt(2) + 0;
                 almanac.setTravelFar(strings[nextInt]);
-                nextInt = r.nextInt(1);
-                int nextInt2 = r.nextInt(11);
+                nextInt = r.nextInt(2) + 0;
+                int nextInt2 = r.nextInt(12) + 0;
                 if (nextInt2 == 11) {//随机返回一至两个穿衣颜色
                     almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色");
                 } else {

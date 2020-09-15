@@ -167,7 +167,7 @@ public interface NotepadDao {
             " party=#{party}," +
             " travelFar=#{travelFar}," +
             " dressing=#{dressing}" +
-            " where id=#{id}" +
+            " where gregorianDatetime = #{gregorianDatetime}" +
             "</script>")
     int updateNotepadLunar(NotepadLunar notepad);
 
