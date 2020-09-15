@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -301,8 +298,29 @@ public class NotepadController extends BaseController implements NotepadApiContr
                 almanac.setWuXingNaYear("");
                 almanac.setXingEast("");
             }
+            if (CommonUtils.checkFull(almanac.getDressing())) {
+                Random r = new Random();
+                String[] strings = "宜/缓".split("/");
+                String[] colour = "红，橙，黄，绿，青，蓝，紫，灰，粉，黑，白，棕".split(",");
+                int nextInt = r.nextInt(1);
+                almanac.setFriends(strings[nextInt]);
+                nextInt = r.nextInt(1);
+                almanac.setPartner(strings[nextInt]);
+                nextInt = r.nextInt(1);
+                almanac.setParty(strings[nextInt]);
+                nextInt = r.nextInt(1);
+                almanac.setTravelFar(strings[nextInt]);
+                nextInt = r.nextInt(1);
+                int nextInt2 = r.nextInt(11);
+                if (nextInt2 == 11) {//随机返回一至两个穿衣颜色
+                    almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色");
+                } else {
+                    almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色、" + colour[nextInt2 + 1] + "色");
+                }
+                notepadService.updateNotepadLunar(almanac);
+            }
         } else {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", almanac);
     }

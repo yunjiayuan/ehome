@@ -143,6 +143,16 @@ public class NotepadService {
         return notepadDao.findDetails(calendar);
     }
 
+    /***
+     * 更新黄历
+     * @param notepad
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateNotepadLunar(NotepadLunar notepad) {
+        return notepadDao.updateNotepadLunar(notepad);
+    }
+
     /**
      * 获取指定年份法定节假日加班日安排时间
      *

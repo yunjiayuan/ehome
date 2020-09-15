@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * @program: 黄历实体类
  * @description:
- * @author: ZHaoJiaJie
+ * @author: ZhaoJiaJie
  * @create: 2018-10-10 15:40:18
  */
 @Setter
@@ -54,5 +54,15 @@ public class NotepadLunar {
     private String lMonth;    //阴历月
 
     private String lDay;  //阴历天
+
+    private String friends;  //见友人恋人
+
+    private String partner;  //见生意伙伴
+
+    private String party;  //聚会聚餐
+
+    private String dressing;  //穿衣
+
+    private String travelFar;  //远行
 
 }

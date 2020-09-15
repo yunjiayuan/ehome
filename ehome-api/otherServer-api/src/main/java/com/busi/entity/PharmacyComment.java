@@ -20,8 +20,6 @@ public class PharmacyComment {
 
     private long masterId;          // 药店ID
 
-    private long pharmacyId;            //药品ID
-
     private long userId;            //评论者ID
 
     private long replayId;            //被评论(回复)用户ID

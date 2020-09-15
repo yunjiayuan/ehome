@@ -156,6 +156,22 @@ public interface NotepadDao {
     NotepadLunar findDetails(@Param("calendar") int calendar);
 
     /***
+     * 更新黄历
+     * @param notepad
+     * @return
+     */
+    @Update("<script>" +
+            "update NotepadLunar set" +
+            " friends=#{friends}," +
+            " partner=#{partner}," +
+            " party=#{party}," +
+            " travelFar=#{travelFar}," +
+            " dressing=#{dressing}" +
+            " where id=#{id}" +
+            "</script>")
+    int updateNotepadLunar(NotepadLunar notepad);
+
+    /***
      * 获取指定年份法定节假日加班日安排时间
      * @param thisYearId
      */
