@@ -74,12 +74,12 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
             gifts = grabGiftsService.findGifts(1);//目前数据还在补充阶段
         }
         grabMedium.setTime(new Date());
-        grabMedium.setDrawingId(id);
+        grabMedium.setDrawingId(gifts.getId());
         grabMedium.setSignature(gifts.getAllusionName());
         grabMedium.setUserId(CommonUtils.getMyId());
         grabGiftsService.add(grabMedium);
         Map<String, Object> map = new HashMap<>();
-        map.put("id", id);//签子ID
+        map.put("id", gifts.getId());//签子ID
         map.put("number", gifts.getSign());//中文签号
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
