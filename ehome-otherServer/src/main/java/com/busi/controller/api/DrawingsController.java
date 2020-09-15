@@ -52,8 +52,12 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         }
         //开始抽
         Random rand = new Random();
-        long id = rand.nextInt(10) + 0;
+//        long id = rand.nextInt(100) + 1;//等对接数据，目前先固定一条数据
+        long id = 1;
         Drawings gifts = grabGiftsService.findGifts(id);
+        if (gifts == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "抽签数据异常", new JSONObject());
+        }
         grabMedium.setTime(new Date());
         grabMedium.setDrawingId(gifts.getId());
         grabMedium.setSignature(gifts.getName());
@@ -80,7 +84,7 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         }
         Map<String, Object> map = new HashMap<>();
         map.put("num", num);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", num);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
     /***

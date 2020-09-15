@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.Min;
 import java.util.Date;
 
 /**
@@ -19,7 +18,6 @@ public class DrawingRecords {
 
     private long id;    //ID
 
-    @Min(value = 1, message = "userId参数有误")
     private long userId;//用户Id
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

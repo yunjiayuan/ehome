@@ -21,6 +21,4 @@ public class Drawings {
 
     private String contents;//内容
 
-    //与数据库无关字段
-    private int num;    //剩余次数
 }
