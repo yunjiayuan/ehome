@@ -46,7 +46,7 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         grabGiftsService.addDrawings(drawings);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", drawings.getSignNum());
     }
 
     /***
