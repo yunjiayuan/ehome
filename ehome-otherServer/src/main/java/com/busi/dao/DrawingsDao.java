@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Mapper
 @Repository
-public interface GrabGiftsDrawDao {
+public interface DrawingsDao {
 
     /***
      * 新增数据

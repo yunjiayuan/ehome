@@ -1,6 +1,6 @@
 package com.busi.service;
 
-import com.busi.dao.GrabGiftsDrawDao;
+import com.busi.dao.DrawingsDao;
 import com.busi.entity.DrawingRecords;
 import com.busi.entity.Drawings;
 import com.busi.entity.PageBean;
@@ -23,7 +23,7 @@ import java.util.List;
 public class DrawingsService {
 
     @Autowired
-    private GrabGiftsDrawDao giftsDrawDao;
+    private DrawingsDao giftsDrawDao;
 
     /***
      * 新增数据
