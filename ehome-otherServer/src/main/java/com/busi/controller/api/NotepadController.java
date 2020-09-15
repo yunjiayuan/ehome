@@ -303,19 +303,21 @@ public class NotepadController extends BaseController implements NotepadApiContr
                 String[] strings = "宜/缓".split("/");
                 String[] colour = "红，橙，黄，绿，青，蓝，紫，灰，粉，黑，白，棕".split("，");
                 int nextInt = r.nextInt(2) + 0;
-                almanac.setFriends(strings[nextInt]);
+                almanac.setFriends("见友人恋人" + strings[nextInt]);
                 nextInt = r.nextInt(2) + 0;
-                almanac.setPartner(strings[nextInt]);
+                almanac.setPartner("见生意伙伴" + strings[nextInt]);
                 nextInt = r.nextInt(2) + 0;
-                almanac.setParty(strings[nextInt]);
+                almanac.setParty("聚会聚餐" + strings[nextInt]);
                 nextInt = r.nextInt(2) + 0;
                 almanac.setTravelFar(strings[nextInt]);
-                nextInt = r.nextInt(2) + 0;
+//                nextInt = r.nextInt(2) + 0;
                 int nextInt2 = r.nextInt(12) + 0;
                 if (nextInt2 == 11) {//随机返回一至两个穿衣颜色
-                    almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色");
+//                    almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色");//暂不拼宜/缓
+                    almanac.setDressing(colour[nextInt2] + "色");
                 } else {
-                    almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色、" + colour[nextInt2 + 1] + "色");
+//                    almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色、" + colour[nextInt2 + 1] + "色");
+                    almanac.setDressing(colour[nextInt2] + "色、" + colour[nextInt2 + 1] + "色");
                 }
                 notepadService.updateNotepadLunar(almanac);
             }
