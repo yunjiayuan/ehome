@@ -80,7 +80,8 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         grabGiftsService.add(grabMedium);
         Map<String, Object> map = new HashMap<>();
         map.put("id", gifts.getId());//签子ID
-        map.put("number", gifts.getSign());//中文签号
+        int last = gifts.getSign().indexOf("签");
+        map.put("number", gifts.getSign().substring(0, last));//中文签号
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
