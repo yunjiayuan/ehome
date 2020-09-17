@@ -33,6 +33,9 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
     @Autowired
     DrawingsService grabGiftsService;
 
+//    @Autowired
+//    CrawlingSignUtils crawlingSign;
+
     /***
      * 新增抽签数据
      * @param drawings
@@ -45,7 +48,15 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //自定义新增
         grabGiftsService.addDrawings(drawings);
+        //遍历网页新增
+//            for (int i = 26; i <= 100; i++) {
+//                Drawings drawings2 = new Drawings();
+//                drawings.setSignNum(i);//阿拉伯签号
+//                drawings2 = crawlingSign.run(drawings);
+//                grabGiftsService.addDrawings(drawings2);
+//            }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", drawings.getSignNum());
     }
 
@@ -70,9 +81,6 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         Random rand = new Random();
         long id = rand.nextInt(100) + 1;
         Drawings gifts = grabGiftsService.findGifts(id);
-        if (gifts == null) {
-            gifts = grabGiftsService.findGifts(1);//目前数据还在补充阶段
-        }
         grabMedium.setTime(new Date());
         grabMedium.setDrawingId(gifts.getId());
         grabMedium.setSignature(gifts.getAllusionName());
@@ -80,8 +88,9 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         grabGiftsService.add(grabMedium);
         Map<String, Object> map = new HashMap<>();
         map.put("id", gifts.getId());//签子ID
-        int last = gifts.getSign().indexOf("签");
-        map.put("number", gifts.getSign().substring(0, last));//中文签号
+//        int last = gifts.getSign().indexOf("签");
+//        map.put("number", gifts.getSign().substring(0, last));//中文签号
+        map.put("number", gifts.getAllusionName());//典故名称
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
