@@ -30,7 +30,7 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
     RedisUtils redisUtils;
 
     @Autowired
-    private ShopCenterService shopCenterService;
+    ShopCenterService shopCenterService;
 
     /***
      * 新增店铺
@@ -426,6 +426,53 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+    }
+
+    /***
+     * 新增商品分类
+     * @param homeShopCenter
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData addGoodsCategory(@Valid @RequestBody GoodsCategory homeShopCenter, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        shopCenterService.addGoodsCategory(homeShopCenter);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新商品分类
+     * @param homeShopCenter
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData changeGoodsCategory(@Valid @RequestBody GoodsCategory homeShopCenter, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        shopCenterService.changeGoodsCategory(homeShopCenter);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /**
+     * @param ids
+     * @Description: 删除商品分类
+     * @return:
+     */
+    @Override
+    public ReturnData delGoodsCategory(@PathVariable String ids) {
+        //验证参数
+        if (CommonUtils.checkFull(ids)) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+        }
+        shopCenterService.delGoodsCategory(ids.split(","));
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***

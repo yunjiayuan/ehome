@@ -143,6 +143,36 @@ public class ShopCenterService {
     }
 
     /***
+     * 新增分类
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int addGoodsCategory(GoodsCategory homeShopCenter) {
+        return shopCenterDao.addYHSort(homeShopCenter);
+    }
+
+    /***
+     * 更新分类
+     * @param homeShopCenter
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeGoodsCategory(GoodsCategory homeShopCenter) {
+        return shopCenterDao.changeYHSort(homeShopCenter);
+    }
+
+    /***
+     * 批量删除分类
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delGoodsCategory(String[] ids) {
+        return shopCenterDao.delYHSort(ids);
+    }
+
+    /***
      * 查询商品品牌
      * @param sortId 商品分类ID
      * @return
@@ -212,5 +242,15 @@ public class ShopCenterService {
         List<GoodsBrandCategoryValue> values;
         values = shopCenterDao.findBrandPropertys(goodCategoryId.split(","), goodsBrandId.split(","));
         return values;
+    }
+
+    /***
+     * 更新分类logo
+     * @param shopPersonalData
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updGoodsCategoryLog(GoodsCategory shopPersonalData) {
+        return shopCenterDao.updGoodsCategoryLog(shopPersonalData);
     }
 }
