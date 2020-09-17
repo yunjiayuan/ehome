@@ -79,7 +79,7 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
             //判断当前用户当天是否还有次数 以每天凌晨0点为准 每天每人只能抽三次
             int num = grabGiftsService.findNum(CommonUtils.getMyId());
             if (num >= 3) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "今天次数用尽，明天再来吧", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "您今天的次数已用完，成为会员后可享无限次抽签", new JSONObject());
             }
         }
         //开始抽
