@@ -2,13 +2,11 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.DrawingRecords;
-import com.busi.entity.Drawings;
-import com.busi.entity.PageBean;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import com.busi.service.DrawingsService;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.StatusCode;
+import com.busi.utils.UserMembershipUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +30,9 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
 
     @Autowired
     DrawingsService grabGiftsService;
+
+    @Autowired
+    UserMembershipUtils userMembershipUtils;
 
 //    @Autowired
 //    CrawlingSignUtils crawlingSign;
@@ -72,10 +73,14 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        //判断当前用户当天是否还有次数 以每天凌晨0点为准 每天每人只能抽三次
-        int num = grabGiftsService.findNum(CommonUtils.getMyId());
-        if (num >= 3) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "今天次数用尽，明天再来吧", new JSONObject());
+        //判断是否是会员：会员不限次数
+        UserMembership memberMap = userMembershipUtils.getUserMemberInfo(CommonUtils.getMyId());
+        if (memberMap.getMemberShipStatus() <= 0) {
+            //判断当前用户当天是否还有次数 以每天凌晨0点为准 每天每人只能抽三次
+            int num = grabGiftsService.findNum(CommonUtils.getMyId());
+            if (num >= 3) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "今天次数用尽，明天再来吧", new JSONObject());
+            }
         }
         //开始抽
         Random rand = new Random();
