@@ -7,6 +7,8 @@ import com.busi.entity.RewardLog;
 import com.busi.entity.RewardTotalMoneyLog;
 import com.busi.service.RewardLogService;
 import com.busi.service.RewardTotalMoneyLogService;
+import com.busi.utils.Constants;
+import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,9 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
 
     @Autowired
     RewardTotalMoneyLogService rewardTotalMoneyLogService;
+
+    @Autowired
+    RedisUtils redisUtils;
 
     /***
      * 新增
@@ -61,6 +66,8 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
             rewardTotalMoneyLog.setRewardTotalMoney(rewardTotalMoneyLog.getRewardTotalMoney()+rewardLog.getRewardMoney());
             rewardTotalMoneyLogService.update(rewardTotalMoneyLog);
         }
+        //清除总金额缓存
+        redisUtils.expire(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
