@@ -148,46 +148,138 @@ public interface ShopCenterDao {
     @Select("<script>" +
             "select * from GoodsCategory" +
             " where 1=1" +
-            "<if test=\"levelOne >= 0 \">" +
-            " and levelTwo > -1" +
-            " and levelOne = #{levelOne}" +
-            "</if>" +
-            "<if test=\"levelOne == -2 \">" +
+//            "<if test=\"levelOne >= 0 \">" +
+//            " and levelTwo > -1" +
+//            " and levelOne = #{levelOne}" +
+//            "</if>" +
+//            "<if test=\"levelOne == -2 \">" +
+//            " and levelOne > -1" +
+//            " and levelTwo = -1" +
+//            "</if>" +
+//            "<if test=\"levelTwo >= 0 \">" +
+//            " and levelThree > -1" +
+//            " and levelTwo = #{levelTwo}" +
+//            "</if>" +
+//            "<if test=\"levelTwo == -2 \">" +
+//            " and levelTwo > -1" +
+//            " and levelThree = -1" +
+//            "</if>" +
+//            "<if test=\"levelThree >= 0 \">" +
+//            " and levelFour > -1" +
+//            " and levelThree = #{levelThree}" +
+//            "</if>" +
+//            "<if test=\"levelThree == -2 \">" +
+//            " and levelThree > -1" +
+//            " and levelFour = -1" +
+//            "</if>" +
+//            "<if test=\"levelFour >= 0 \">" +
+//            " and levelFive > -1" +
+//            " and levelFour = #{levelFour}" +
+//            "</if>" +
+//            "<if test=\"levelFour == -2 \">" +
+//            " and levelFour > -1" +
+//            " and levelFive = -1" +
+//            "</if>" +
+//            "<if test=\"levelFive == -2 \">" +
+//            " and levelFive > -1" +
+//            "</if>" +
+//            "<if test=\"levelFive >= 0 \">" +
+//            " and levelFive = #{levelFive}" +
+//            "</if>" +
+
+            "<if test=\"levelOne == -2\">" +
             " and levelOne > -1" +
             " and levelTwo = -1" +
-            "</if>" +
-            "<if test=\"levelTwo >= 0 \">" +
-            " and levelThree > -1" +
-            " and levelTwo = #{levelTwo}" +
-            "</if>" +
-            "<if test=\"levelTwo == -2 \">" +
-            " and levelTwo > -1" +
             " and levelThree = -1" +
-            "</if>" +
-            "<if test=\"levelThree >= 0 \">" +
-            " and levelFour > -1" +
-            " and levelThree = #{levelThree}" +
-            "</if>" +
-            "<if test=\"levelThree == -2 \">" +
-            " and levelThree > -1" +
             " and levelFour = -1" +
-            "</if>" +
-            "<if test=\"levelFour >= 0 \">" +
-            " and levelFive > -1" +
-            " and levelFour = #{levelFour}" +
-            "</if>" +
-            "<if test=\"levelFour == -2 \">" +
-            " and levelFour > -1" +
             " and levelFive = -1" +
             "</if>" +
+            "<if test=\"levelOne >= 0 \">" +
+            " and levelOne = #{levelOne}" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelTwo >= -1" +
+            " and levelThree = -1" +
+            " and levelFour = -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelTwo >= 0 \">" +
+            " and levelTwo = #{levelTwo}" +
+            "<if test=\"levelThree == -2 \">" +
+            " and levelThree >= -1" +
+            " and levelFour = -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelThree >= 0 \">" +
+            " and levelThree = #{levelThree}" +
+            "<if test=\"levelFour == -2 \">" +
+            " and levelFour >= -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelFour >= 0 \">" +
+            " and levelFour = #{levelFour}" +
             "<if test=\"levelFive == -2 \">" +
-            " and levelFive > -1" +
+            " and levelFive >= -1" +
             "</if>" +
             "<if test=\"levelFive >= 0 \">" +
             " and levelFive = #{levelFive}" +
             "</if>" +
+            "</if>" +
+            "</if>" +
+            "</if>" +
+            "</if>" +
             "</script>")
     List<GoodsCategory> findList(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
+
+    /***
+     * 新增分类
+     * @param homeShopCenter
+     * @return
+     */
+    @Insert("insert into GoodsCategory(name,levelOne,levelTwo,levelThree,levelFour,levelFive,letter,logo,goodCategoryId)" +
+            "values (#{name},#{levelOne},#{levelTwo},#{levelThree},#{levelFour},#{levelFive},#{letter},#{logo},#{goodCategoryId})")
+    @Options(useGeneratedKeys = true)
+    int addYHSort(GoodsCategory homeShopCenter);
+
+    /***
+     * 更新分类
+     * @param homeShopCenter
+     * @return
+     */
+    @Update("<script>" +
+            "update GoodsCategory set" +
+            "<if test=\"name != null and name != ''\">" +
+            " name=#{name}," +
+            "</if>" +
+            " levelOne=#{levelOne}," +
+            " levelTwo=#{levelTwo}," +
+            " levelThree=#{levelThree}," +
+            " levelFour=#{levelFour}," +
+            " levelFive=#{levelFive}," +
+            "<if test=\"letter != null and letter != ''\">" +
+            " letter=#{letter}," +
+            "</if>" +
+            "<if test=\"logo != null and logo != ''\">" +
+            " logo=#{logo}," +
+            "</if>" +
+            " goodCategoryId=#{goodCategoryId}" +
+            " where id=#{id}" +
+            "</script>")
+    int changeYHSort(GoodsCategory homeShopCenter);
+
+
+    /***
+     * 删除分类
+     * @param ids
+     * @return
+     */
+    @Delete("<script>" +
+            "delete from GoodsCategory" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int delYHSort(@Param("ids") String[] ids);
 
     /***
      * 查询商品分类
@@ -210,36 +302,36 @@ public interface ShopCenterDao {
             "</if>" +
             "<if test=\"levelOne >= 0 \">" +
             " and levelOne = #{levelOne}" +
-                "<if test=\"levelTwo == -2 \">" +
-                " and levelTwo >= -1" +
-                " and levelThree = -1" +
-                " and levelFour = -1" +
-                " and levelFive = -1" +
-                "</if>" +
-                "<if test=\"levelTwo >= 0 \">" +
-                    " and levelTwo = #{levelTwo}" +
-                    "<if test=\"levelThree == -2 \">" +
-                        " and levelThree >= -1" +
-                        " and levelFour = -1" +
-                        " and levelFive = -1" +
-                    "</if>" +
-                    "<if test=\"levelThree >= -1 \">" +
-                        " and levelThree = #{levelThree}" +
-                        "<if test=\"levelFour == -2 \">" +
-                        " and levelFour >= -1" +
-                        " and levelFive = -1" +
-                        "</if>" +
-                        "<if test=\"levelFour >= -1 \">" +
-                        " and levelFour = #{levelFour}" +
-                            "<if test=\"levelFive == -2 \">" +
-                            " and levelFive >= -1" +
-                            "</if>" +
-                            "<if test=\"levelFive >= -1 \">" +
-                            " and levelFive = #{levelFive}" +
-                            "</if>" +
-                        "</if>" +
-                    "</if>" +
-                "</if>" +
+            "<if test=\"levelTwo == -2 \">" +
+            " and levelTwo >= -1" +
+            " and levelThree = -1" +
+            " and levelFour = -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelTwo >= 0 \">" +
+            " and levelTwo = #{levelTwo}" +
+            "<if test=\"levelThree == -2 \">" +
+            " and levelThree >= -1" +
+            " and levelFour = -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelThree >= -1 \">" +
+            " and levelThree = #{levelThree}" +
+            "<if test=\"levelFour == -2 \">" +
+            " and levelFour >= -1" +
+            " and levelFive = -1" +
+            "</if>" +
+            "<if test=\"levelFour >= -1 \">" +
+            " and levelFour = #{levelFour}" +
+            "<if test=\"levelFive == -2 \">" +
+            " and levelFive >= -1" +
+            "</if>" +
+            "<if test=\"levelFive >= -1 \">" +
+            " and levelFive = #{levelFive}" +
+            "</if>" +
+            "</if>" +
+            "</if>" +
+            "</if>" +
             "</if>" +
             "</script>")
     List<GoodsCategory> findList5(@Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree, @Param("levelFour") int levelFour, @Param("levelFive") int levelFive);
@@ -400,4 +492,21 @@ public interface ShopCenterDao {
             "</foreach>" +
             "</script>")
     List<GoodsBrandProperty> findBrandPropertyss(@Param("goodCategoryId") String[] goodCategoryId, @Param("goodsBrandId") String[] goodsBrandId);
+
+    /***
+     * 更新分类logo
+     * @param homeShopCenter
+     * @return
+     */
+    @Update("<script>" +
+            "update GoodsCategory set" +
+            " logo=#{logo}" +
+//            " where name LIKE CONCAT('%',#{name},'%')" +
+            " where name =#{name}" +
+            " and levelFour = -1" +
+            " and levelFive = -1" +
+            " and goodCategoryId > 0" +
+            " and logo = ''" +
+            "</script>")
+    int updGoodsCategoryLog(GoodsCategory homeShopCenter);
 }

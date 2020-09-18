@@ -1,5 +1,6 @@
 package com.busi.controller.api;
 
+import com.busi.entity.GoodsCategory;
 import com.busi.entity.HomeShopCenter;
 import com.busi.entity.HomeShopPersonalData;
 import com.busi.entity.ReturnData;
@@ -109,6 +110,29 @@ public interface ShopCenterApiController {
      */
     @GetMapping("findGoodsCategory/{levelOne}/{levelTwo}/{levelThree}/{levelFour}/{levelFive}/{letter}/{page}/{count}")
     ReturnData findGoodsCategory(@PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int levelFour, @PathVariable int levelFive, @PathVariable String letter, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 新增商品分类
+     * @param homeShopCenter
+     * @return
+     */
+    @PostMapping("addGoodsCategory")
+    ReturnData addGoodsCategory(@Valid @RequestBody GoodsCategory homeShopCenter, BindingResult bindingResult);
+
+    /***
+     * 更新商品分类
+     * @param homeShopCenter
+     * @return
+     */
+    @PutMapping("changeGoodsCategory")
+    ReturnData changeGoodsCategory(@Valid @RequestBody GoodsCategory homeShopCenter, BindingResult bindingResult);
+
+    /**
+     * @Description: 删除商品分类
+     * @return:
+     */
+    @DeleteMapping("delGoodsCategory/{ids}")
+    ReturnData delGoodsCategory(@PathVariable String ids);
 
     /***
      * 查询商品分类主键ID
