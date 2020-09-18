@@ -62,4 +62,7 @@ public class HomePageInfo {
 
     private int user_ce;//用户认证 ，0表示未经过认证，1表示通过网络大V认证
 
+    private long totalVisitCount;//总访问量  与数据库无关字段
+
+    private long todayVisitCount;//今天访问量 与数据库无关字段
 }

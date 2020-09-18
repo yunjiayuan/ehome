@@ -456,11 +456,13 @@ public class RegisterController extends BaseController implements RegisterApiCon
             if(visitView==null){
                 visitView = new VisitView();
                 visitView.setUserId(userId);
-            }
-            if(CommonUtils.getMyId()==userId){//自己看自己
-                visitView.setTodayVisitCount(0);//初始化今日访问量
-            }else{//别人看自己
-                visitView.setTodayVisitCount(1);//初始化今日访问量
+                if(CommonUtils.getMyId()==userId){//自己看自己
+                    visitView.setTodayVisitCount(0);//初始化今日访问量
+                    visitView.setTotalVisitCount(0);//初始化总访问量
+                }else{//别人看自己
+                    visitView.setTodayVisitCount(1);//初始化今日访问量
+                    visitView.setTotalVisitCount(1);//初始化总访问量
+                }
             }
             userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//初始化今日访问量
             userInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
@@ -473,11 +475,13 @@ public class RegisterController extends BaseController implements RegisterApiCon
                 if(visitView==null){
                     visitView = new VisitView();
                     visitView.setUserId(userId);
-                }
-                if(CommonUtils.getMyId()==userId){//自己看自己
-                    visitView.setTodayVisitCount(0);//初始化今日访问量
-                }else{//别人看自己
-                    visitView.setTodayVisitCount(1);//初始化今日访问量
+                    if(CommonUtils.getMyId()==userId){//自己看自己
+                        visitView.setTodayVisitCount(0);//初始化今日访问量
+                        visitView.setTotalVisitCount(0);//初始化总访问量
+                    }else{//别人看自己
+                        visitView.setTodayVisitCount(1);//初始化今日访问量
+                        visitView.setTotalVisitCount(1);//初始化总访问量
+                    }
                 }
                 userInfo.setTodayVisitCount(visitView.getTodayVisitCount());//初始化今日访问量
                 userInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量

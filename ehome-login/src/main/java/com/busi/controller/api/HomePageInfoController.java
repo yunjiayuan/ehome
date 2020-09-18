@@ -45,6 +45,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
     @Autowired
     FollowCountsService followCountsService;
 
+    @Autowired
+    VisitViewService visitViewService;
+
     /***
      * 获取指定用户ID的家主页信息
      * @param userId
@@ -255,6 +258,50 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         }
         homePageInfo.setFlagByAndroid(homepageinfoFlagByAndroid);//临时参数 1禁止安卓部分功能 方便安卓平台审核
         homePageInfo.setVideoshootType(videoshootType);//临时参数 1禁止查看会员中心 方便IOS平台审核
+        //设置访问量信息
+        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+userId);
+        VisitView visitView = null;
+        if(map==null||map.size()<=0){//缓存中不存在 查询数据库
+            visitView = visitViewService.findVisitView(userId);
+            if(visitView==null){
+                visitView = new VisitView();
+                visitView.setUserId(userId);
+                if(CommonUtils.getMyId()==userId){//自己看自己
+                    visitView.setTodayVisitCount(0);//初始化今日访问量
+                    visitView.setTotalVisitCount(0);//初始化总访问量
+                }else{//别人看自己
+                    visitView.setTodayVisitCount(1);//初始化今日访问量
+                    visitView.setTotalVisitCount(1);//初始化总访问量
+                }
+            }
+            homePageInfo.setTodayVisitCount(visitView.getTodayVisitCount());//初始化今日访问量
+            homePageInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
+            //更新缓存
+            redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),CommonUtils.getCurrentTimeTo_12());//保证今日访问量的生命周期 到今天晚上12点失效
+        }else{//缓存中存在
+            VisitView vv  = (VisitView) CommonUtils.mapToObject(map,VisitView.class);
+            if(vv==null){//防止异常数据情况
+                visitView = visitViewService.findVisitView(userId);
+                if(visitView==null){
+                    visitView = new VisitView();
+                    visitView.setUserId(userId);
+                    if(CommonUtils.getMyId()==userId){//自己看自己
+                        visitView.setTodayVisitCount(0);//初始化今日访问量
+                        visitView.setTotalVisitCount(0);//初始化总访问量
+                    }else{//别人看自己
+                        visitView.setTodayVisitCount(1);//初始化今日访问量
+                        visitView.setTotalVisitCount(1);//初始化总访问量
+                    }
+                }
+                homePageInfo.setTodayVisitCount(visitView.getTodayVisitCount());//初始化今日访问量
+                homePageInfo.setTotalVisitCount(visitView.getTotalVisitCount());//设置总访问量
+                //更新缓存
+                redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),CommonUtils.getCurrentTimeTo_12());//保证今日访问量的生命周期 到今天晚上12点失效
+            }else{
+                homePageInfo.setTodayVisitCount(vv.getTodayVisitCount());//设置今日访问量
+                homePageInfo.setTotalVisitCount(vv.getTotalVisitCount());//设置总访问量
+            }
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",homePageInfo);
     }
 
