@@ -67,7 +67,7 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
             rewardTotalMoneyLogService.update(rewardTotalMoneyLog);
         }
         //清除总金额缓存
-        redisUtils.expire(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + userId, 0);
+        redisUtils.expire(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + rewardLog.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
