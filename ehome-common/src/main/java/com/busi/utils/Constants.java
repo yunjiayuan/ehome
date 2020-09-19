@@ -191,7 +191,7 @@ public class Constants {
 
     /** 用户奖励提现金额的最低限制 配置 开始**/
     public static final int REWARD_TOTAL_MONEY = 100;//例如 满100元可以提现到钱包
-    public static final int REWARD_TOTAL_MONEY_LIMIT = 85;//奖励系统给钱的最大临界值 达到此值后将不再给钱 防止达到提现金额
+    public static final int REWARD_TOTAL_MONEY_LIMIT = 80;//奖励系统给钱的最大临界值 达到此值后将不再给钱 防止达到提现金额
     public static final int REWARD_EBLOG_LIKE_COUNT_10 = 10;//点赞数临界值 超过临界值 自动奖励用户红包
     public static final int REWARD_EBLOG_LIKE_COUNT_100 = 100;//点赞数临界值 超过临界值 自动奖励用户红包
     public static final int REWARD_EBLOG_LIKE_COUNT_10000 = 10000;//点赞数临界值 超过临界值 自动奖励用户红包

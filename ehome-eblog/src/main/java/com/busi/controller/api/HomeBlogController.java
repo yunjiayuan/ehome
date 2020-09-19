@@ -187,7 +187,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 }
             }else{//非首发视频 每次发视频60%-70%概率得10或20  总奖励累积到达70-90之间不给稿费
                 if(!flag){
-                    //判断奖励系统是否累计达到85（70-90）  达到85元则不再给稿费
+                    //判断奖励系统是否累计达到85（70-90）  达到80元则不再给稿费
                     Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + homeBlog.getUserId());
                     RewardTotalMoneyLog rewardTotalMoneyLog = null;
                     if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
