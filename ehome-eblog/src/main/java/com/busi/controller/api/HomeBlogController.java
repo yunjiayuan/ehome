@@ -228,7 +228,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                                 homeBlog.setRemunerationMoney(rewardMoney);
                                 homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
                                 homeBlog.setRemunerationTime(homeBlog.getTime());
-                                log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励 ["+homeBlog.getRemunerationMoney()+"元]，今日已获得稿费奖励：["+list.size()+1+"]次");
+                                int countss = list.size()+1;
+                                log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励 ["+homeBlog.getRemunerationMoney()+"元]，今日已获得稿费奖励：["+countss+"]次");
                             }else{
                                 log.info("用户 ["+homeBlog.getUserId()+"] 今日已得 ["+list.size()+"] 次视频稿费奖励，本次将不再给其稿费奖励");
                             }
