@@ -148,6 +148,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     }
                     homeBlog.setRemunerationStatus(remunerationStatus);
                     homeBlog.setRemunerationMoney(moneyNew);
+                    homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
+                    homeBlog.setRemunerationTime(homeBlog.getTime());
                 }
                 UserHeadNotes userHeadNotes = new UserHeadNotes();
                 userHeadNotes.setWelcomeVideoPath(homeBlog.getVideoUrl());
@@ -191,9 +193,14 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
                     homeBlog.setRemunerationTime(homeBlog.getTime());
                 }
-            }else{//非首发视频 每次发视频60%-70%概率得10或20  总奖励累积到达70-90之间不给稿费
+            }else{//非首发视频 每次发视频60%-70%概率得10或20  总奖励累积到达80不给稿费
+                  /*1、用户发布的视频60%的概率会成为稿费作品。
+                    2、同一个用户、同一天发布的视频，最多给2两个视频为稿费作品。
+                    3、稿费累积达到80元以后，系统则不再给该用户稿费奖励。
+                    4、稿费金额90%为10元，10%为20元。
+                  * */
                 if(!flag){
-                    //判断奖励系统是否累计达到85（70-90）  达到80元则不再给稿费
+                    //判断奖励系统是否累计达到80（70-90）  达到80元则不再给稿费
                     Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + homeBlog.getUserId());
                     RewardTotalMoneyLog rewardTotalMoneyLog = null;
                     if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
@@ -209,7 +216,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         if(count<=60){
                             //判断今日是否给过稿费 同一个用户每天最多给1-2个视频稿费
                             list = rewardLogLocalControllerFegin.findRewardLogListByUserId(homeBlog.getUserId());
-                            int size = random.nextInt(2)+1;
+                            int size = random.nextInt(3);
                             if(list==null||list.size()<size){
                                 int r = random.nextInt(100)+1;
                                 if(r>90){//10%的得20
@@ -228,11 +235,16 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                                 homeBlog.setRemunerationMoney(rewardMoney);
                                 homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
                                 homeBlog.setRemunerationTime(homeBlog.getTime());
-                                log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励 ["+homeBlog.getRemunerationMoney()+"元]，今日已获得稿费奖励：["+list.size()+1+"]次");
+                                int countss = list.size()+1;
+                                log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励 ["+homeBlog.getRemunerationMoney()+"元]，今日已获得稿费奖励：["+countss+"]次");
                             }else{
                                 log.info("用户 ["+homeBlog.getUserId()+"] 今日已得 ["+list.size()+"] 次视频稿费奖励，本次将不再给其稿费奖励");
                             }
+                        }else{
+                            log.info("用户 ["+homeBlog.getUserId()+"] 发布的视频，根据概率分配机制，未进入到稿费奖励分派系统");
                         }
+                    }else{
+                        log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励总金额 ["+rewardTotalMoneyLog.getRewardTotalMoney()+"元]，系统将不再自动给稿费奖励");
                     }
                 }
             }
@@ -373,7 +385,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
             homeBlog.setRemunerationStatus(grade);
             homeBlog.setRemunerationMoney(moneyNew);
-            homeBlog.setRemunerationUserId(CommonUtils.getMyId());
+            homeBlog.setRemunerationUserId(myId);
             homeBlog.setRemunerationTime(new Date());
             homeBlogService.updateGradeBlog(homeBlog);
             //上边将生活秀删除 此处重新添加进去

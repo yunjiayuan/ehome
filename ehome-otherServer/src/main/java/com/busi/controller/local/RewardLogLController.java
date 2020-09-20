@@ -82,7 +82,7 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
      * @return
      */
     @Override
-    public List<RewardLog> findRewardLogListByUserId(@PathVariable long userId) {
+    public List<RewardLog> findRewardLogListByUserId(@PathVariable(value="userId") long userId) {
         List<RewardLog> list = null;
         list = rewardLogService.findListByUserId(userId);
         return list;

@@ -31,6 +31,6 @@ public interface RewardLogLocalController {
      * @return
      */
     @GetMapping("findRewardLogListByUserId/{userId}")
-    List<RewardLog> findRewardLogListByUserId(@PathVariable long userId);
+    List<RewardLog> findRewardLogListByUserId(@PathVariable(value="userId")  long userId);
 
 }
