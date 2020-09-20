@@ -6,6 +6,7 @@ import com.busi.entity.*;
 import com.busi.fegin.RewardTotalMoneyLogLocalControllerFegin;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.validation.BindingResult;
@@ -26,6 +27,7 @@ import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
  * author：SunTianJie
  * create time：2018/10/23 10:35
  */
+@Slf4j
 @RestController
 public class HomeBlogController extends BaseController implements HomeBlogApiController {
 
@@ -199,24 +201,33 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         Random random = new Random();
                         int count = random.nextInt(100)+1;
                         int grade = 7;
+                        List<HomeBlog> list = null;
                         if(count<=60){
-                            int r = random.nextInt(100)+1;
-                            if(r>90){//10%的得20
-                                rewardMoney=20;
-                                grade = 8;
-                            }
-                            mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
-                            //更新用户状态
+                            //判断今日是否给过稿费 同一个用户每天最多给1-2个视频稿费
+                            list = homeBlogService.findBlogListByUserId2(homeBlog.getUserId());
+                            int size = random.nextInt(2)+1;
+                            if(list==null||list.size()<size){
+                                int r = random.nextInt(100)+1;
+                                if(r>90){//10%的得20
+                                    rewardMoney=20;
+                                    grade = 8;
+                                }
+                                mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
+                                //更新用户状态
 //                        userInfo.setHomeBlogStatus(1);//改为：已发送
 //                        userInfoUtils.updateHomeBlogStatus(userInfo);
-                            if(rewardMoney==10){
-                                homeBlog.setRemunerationStatus(1);
+                                if(rewardMoney==10){
+                                    homeBlog.setRemunerationStatus(1);
+                                }else{
+                                    homeBlog.setRemunerationStatus(2);
+                                }
+                                homeBlog.setRemunerationMoney(rewardMoney);
+                                homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
+                                homeBlog.setRemunerationTime(homeBlog.getTime());
+                                log.info("用户 ["+homeBlog.getUserId()+"] 本次发布视频，获得视频稿费奖励 ["+homeBlog.getRemunerationMoney()+"元]");
                             }else{
-                                homeBlog.setRemunerationStatus(2);
+                                log.info("用户 ["+homeBlog.getUserId()+"] 今日已得 ["+list.size()+"] 次视频稿费奖励，本次将不再给其稿费奖励");
                             }
-                            homeBlog.setRemunerationMoney(rewardMoney);
-                            homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
-                            homeBlog.setRemunerationTime(homeBlog.getTime());
                         }
                     }
                 }
