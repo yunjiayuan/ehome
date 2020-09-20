@@ -266,23 +266,6 @@ public interface HomeBlogDao {
     List<HomeBlog> findBlogListByUserId(@Param("userId") long userId, @Param("userIds") String userIds, @Param("searchType") int searchType ,@Param("sendType") int sendType);
 
     /***
-     * 根据指定用户ID查询当前获得稿费视频的作品列表
-     * @param userId  被查询用户ID
-     * @return
-     */
-    @Select("<script>" +
-            "select * from homeBlog" +
-            " where 1=1" +
-            " and userId = #{userId}" +
-            " and sendType = 2" +
-            " and blogType = 0" +
-            " and blogStatus = 0" +
-            " and remunerationStatus > 0" +
-            " and TO_DAYS(time) = TO_DAYS(NOW()) " +
-            "</script>")
-    List<HomeBlog> findBlogListByUserId2(@Param("userId") long userId);
-
-    /***
      * 根据城市ID查询 同城生活秀
      * @param cityId 博文类型：0查自己 1查别人
      * @param userId 当前用户ID

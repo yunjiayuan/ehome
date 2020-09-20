@@ -149,17 +149,6 @@ public class HomeBlogService {
     }
 
     /***
-     * 根据指定用户ID查询当前获得稿费视频的作品列表
-     * @param userId     被查询用户ID
-     * @return
-     */
-    public List<HomeBlog> findBlogListByUserId2(long userId) {
-        List<HomeBlog> list = null  ;
-        list = homeBlogDao.findBlogListByUserId2(userId);
-        return list;
-    }
-
-    /***
      * 根据城市ID查询 同城
      * @param cityId      博文类型：0查自己 1查别人
      * @param searchType  博文类型：0所有 1只看生活秀视频  2只看今日现场  3只看娱乐圈  4只看医生圈 5只看律师圈

@@ -3,6 +3,7 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.fegin.RewardLogLocalControllerFegin;
 import com.busi.fegin.RewardTotalMoneyLogLocalControllerFegin;
 import com.busi.service.HomeBlogService;
 import com.busi.utils.*;
@@ -45,6 +46,9 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
 
     @Autowired
     private RewardTotalMoneyLogLocalControllerFegin rewardTotalMoneyLogLocalControllerFegin;
+
+    @Autowired
+    private RewardLogLocalControllerFegin rewardLogLocalControllerFegin;
 
     @Autowired
     RedisUtils redisUtils;
@@ -201,10 +205,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         Random random = new Random();
                         int count = random.nextInt(100)+1;
                         int grade = 7;
-                        List<HomeBlog> list = null;
+                        List<RewardLog> list = null;
                         if(count<=60){
                             //判断今日是否给过稿费 同一个用户每天最多给1-2个视频稿费
-                            list = homeBlogService.findBlogListByUserId2(homeBlog.getUserId());
+                            list = rewardLogLocalControllerFegin.findRewardLogListByUserId(homeBlog.getUserId());
                             int size = random.nextInt(2)+1;
                             if(list==null||list.size()<size){
                                 int r = random.nextInt(100)+1;

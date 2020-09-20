@@ -1,19 +1,24 @@
 package com.busi.controller.local;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.entity.RewardLog;
 import com.busi.entity.RewardTotalMoneyLog;
 import com.busi.service.RewardLogService;
 import com.busi.service.RewardTotalMoneyLogService;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
+import java.util.List;
 
 /***
  * 用户奖励记录相关接口(服务期间调用)
@@ -69,5 +74,17 @@ public class RewardLogLController extends BaseController implements RewardLogLoc
         //清除总金额缓存
         redisUtils.expire(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + rewardLog.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 查询指定用户的今天的稿费作品奖励列表
+     * @param userId  用户ID
+     * @return
+     */
+    @Override
+    public List<RewardLog> findRewardLogListByUserId(@PathVariable long userId) {
+        List<RewardLog> list = null;
+        list = rewardLogService.findListByUserId(userId);
+        return list;
     }
 }

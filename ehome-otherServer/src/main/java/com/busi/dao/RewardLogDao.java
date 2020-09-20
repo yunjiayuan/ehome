@@ -59,6 +59,21 @@ public interface RewardLogDao {
     List<RewardLog> findList(@Param("userId") long userId, @Param("rewardType") int rewardType);
 
     /***
+     * 查询指定用户的今天的稿费作品奖励列表
+     * @param userId  用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from rewardLog" +
+            " where 1=1" +
+            " and rewardType > 6" +
+            " and 11 > rewardType" +
+            " and userId=#{userId}" +
+            " and TO_DAYS(time) = TO_DAYS(NOW()) " +
+            "</script>")
+    List<RewardLog> findListByUserId(@Param("userId") long userId);
+
+    /***
      * 查询记录信息
      * @param userId      用户ID
      * @param rewardType  奖励类型 0红包雨奖励 1新人注册奖励 2分享码邀请别人注册奖励 3生活圈首次发布视频奖励 4生活圈10赞奖励 5生活圈100赞奖励 6生活圈10000赞奖励

@@ -57,6 +57,16 @@ public class RewardLogService {
 
         return PageUtils.getPageBean(p, list);
     }
+    /***
+     * 查询指定用户的今天的稿费作品奖励列表
+     * @param userId  用户ID
+     * @return
+     */
+    public List<RewardLog> findListByUserId(long userId) {
+        List<RewardLog> list = null;
+        list = rewardLogDao.findListByUserId(userId);
+        return list;
+    }
 
     public RewardLog findRewardLog(long userId, int rewardType, long infoId) {
         return rewardLogDao.findRewardLog(userId, rewardType, infoId);
