@@ -277,6 +277,7 @@ public interface HomeBlogDao {
             " and sendType = 2" +
             " and blogType = 0" +
             " and blogStatus = 0" +
+            " and remunerationStatus > 0" +
             " and TO_DAYS(time) = TO_DAYS(NOW()) " +
             "</script>")
     List<HomeBlog> findBlogListByUserId2(@Param("userId") long userId);
