@@ -148,6 +148,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     }
                     homeBlog.setRemunerationStatus(remunerationStatus);
                     homeBlog.setRemunerationMoney(moneyNew);
+                    homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
+                    homeBlog.setRemunerationTime(homeBlog.getTime());
                 }
                 UserHeadNotes userHeadNotes = new UserHeadNotes();
                 userHeadNotes.setWelcomeVideoPath(homeBlog.getVideoUrl());
@@ -383,7 +385,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             }
             homeBlog.setRemunerationStatus(grade);
             homeBlog.setRemunerationMoney(moneyNew);
-            homeBlog.setRemunerationUserId(CommonUtils.getMyId());
+            homeBlog.setRemunerationUserId(myId);
             homeBlog.setRemunerationTime(new Date());
             homeBlogService.updateGradeBlog(homeBlog);
             //上边将生活秀删除 此处重新添加进去
