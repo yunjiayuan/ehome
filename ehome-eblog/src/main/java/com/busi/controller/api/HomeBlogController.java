@@ -201,23 +201,23 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         int grade = 7;
                         if(count<=60){
                             int r = random.nextInt(100)+1;
-                            if(r>70){//30%的得20
+                            if(r>90){//10%的得20
                                 rewardMoney=20;
                                 grade = 8;
                             }
+                            mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
+                            //更新用户状态
+//                        userInfo.setHomeBlogStatus(1);//改为：已发送
+//                        userInfoUtils.updateHomeBlogStatus(userInfo);
+                            if(rewardMoney==10){
+                                homeBlog.setRemunerationStatus(1);
+                            }else{
+                                homeBlog.setRemunerationStatus(2);
+                            }
+                            homeBlog.setRemunerationMoney(rewardMoney);
+                            homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
+                            homeBlog.setRemunerationTime(homeBlog.getTime());
                         }
-                        mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
-                        //更新用户状态
-                        userInfo.setHomeBlogStatus(1);//改为：已发送
-                        userInfoUtils.updateHomeBlogStatus(userInfo);
-                        if(rewardMoney==10){
-                            homeBlog.setRemunerationStatus(1);
-                        }else{
-                            homeBlog.setRemunerationStatus(2);
-                        }
-                        homeBlog.setRemunerationMoney(rewardMoney);
-                        homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
-                        homeBlog.setRemunerationTime(homeBlog.getTime());
                     }
                 }
             }
