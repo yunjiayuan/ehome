@@ -152,4 +152,24 @@ public class HotelTourismService {
         return kitchenBookedDao.addSort(kitchenDishesSort);
     }
 
+    /***
+     * 查询审核列表
+     * @param auditType
+     * @return
+     */
+    public PageBean<?> findAuditTypeList(int type, int auditType, int page, int count) {
+        List<?> list;
+        list = kitchenBookedDao.findAuditTypeList(type, auditType);
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 根据主键ID查询并更新
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeAuditType(int type, int auditType, long id) {
+        return kitchenBookedDao.changeAuditType(type, auditType, id);
+    }
 }

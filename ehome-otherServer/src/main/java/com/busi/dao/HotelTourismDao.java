@@ -169,4 +169,82 @@ public interface HotelTourismDao {
             "values (#{userId},#{kitchenId},#{name},#{bookedState})")
     @Options(useGeneratedKeys = true)
     int addSort(KitchenDishesSort dishes);
+
+    /***
+     * 查询审核列表
+     * @param type  0酒店 1景区 2药店 3订座
+     * @param auditType  0待审核 1已审核
+     * @return
+     */
+    @Select("<script>" +
+            "<if test=\"type == 0\">" +
+            "select * from Hotel" +
+            " where deleteType = 0 and licence != '' " +
+            "<if test=\"auditType == 0\">" +
+            " and auditType = #{auditType}" +
+            "</if>" +
+            "<if test=\"auditType == 1\">" +
+            " and auditType >= 1" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"type == 1\">" +
+            "select * from ScenicSpot" +
+            " where deleteType = 0 and licence != '' " +
+            "<if test=\"auditType == 0\">" +
+            " and auditType = #{auditType}" +
+            "</if>" +
+            "<if test=\"auditType == 1\">" +
+            " and auditType >= 1" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"type == 2\">" +
+            "select * from Pharmacy" +
+            " where deleteType = 0 and licence != '' " +
+            "<if test=\"auditType == 0\">" +
+            " and auditType = #{auditType}" +
+            "</if>" +
+            "<if test=\"auditType == 1\">" +
+            " and auditType >= 1" +
+            "</if>" +
+            "</if>" +
+            "<if test=\"type == 3\">" +
+            "select * from KitchenReserve" +
+            " where deleteType = 0 and licence != '' " +
+            "<if test=\"auditType == 0\">" +
+            " and auditType = #{auditType}" +
+            "</if>" +
+            "<if test=\"auditType == 1\">" +
+            " and auditType >= 1" +
+            "</if>" +
+            "</if>" +
+            "</script>")
+    List<?> findAuditTypeList(@Param("type") int type, @Param("auditType") int auditType);
+
+    /***
+     * 根据主键ID查询并更新审核状态
+     * @return
+     */
+    @Update("<script>" +
+            "<if test=\"type == 0\">" +
+            "update Hotel set" +
+            " auditType = #{auditType}" +
+            " where deleteType = 0 and id=#{id} and licence != '' " +
+            "</if>" +
+            "<if test=\"type == 1\">" +
+            "update ScenicSpot set" +
+            " auditType = #{auditType}" +
+            " where deleteType = 0 and id=#{id} and licence != '' " +
+            "</if>" +
+            "<if test=\"type == 2\">" +
+            "update Pharmacy set" +
+            " auditType = #{auditType}" +
+            " where deleteType = 0 and id=#{id} and licence != '' " +
+            "</if>" +
+            "<if test=\"type == 3\">" +
+            "update KitchenReserve set" +
+            " auditType = #{auditType}" +
+            " where deleteType = 0 and id=#{id} and licence != '' " +
+            "</if>" +
+            "</script>")
+    int changeAuditType(@Param("type") int type, @Param("auditType") int auditType, @Param("id") long id);
 }
