@@ -232,7 +232,11 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                             }else{
                                 log.info("用户 ["+homeBlog.getUserId()+"] 今日已得 ["+list.size()+"] 次视频稿费奖励，本次将不再给其稿费奖励");
                             }
+                        }else{
+                            log.info("用户 ["+homeBlog.getUserId()+"] 发布的视频，根据概率分配机制，未进入到稿费奖励分派系统");
                         }
+                    }else{
+                        log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励总金额 ["+rewardTotalMoneyLog.getRewardTotalMoney()+"元]，系统将不再自动给稿费奖励");
                     }
                 }
             }
