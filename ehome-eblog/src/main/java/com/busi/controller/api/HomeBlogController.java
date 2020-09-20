@@ -191,9 +191,14 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
                     homeBlog.setRemunerationTime(homeBlog.getTime());
                 }
-            }else{//非首发视频 每次发视频60%-70%概率得10或20  总奖励累积到达70-90之间不给稿费
+            }else{//非首发视频 每次发视频60%-70%概率得10或20  总奖励累积到达80不给稿费
+                  /*1、用户发布的视频60%的概率会成为稿费作品。
+                    2、同一个用户、同一天发布的视频，最多给2两个视频为稿费作品。
+                    3、稿费累积达到80元以后，系统则不再给该用户稿费奖励。
+                    4、稿费金额90%为10元，10%为20元。
+                  * */
                 if(!flag){
-                    //判断奖励系统是否累计达到85（70-90）  达到80元则不再给稿费
+                    //判断奖励系统是否累计达到80（70-90）  达到80元则不再给稿费
                     Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + homeBlog.getUserId());
                     RewardTotalMoneyLog rewardTotalMoneyLog = null;
                     if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
@@ -209,7 +214,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         if(count<=60){
                             //判断今日是否给过稿费 同一个用户每天最多给1-2个视频稿费
                             list = rewardLogLocalControllerFegin.findRewardLogListByUserId(homeBlog.getUserId());
-                            int size = random.nextInt(2)+1;
+                            int size = random.nextInt(3);
                             if(list==null||list.size()<size){
                                 int r = random.nextInt(100)+1;
                                 if(r>90){//10%的得20
