@@ -209,7 +209,7 @@ public interface HotelTourismDao {
             "</if>" +
             "<if test=\"type == 3\">" +
             "select * from KitchenReserve" +
-            " where deleteType = 0 and licence != '' " +
+            " where deleteType = 0 and healthyCard != '' " +
             "<if test=\"auditType == 0\">" +
             " and auditType = #{auditType}" +
             "</if>" +
@@ -218,7 +218,7 @@ public interface HotelTourismDao {
             "</if>" +
             "</if>" +
             "</script>")
-    List<?> findAuditTypeList(@Param("type") int type, @Param("auditType") int auditType);
+    List findAuditTypeList(@Param("type") int type, @Param("auditType") int auditType);
 
     /***
      * 根据主键ID查询并更新审核状态
@@ -243,7 +243,7 @@ public interface HotelTourismDao {
             "<if test=\"type == 3\">" +
             "update KitchenReserve set" +
             " auditType = #{auditType}" +
-            " where deleteType = 0 and id=#{id} and licence != '' " +
+            " where deleteType = 0 and id=#{id} and healthyCard != '' " +
             "</if>" +
             "</script>")
     int changeAuditType(@Param("type") int type, @Param("auditType") int auditType, @Param("id") long id);

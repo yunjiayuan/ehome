@@ -414,35 +414,39 @@ public class HotelTourismController extends BaseController implements HotelTouri
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
-//        if (type == 0) {//0酒店
-        PageBean<?> pageBean = null;
-        pageBean = kitchenBookedService.findAuditTypeList(type, auditType, page, count);
-        if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+        if (type == 0) {//0酒店
+            PageBean<Hotel> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList(type, auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
-//        }
-//        if (type == 1) {//1景区
-//            PageBean<ScenicSpot> pageBean = null;
-//            pageBean = travelService.findAuditTypeList(type, auditType, page, count);
-//            if (pageBean == null) {
-//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
-//            }
-//        }
-//        if (type == 2) {//2药店
-//            PageBean<ScenicSpot> pageBean = null;
-//            pageBean = travelService.findAuditTypeList(type, auditType, page, count);
-//            if (pageBean == null) {
-//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
-//            }
-//        }
-//        if (type == 3) {//3订座
-//            PageBean<ScenicSpot> pageBean = null;
-//            pageBean = travelService.findAuditTypeList(type, auditType, page, count);
-//            if (pageBean == null) {
-//                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
-//            }
-//        }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        if (type == 1) {//1景区
+            PageBean<ScenicSpot> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList2(type, auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        if (type == 2) {//2药店
+            PageBean<Pharmacy> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList3(type, auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        if (type == 3) {//3订座
+            PageBean<KitchenReserve> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList4(type, auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
@@ -455,18 +459,6 @@ public class HotelTourismController extends BaseController implements HotelTouri
     @Override
     public ReturnData changeAuditType(@PathVariable int type, @PathVariable int auditType, @PathVariable long id) {
         //开始更新
-//        if (type == 0) {//0酒店
-//
-//        }
-//        if (type == 1) {//1景区
-//
-//        }
-//        if (type == 2) {//2药店
-//
-//        }
-//        if (type == 3) {//3订座
-//
-//        }
         kitchenBookedService.changeAuditType(type, auditType, id);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
