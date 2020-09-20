@@ -317,7 +317,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
                     almanac.setDressing(colour[nextInt2] + "色");
                 } else {
 //                    almanac.setDressing(strings[nextInt] + colour[nextInt2] + "色、" + colour[nextInt2 + 1] + "色");
-                    almanac.setDressing(colour[nextInt2] + "色、" + colour[nextInt2 + 1] + "色");
+                    almanac.setDressing(colour[nextInt2] + "色 " + colour[nextInt2 + 1] + "色");
                 }
                 notepadService.updateNotepadLunar(almanac);
             }

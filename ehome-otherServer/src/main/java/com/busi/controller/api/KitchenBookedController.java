@@ -76,7 +76,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (ik != null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
         }
-        kitchenReserve.setAuditType(1);
+        kitchenReserve.setAuditType(0);
         kitchenReserve.setClaimStatus(1);//默认自己新增店铺为已入驻
         kitchenReserve.setBusinessStatus(1);//厨房默认关闭
         kitchenReserve.setAddTime(new Date());
@@ -146,7 +146,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         reserve.setLon(kitchenReserve.getLongitude());
         reserve.setPhone(kitchenReserve.getPhone());
         reserve.setTotalScore(kitchenReserve.getOverallRating());
-        reserve.setAuditType(1);
+        reserve.setAuditType(0);
 //        reserve.setBusinessStatus(1);//厨房默认关闭
         if (reserveData == null) {//新增
             //新增订座数据表
@@ -360,7 +360,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
                 return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
             }
             //新增邀请者奖励记录
-            mqUtils.addRewardLog(userId, 11, 0, redPacketsMoney, 0);
+//            mqUtils.addRewardLog(userId, 11, 0, redPacketsMoney, 0);
         }
         //更新订座数据
         kitchen.setClaimStatus(1);

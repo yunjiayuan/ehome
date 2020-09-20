@@ -98,7 +98,7 @@ public class TravelController extends BaseController implements TravelApiControl
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         if (CommonUtils.checkFull(scenicSpot.getScenicSpotName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {
-            scenicSpot.setAuditType(1);
+            scenicSpot.setAuditType(0);
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);
@@ -533,7 +533,7 @@ public class TravelController extends BaseController implements TravelApiControl
         reserve.setLon(kitchenData.getLongitude());
         reserve.setPhone(kitchenData.getPhone());
         reserve.setTotalScore(kitchenData.getOverallRating());
-        reserve.setAuditType(1);
+        reserve.setAuditType(0);
 //        reserve.setBusinessStatus(1);//景区默认关闭
         if (reserveData == null) {//新增
             //新增景区数据表
@@ -611,7 +611,7 @@ public class TravelController extends BaseController implements TravelApiControl
                 return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
             }
             //新增邀请者奖励记录
-            mqUtils.addRewardLog(userId, 12, 0, redPacketsMoney, 0);
+//            mqUtils.addRewardLog(userId, 12, 0, redPacketsMoney, 0);
         }
         //更新景区数据
         kitchen.setClaimStatus(1);
