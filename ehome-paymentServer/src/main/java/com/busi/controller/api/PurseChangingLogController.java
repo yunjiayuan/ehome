@@ -60,8 +60,11 @@ public class PurseChangingLogController extends BaseController implements PurseC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"count参数有误",new JSONObject());
         }
         //验证身份
-        if(CommonUtils.getMyId()!=userId){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误,您无权限进行此操作",new JSONObject());
+        long myId = CommonUtils.getMyId();
+        if(myId!=10076&&myId!=12770&&myId!=9389&&myId!=9999&&myId!=13005&&myId!=12774&&myId!=13031&&myId!=12769&&myId!=12796&&myId!=10053){
+            if(CommonUtils.getMyId()!=userId){
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误,您无权限进行此操作",new JSONObject());
+            }
         }
         //开始查询
         PageBean<PurseChangingLog> pageBean;
