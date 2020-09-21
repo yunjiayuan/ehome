@@ -8,7 +8,7 @@ import javax.validation.Valid;
 
 /**
  * @program: ehome
- * @description: 酒店景区设置相关接口
+ * @description: 订座、酒店、景区、药店设置管理相关接口
  * @author: ZHaoJiaJie
  * @create: 2020-08-13 12:57:13
  */
@@ -117,4 +117,33 @@ public interface HotelTourismApiController {
      */
     @GetMapping("relationSet/{type}/{relation}/{id}")
     ReturnData relationSet(@PathVariable int type, @PathVariable int relation, @PathVariable long id);
+
+    /***
+     * 统计各种审核状态数量
+     * @param type  0酒店 1景区 2药店 3订座
+     * @return
+     */
+    @GetMapping("countAuditType/{type}")
+    ReturnData countAuditType(@PathVariable int type);
+
+    /***
+     * 查询审核列表
+     * @param type  0酒店 1景区 2药店 3订座
+     * @param auditType  0待审核 1已审核
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @GetMapping("findAuditTypeList/{type}/{auditType}/{page}/{count}")
+    ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 更新审核状态
+     * @param type  0酒店 1景区 2药店 3订座
+     * @param auditType  0审核通过 1审核未通过
+     * @param id   酒店、景区、药店、订座 主键ID
+     * @return
+     */
+    @GetMapping("changeAuditType/{type}/{auditType}/{id}")
+    ReturnData changeAuditType(@PathVariable int type, @PathVariable int auditType, @PathVariable long id);
 }

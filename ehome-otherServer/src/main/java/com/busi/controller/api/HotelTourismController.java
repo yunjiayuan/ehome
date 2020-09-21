@@ -398,4 +398,147 @@ public class HotelTourismController extends BaseController implements HotelTouri
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
+
+    /***
+     * 统计各种审核状态数量
+     * @param type  0酒店 1景区 2药店 3订座
+     * @return
+     */
+    @Override
+    public ReturnData countAuditType(@PathVariable int type) {
+        //开始统计
+        List list = null;
+        int num = 0;
+        int num1 = 0;
+        int num2 = 0;
+        if (type == 0) {
+            list = kitchenBookedService.countAuditType();
+            for (int i = 0; i < list.size(); i++) {
+                Hotel hotel = (Hotel) list.get(i);
+                if (hotel.getAuditType() == 0) {
+                    num++;
+                }
+                if (hotel.getAuditType() == 1) {
+                    num1++;
+                }
+                if (hotel.getAuditType() == 2) {
+                    num2++;
+                }
+            }
+        }
+        if (type == 1) {
+            list = kitchenBookedService.countAuditType1();
+            for (int i = 0; i < list.size(); i++) {
+                ScenicSpot hotel = (ScenicSpot) list.get(i);
+                if (hotel.getAuditType() == 0) {
+                    num++;
+                }
+                if (hotel.getAuditType() == 1) {
+                    num1++;
+                }
+                if (hotel.getAuditType() == 2) {
+                    num2++;
+                }
+            }
+        }
+        if (type == 2) {
+            list = kitchenBookedService.countAuditType2();
+            for (int i = 0; i < list.size(); i++) {
+                Pharmacy hotel = (Pharmacy) list.get(i);
+                if (hotel.getAuditType() == 0) {
+                    num++;
+                }
+                if (hotel.getAuditType() == 1) {
+                    num1++;
+                }
+                if (hotel.getAuditType() == 2) {
+                    num2++;
+                }
+            }
+        }
+        if (type == 3) {
+            list = kitchenBookedService.countAuditType3();
+            for (int i = 0; i < list.size(); i++) {
+                KitchenReserve hotel = (KitchenReserve) list.get(i);
+                if (hotel.getAuditType() == 0) {
+                    num++;
+                }
+                if (hotel.getAuditType() == 1) {
+                    num1++;
+                }
+                if (hotel.getAuditType() == 2) {
+                    num2++;
+                }
+            }
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("auditType", num);//0待审核 1已审核通过 2未审核通过
+        map.put("auditType1", num1);
+        map.put("auditType2", num2);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 查询审核列表
+     * @param type  0酒店 1景区 2药店 3订座
+     * @param auditType  0待审核 1已审核通过 2未审核通过
+     * @param page     页码
+     * @param count    条数
+     * @return
+     */
+    @Override
+    public ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        if (type == 0) {//0酒店
+            PageBean<Hotel> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList(auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        if (type == 1) {//1景区
+            PageBean<ScenicSpot> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList2(auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        if (type == 2) {//2药店
+            PageBean<Pharmacy> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList3(auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        if (type == 3) {//3订座
+            PageBean<KitchenReserve> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList4(auditType, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+            }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新审核状态
+     * @param type  0酒店 1景区 2药店 3订座
+     * @param auditType  0审核通过 1审核未通过
+     * @param id   酒店、景区、药店、订座 主键ID
+     * @return
+     */
+    @Override
+    public ReturnData changeAuditType(@PathVariable int type, @PathVariable int auditType, @PathVariable long id) {
+        //开始更新
+        kitchenBookedService.changeAuditType(type, auditType, id);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
 }
