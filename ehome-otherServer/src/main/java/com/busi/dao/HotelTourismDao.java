@@ -172,53 +172,36 @@ public interface HotelTourismDao {
 
     /***
      * 查询审核列表
-     * @param type  0酒店 1景区 2药店 3订座
      * @param auditType  0待审核 1已审核
      * @return
      */
     @Select("<script>" +
-            "<if test=\"type == 0\">" +
             "select * from Hotel" +
             " where deleteType = 0 and licence != '' " +
-            "<if test=\"auditType == 0\">" +
             " and auditType = #{auditType}" +
-            "</if>" +
-            "<if test=\"auditType == 1\">" +
-            " and auditType >= 1" +
-            "</if>" +
-            "</if>" +
-            "<if test=\"type == 1\">" +
+            "</script>")
+    List<Hotel> findAuditTypeList(@Param("auditType") int auditType);
+
+    @Select("<script>" +
             "select * from ScenicSpot" +
             " where deleteType = 0 and licence != '' " +
-            "<if test=\"auditType == 0\">" +
             " and auditType = #{auditType}" +
-            "</if>" +
-            "<if test=\"auditType == 1\">" +
-            " and auditType >= 1" +
-            "</if>" +
-            "</if>" +
-            "<if test=\"type == 2\">" +
+            "</script>")
+    List<ScenicSpot> findAuditTypeList2(@Param("auditType") int auditType);
+
+    @Select("<script>" +
             "select * from Pharmacy" +
             " where deleteType = 0 and licence != '' " +
-            "<if test=\"auditType == 0\">" +
             " and auditType = #{auditType}" +
-            "</if>" +
-            "<if test=\"auditType == 1\">" +
-            " and auditType >= 1" +
-            "</if>" +
-            "</if>" +
-            "<if test=\"type == 3\">" +
+            "</script>")
+    List<Pharmacy> findAuditTypeList3(@Param("auditType") int auditType);
+
+    @Select("<script>" +
             "select * from KitchenReserve" +
             " where deleteType = 0 and healthyCard != '' " +
-            "<if test=\"auditType == 0\">" +
             " and auditType = #{auditType}" +
-            "</if>" +
-            "<if test=\"auditType == 1\">" +
-            " and auditType >= 1" +
-            "</if>" +
-            "</if>" +
             "</script>")
-    List findAuditTypeList(@Param("type") int type, @Param("auditType") int auditType);
+    List<KitchenReserve> findAuditTypeList4(@Param("auditType") int auditType);
 
     /***
      * 根据主键ID查询并更新审核状态
@@ -247,4 +230,44 @@ public interface HotelTourismDao {
             "</if>" +
             "</script>")
     int changeAuditType(@Param("type") int type, @Param("auditType") int auditType, @Param("id") long id);
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Hotel" +
+            " where deleteType = 0 and licence != ''" +
+            "</script>")
+    List<Hotel> countAuditType();
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ScenicSpot" +
+            " where deleteType = 0 and licence != ''" +
+            "</script>")
+    List<ScenicSpot> countAuditType1();
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Pharmacy" +
+            " where deleteType = 0 and licence != ''" +
+            "</script>")
+    List<Pharmacy> countAuditType2();
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenReserve" +
+            " where deleteType = 0 and healthyCard != ''" +
+            "</script>")
+    List<KitchenReserve> countAuditType3();
 }

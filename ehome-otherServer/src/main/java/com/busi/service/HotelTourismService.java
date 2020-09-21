@@ -157,30 +157,30 @@ public class HotelTourismService {
      * @param auditType
      * @return
      */
-    public PageBean<Hotel> findAuditTypeList(int type, int auditType, int page, int count) {
+    public PageBean<Hotel> findAuditTypeList(int auditType, int page, int count) {
         List<Hotel> list;
-        list = kitchenBookedDao.findAuditTypeList(type, auditType);
+        list = kitchenBookedDao.findAuditTypeList(auditType);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
 
-    public PageBean<ScenicSpot> findAuditTypeList2(int type, int auditType, int page, int count) {
+    public PageBean<ScenicSpot> findAuditTypeList2(int auditType, int page, int count) {
         List<ScenicSpot> list;
-        list = kitchenBookedDao.findAuditTypeList(type, auditType);
+        list = kitchenBookedDao.findAuditTypeList2(auditType);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
 
-    public PageBean<Pharmacy> findAuditTypeList3(int type, int auditType, int page, int count) {
+    public PageBean<Pharmacy> findAuditTypeList3(int auditType, int page, int count) {
         List<Pharmacy> list;
-        list = kitchenBookedDao.findAuditTypeList(type, auditType);
+        list = kitchenBookedDao.findAuditTypeList3(auditType);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
 
-    public PageBean<KitchenReserve> findAuditTypeList4(int type, int auditType, int page, int count) {
+    public PageBean<KitchenReserve> findAuditTypeList4(int auditType, int page, int count) {
         List<KitchenReserve> list;
-        list = kitchenBookedDao.findAuditTypeList(type, auditType);
+        list = kitchenBookedDao.findAuditTypeList4(auditType);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
@@ -192,5 +192,45 @@ public class HotelTourismService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int changeAuditType(int type, int auditType, long id) {
         return kitchenBookedDao.changeAuditType(type, auditType, id);
+    }
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    public List<Hotel> countAuditType() {
+        List<Hotel> list;
+        list = kitchenBookedDao.countAuditType();
+        return list;
+    }
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    public List<ScenicSpot> countAuditType1() {
+        List<ScenicSpot> list;
+        list = kitchenBookedDao.countAuditType1();
+        return list;
+    }
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    public List<Pharmacy> countAuditType2() {
+        List<Pharmacy> list;
+        list = kitchenBookedDao.countAuditType2();
+        return list;
+    }
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    public List<KitchenReserve> countAuditType3() {
+        List<KitchenReserve> list;
+        list = kitchenBookedDao.countAuditType3();
+        return list;
     }
 }

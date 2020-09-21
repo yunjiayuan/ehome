@@ -119,6 +119,14 @@ public interface HotelTourismApiController {
     ReturnData relationSet(@PathVariable int type, @PathVariable int relation, @PathVariable long id);
 
     /***
+     * 统计各种审核状态数量
+     * @param type  0酒店 1景区 2药店 3订座
+     * @return
+     */
+    @GetMapping("countAuditType/{type}")
+    ReturnData countAuditType(@PathVariable int type);
+
+    /***
      * 查询审核列表
      * @param type  0酒店 1景区 2药店 3订座
      * @param auditType  0待审核 1已审核
