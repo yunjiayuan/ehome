@@ -34,4 +34,9 @@ public class PurseChangingLog {
   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
   private Date time;//交易时间
 
+  private String name;        //发布者用户名	 与数据库无关字段
+  private String head;        //发布者头像	 与数据库无关字段
+  private int proTypeId;      //发布者省简称ID 与数据库无关字段
+  private long houseNumber;   //发布者门牌号   与数据库无关字段
+
 }
