@@ -219,7 +219,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                             int size = random.nextInt(3);
                             if(list==null||list.size()<size){
                                 int r = random.nextInt(100)+1;
-                                if(r>90){//10%的得20
+                                if(r>90&&rewardTotalMoneyLog.getRewardTotalMoney()<=60){//10%的得20  总金额不能超过80
                                     rewardMoney=20;
                                     grade = 8;
                                 }
