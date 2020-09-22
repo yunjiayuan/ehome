@@ -49,7 +49,10 @@ public interface PurseChangingLogDao {
             "<if test=\" endTime != null \">"+
             " and UNIX_TIMESTAMP(#{endTime})+86400000 >= UNIX_TIMESTAMP(time)" +
             "</if>" +
+            "<if test=\" userId != -1 \">"+
             " and userId = #{userId}"+
+            "</if>" +
+
             " order by time desc" +
             "</script>")
     List<PurseChangingLog> findList(@Param("userId") long userId,@Param("tradeType") int tradeType,
