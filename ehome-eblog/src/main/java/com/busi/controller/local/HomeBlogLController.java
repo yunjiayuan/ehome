@@ -70,44 +70,38 @@ public class HomeBlogLController extends BaseController implements HomeBlogLocal
                 double[] moneyArray = new double[10000];//奖池 可自定义奖池大小
                 Random random = new Random();
                 if(hb.getLikeCount()==Constants.REWARD_EBLOG_LIKE_COUNT_10000){
-                    //大区间为20-30  实际20-25居多
-                    //开始构建奖池
+                    //开始构建奖池 1.5-3之间
                     for(int i=0;i<10000;i++){
-                        moneyArray[i] = (random.nextInt(501) + 2000)/100.0;
+                        moneyArray[i] = (random.nextInt(16) + 15)/10.0;
                     }
-                    //向奖池中添加20-30区间的红包 千分之一概率
-                    for(int i=0;i<10;i++){
-                        moneyArray[random.nextInt(10000)] = (random.nextInt(1001) + 2000)/100.0;
-                    }
-                    //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+//                    //向奖池中添加20-30区间的红包 千分之一概率
+//                    for(int i=0;i<10;i++){
+//                        moneyArray[random.nextInt(10000)] = (random.nextInt(1001) + 2000)/100.0;
+//                    }
                     //奖池构建完成 开始随机取值
                     rewardMoney = moneyArray[random.nextInt(10000)];
                     rewardType = 6;
                 }else if(hb.getLikeCount()==Constants.REWARD_EBLOG_LIKE_COUNT_100){
-                    //大区间为5-10  实际5-5.5居多
-                    //开始构建奖池
+                    //开始构建奖池 0.5-1.5之间
                     for(int i=0;i<10000;i++){
-                        moneyArray[i] = (random.nextInt(51) + 500)/100.0;
+                        moneyArray[i] = (random.nextInt(11) + 5)/10.0;
                     }
-                    //向奖池中添加5-10区间的红包 千分之一概率
-                    for(int i=0;i<10;i++){
-                        moneyArray[random.nextInt(10000)] = (random.nextInt(501) + 500)/100.0;
-                    }
-                    //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+//                    //向奖池中添加5-10区间的红包 千分之一概率
+//                    for(int i=0;i<10;i++){
+//                        moneyArray[random.nextInt(10000)] = (random.nextInt(501) + 500)/100.0;
+//                    }
                     //奖池构建完成 开始随机取值
                     rewardMoney = moneyArray[random.nextInt(10000)];
                     rewardType = 5;
                 }else if(hb.getLikeCount()==Constants.REWARD_EBLOG_LIKE_COUNT_10){
-                    //大区间为1-3  实际1-1.5居多
-                    //开始构建奖池
+                    //开始构建奖池 0.1-0.9之间
                     for(int i=0;i<10000;i++){
-                        moneyArray[i] = (random.nextInt(51) + 100)/100.0;
+                        moneyArray[i] = (random.nextInt(9)+1)/10.0;
                     }
                     //向奖池中添加1-3区间的红包 千分之一概率
-                    for(int i=0;i<10;i++){
-                        moneyArray[random.nextInt(10000)] = (random.nextInt(201) + 100)/100.0;
-                    }
-                    //向奖池中添加大额红包 万分之一概率  后续添加 需要再构建一个小奖池
+//                    for(int i=0;i<10;i++){
+//                        moneyArray[random.nextInt(10000)] = (random.nextInt(201) + 100)/100.0;
+//                    }
                     //奖池构建完成 开始随机取值
                     rewardMoney = moneyArray[random.nextInt(10000)];
                     rewardType = 4;
