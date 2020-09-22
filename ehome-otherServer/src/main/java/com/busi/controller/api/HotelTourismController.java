@@ -39,10 +39,16 @@ public class HotelTourismController extends BaseController implements HotelTouri
     KitchenService kitchenService;
 
     @Autowired
+    KitchenBookedService bookedService;
+
+    @Autowired
     TravelService travelService;
 
     @Autowired
     HotelService hotelService;
+
+    @Autowired
+    PharmacyService pharmacyService;
 
     @Autowired
     HotelTourismBookedOrdersService hotelTourismBookedOrdersService;
@@ -538,7 +544,164 @@ public class HotelTourismController extends BaseController implements HotelTouri
     @Override
     public ReturnData changeAuditType(@PathVariable int type, @PathVariable int auditType, @PathVariable long id) {
         //开始更新
-        kitchenBookedService.changeAuditType(type, auditType, id);
+        int num = kitchenBookedService.changeAuditType(type, auditType, id);
+        if (num > 0 && auditType == 0) {
+            if (type == 0) {//0酒店
+                Hotel hotel = hotelService.findById(id);
+                if (hotel != null) {
+                    //判断是否有邀请码
+                    long myId = hotel.getUserId();
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = hotel.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "酒店邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "酒店邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (myId == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 13, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+            if (type == 0) {//1景区
+                ScenicSpot hotel = travelService.findById(id);
+                if (hotel != null) {
+                    //判断是否有邀请码
+                    long myId = hotel.getUserId();
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = hotel.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (myId == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 12, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+            if (type == 0) {//2药店
+                Pharmacy hotel = pharmacyService.findById(id);
+                if (hotel != null) {
+                    //判断是否有邀请码
+                    long myId = hotel.getUserId();
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = hotel.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (myId == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 14, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+            if (type == 0) {//3订座
+                KitchenReserve serviceReserve = bookedService.findById(id);
+                if (serviceReserve != null) {
+                    //判断是否有邀请码
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = serviceReserve.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (serviceReserve.getUserId() == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 11, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }

@@ -191,6 +191,7 @@ public class HotelTourismService {
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int changeAuditType(int type, int auditType, long id) {
+        auditType += 1;
         return kitchenBookedDao.changeAuditType(type, auditType, id);
     }
 
