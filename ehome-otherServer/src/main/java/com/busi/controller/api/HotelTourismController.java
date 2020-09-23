@@ -412,6 +412,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
      */
     @Override
     public ReturnData countAuditType(@PathVariable int type) {
+        //判断是否有审核权限
+        long user = CommonUtils.getMyId();
+        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
         //开始统计
         List list = null;
         int num = 0;
@@ -488,47 +493,122 @@ public class HotelTourismController extends BaseController implements HotelTouri
      * 查询审核列表
      * @param type  0酒店 1景区 2药店 3订座
      * @param auditType  0待审核 1已审核通过 2未审核通过
+     * @param lat      纬度
+     * @param lon      经度
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
+        //判断是否有审核权限
+        long user = CommonUtils.getMyId();
+        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
         //开始查询
         if (type == 0) {//0酒店
             PageBean<Hotel> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList(auditType, lat, lon, page, count);
             if (pageBean == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            for (int j = 0; j < list.size(); j++) {
+                Hotel kc = (Hotel) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         if (type == 1) {//1景区
             PageBean<ScenicSpot> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList2(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList2(auditType, lat, lon, page, count);
             if (pageBean == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            for (int j = 0; j < list.size(); j++) {
+                ScenicSpot kc = (ScenicSpot) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         if (type == 2) {//2药店
             PageBean<Pharmacy> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList3(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList3(auditType, lat, lon, page, count);
             if (pageBean == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            for (int j = 0; j < list.size(); j++) {
+                Pharmacy kc = (Pharmacy) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         if (type == 3) {//3订座
             PageBean<KitchenReserve> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList4(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList4(auditType, lat, lon, page, count);
             if (pageBean == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            for (int j = 0; j < list.size(); j++) {
+                KitchenReserve kc = (KitchenReserve) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -543,6 +623,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
      */
     @Override
     public ReturnData changeAuditType(@PathVariable int type, @PathVariable int auditType, @PathVariable long id) {
+        //判断是否有审核权限
+        long user = CommonUtils.getMyId();
+        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
         //开始更新
         int num = kitchenBookedService.changeAuditType(type, auditType, id);
         if (num > 0 && auditType == 0) {

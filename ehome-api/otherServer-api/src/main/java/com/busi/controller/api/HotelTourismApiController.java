@@ -130,12 +130,14 @@ public interface HotelTourismApiController {
      * 查询审核列表
      * @param type  0酒店 1景区 2药店 3订座
      * @param auditType  0待审核 1已审核
+     * @param lat      纬度
+     * @param lon      经度
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findAuditTypeList/{type}/{auditType}/{page}/{count}")
-    ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findAuditTypeList/{type}/{auditType}/{lat}/{lon}/{page}/{count}")
+    ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType,@PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 更新审核状态

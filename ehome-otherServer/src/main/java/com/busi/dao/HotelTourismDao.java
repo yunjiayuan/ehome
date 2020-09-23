@@ -176,32 +176,40 @@ public interface HotelTourismDao {
      * @return
      */
     @Select("<script>" +
-            "select * from Hotel" +
+            "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from Hotel" +
             " where deleteType = 0 and licence != '' " +
             " and auditType = #{auditType}" +
+            " order by juli asc" +
             "</script>")
-    List<Hotel> findAuditTypeList(@Param("auditType") int auditType);
+    List<Hotel> findAuditTypeList(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
 
     @Select("<script>" +
-            "select * from ScenicSpot" +
+            "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from ScenicSpot" +
             " where deleteType = 0 and licence != '' " +
             " and auditType = #{auditType}" +
+            " order by juli asc" +
             "</script>")
-    List<ScenicSpot> findAuditTypeList2(@Param("auditType") int auditType);
+    List<ScenicSpot> findAuditTypeList2(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
 
     @Select("<script>" +
-            "select * from Pharmacy" +
+            "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from Pharmacy" +
             " where deleteType = 0 and licence != '' " +
             " and auditType = #{auditType}" +
+            " order by juli asc" +
             "</script>")
-    List<Pharmacy> findAuditTypeList3(@Param("auditType") int auditType);
+    List<Pharmacy> findAuditTypeList3(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
 
     @Select("<script>" +
-            "select * from KitchenReserve" +
+            "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from KitchenReserve" +
             " where deleteType = 0 and healthyCard != '' " +
-            " and auditType = #{auditType}" +
+            " and healthyCard = #{auditType}" +
+            " order by juli asc" +
             "</script>")
-    List<KitchenReserve> findAuditTypeList4(@Param("auditType") int auditType);
+    List<KitchenReserve> findAuditTypeList4(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 根据主键ID查询并更新审核状态
