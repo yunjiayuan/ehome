@@ -515,11 +515,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
             PageBean<Hotel> pageBean = null;
             pageBean = kitchenBookedService.findAuditTypeList(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
             List list = pageBean.getList();
             if (list == null || list.size() <= 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
             }
             for (int j = 0; j < list.size(); j++) {
                 Hotel kc = (Hotel) list.get(j);
@@ -540,11 +540,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
             PageBean<ScenicSpot> pageBean = null;
             pageBean = kitchenBookedService.findAuditTypeList2(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
             List list = pageBean.getList();
             if (list == null || list.size() <= 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
             }
             for (int j = 0; j < list.size(); j++) {
                 ScenicSpot kc = (ScenicSpot) list.get(j);
@@ -565,11 +565,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
             PageBean<Pharmacy> pageBean = null;
             pageBean = kitchenBookedService.findAuditTypeList3(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
             List list = pageBean.getList();
             if (list == null || list.size() <= 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
             }
             for (int j = 0; j < list.size(); j++) {
                 Pharmacy kc = (Pharmacy) list.get(j);
@@ -590,11 +590,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
             PageBean<KitchenReserve> pageBean = null;
             pageBean = kitchenBookedService.findAuditTypeList4(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
             List list = pageBean.getList();
             if (list == null || list.size() <= 0) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
             }
             for (int j = 0; j < list.size(); j++) {
                 KitchenReserve kc = (KitchenReserve) list.get(j);
