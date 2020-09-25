@@ -157,30 +157,30 @@ public class HotelTourismService {
      * @param auditType
      * @return
      */
-    public PageBean<Hotel> findAuditTypeList(int auditType, int page, int count) {
+    public PageBean<Hotel> findAuditTypeList(int auditType, double lat, double lon, int page, int count) {
         List<Hotel> list;
-        list = kitchenBookedDao.findAuditTypeList(auditType);
+        list = kitchenBookedDao.findAuditTypeList(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
 
-    public PageBean<ScenicSpot> findAuditTypeList2(int auditType, int page, int count) {
+    public PageBean<ScenicSpot> findAuditTypeList2(int auditType, double lat, double lon, int page, int count) {
         List<ScenicSpot> list;
-        list = kitchenBookedDao.findAuditTypeList2(auditType);
+        list = kitchenBookedDao.findAuditTypeList2(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
 
-    public PageBean<Pharmacy> findAuditTypeList3(int auditType, int page, int count) {
+    public PageBean<Pharmacy> findAuditTypeList3(int auditType, double lat, double lon, int page, int count) {
         List<Pharmacy> list;
-        list = kitchenBookedDao.findAuditTypeList3(auditType);
+        list = kitchenBookedDao.findAuditTypeList3(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
 
-    public PageBean<KitchenReserve> findAuditTypeList4(int auditType, int page, int count) {
+    public PageBean<KitchenReserve> findAuditTypeList4(int auditType, double lat, double lon, int page, int count) {
         List<KitchenReserve> list;
-        list = kitchenBookedDao.findAuditTypeList4(auditType);
+        list = kitchenBookedDao.findAuditTypeList4(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         return PageUtils.getPageBean(p, list);
     }
@@ -191,6 +191,7 @@ public class HotelTourismService {
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int changeAuditType(int type, int auditType, long id) {
+        auditType += 1;
         return kitchenBookedDao.changeAuditType(type, auditType, id);
     }
 

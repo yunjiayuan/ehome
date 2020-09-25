@@ -39,10 +39,16 @@ public class HotelTourismController extends BaseController implements HotelTouri
     KitchenService kitchenService;
 
     @Autowired
+    KitchenBookedService bookedService;
+
+    @Autowired
     TravelService travelService;
 
     @Autowired
     HotelService hotelService;
+
+    @Autowired
+    PharmacyService pharmacyService;
 
     @Autowired
     HotelTourismBookedOrdersService hotelTourismBookedOrdersService;
@@ -406,6 +412,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
      */
     @Override
     public ReturnData countAuditType(@PathVariable int type) {
+        //判断是否有审核权限
+        long user = CommonUtils.getMyId();
+        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
         //开始统计
         List list = null;
         int num = 0;
@@ -482,47 +493,122 @@ public class HotelTourismController extends BaseController implements HotelTouri
      * 查询审核列表
      * @param type  0酒店 1景区 2药店 3订座
      * @param auditType  0待审核 1已审核通过 2未审核通过
+     * @param lat      纬度
+     * @param lon      经度
      * @param page     页码
      * @param count    条数
      * @return
      */
     @Override
-    public ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findAuditTypeList(@PathVariable int type, @PathVariable int auditType, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
+        //判断是否有审核权限
+        long user = CommonUtils.getMyId();
+        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
         //开始查询
         if (type == 0) {//0酒店
             PageBean<Hotel> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
+            for (int j = 0; j < list.size(); j++) {
+                Hotel kc = (Hotel) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         if (type == 1) {//1景区
             PageBean<ScenicSpot> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList2(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList2(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
+            for (int j = 0; j < list.size(); j++) {
+                ScenicSpot kc = (ScenicSpot) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         if (type == 2) {//2药店
             PageBean<Pharmacy> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList3(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList3(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
+            for (int j = 0; j < list.size(); j++) {
+                Pharmacy kc = (Pharmacy) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         if (type == 3) {//3订座
             PageBean<KitchenReserve> pageBean = null;
-            pageBean = kitchenBookedService.findAuditTypeList4(auditType, page, count);
+            pageBean = kitchenBookedService.findAuditTypeList4(auditType, lat, lon, page, count);
             if (pageBean == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
             }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
+            for (int j = 0; j < list.size(); j++) {
+                KitchenReserve kc = (KitchenReserve) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
@@ -537,8 +623,170 @@ public class HotelTourismController extends BaseController implements HotelTouri
      */
     @Override
     public ReturnData changeAuditType(@PathVariable int type, @PathVariable int auditType, @PathVariable long id) {
+        //判断是否有审核权限
+        long user = CommonUtils.getMyId();
+        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
         //开始更新
-        kitchenBookedService.changeAuditType(type, auditType, id);
+        int num = kitchenBookedService.changeAuditType(type, auditType, id);
+        if (num > 0 && auditType == 0) {
+            if (type == 0) {//0酒店
+                Hotel hotel = hotelService.findById(id);
+                if (hotel != null && hotel.getAuditType() == 1) {
+                    //判断是否有邀请码
+                    long myId = hotel.getUserId();
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = hotel.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "酒店邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "酒店邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (myId == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 13, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+            if (type == 1) {//1景区
+                ScenicSpot hotel = travelService.findById(id);
+                if (hotel != null && hotel.getAuditType() == 1) {
+                    //判断是否有邀请码
+                    long myId = hotel.getUserId();
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = hotel.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (myId == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 12, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+            if (type == 2) {//2药店
+                Pharmacy hotel = pharmacyService.findById(id);
+                if (hotel != null && hotel.getAuditType() == 1) {
+                    //判断是否有邀请码
+                    long myId = hotel.getUserId();
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = hotel.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (myId == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 14, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+            if (type == 3) {//3订座
+                KitchenReserve serviceReserve = bookedService.findById(id);
+                if (serviceReserve != null && serviceReserve.getAuditType() == 1) {
+                    //判断是否有邀请码
+                    double redPacketsMoney = 10;
+                    String proId = "";
+                    String shareCode = serviceReserve.getInvitationCode();
+                    if (!CommonUtils.checkFull(shareCode)) {
+                        //判断第一位是否为0  邀请码格式为 001001518 前两位为省简称ID
+                        if (shareCode.indexOf("0") != 0) {
+                            proId = shareCode.substring(0, 2);
+                        } else {
+                            proId = shareCode.substring(1, 2);
+                        }
+                        long userId = 0;
+                        Map<String, Object> userIdMap = redisUtils.hmget(Constants.REDIS_KEY_HOUSENUMBER);
+                        if (userIdMap == null || userIdMap.size() <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        for (String key : userIdMap.keySet()) {
+                            Object object = key;
+                            if (object.toString().equals(proId + "_" + shareCode.substring(2))) {
+                                userId = Long.valueOf(String.valueOf(userIdMap.get(key)));
+                                break;
+                            }
+                        }
+                        if (userId <= 0) {
+                            return returnData(StatusCode.CODE_ACCOUNT_NOT_EXIST.CODE_VALUE, "邀请者不存在!", new JSONObject());
+                        }
+                        //验证参数
+                        if (serviceReserve.getUserId() == userId) {
+                            return returnData(StatusCode.CODE_SHARE_CODE_ERROR2.CODE_VALUE, "邀请码有误,邀请码不能是自己的", new JSONObject());
+                        }
+                        //新增邀请者奖励记录
+                        mqUtils.addRewardLog(userId, 11, 0, redPacketsMoney, 0);
+                    }
+                }
+            }
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
