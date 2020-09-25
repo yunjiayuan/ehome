@@ -34,7 +34,7 @@ public interface RewardTotalMoneyLogDao {
             "<if test=\" userId != -1 \">"+
                " and userId=#{userId}" +
             "</if>" +
-
+            " order by rewardTotalMoney desc" +
             "</script>")
     RewardTotalMoneyLog findRewardTotalMoneyLogInfo(@Param("userId") long userId);
 
