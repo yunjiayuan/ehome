@@ -31,7 +31,10 @@ public interface RewardTotalMoneyLogDao {
     @Select("<script>" +
             "select * from rewardTotalMoneyLog" +
             " where 1=1" +
-            " and userId=#{userId}" +
+            "<if test=\" userId != -1 \">"+
+               " and userId=#{userId}" +
+            "</if>" +
+
             "</script>")
     RewardTotalMoneyLog findRewardTotalMoneyLogInfo(@Param("userId") long userId);
 
