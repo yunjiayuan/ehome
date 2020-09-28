@@ -2,8 +2,6 @@ package com.busi.dao;
 
 import com.busi.entity.Administrators;
 import com.busi.entity.AdministratorsAuthority;
-import com.busi.entity.Community;
-import com.busi.entity.CommunityResident;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -24,8 +22,8 @@ public interface AdministratorsDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into Administrators(userId,name,province,city,district,lat,lon,address,cover,photo,content,notice,time,review) " +
-            "values (#{userId},#{name},#{province},#{city},#{district},#{lat},#{lon},#{address},#{cover},#{photo},#{content},#{notice},#{time},#{review})")
+    @Insert("insert into Administrators(userId,levels) " +
+            "values (#{userId},#{levels})")
     @Options(useGeneratedKeys = true)
     int addAdministrator(Administrators selectionVote);
 
