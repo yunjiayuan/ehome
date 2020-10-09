@@ -3,6 +3,7 @@ package com.busi.controller.api;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
+import com.busi.service.RewardTotalMoneyLogService;
 import com.busi.service.TaskService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class RedBagRainController extends BaseController implements RedBagRainAp
 
     @Autowired
     UserInfoUtils userInfoUtils;
+
+    @Autowired
+    RewardTotalMoneyLogService rewardTotalMoneyLogService;
 
     /***
      * 查询任务完成度
@@ -83,43 +87,55 @@ public class RedBagRainController extends BaseController implements RedBagRainAp
         }
         //清除秘钥
         redisUtils.expire(Constants.REDIS_KEY_PAYMENT_PAYKEY + myId, 0);
+        //更新钱包余额和钱包明细
+//        mqUtils.sendPurseMQ(myId, 4, 0, spareMoney);
+
+        //判断奖励系统是否累计达到80（70-90）  达到80元则不再给现金
         int num = 0;
         int awardsId = 1;//奖品,0谢谢参与 1现金
         double spareMoney = 0.00;//现金具体数值
-
-        Random r = new Random();
-        int romAwardsId = r.nextInt(15) + 1;
-        DecimalFormat dcmFmt = new DecimalFormat("0.00");
-        if (romAwardsId <= 9) {//返现金0-2元
-            romAwardsId = r.nextInt(10) + 1;
-            if (romAwardsId > 5) {
-                num = r.nextInt(1000) + 1;
-            } else {
-                awardsId = 0;
-            }
-        } else if (romAwardsId > 9 && romAwardsId <= 12) {//返现金2-5元
-            num = r.nextInt(1501) + 1000;
-        } else if (romAwardsId > 12 && romAwardsId <= 14) {//返现金5-8元
-            romAwardsId = r.nextInt(10) + 1;
-            if (romAwardsId > 7) {
-                num = r.nextInt(1501) + 2500;
-            } else {
-                awardsId = 0;
-            }
-        } else if (romAwardsId > 14) {//返现金8-10元
-            romAwardsId = r.nextInt(10) + 1;
-            if (romAwardsId % 2 == 0) {
-                num = r.nextInt(1001) + 4000;
-            } else {
-                awardsId = 0;
-            }
+        Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + myId);
+        RewardTotalMoneyLog rewardTotalMoneyLog = null;
+        if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
+            rewardTotalMoneyLog = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfo(myId);
+        } else {
+            rewardTotalMoneyLog = (RewardTotalMoneyLog) CommonUtils.mapToObject(rewardTotalMoneyLogMap, RewardTotalMoneyLog.class);
         }
-        double num2 = (num / 5000.00);
-        String num3 = dcmFmt.format(num2);
-        spareMoney = Double.parseDouble(num3);
-
-        //更新钱包余额和钱包明细
-//        mqUtils.sendPurseMQ(myId, 4, 0, spareMoney);
+        if (rewardTotalMoneyLog != null && rewardTotalMoneyLog.getRewardTotalMoney() < Constants.REWARD_TOTAL_MONEY_LIMIT) {
+            Random r = new Random();
+            int romAwardsId = r.nextInt(15) + 1;
+            DecimalFormat dcmFmt = new DecimalFormat("0.00");
+            if (romAwardsId <= 9) {//返现金0-2元
+                romAwardsId = r.nextInt(10) + 1;
+                if (romAwardsId > 5) {
+                    num = r.nextInt(1000) + 1;
+                } else {
+                    awardsId = 0;
+                }
+            } else if (romAwardsId > 9 && romAwardsId <= 12) {//返现金2-5元
+                num = r.nextInt(1501) + 1000;
+            } else if (romAwardsId > 12 && romAwardsId <= 14) {//返现金5-8元
+                romAwardsId = r.nextInt(10) + 1;
+                if (romAwardsId > 7) {
+                    num = r.nextInt(1501) + 2500;
+                } else {
+                    awardsId = 0;
+                }
+            } else if (romAwardsId > 14) {//返现金8-10元
+                romAwardsId = r.nextInt(10) + 1;
+                if (romAwardsId % 2 == 0) {
+                    num = r.nextInt(1001) + 4000;
+                } else {
+                    awardsId = 0;
+                }
+            }
+            double num2 = (num / 5000.00);
+            String num3 = dcmFmt.format(num2);
+            double num4 = Double.parseDouble(num3);
+//            if (rewardTotalMoneyLog.getRewardTotalMoney() + num4 <= 80) {
+            spareMoney = num4;
+//            }
+        }
         //新增用户奖励记录
         if (spareMoney > 0) {
             mqUtils.addRewardLog(myId, 0, 0, spareMoney, 0);
