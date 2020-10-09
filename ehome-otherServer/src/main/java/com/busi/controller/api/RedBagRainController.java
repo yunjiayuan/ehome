@@ -114,7 +114,7 @@ public class RedBagRainController extends BaseController implements RedBagRainAp
                 awardsId = 0;
             }
         }
-        double num2 = (num / 500.00);
+        double num2 = (num / 5000.00);
         String num3 = dcmFmt.format(num2);
         spareMoney = Double.parseDouble(num3);
 
