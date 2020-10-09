@@ -413,8 +413,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
     @Override
     public ReturnData countAuditType(@PathVariable int type) {
         //判断是否有审核权限
-        long user = CommonUtils.getMyId();
-        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+        int levels = CommonUtils.getAdministrator(CommonUtils.getMyId(), redisUtils);
+        if (levels < 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
         }
         //开始统计
@@ -505,9 +505,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
-        //判断是否有审核权限
-        long user = CommonUtils.getMyId();
-        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+        //判断是否有权限
+        int levels = CommonUtils.getAdministrator(CommonUtils.getMyId(), redisUtils);
+        if (levels < 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
         }
         //开始查询
@@ -624,8 +624,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
     @Override
     public ReturnData changeAuditType(@PathVariable int type, @PathVariable int auditType, @PathVariable long id) {
         //判断是否有审核权限
-        long user = CommonUtils.getMyId();
-        if (user != 10076 && user != 12770 && user != 9389 && user != 9999 && user != 13005 && user != 12774 && user != 13031 && user != 12769 && user != 12796 && user != 10053) {
+        int levels = CommonUtils.getAdministrator(CommonUtils.getMyId(), redisUtils);
+        if (levels < 0) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
         }
         //开始更新

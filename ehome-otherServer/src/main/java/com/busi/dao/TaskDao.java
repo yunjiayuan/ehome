@@ -136,6 +136,7 @@ public interface TaskDao {
     @Select("<script>" +
             "select * from RedBagRain" +
             " where userId=#{userId}" +
+            " order by time desc" +
             "</script>")
     List<RedBagRain> findPrizeList(@Param("userId") long userId);
 
