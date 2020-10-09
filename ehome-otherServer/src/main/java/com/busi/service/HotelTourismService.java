@@ -159,29 +159,29 @@ public class HotelTourismService {
      */
     public PageBean<Hotel> findAuditTypeList(int auditType, double lat, double lon, int page, int count) {
         List<Hotel> list;
-        list = kitchenBookedDao.findAuditTypeList(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenBookedDao.findAuditTypeList(auditType, lat, lon);
         return PageUtils.getPageBean(p, list);
     }
 
     public PageBean<ScenicSpot> findAuditTypeList2(int auditType, double lat, double lon, int page, int count) {
         List<ScenicSpot> list;
-        list = kitchenBookedDao.findAuditTypeList2(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenBookedDao.findAuditTypeList2(auditType, lat, lon);
         return PageUtils.getPageBean(p, list);
     }
 
     public PageBean<Pharmacy> findAuditTypeList3(int auditType, double lat, double lon, int page, int count) {
         List<Pharmacy> list;
-        list = kitchenBookedDao.findAuditTypeList3(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenBookedDao.findAuditTypeList3(auditType, lat, lon);
         return PageUtils.getPageBean(p, list);
     }
 
     public PageBean<KitchenReserve> findAuditTypeList4(int auditType, double lat, double lon, int page, int count) {
         List<KitchenReserve> list;
-        list = kitchenBookedDao.findAuditTypeList4(auditType, lat, lon);
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenBookedDao.findAuditTypeList4(auditType, lat, lon);
         return PageUtils.getPageBean(p, list);
     }
 

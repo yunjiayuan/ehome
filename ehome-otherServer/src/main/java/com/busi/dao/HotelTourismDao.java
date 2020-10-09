@@ -206,7 +206,7 @@ public interface HotelTourismDao {
             "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from KitchenReserve" +
             " where deleteType = 0 and healthyCard != '' " +
-            " and healthyCard = #{auditType}" +
+            " and auditType = #{auditType}" +
             " order by juli asc" +
             "</script>")
     List<KitchenReserve> findAuditTypeList4(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);

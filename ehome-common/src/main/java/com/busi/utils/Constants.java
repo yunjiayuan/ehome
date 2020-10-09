@@ -335,6 +335,7 @@ public class Constants {
     //redis 2库相关key配置(otherServer)
     public static final String REDIS_KEY_IPS_TASK = "task_";//userId与任务对象的关系对照
     public static final String REDIS_KEY_USER_ACCOUNT_SECURITY = "user_account_security_";//userId与安全中心对象的关系对照
+    public static final String REDIS_KEY_USER_ADMINISTRATORS = "user_administrators";//userId与管理员关系对照
 
     //redis 3库相关key配置(EBLOG)
     public static final String REDIS_KEY_EBLOG = "eblog_";//userId与生活圈对象的关系对照
