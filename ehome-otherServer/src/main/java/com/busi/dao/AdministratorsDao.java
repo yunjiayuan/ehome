@@ -22,8 +22,8 @@ public interface AdministratorsDao {
      * @param selectionVote
      * @return
      */
-    @Insert("insert into Administrators(userId,levels) " +
-            "values (#{userId},#{levels})")
+    @Insert("insert into Administrators(userId,levels,time) " +
+            "values (#{userId},#{levels},#{time})")
     @Options(useGeneratedKeys = true)
     int addAdministrator(Administrators selectionVote);
 
@@ -54,7 +54,7 @@ public interface AdministratorsDao {
             "<if test=\"levels >= 0\">" +
             " and levels = #{levels}" +
             "</if>" +
-            " ORDER BY levels desc" +
+            " ORDER BY time desc" +
             "</script>")
     List<Administrators> findAdministratorlist(@Param("levels") int levels);
 
