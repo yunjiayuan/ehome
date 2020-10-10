@@ -90,18 +90,23 @@ public class RedBagRainController extends BaseController implements RedBagRainAp
         //更新钱包余额和钱包明细
 //        mqUtils.sendPurseMQ(myId, 4, 0, spareMoney);
 
-        //判断奖励系统是否累计达到80（70-90）  达到80元则不再给现金
         int num = 0;
         int awardsId = 1;//奖品,0谢谢参与 1现金
         double spareMoney = 0.00;//现金具体数值
+        //临时处理 超过90则不再给钱
         Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + myId);
         RewardTotalMoneyLog rewardTotalMoneyLog = null;
         if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
             rewardTotalMoneyLog = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfo(myId);
+            if(rewardTotalMoneyLog==null){
+                rewardTotalMoneyLog = new RewardTotalMoneyLog();
+                rewardTotalMoneyLog.setUserId(myId);
+            }
         } else {
             rewardTotalMoneyLog = (RewardTotalMoneyLog) CommonUtils.mapToObject(rewardTotalMoneyLogMap, RewardTotalMoneyLog.class);
         }
-        if (rewardTotalMoneyLog != null && rewardTotalMoneyLog.getRewardTotalMoney() < Constants.REWARD_TOTAL_MONEY_LIMIT) {
+        double moneyLimint = Constants.REWARD_TOTAL_MONEY_LIMIT+10;
+        if (rewardTotalMoneyLog != null && rewardTotalMoneyLog.getRewardTotalMoney() < moneyLimint) {
             Random r = new Random();
             int romAwardsId = r.nextInt(15) + 1;
             DecimalFormat dcmFmt = new DecimalFormat("0.00");

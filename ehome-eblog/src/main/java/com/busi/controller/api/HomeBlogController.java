@@ -214,10 +214,10 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                         int grade = 7;
                         List<RewardLog> list = null;
                         if(count<=60){
-                            //判断今日是否给过稿费 同一个用户每天最多给1-2个视频稿费
+                            //判断今日是否给过稿费 同一个用户每天最多给1个视频稿费
                             list = rewardLogLocalControllerFegin.findRewardLogListByUserId(homeBlog.getUserId());
-                            int size = random.nextInt(3);
-                            if(list==null||list.size()<size){
+//                            int size = random.nextInt(3);
+                            if(list==null||list.size()==0){
                                 int r = random.nextInt(100)+1;
                                 if(r>90&&rewardTotalMoneyLog.getRewardTotalMoney()<=60){//10%的得20  总金额不能超过80
                                     rewardMoney=20;
@@ -345,7 +345,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
     @Override
     public ReturnData gradeBlog(@PathVariable long userId,@PathVariable long blogId,@PathVariable int grade,@PathVariable int type,@PathVariable double money) {
         long myId = CommonUtils.getMyId();
-        if(myId!=10076&&myId!=12770&&myId!=9389&&myId!=9999&&myId!=13005&&myId!=12774&&myId!=13031&&myId!=12769&&myId!=12796&&myId!=10053){
+        if(CommonUtils.getAdministrator(myId,redisUtils)<0){
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
         }
         double moneyNew = 0;

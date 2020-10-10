@@ -9,6 +9,7 @@ import com.busi.entity.ReturnData;
 import com.busi.entity.UserInfo;
 import com.busi.service.PurseChangingLogService;
 import com.busi.utils.CommonUtils;
+import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import com.busi.utils.UserInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class PurseChangingLogController extends BaseController implements PurseC
 
     @Autowired
     private UserInfoUtils userInfoUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
 
 
     /***
@@ -66,7 +70,7 @@ public class PurseChangingLogController extends BaseController implements PurseC
         }
         //验证身份
         long myId = CommonUtils.getMyId();
-        if(myId!=10076&&myId!=12770&&myId!=9389&&myId!=9999&&myId!=13005&&myId!=12774&&myId!=13031&&myId!=12769&&myId!=12796&&myId!=10053){
+        if(CommonUtils.getAdministrator(myId,redisUtils)<1){
             if(CommonUtils.getMyId()!=userId){
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"userId参数有误,您无权限进行此操作",new JSONObject());
             }

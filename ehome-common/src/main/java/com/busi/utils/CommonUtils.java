@@ -964,7 +964,11 @@ public class CommonUtils {
 
     /**
      * 判断是否是管理员
-     *
+     *  a、管理员总共分三级：最高管理员、高级管理员、管理员
+     *  b、管理员查看时，只显示：审核管理、功能管理、其他设置三项内容
+     *  c、高级管理员和最高管理员查看时，显示所有内容
+     *  d、最高管理员对高级管理员、管理员有新增、删除的权限
+     *  e、高级管理员对管理员有新增、删除的权限
      * @return
      */
     public static int getAdministrator(long userId, RedisUtils redisUtils) {
