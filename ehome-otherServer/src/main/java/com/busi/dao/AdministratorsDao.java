@@ -28,6 +28,18 @@ public interface AdministratorsDao {
     int addAdministrator(Administrators selectionVote);
 
     /***
+     * 更新管理员
+     * @param communityHouse
+     * @return
+     */
+    @Update("<script>" +
+            "update Administrators set" +
+            " levels=#{levels}" +
+            " where userId=#{userId}" +
+            "</script>")
+    int changeAdministrator(Administrators communityHouse);
+
+    /***
      * 根据userId查询管理员
      * @param userId
      * @return

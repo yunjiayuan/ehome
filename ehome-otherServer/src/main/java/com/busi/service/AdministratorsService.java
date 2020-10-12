@@ -32,6 +32,16 @@ public class AdministratorsService {
     }
 
     /***
+     * 更新管理员
+     * @param communityHouse
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeAdministrator(Administrators communityHouse) {
+        return epidemicSituationDao.changeAdministrator(communityHouse);
+    }
+
+    /***
      * 查询管理员
      * @param userId
      * @return
