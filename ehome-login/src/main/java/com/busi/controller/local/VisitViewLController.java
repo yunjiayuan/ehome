@@ -42,47 +42,24 @@ public class VisitViewLController extends BaseController implements VisitViewLoc
         Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId());
         VisitView v = null;
         int count = 0;
-        if(map==null||map.size()<=0){//缓存中不存在 查询数据库
-            v = visitViewService.findVisitView(visitView.getUserId());
-            if(v==null){
-                v = new VisitView();
-                v.setTotalVisitCount(1);
-                v.setTodayVisitCount(1);
-                v.setMyId(visitView.getMyId());
-                v.setUserId(visitView.getUserId());
-                count = visitViewService.add(v);
-            }else{
-                v.setTodayVisitCount(1);
-                v.setTotalVisitCount(v.getTotalVisitCount()+1);
-                count = visitViewService.update(v);
-            }
-        }else{//缓存中存在
-            v  = (VisitView) CommonUtils.mapToObject(map,VisitView.class);
-            if(v==null){//防止异常数据情况
-                v = visitViewService.findVisitView(visitView.getUserId());
-                if(v==null){
-                    v = new VisitView();
-                    v.setTotalVisitCount(1);
-                    v.setTodayVisitCount(1);
-                    v.setMyId(visitView.getMyId());
-                    v.setUserId(visitView.getUserId());
-                    count = visitViewService.add(v);
-                }else{
-                    v.setTodayVisitCount(1);
-                    v.setTotalVisitCount(v.getTotalVisitCount()+1);
-                    count = visitViewService.update(v);
-                }
-            }else{
-                v.setTodayVisitCount(v.getTodayVisitCount()+1);//设置今日访问量
-                v.setTotalVisitCount(v.getTotalVisitCount()+1);//设置总访问量
-                count = visitViewService.update(v);
-            }
-        }
-        if(count<=0){
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"更新用户["+visitView.getUserId()+"]访问量记录到数据库失败",new JSONObject());
+        v = visitViewService.findVisitView(visitView.getUserId());
+        if(v==null){
+            v = new VisitView();
+            v.setTotalVisitCount(1);
+            v.setTodayVisitCount(1);
+            v.setMyId(visitView.getMyId());
+            v.setUserId(visitView.getUserId());
+            count = visitViewService.add(v);
+        }else{
+            v.setTodayVisitCount(v.getTodayVisitCount()+1);
+            v.setTotalVisitCount(v.getTotalVisitCount()+1);
+            count = visitViewService.update(v);
         }
         //更新缓存
         redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(v),CommonUtils.getCurrentTimeTo_12());//今日访问量的生命周期 到今天晚上12点失效
+        if(count<=0){
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE,"更新用户["+visitView.getUserId()+"]访问量记录到数据库失败",new JSONObject());
+        }
         //新增脚印记录
         Footprint footprint = new Footprint();
         footprint.setMyId(visitView.getMyId());
