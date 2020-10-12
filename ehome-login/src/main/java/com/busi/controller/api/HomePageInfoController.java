@@ -298,8 +298,8 @@ public class HomePageInfoController extends BaseController implements HomePageIn
                 //更新缓存
                 redisUtils.hmset(Constants.REDIS_KEY_USER_VISIT+visitView.getUserId(),CommonUtils.objectToMap(visitView),CommonUtils.getCurrentTimeTo_12());//保证今日访问量的生命周期 到今天晚上12点失效
             }else{
-                homePageInfo.setTodayVisitCount(vv.getTodayVisitCount());//设置今日访问量
-                homePageInfo.setTotalVisitCount(vv.getTotalVisitCount());//设置总访问量
+                homePageInfo.setTodayVisitCount(vv.getTodayVisitCount()+1);//设置今日访问量
+                homePageInfo.setTotalVisitCount(vv.getTotalVisitCount()+1);//设置总访问量
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",homePageInfo);
