@@ -1,7 +1,6 @@
 package com.busi.controller.api;
 
 import com.busi.entity.Administrators;
-import com.busi.entity.Community;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +21,14 @@ public interface AdministratorsApiController {
      */
     @PostMapping("addAdministrator")
     ReturnData addAdministrator(@Valid @RequestBody Administrators homeHospital, BindingResult bindingResult);
+
+    /***
+     * 修改管理员权限
+     * @param administrators
+     * @return
+     */
+    @PutMapping("changeAdministrator")
+    ReturnData changeAdministrator(@Valid @RequestBody Administrators administrators, BindingResult bindingResult);
 
     /***
      * 删除管理员
