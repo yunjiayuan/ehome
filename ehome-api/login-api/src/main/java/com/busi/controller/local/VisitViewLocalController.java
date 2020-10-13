@@ -20,4 +20,12 @@ public interface VisitViewLocalController {
     @PutMapping("updateLocalVisit")
     ReturnData updateLocalVisit(@RequestBody VisitView visitView);
 
+    /***
+     * 随机新增访问量，每日给用户新增一些访问量（用于服务间调用）
+     * @param visitView
+     * @return
+     */
+    @PutMapping("updateLocalRandomVisit")
+    ReturnData updateLocalRandomVisit(@RequestBody VisitView visitView);
+
 }
