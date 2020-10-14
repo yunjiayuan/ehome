@@ -74,19 +74,11 @@ public class AdministratorsController extends BaseController implements Administ
         if (levels2 >= levels) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的级别无权限进行此操作", new JSONObject());
         }
-//        if (levels == 1) {//高级管理员对普通管理员有新增、删除的权限
-//            if (homeHospital.getLevels() >= 1) {
-//                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的级别无权限进行此操作", new JSONObject());
-//            }
-//        }
-//        if (levels == 2) {//最高管理员对高级管理员、普通管理员有新增、删除的权限
-//            if (homeHospital.getLevels() >= 2) {
-//                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的级别无权限进行此操作", new JSONObject());
-//            }
-//        }
         //新增管理员
         homeHospital.setTime(new Date());
         administratorsService.addAdministrator(homeHospital);
+        //更新缓存
+        redisUtils.hset(Constants.REDIS_KEY_USER_ADMINISTRATORS, "levels_" + homeHospital.getUserId(), homeHospital.getLevels());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -166,16 +158,6 @@ public class AdministratorsController extends BaseController implements Administ
         if (levels2 >= levels) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的级别无权限进行此操作", new JSONObject());
         }
-//        if (levels == 1) {//高级管理员对普通管理员有新增、删除的权限
-//            if (levels2 >= 1) {
-//                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的级别无权限进行此操作", new JSONObject());
-//            }
-//        }
-//        if (levels == 2) {//最高管理员对高级管理员、普通管理员有新增、删除的权限
-//            if (levels2 >= 2) {
-//                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的级别无权限进行此操作", new JSONObject());
-//            }
-//        }
         //删除管理员
         administratorsService.delAdministrator(userId);
         //更新缓存
