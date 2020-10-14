@@ -197,7 +197,7 @@ public interface ShopCenterDao {
             "<if test=\"levelOne >= 0 \">" +
             " and levelOne = #{levelOne}" +
             "<if test=\"levelTwo == -2 \">" +
-            " and levelTwo >= -1" +
+            " and levelTwo > -1" +
             " and levelThree = -1" +
             " and levelFour = -1" +
             " and levelFive = -1" +
@@ -205,20 +205,20 @@ public interface ShopCenterDao {
             "<if test=\"levelTwo >= 0 \">" +
             " and levelTwo = #{levelTwo}" +
             "<if test=\"levelThree == -2 \">" +
-            " and levelThree >= -1" +
+            " and levelThree > -1" +
             " and levelFour = -1" +
             " and levelFive = -1" +
             "</if>" +
             "<if test=\"levelThree >= 0 \">" +
             " and levelThree = #{levelThree}" +
             "<if test=\"levelFour == -2 \">" +
-            " and levelFour >= -1" +
+            " and levelFour > -1" +
             " and levelFive = -1" +
             "</if>" +
             "<if test=\"levelFour >= 0 \">" +
             " and levelFour = #{levelFour}" +
             "<if test=\"levelFive == -2 \">" +
-            " and levelFive >= -1" +
+            " and levelFive > -1" +
             "</if>" +
             "<if test=\"levelFive >= 0 \">" +
             " and levelFive = #{levelFive}" +
@@ -303,7 +303,7 @@ public interface ShopCenterDao {
             "<if test=\"levelOne >= 0 \">" +
             " and levelOne = #{levelOne}" +
             "<if test=\"levelTwo == -2 \">" +
-            " and levelTwo >= -1" +
+            " and levelTwo > -1" +
             " and levelThree = -1" +
             " and levelFour = -1" +
             " and levelFive = -1" +
@@ -311,20 +311,20 @@ public interface ShopCenterDao {
             "<if test=\"levelTwo >= 0 \">" +
             " and levelTwo = #{levelTwo}" +
             "<if test=\"levelThree == -2 \">" +
-            " and levelThree >= -1" +
+            " and levelThree > -1" +
             " and levelFour = -1" +
             " and levelFive = -1" +
             "</if>" +
             "<if test=\"levelThree >= -1 \">" +
             " and levelThree = #{levelThree}" +
             "<if test=\"levelFour == -2 \">" +
-            " and levelFour >= -1" +
+            " and levelFour > -1" +
             " and levelFive = -1" +
             "</if>" +
             "<if test=\"levelFour >= -1 \">" +
             " and levelFour = #{levelFour}" +
             "<if test=\"levelFive == -2 \">" +
-            " and levelFive >= -1" +
+            " and levelFive > -1" +
             "</if>" +
             "<if test=\"levelFive >= -1 \">" +
             " and levelFive = #{levelFive}" +

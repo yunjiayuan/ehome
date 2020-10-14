@@ -440,7 +440,11 @@ public class ShopCenterController extends BaseController implements ShopCenterAp
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        shopCenterService.addGoodsCategory(homeShopCenter);
+        //防止重复数据
+        GoodsCategory category = shopCenterService.findList2(homeShopCenter.getLevelOne(), homeShopCenter.getLevelTwo(), homeShopCenter.getLevelThree(), homeShopCenter.getLevelFour(), homeShopCenter.getLevelFive());
+        if (category == null) {
+            shopCenterService.addGoodsCategory(homeShopCenter);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
