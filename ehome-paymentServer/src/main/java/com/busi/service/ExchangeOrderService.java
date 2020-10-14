@@ -55,8 +55,8 @@ public class ExchangeOrderService extends BaseController implements PayBaseServi
             mqUtils.sendPurseMQ(pay.getUserId(),11,0,money*-1);//人民币转出
         }else{
             //家币兑换家点
-            long serverHomePoint = Long.parseLong(purseMap.get("homePoint").toString());
-            if(serverHomePoint<money){
+            long serverHomeCoin = Long.parseLong(purseMap.get("homeCoin").toString());
+            if(serverHomeCoin<money){
                 return returnData(StatusCode.CODE_PURSE_NOT_ENOUGH_ERROR.CODE_VALUE,"您账户余额不足，无法进行兑换操作",new JSONObject());
             }
             //更改状态 防止重复支付
