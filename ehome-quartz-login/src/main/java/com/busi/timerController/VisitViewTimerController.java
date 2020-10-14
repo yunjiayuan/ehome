@@ -53,7 +53,7 @@ public class VisitViewTimerController {
                         v = new VisitView();
                         v.setTotalVisitCount(r);
                         v.setTodayVisitCount(r);
-                        v.setMyId(CommonUtils.getMyId());
+//                        v.setMyId(CommonUtils.getMyId());
                         v.setUserId(userInfo.getUserId());
                         count = visitViewService.add(v);
                     } else {
