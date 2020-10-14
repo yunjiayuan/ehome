@@ -26,6 +26,16 @@ public interface RewardTotalMoneyLogApiController {
     ReturnData findTotalRewardMoney(@PathVariable long userId);
 
     /***
+     * 查询奖励总金额列表
+     * @param userId 被查询人的用户ID  -1查询所有人
+     * @param page
+     * @param count
+     * @return
+     */
+    @GetMapping("findTotalRewardMoneyList/{userId}/{page}/{count}")
+    ReturnData findTotalRewardMoneyList(@PathVariable long userId,@PathVariable int page,@PathVariable int count);
+
+    /***
      * 将指定金额的奖励转入钱包
      * @param rewardTotalMoneyLog
      * @param bindingResult

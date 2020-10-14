@@ -1,7 +1,9 @@
 package com.busi.controller.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.entity.RewardTotalMoneyLog;
 import com.busi.service.RewardTotalMoneyLogService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 /***
@@ -42,10 +45,8 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
     public ReturnData findTotalRewardMoney(@PathVariable long userId) {
         //验证权限
         long myId = CommonUtils.getMyId();
-        if(CommonUtils.getAdministrator(myId,redisUtils)<1){
-            if (myId != userId) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作用户[" + userId + "]的奖励总金额信息", new JSONObject());
-            }
+        if (myId != userId) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作用户[" + userId + "]的奖励总金额信息", new JSONObject());
         }
         Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + userId);
         if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
@@ -61,6 +62,32 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", rewardTotalMoneyLogMap);
 
+    }
+
+    /***
+     * 查询奖励总金额列表
+     * @param userId 被查询人的用户ID  -1查询所有人
+     * @param page
+     * @param count
+     * @return
+     */
+    @Override
+    public ReturnData findTotalRewardMoneyList(@PathVariable long userId,@PathVariable int page,@PathVariable int count) {
+        //判断分页参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //验证权限
+        long myId = CommonUtils.getMyId();
+        if(CommonUtils.getAdministrator(myId,redisUtils)<1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作奖励总金额列表信息", new JSONObject());
+        }
+        PageBean<RewardTotalMoneyLog> pageBean;
+        pageBean = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfoList(userId, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
     @Override

@@ -4,6 +4,8 @@ import com.busi.entity.RewardTotalMoneyLog;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 用户奖励总金额记录Dao
  * author：suntj
@@ -31,12 +33,25 @@ public interface RewardTotalMoneyLogDao {
     @Select("<script>" +
             "select * from rewardTotalMoneyLog" +
             " where 1=1" +
+            " and userId=#{userId}" +
+            " order by rewardTotalMoney desc" +
+            "</script>")
+    RewardTotalMoneyLog findRewardTotalMoneyLogInfo(@Param("userId") long userId);
+
+    /***
+     * 查询指定奖励总金额利列表
+     * @param userId  用户ID
+     * @return
+     */
+    @Select("<script>" +
+            "select * from rewardTotalMoneyLog" +
+            " where 1=1" +
             "<if test=\" userId != -1 \">"+
                " and userId=#{userId}" +
             "</if>" +
             " order by rewardTotalMoney desc" +
             "</script>")
-    RewardTotalMoneyLog findRewardTotalMoneyLogInfo(@Param("userId") long userId);
+    List<RewardTotalMoneyLog> findRewardTotalMoneyLogInfoList(@Param("userId") long userId);
 
     /***
      * 更新奖励总金额
