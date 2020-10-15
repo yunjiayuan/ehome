@@ -421,6 +421,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
      * @param kitchenName    厨房名称
      * @param lat      纬度
      * @param lon      经度
+     * @param merchantsType    商户类型:-1不限 0餐馆、1酒吧、2KTV、3茶馆、4咖啡厅、5其他，默认餐馆
      * @param page     页码
      * @param count    条数
      * @return
@@ -428,14 +429,14 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData findReserveList(@PathVariable String cuisine, @PathVariable int watchVideos,
                                       @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat,
-                                      @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+                                      @PathVariable double lon, @PathVariable int merchantsType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<KitchenReserve> pageBean = null;
-        pageBean = kitchenBookedService.findKitchenList(CommonUtils.getMyId(), cuisine, watchVideos, sortType, kitchenName, lat, lon, page, count);
+        pageBean = kitchenBookedService.findKitchenList(CommonUtils.getMyId(), cuisine, watchVideos, sortType, kitchenName, lat, lon, merchantsType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

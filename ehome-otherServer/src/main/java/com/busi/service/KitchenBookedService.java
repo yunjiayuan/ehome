@@ -235,9 +235,10 @@ public class KitchenBookedService {
      * @param count  条数
      * @param watchVideos 筛选视频：0否 1是
      * @param sortType  排序类型：默认0综合排序  1距离最近  2销量最高  3评分最高
+     * @param merchantsType    商户类型:0餐馆、1酒吧、2KTV、3茶馆、4咖啡厅、5其他，默认餐馆
      * @return
      */
-    public PageBean<KitchenReserve> findKitchenList(long userId, String cuisine, int watchVideos, int sortType, String kitchenName, double lat, double lon, int page, int count) {
+    public PageBean<KitchenReserve> findKitchenList(long userId, String cuisine, int watchVideos, int sortType, String kitchenName, double lat, double lon, int merchantsType, int page, int count) {
 
         List<KitchenReserve> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
@@ -247,8 +248,8 @@ public class KitchenBookedService {
         if (CommonUtils.checkFull(kitchenName)) {
             kitchenName = null;
         }
-        if (!CommonUtils.checkFull(kitchenName) || !CommonUtils.checkFull(cuisine)) {
-            list = kitchenBookedDao.findKitchenList(userId, watchVideos, kitchenName, cuisine);
+        if (!CommonUtils.checkFull(kitchenName) || !CommonUtils.checkFull(cuisine) || merchantsType >= 0) {
+            list = kitchenBookedDao.findKitchenList(userId, watchVideos, kitchenName, cuisine, merchantsType);
         } else if (sortType == 1) {
             list = kitchenBookedDao.findKitchenList2(userId, watchVideos, lat, lon);
         } else {

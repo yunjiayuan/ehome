@@ -98,12 +98,13 @@ public interface KitchenBookedApiController {
      * @param kitchenName    厨房名称
      * @param lat      纬度
      * @param lon      经度
+     * @param merchantsType    商户类型:0餐馆、1酒吧、2KTV、3茶馆、4咖啡厅、5其他，默认餐馆
      * @param page     页码
      * @param count    条数
      * @return
      */
-    @GetMapping("findReserveList/{cuisine}/{watchVideos}/{sortType}/{kitchenName}/{lat}/{lon}/{page}/{count}")
-    ReturnData findReserveList(@PathVariable String cuisine, @PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findReserveList/{cuisine}/{watchVideos}/{sortType}/{kitchenName}/{lat}/{lon}/{merchantsType}/{page}/{count}")
+    ReturnData findReserveList(@PathVariable String cuisine, @PathVariable int watchVideos, @PathVariable int sortType, @PathVariable String kitchenName, @PathVariable double lat, @PathVariable double lon, @PathVariable int merchantsType, @PathVariable int page, @PathVariable int count);
 
 
     /***

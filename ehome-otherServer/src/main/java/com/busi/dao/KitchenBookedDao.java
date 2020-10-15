@@ -309,8 +309,11 @@ public interface KitchenBookedDao {
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
+            "<if test=\"merchantsType >= 0\">" +
+            " and merchantsType = #{merchantsType}" +
+            "</if>" +
             "</script>")
-    List<KitchenReserve> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName, @Param("cuisine") String cuisine);
+    List<KitchenReserve> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("kitchenName") String kitchenName, @Param("cuisine") String cuisine, @Param("merchantsType") int merchantsType);
 
     /***
      * 条件查询预定厨房（距离最近）
