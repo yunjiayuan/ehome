@@ -6,6 +6,7 @@ import com.busi.controller.BaseController;
 import com.busi.entity.PageBean;
 import com.busi.entity.ReturnData;
 import com.busi.entity.RewardTotalMoneyLog;
+import com.busi.entity.UserInfo;
 import com.busi.service.RewardTotalMoneyLogService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    UserInfoUtils userInfoUtils;
 
 
     /***
@@ -86,6 +90,21 @@ public class RewardTotalMoneyLogController extends BaseController implements Rew
         pageBean = rewardTotalMoneyLogService.findRewardTotalMoneyLogInfoList(userId, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        List list = pageBean.getList();
+        if(list!=null&&list.size()>0){
+            for (int i=0;i<list.size();i++){
+                RewardTotalMoneyLog rewardTotalMoneyLog = (RewardTotalMoneyLog) list.get(i);
+                if(rewardTotalMoneyLog!=null){
+                    UserInfo userInfo = userInfoUtils.getUserInfo(rewardTotalMoneyLog.getUserId());
+                    if(userInfo!=null){
+                        rewardTotalMoneyLog.setUserName(userInfo.getName());
+                        rewardTotalMoneyLog.setUserHead(userInfo.getHead());
+                        rewardTotalMoneyLog.setHouseNumber(userInfo.getHouseNumber());
+                        rewardTotalMoneyLog.setProId(userInfo.getProType());
+                    }
+                }
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }

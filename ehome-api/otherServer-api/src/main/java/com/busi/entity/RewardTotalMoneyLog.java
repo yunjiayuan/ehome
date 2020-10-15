@@ -22,4 +22,9 @@ public class RewardTotalMoneyLog {
   @DecimalMin(value = "0.00",message = "rewardMoney参数有误，奖励总金额不能小于0")
   private double rewardTotalMoney;//奖励总金额
 
+  private String userName;//用户名字  与数据库无关
+  private String userHead;//用户头像  与数据库无关
+  private long houseNumber;//用户门牌号  与数据库无关
+  private int proId;//用户省简称ID  与数据库无关
+
 }
