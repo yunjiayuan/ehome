@@ -147,7 +147,7 @@ public interface KitchenBookedDao {
             " phone=#{phone}," +
             " orderingPhone=#{orderingPhone}," +
             " userId=#{userId}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen(KitchenReserve kitchen);
 
@@ -159,7 +159,7 @@ public interface KitchenBookedDao {
     @Update("<script>" +
             "update KitchenReserve set" +
             " deleteType=#{deleteType}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateDel(KitchenReserve kitchen);
 
@@ -205,7 +205,7 @@ public interface KitchenBookedDao {
     @Update("<script>" +
             "update KitchenReserve set" +
             " totalSales=#{totalSales}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateNumber(KitchenReserve kitchen);
 
@@ -222,7 +222,7 @@ public interface KitchenBookedDao {
      * @param userId
      * @return
      */
-    @Select("select * from KitchenReserve where userId=#{userId} and deleteType = 0 and auditType=1")
+    @Select("select * from KitchenReserve where userId=#{userId} and deleteType = 0")
     KitchenReserve findReserve(@Param("userId") long userId);
 
     /***
@@ -260,7 +260,7 @@ public interface KitchenBookedDao {
      * @param id
      * @return
      */
-    @Select("select * from KitchenReserve where id=#{id} and deleteType = 0 and auditType=1 ")
+    @Select("select * from KitchenReserve where id=#{id} and deleteType = 0 ")
     KitchenReserve findById(@Param("id") long id);
 
     /***
@@ -284,7 +284,7 @@ public interface KitchenBookedDao {
             "update KitchenReserve set" +
             " totalScore=#{totalScore}," +
             " averageScore=#{averageScore}" +
-            " where id=#{id} and userId=#{userId} and deleteType = 0 and auditType=1 " +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateScore(KitchenReserve kitchen);
 
