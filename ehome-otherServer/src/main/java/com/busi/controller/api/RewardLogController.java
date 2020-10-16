@@ -45,7 +45,7 @@ public class RewardLogController extends BaseController implements RewardLogApiC
         }
         //验证权限
         long myId = CommonUtils.getMyId();
-        if(CommonUtils.getAdministrator(myId,redisUtils)<1){
+        if(CommonUtils.getAdministrator(myId,redisUtils)<0){
             if (myId != userId) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + myId + "]无权限操作用户[" + userId + "]的系统奖励信息", new JSONObject());
             }
