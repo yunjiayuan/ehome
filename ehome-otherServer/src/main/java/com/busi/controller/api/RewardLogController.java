@@ -24,6 +24,9 @@ public class RewardLogController extends BaseController implements RewardLogApiC
     @Autowired
     RewardLogService rewardLogService;
 
+    @Autowired
+    RedisUtils redisUtils;
+
     /***
      * 查询指定用户的奖励列表
      * @param userId  用户ID
@@ -41,8 +44,11 @@ public class RewardLogController extends BaseController implements RewardLogApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //验证权限
-        if (CommonUtils.getMyId() != userId) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作用户[" + userId + "]的系统奖励信息", new JSONObject());
+        long myId = CommonUtils.getMyId();
+        if(CommonUtils.getAdministrator(myId,redisUtils)<1){
+            if (myId != userId) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + myId + "]无权限操作用户[" + userId + "]的系统奖励信息", new JSONObject());
+            }
         }
         PageBean<RewardLog> pageBean;
         pageBean = rewardLogService.findList(userId, rewardType, page, count);
