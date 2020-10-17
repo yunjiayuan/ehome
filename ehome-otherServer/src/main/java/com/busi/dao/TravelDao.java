@@ -189,7 +189,7 @@ public interface TravelDao {
     @Select("<script>" +
             "<if test=\"name != null and name != '' \">" +
             "select * from ScenicSpot" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 " +
+            " where businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
             " and userId != #{userId}" +
             " and scenicSpotName LIKE CONCAT('%',#{name},'%')" +
 //            "<if test=\"watchVideos == 1\">" +
@@ -203,7 +203,7 @@ public interface TravelDao {
             "</if>" +
             " from ScenicSpot " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
