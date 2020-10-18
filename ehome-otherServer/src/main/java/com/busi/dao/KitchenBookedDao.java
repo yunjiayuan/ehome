@@ -298,7 +298,7 @@ public interface KitchenBookedDao {
      */
     @Select("<script>" +
             "select * from KitchenReserve" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != '' " +
+            " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
             " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
@@ -335,7 +335,7 @@ public interface KitchenBookedDao {
             " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from KitchenReserve " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != '' " +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 " +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -376,7 +376,7 @@ public interface KitchenBookedDao {
             " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from KitchenReserve " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != '' " +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 " +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -389,7 +389,7 @@ public interface KitchenBookedDao {
             "<if test=\"sortType == 2\">" +
             "select * from KitchenReserve" +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != '' " +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 " +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -398,7 +398,7 @@ public interface KitchenBookedDao {
             "<if test=\"sortType == 3\">" +
             "select * from KitchenReserve" +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != '' " +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 and " +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
