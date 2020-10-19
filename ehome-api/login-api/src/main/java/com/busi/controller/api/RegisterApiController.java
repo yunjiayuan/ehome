@@ -85,6 +85,14 @@ public interface RegisterApiController {
     ReturnData updateUserAccessRights (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 
     /***
+     * 修改账号状态接口 启用、停用
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateAccountStatus")
+    ReturnData updateAccountStatus (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
+
+    /***
      * 修改新用户系统欢迎消息状态接口
      * @return
      */

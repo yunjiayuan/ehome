@@ -591,6 +591,33 @@ public class RegisterController extends BaseController implements RegisterApiCon
     }
 
     /***
+     * 修改账号状态接口 启用、停用
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData updateAccountStatus(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        long myId = CommonUtils.getMyId();
+        if(CommonUtils.getAdministrator(myId,redisUtils)<1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限操作用户[" + userInfo.getUserId() + "]的账号状态", new JSONObject());
+        }
+        //开始修改
+        userInfoService.updateAccountStatus(userInfo);
+        //获取缓存中的登录信息
+        Map<String,Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER+userInfo.getUserId());
+        if(userMap!=null&&userMap.size()>0){//缓存中存在 才更新 不存在不更新
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER+userInfo.getUserId(),"accountStatus",userInfo.getAccountStatus(),Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER+userInfo.getUserId(),Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
      * 修改新用户系统欢迎消息状态接口
      * @return
      */

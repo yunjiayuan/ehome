@@ -175,6 +175,16 @@ public class UserInfoService {
     }
 
     /***
+     * 修改用户账号状态 正常 停用
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateAccountStatus(UserInfo userInfo) {
+        return userInfoDao.updateAccountStatus(userInfo);
+    }
+
+    /***
      * 修改新用户系统欢迎消息状态接口
      * @param userInfo
      * @return

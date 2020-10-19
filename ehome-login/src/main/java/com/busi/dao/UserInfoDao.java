@@ -285,6 +285,19 @@ public interface UserInfoDao {
             "</script>")
     int updateHomeBlogStatus(UserInfo userInfo);
 
+    /**
+     * 修改用户账号状态 正常 停用
+     *
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set" +
+            " accountStatus=#{accountStatus}" +
+            " where userId=#{userId}" +
+            "</script>")
+    int updateAccountStatus(UserInfo userInfo);
+
     /***
      * 更新用户手机绑定状态
      * @param userInfo
