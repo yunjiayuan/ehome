@@ -145,6 +145,7 @@ public interface KitchenBookedDao {
             " videoCoverUrl=#{videoCoverUrl}," +
             " realName=#{realName}," +
             " phone=#{phone}," +
+            " merchantsType=#{merchantsType}," +
             " orderingPhone=#{orderingPhone}," +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
