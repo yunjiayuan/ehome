@@ -86,6 +86,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         if (CommonUtils.checkFull(scenicSpot.getPharmacyName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {//上传药店证照
             scenicSpot.setAuditType(0);
+            scenicSpot.setBusinessStatus(1);//打烊中
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);

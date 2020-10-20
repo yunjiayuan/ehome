@@ -63,7 +63,8 @@ public interface HotelDao {
     @Update("<script>" +
             "update Hotel set" +
             " licence=#{licence}," +
-            " auditType=#{auditType}" +
+            " auditType=#{auditType}," +
+            " businessStatus=#{businessStatus}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(Hotel kitchen);

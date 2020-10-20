@@ -159,7 +159,9 @@ public interface KitchenBookedDao {
     @Update("<script>" +
             "update KitchenReserve set" +
             "<if test=\"healthyCard != null and healthyCard != '' \">" +
+            " auditType=#{auditType}," +
             " healthyCard=#{healthyCard}," +
+            " businessStatus=#{businessStatus}," +
             "</if>" +
             " userId=#{userId}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +

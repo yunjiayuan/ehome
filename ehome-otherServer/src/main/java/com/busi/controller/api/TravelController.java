@@ -99,6 +99,7 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         if (CommonUtils.checkFull(scenicSpot.getScenicSpotName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {
             scenicSpot.setAuditType(0);
+            scenicSpot.setBusinessStatus(1);//打烊中
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);

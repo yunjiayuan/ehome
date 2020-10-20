@@ -64,7 +64,8 @@ public interface PharmacyDao {
     @Update("<script>" +
             "update Pharmacy set" +
             " licence=#{licence}," +
-            " auditType=#{auditType}" +
+            " auditType=#{auditType}," +
+            " businessStatus=#{businessStatus}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(Pharmacy kitchen);

@@ -104,7 +104,8 @@ public interface TravelDao {
     @Update("<script>" +
             "update ScenicSpot set" +
             " licence=#{licence}," +
-            " auditType=1" +
+            " auditType=#{auditType}," +
+            " businessStatus=#{businessStatus}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(ScenicSpot kitchen);

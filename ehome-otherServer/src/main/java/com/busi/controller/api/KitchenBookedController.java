@@ -201,6 +201,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        kitchenReserve.setAuditType(0);//审核中
+        kitchenReserve.setBusinessStatus(1);//打烊中
         kitchenBookedService.uploadReserveLicence(kitchenReserve);
         if (!CommonUtils.checkFull(kitchenReserve.getDelImgUrls())) {
             //调用MQ同步 图片到图片删除记录表

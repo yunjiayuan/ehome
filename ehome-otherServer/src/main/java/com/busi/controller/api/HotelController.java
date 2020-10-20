@@ -86,6 +86,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         if (CommonUtils.checkFull(scenicSpot.getHotelName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {//上传酒店民宿证照
             scenicSpot.setAuditType(0);
+            scenicSpot.setBusinessStatus(1);//打烊中
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);
