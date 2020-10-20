@@ -189,6 +189,28 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
+    /***
+     * 上传订座证照
+     * @param kitchenReserve
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData uploadReserveLicence(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        kitchenBookedService.uploadReserveLicence(kitchenReserve);
+        if (!CommonUtils.checkFull(kitchenReserve.getDelImgUrls())) {
+            //调用MQ同步 图片到图片删除记录表
+            mqUtils.sendDeleteImageMQ(kitchenReserve.getUserId(), kitchenReserve.getDelImgUrls());
+        }
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchenReserve.getUserId() + "_" + 1, 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
     /**
      * @Description: 删除可预订厨房
      * @return:
@@ -215,6 +237,16 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData updReserveStatus(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult
             bindingResult) {
+        KitchenReserve reserve = kitchenBookedService.findReserve(kitchenReserve.getUserId());
+        if (reserve == null) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "店铺不存在", new JSONObject());
+        }
+        if (reserve.getAuditType() == 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+        }
+        if (reserve.getAuditType() == 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺审核失败，请重新上传清晰、准确、合法的证照", new JSONObject());
+        }
         //判断该用户是否实名
         Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + kitchenReserve.getUserId());
         if (map == null || map.size() <= 0) {

@@ -140,10 +140,13 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         Pharmacy ik = (Pharmacy) CommonUtils.mapToObject(kitchenMap, Pharmacy.class);
         if (ik == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "药店不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "药店不存在！", new JSONObject());
         }
-        if (ik.getAuditType() != 1) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该药店未上传药店证照", new JSONObject());
+        if (ik.getAuditType() == 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+        }
+        if (ik.getAuditType() == 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺审核失败，请重新上传清晰、准确、合法的证照", new JSONObject());
         }
         travelService.updateBusiness(scenicSpot);
         //清除缓存

@@ -152,6 +152,21 @@ public interface KitchenBookedDao {
     int updateKitchen(KitchenReserve kitchen);
 
     /***
+     * 上传厨房证照
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenReserve set" +
+            "<if test=\"healthyCard != null and healthyCard != '' \">" +
+            " healthyCard=#{healthyCard}," +
+            "</if>" +
+            " userId=#{userId}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int uploadReserveLicence(KitchenReserve kitchen);
+
+    /***
      * 更新预定厨房删除状态
      * @param kitchen
      * @return

@@ -39,6 +39,14 @@ public interface KitchenBookedApiController {
     @PutMapping("changeReserve")
     ReturnData changeReserve(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult);
 
+    /***
+     * 上传订座证照
+     * @param kitchenReserve
+     * @return
+     */
+    @PutMapping("uploadReserveLicence")
+    ReturnData uploadReserveLicence(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult);
+
     /**
      * @Description: 删除厨房订座
      * @return:

@@ -142,7 +142,6 @@ public class TravelController extends BaseController implements TravelApiControl
      */
     @Override
     public ReturnData updScenicSpotStatus(@Valid @RequestBody ScenicSpot scenicSpot, BindingResult bindingResult) {
-        //判断该景区是否有证照
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + scenicSpot.getUserId());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
@@ -155,10 +154,13 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         ScenicSpot ik = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
         if (ik == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "景区不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "景区不存在！", new JSONObject());
         }
-        if (ik.getAuditType() != 1) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该景区未上传景区证照", new JSONObject());
+        if (ik.getAuditType() == 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+        }
+        if (ik.getAuditType() == 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺审核失败，请重新上传清晰、准确、合法的证照", new JSONObject());
         }
         travelService.updateBusiness(scenicSpot);
         //清除缓存
