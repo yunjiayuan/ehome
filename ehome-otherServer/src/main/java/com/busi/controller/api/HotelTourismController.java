@@ -630,10 +630,12 @@ public class HotelTourismController extends BaseController implements HotelTouri
         }
         //开始更新
         int num = kitchenBookedService.changeAuditType(type, auditType, id);
-        if (num > 0 && auditType == 0) {
+        if (num > 0) {
             if (type == 0) {//0酒店
                 Hotel hotel = hotelService.findById(id);
-                if (hotel != null && hotel.getAuditType() == 1) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_HOTEL + hotel.getUserId(), 0);
+                if (hotel != null && hotel.getAuditType() == 1 && auditType == 0) {
                     //判断是否有邀请码
                     long myId = hotel.getUserId();
                     double redPacketsMoney = 10;
@@ -672,7 +674,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
             }
             if (type == 1) {//1景区
                 ScenicSpot hotel = travelService.findById(id);
-                if (hotel != null && hotel.getAuditType() == 1) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_TRAVEL + hotel.getUserId(), 0);
+                if (hotel != null && hotel.getAuditType() == 1 && auditType == 0) {
                     //判断是否有邀请码
                     long myId = hotel.getUserId();
                     double redPacketsMoney = 10;
@@ -711,7 +715,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
             }
             if (type == 2) {//2药店
                 Pharmacy hotel = pharmacyService.findById(id);
-                if (hotel != null && hotel.getAuditType() == 1) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_PHARMACY + hotel.getUserId(), 0);
+                if (hotel != null && hotel.getAuditType() == 1 && auditType == 0) {
                     //判断是否有邀请码
                     long myId = hotel.getUserId();
                     double redPacketsMoney = 10;
@@ -750,7 +756,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
             }
             if (type == 3) {//3订座
                 KitchenReserve serviceReserve = bookedService.findById(id);
-                if (serviceReserve != null && serviceReserve.getAuditType() == 1) {
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_KITCHEN + serviceReserve.getUserId() + "_" + 1, 0);
+                if (serviceReserve != null && serviceReserve.getAuditType() == 1 && auditType == 0) {
                     //判断是否有邀请码
                     double redPacketsMoney = 10;
                     String proId = "";
