@@ -370,6 +370,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         kitchenBookedService.claimKitchen(kitchen);
         //更新订座厨房
         KitchenReserve reserve = new KitchenReserve();
+        reserve.setBusinessStatus(1);
         reserve.setRealName(kitchenReserve.getRealName());
         reserve.setPhone(kitchenReserve.getPhone());
         reserve.setOrderingPhone(kitchenReserve.getOrderingPhone());

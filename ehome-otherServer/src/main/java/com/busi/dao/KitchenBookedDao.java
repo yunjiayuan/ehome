@@ -210,6 +210,7 @@ public interface KitchenBookedDao {
             " realName=#{realName}," +
             " phone=#{phone}," +
             " claimTime=#{claimTime}," +
+            " businessStatus=#{businessStatus}," +
             " claimStatus=#{claimStatus}" +
             " where claimId=#{claimId}" +
             "</script>")

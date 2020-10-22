@@ -376,6 +376,7 @@ public interface PharmacyDao {
             " licence=#{licence}," +
             " phone=#{phone}," +
             " claimTime=#{claimTime}," +
+            " businessStatus=#{businessStatus}," +
             " claimStatus=#{claimStatus}" +
             " where claimId=#{claimId}" +
             "</script>")

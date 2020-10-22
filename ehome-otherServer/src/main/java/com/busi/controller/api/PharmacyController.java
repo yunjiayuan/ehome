@@ -583,6 +583,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         travelService.claimKitchen(kitchen);
         //更新药店
         Pharmacy reserve = new Pharmacy();
+        reserve.setBusinessStatus(1);
         reserve.setPhone(kitchen.getPhone());
         reserve.setLicence(kitchenReserve.getLicence());
         reserve.setClaimId(kitchen.getUid());

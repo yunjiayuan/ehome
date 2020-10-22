@@ -630,6 +630,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         //更新酒店
         Hotel reserve = new Hotel();
         reserve.setPhone(kitchen.getPhone());
+        reserve.setBusinessStatus(1);
         reserve.setLicence(kitchenReserve.getLicence());
         reserve.setClaimId(kitchen.getUid());
         reserve.setClaimStatus(1);

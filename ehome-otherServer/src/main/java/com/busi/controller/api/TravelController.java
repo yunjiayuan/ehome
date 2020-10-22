@@ -589,6 +589,7 @@ public class TravelController extends BaseController implements TravelApiControl
         travelService.claimKitchen(kitchen);
         //更新景区
         ScenicSpot reserve = new ScenicSpot();
+        reserve.setBusinessStatus(1);
         reserve.setPhone(kitchen.getPhone());
         reserve.setLicence(kitchenReserve.getLicence());
         reserve.setClaimId(kitchen.getUid());
