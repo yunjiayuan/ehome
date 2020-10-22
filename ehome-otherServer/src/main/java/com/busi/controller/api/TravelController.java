@@ -580,7 +580,7 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区不存在", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻景区不存在", new JSONObject());
         }
         //更新景区数据
         kitchen.setClaimStatus(1);

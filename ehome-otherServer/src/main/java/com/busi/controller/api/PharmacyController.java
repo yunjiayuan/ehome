@@ -574,7 +574,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         PharmacyData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻药店不存在", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻药店不存在", new JSONObject());
         }
         //更新药店数据
         kitchen.setClaimStatus(1);
