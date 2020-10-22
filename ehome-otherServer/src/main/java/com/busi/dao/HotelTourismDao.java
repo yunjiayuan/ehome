@@ -178,7 +178,7 @@ public interface HotelTourismDao {
     @Select("<script>" +
             "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from Hotel" +
-            " where deleteType = 0 and licence != '' " +
+            " where deleteType = 0 and licence != '' and claimStatus = 1" +
             " and auditType = #{auditType}" +
             " order by juli asc" +
             "</script>")
@@ -187,7 +187,7 @@ public interface HotelTourismDao {
     @Select("<script>" +
             "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from ScenicSpot" +
-            " where deleteType = 0 and licence != '' " +
+            " where deleteType = 0 and licence != '' and claimStatus = 1" +
             " and auditType = #{auditType}" +
             " order by juli asc" +
             "</script>")
@@ -196,7 +196,7 @@ public interface HotelTourismDao {
     @Select("<script>" +
             "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from Pharmacy" +
-            " where deleteType = 0 and licence != '' " +
+            " where deleteType = 0 and licence != '' and claimStatus = 1" +
             " and auditType = #{auditType}" +
             " order by juli asc" +
             "</script>")
@@ -205,7 +205,7 @@ public interface HotelTourismDao {
     @Select("<script>" +
             "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from KitchenReserve" +
-            " where deleteType = 0 and healthyCard != '' " +
+            " where deleteType = 0 and healthyCard != '' and claimStatus = 1" +
             " and auditType = #{auditType}" +
             " order by juli asc" +
             "</script>")

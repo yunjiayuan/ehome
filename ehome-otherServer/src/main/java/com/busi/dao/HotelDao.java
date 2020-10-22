@@ -140,7 +140,7 @@ public interface HotelDao {
     @Select("<script>" +
             "<if test=\"name != null and name != '' \">" +
             "select * from Hotel" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " where deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR claimId != '')" +
             " and userId != #{userId}" +
             " and hotelName LIKE CONCAT('%',#{name},'%')" +
 //            "<if test=\"watchVideos == 1\">" +
@@ -157,7 +157,7 @@ public interface HotelDao {
             "</if>" +
             " from Hotel " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " and deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR claimId != '')" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +

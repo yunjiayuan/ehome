@@ -131,7 +131,7 @@ public interface PharmacyDao {
     @Select("<script>" +
             "<if test=\"name != null and name != '' \">" +
             "select * from Pharmacy" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " where deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR claimId != '')" +
             " and userId != #{userId}" +
             " and pharmacyName LIKE CONCAT('%',#{name},'%')" +
 //            "<if test=\"watchVideos == 1\">" +
@@ -145,7 +145,7 @@ public interface PharmacyDao {
             "</if>" +
             " from Pharmacy " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " and deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR claimId != '')" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
