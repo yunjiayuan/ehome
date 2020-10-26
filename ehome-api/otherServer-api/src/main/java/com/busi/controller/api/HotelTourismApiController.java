@@ -120,7 +120,7 @@ public interface HotelTourismApiController {
 
     /***
      * 统计各种审核状态数量
-     * @param type  0酒店 1景区 2药店 3订座
+     * @param type  0酒店 1景区 2药店 3订座 4厨房
      * @return
      */
     @GetMapping("countAuditType/{type}")
@@ -128,7 +128,7 @@ public interface HotelTourismApiController {
 
     /***
      * 查询审核列表
-     * @param type  0酒店 1景区 2药店 3订座
+     * @param type  0酒店 1景区 2药店 3订座 4厨房
      * @param auditType  0待审核 1已审核
      * @param lat      纬度
      * @param lon      经度
@@ -141,7 +141,7 @@ public interface HotelTourismApiController {
 
     /***
      * 更新审核状态
-     * @param type  0酒店 1景区 2药店 3订座
+     * @param type  0酒店 1景区 2药店 3订座 4厨房
      * @param auditType  0审核通过 1审核未通过
      * @param id   酒店、景区、药店、订座 主键ID
      * @return

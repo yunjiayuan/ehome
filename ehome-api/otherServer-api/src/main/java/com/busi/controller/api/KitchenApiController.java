@@ -29,6 +29,14 @@ public interface KitchenApiController {
     @PutMapping("changeKitchen")
     ReturnData changeKitchen(@Valid @RequestBody Kitchen kitchen, BindingResult bindingResult);
 
+    /***
+     * 上传证照
+     * @param kitchen
+     * @return
+     */
+    @PutMapping("uploadKitchenLicence")
+    ReturnData uploadKitchenLicence(@Valid @RequestBody Kitchen kitchen, BindingResult bindingResult);
+
     /**
      * @Description: 删除厨房
      * @return:

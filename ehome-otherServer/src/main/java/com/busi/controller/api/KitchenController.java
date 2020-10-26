@@ -70,7 +70,7 @@ public class KitchenController extends BaseController implements KitchenApiContr
         if (ik != null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增厨房失败，厨房已存在！", new JSONObject());
         }
-        kitchen.setAuditType(1);
+        kitchen.setAuditType(0);//默认审核中
         kitchen.setBusinessStatus(1);//厨房默认关闭
         kitchen.setAddTime(new Date());
         //菜系最多选四个
@@ -118,6 +118,30 @@ public class KitchenController extends BaseController implements KitchenApiContr
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
+    /***
+     * 上传证照
+     * @param kitchenReserve
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData uploadKitchenLicence(@Valid @RequestBody Kitchen kitchenReserve, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        kitchenReserve.setAuditType(0);//审核中
+        kitchenReserve.setBusinessStatus(1);//打烊中
+        kitchenService.uploadReserveLicence(kitchenReserve);
+        if (!CommonUtils.checkFull(kitchenReserve.getDelImgUrls())) {
+            //调用MQ同步 图片到图片删除记录表
+            mqUtils.sendDeleteImageMQ(kitchenReserve.getUserId(), kitchenReserve.getDelImgUrls());
+        }
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + kitchenReserve.getUserId() + "_" + 0, 0);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
     /**
      * @Description: 删除厨房
      * @return:
@@ -162,6 +186,17 @@ public class KitchenController extends BaseController implements KitchenApiContr
         }
         if (CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
             return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+        }
+        //查询数据库
+        Kitchen kitchen1 = kitchenService.findByUserId(kitchen.getUserId());
+        if (kitchen1 == null) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "店铺不存在", new JSONObject());
+        }
+        if (kitchen1.getAuditType() == 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+        }
+        if (kitchen1.getAuditType() == 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺审核失败，请重新上传清晰、准确、合法的证照", new JSONObject());
         }
         kitchenService.updateBusiness(kitchen);
         //清除缓存
