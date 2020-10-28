@@ -380,6 +380,8 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         kitchenBookedService.claimKitchen2(reserve);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + reserve.getUserId() + "_" + 1, 0);
         //新增默认菜品分类
         String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
         for (int i = 0; i < strings.length; i++) {

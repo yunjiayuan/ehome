@@ -597,6 +597,8 @@ public class TravelController extends BaseController implements TravelApiControl
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         travelService.claimKitchen2(reserve);
+        //清除景区缓存
+        redisUtils.expire(Constants.REDIS_KEY_TRAVEL + reserve.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

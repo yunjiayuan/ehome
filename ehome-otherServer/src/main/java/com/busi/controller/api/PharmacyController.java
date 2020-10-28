@@ -591,6 +591,8 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         travelService.claimKitchen2(reserve);
+        //清除药店缓存
+        redisUtils.expire(Constants.REDIS_KEY_PHARMACY + reserve.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

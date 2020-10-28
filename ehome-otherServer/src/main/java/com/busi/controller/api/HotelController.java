@@ -637,6 +637,8 @@ public class HotelController extends BaseController implements HotelApiControlle
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         travelService.claimKitchen2(reserve);
+        //清除酒店缓存
+        redisUtils.expire(Constants.REDIS_KEY_HOTEL + reserve.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
