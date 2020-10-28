@@ -227,21 +227,33 @@ public interface HotelTourismDao {
     @Update("<script>" +
             "<if test=\"type == 0\">" +
             "update Hotel set" +
+            "<if test=\"auditType == 1\">" +
+            " claimStatus = 1," +
+            "</if>" +
             " auditType = #{auditType}" +
             " where deleteType = 0 and id=#{id} and licence != '' " +
             "</if>" +
             "<if test=\"type == 1\">" +
             "update ScenicSpot set" +
+            "<if test=\"auditType == 1\">" +
+            " claimStatus = 1," +
+            "</if>" +
             " auditType = #{auditType}" +
             " where deleteType = 0 and id=#{id} and licence != '' " +
             "</if>" +
             "<if test=\"type == 2\">" +
             "update Pharmacy set" +
+            "<if test=\"auditType == 1\">" +
+            " claimStatus = 1," +
+            "</if>" +
             " auditType = #{auditType}" +
             " where deleteType = 0 and id=#{id} and licence != '' " +
             "</if>" +
             "<if test=\"type == 3\">" +
             "update KitchenReserve set" +
+            "<if test=\"auditType == 1\">" +
+            " claimStatus = 1," +
+            "</if>" +
             " auditType = #{auditType}" +
             " where deleteType = 0 and id=#{id} and healthyCard != '' " +
             "</if>" +
