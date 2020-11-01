@@ -48,6 +48,15 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
         if(CommonUtils.getMyId()!=cashOut.getUserId()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误，当前用户["+CommonUtils.getMyId()+"]无权限提现用户["+cashOut.getUserId()+"]的钱包金额",new JSONObject());
         }
+        //判断提现功能开关
+        int purseCashOutStatus = 0;//0开启钱包提现功能 1禁用钱包提现功能
+        Object obj3 = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_PURSE_CASHOUT_STATUS);
+        if(obj3!=null){
+            purseCashOutStatus = Integer.parseInt(obj3.toString());
+        }
+        if(purseCashOutStatus!=0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"很抱歉，系统维护中，提现功能暂不开放！",new JSONObject());
+        }
         //生成订单
         String orderNumber = CommonUtils.getOrderNumber(cashOut.getUserId(),Constants.REDIS_KEY_PAY_ORDER_CASHOUT);
         cashOut.setId(orderNumber);
