@@ -561,24 +561,26 @@ public class BirdJournalController extends BaseController implements BirdJournal
                         currencyType = 2;
                         awardsId = 2;//家点
                     }
-                } else {//现金红包
-                    Random r = new Random();
-                    int romAwardsId = r.nextInt(10) + 1;
-                    if (romAwardsId % 2 == 0) {//偶数返家币
-                        romAwardsId = r.nextInt(10) + 1;
-                        if (romAwardsId % 2 != 0) {//奇数返现金
-                            currencyType = 0;
-                            redNum = rand.nextInt(300) + 1;
-                        } else {
-                            redNum = rand.nextInt(50) + 51;
-                            currencyType = 2;
-                            awardsId = 2;
-                        }
-                    } else {
-                        redNum = rand.nextInt(50) + 51;
-                        currencyType = 2;
-                        awardsId = 2;
-                    }
+                } else {//现金红包 暂时不给现金红包 后续改为奖励系统 suntj 20201101
+                    currencyType = 2;
+                    redNum = rand.nextInt(300) + 201;
+//                    Random r = new Random();
+//                    int romAwardsId = r.nextInt(10) + 1;
+//                    if (romAwardsId % 2 == 0) {//偶数返家币
+//                        romAwardsId = r.nextInt(10) + 1;
+//                        if (romAwardsId % 2 != 0) {//奇数返现金
+//                            currencyType = 0;
+//                            redNum = rand.nextInt(300) + 1;
+//                        } else {
+//                            redNum = rand.nextInt(50) + 51;
+//                            currencyType = 2;
+//                            awardsId = 2;
+//                        }
+//                    } else {
+//                        redNum = rand.nextInt(50) + 51;
+//                        currencyType = 2;
+//                        awardsId = 2;
+//                    }
                 }
                 double spareMoney = 0.0;
                 if (currencyType == 0) {
