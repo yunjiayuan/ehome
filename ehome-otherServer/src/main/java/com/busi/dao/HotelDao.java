@@ -63,7 +63,8 @@ public interface HotelDao {
     @Update("<script>" +
             "update Hotel set" +
             " licence=#{licence}," +
-            " auditType=#{auditType}" +
+            " auditType=#{auditType}," +
+            " businessStatus=#{businessStatus}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(Hotel kitchen);
@@ -139,7 +140,7 @@ public interface HotelDao {
     @Select("<script>" +
             "<if test=\"name != null and name != '' \">" +
             "select * from Hotel" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " where deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR (claimId != '' and businessStatus = 0 and auditType = 1) OR (claimId != '' and businessStatus = 0))" +
             " and userId != #{userId}" +
             " and hotelName LIKE CONCAT('%',#{name},'%')" +
 //            "<if test=\"watchVideos == 1\">" +
@@ -156,7 +157,7 @@ public interface HotelDao {
             "</if>" +
             " from Hotel " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " and deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR (claimId != '' and businessStatus = 0 and auditType = 1) OR (claimId != '' and businessStatus = 0))" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -391,6 +392,7 @@ public interface HotelDao {
             " licence=#{licence}," +
             " phone=#{phone}," +
             " claimTime=#{claimTime}," +
+            " businessStatus=#{businessStatus}," +
             " claimStatus=#{claimStatus}" +
             " where claimId=#{claimId}" +
             "</script>")

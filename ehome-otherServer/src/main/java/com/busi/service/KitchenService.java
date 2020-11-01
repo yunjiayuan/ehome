@@ -45,6 +45,16 @@ public class KitchenService {
     }
 
     /***
+     * 上传厨房证照
+     * @param kitchen
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int uploadReserveLicence(Kitchen kitchen) {
+        return kitchenDao.uploadReserveLicence(kitchen);
+    }
+
+    /***
      * 根据用户ID查询
      * @param userId
      * @return

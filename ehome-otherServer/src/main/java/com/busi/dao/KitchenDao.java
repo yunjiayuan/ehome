@@ -53,6 +53,23 @@ public interface KitchenDao {
     int updateKitchen(Kitchen kitchen);
 
     /***
+     * 上传厨房证照
+     * @param kitchen
+     * @return
+     */
+    @Update("<script>" +
+            "update Kitchen set" +
+            "<if test=\"healthyCard != null and healthyCard != '' \">" +
+            " auditType=#{auditType}," +
+            " healthyCard=#{healthyCard}," +
+            " businessStatus=#{businessStatus}," +
+            "</if>" +
+            " userId=#{userId}" +
+            " where id=#{id} and userId=#{userId} and deleteType = 0" +
+            "</script>")
+    int uploadReserveLicence(Kitchen kitchen);
+
+    /***
      * 更新厨房删除状态
      * @param kitchen
      * @return
@@ -152,7 +169,7 @@ public interface KitchenDao {
      */
     @Select("<script>" +
             "select * from kitchen" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 " +
+            " where businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != ''" +
             " and userId != #{userId}" +
             "<if test=\"kitchenName != null and kitchenName != '' \">" +
             " and kitchenName LIKE CONCAT('%',#{kitchenName},'%')" +
@@ -191,7 +208,7 @@ public interface KitchenDao {
             " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from Kitchen " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != ''" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -239,7 +256,7 @@ public interface KitchenDao {
             " select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
             " from Kitchen " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != ''" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -255,7 +272,7 @@ public interface KitchenDao {
             "<if test=\"sortType == 2\">" +
             "select * from Kitchen" +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != ''" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -267,7 +284,7 @@ public interface KitchenDao {
             "<if test=\"sortType == 3\">" +
             "select * from Kitchen" +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1" +
+            " and businessStatus=0 and deleteType = 0 and auditType=1 and healthyCard != ''" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +

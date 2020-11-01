@@ -86,6 +86,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         if (CommonUtils.checkFull(scenicSpot.getPharmacyName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {//上传药店证照
             scenicSpot.setAuditType(0);
+            scenicSpot.setBusinessStatus(1);//打烊中
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);
@@ -140,10 +141,13 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         Pharmacy ik = (Pharmacy) CommonUtils.mapToObject(kitchenMap, Pharmacy.class);
         if (ik == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "药店不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "药店不存在！", new JSONObject());
         }
-        if (ik.getAuditType() != 1) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该药店未上传药店证照", new JSONObject());
+        if (ik.getAuditType() == 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+        }
+        if (ik.getAuditType() == 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺审核失败，请重新上传清晰、准确、合法的证照", new JSONObject());
         }
         travelService.updateBusiness(scenicSpot);
         //清除缓存
@@ -570,7 +574,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         }
         PharmacyData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻药店不存在", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻药店不存在", new JSONObject());
         }
         //更新药店数据
         kitchen.setClaimStatus(1);
@@ -579,6 +583,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         travelService.claimKitchen(kitchen);
         //更新药店
         Pharmacy reserve = new Pharmacy();
+        reserve.setBusinessStatus(1);
         reserve.setPhone(kitchen.getPhone());
         reserve.setLicence(kitchenReserve.getLicence());
         reserve.setClaimId(kitchen.getUid());
@@ -586,6 +591,8 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         travelService.claimKitchen2(reserve);
+        //清除药店缓存
+        redisUtils.expire(Constants.REDIS_KEY_PHARMACY + reserve.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

@@ -64,7 +64,8 @@ public interface PharmacyDao {
     @Update("<script>" +
             "update Pharmacy set" +
             " licence=#{licence}," +
-            " auditType=#{auditType}" +
+            " auditType=#{auditType}," +
+            " businessStatus=#{businessStatus}" +
             " where id=#{id} and userId=#{userId} and deleteType = 0" +
             "</script>")
     int updateKitchen2(Pharmacy kitchen);
@@ -130,7 +131,7 @@ public interface PharmacyDao {
     @Select("<script>" +
             "<if test=\"name != null and name != '' \">" +
             "select * from Pharmacy" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " where deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR (claimId != '' and businessStatus = 0 and auditType = 1) OR (claimId != '' and businessStatus = 0))" +
             " and userId != #{userId}" +
             " and pharmacyName LIKE CONCAT('%',#{name},'%')" +
 //            "<if test=\"watchVideos == 1\">" +
@@ -144,7 +145,7 @@ public interface PharmacyDao {
             "</if>" +
             " from Pharmacy " +
             " where userId != #{userId}" +
-            " and businessStatus=0 and deleteType = 0 and auditType=1 and licence != '' " +
+            " and deleteType = 0 and (businessStatus=0 and auditType=1 and licence != '' OR (claimId != '' and businessStatus = 0 and auditType = 1) OR (claimId != '' and businessStatus = 0))" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
             "</if>" +
@@ -375,6 +376,7 @@ public interface PharmacyDao {
             " licence=#{licence}," +
             " phone=#{phone}," +
             " claimTime=#{claimTime}," +
+            " businessStatus=#{businessStatus}," +
             " claimStatus=#{claimStatus}" +
             " where claimId=#{claimId}" +
             "</script>")

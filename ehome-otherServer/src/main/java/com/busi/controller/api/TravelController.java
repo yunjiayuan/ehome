@@ -99,6 +99,7 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         if (CommonUtils.checkFull(scenicSpot.getScenicSpotName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {
             scenicSpot.setAuditType(0);
+            scenicSpot.setBusinessStatus(1);//打烊中
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);
@@ -142,7 +143,6 @@ public class TravelController extends BaseController implements TravelApiControl
      */
     @Override
     public ReturnData updScenicSpotStatus(@Valid @RequestBody ScenicSpot scenicSpot, BindingResult bindingResult) {
-        //判断该景区是否有证照
         //查询缓存 缓存中不存在 查询数据库
         Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TRAVEL + scenicSpot.getUserId());
         if (kitchenMap == null || kitchenMap.size() <= 0) {
@@ -155,10 +155,13 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         ScenicSpot ik = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
         if (ik == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "景区不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "景区不存在！", new JSONObject());
         }
-        if (ik.getAuditType() != 1) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该景区未上传景区证照", new JSONObject());
+        if (ik.getAuditType() == 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+        }
+        if (ik.getAuditType() == 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺审核失败，请重新上传清晰、准确、合法的证照", new JSONObject());
         }
         travelService.updateBusiness(scenicSpot);
         //清除缓存
@@ -577,7 +580,7 @@ public class TravelController extends BaseController implements TravelApiControl
         }
         ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻景区不存在", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻景区不存在", new JSONObject());
         }
         //更新景区数据
         kitchen.setClaimStatus(1);
@@ -586,6 +589,7 @@ public class TravelController extends BaseController implements TravelApiControl
         travelService.claimKitchen(kitchen);
         //更新景区
         ScenicSpot reserve = new ScenicSpot();
+        reserve.setBusinessStatus(1);
         reserve.setPhone(kitchen.getPhone());
         reserve.setLicence(kitchenReserve.getLicence());
         reserve.setClaimId(kitchen.getUid());
@@ -593,6 +597,8 @@ public class TravelController extends BaseController implements TravelApiControl
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         travelService.claimKitchen2(reserve);
+        //清除景区缓存
+        redisUtils.expire(Constants.REDIS_KEY_TRAVEL + reserve.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

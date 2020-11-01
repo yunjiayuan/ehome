@@ -86,6 +86,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         if (CommonUtils.checkFull(scenicSpot.getHotelName()) && !CommonUtils.checkFull(scenicSpot.getLicence())) {//上传酒店民宿证照
             scenicSpot.setAuditType(0);
+            scenicSpot.setBusinessStatus(1);//打烊中
             travelService.updateKitchen2(scenicSpot);
         } else {
             travelService.updateKitchen(scenicSpot);
@@ -140,10 +141,13 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         Hotel ik = (Hotel) CommonUtils.mapToObject(kitchenMap, Hotel.class);
         if (ik == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "酒店民宿不存在！", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "酒店民宿不存在！", new JSONObject());
         }
-        if (ik.getAuditType() != 1) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "该酒店民宿未上传酒店民宿证照", new JSONObject());
+        if (ik.getAuditType() == 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+        }
+        if (ik.getAuditType() == 2) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺审核失败，请重新上传清晰、准确、合法的证照", new JSONObject());
         }
         travelService.updateBusiness(scenicSpot);
         //清除缓存
@@ -616,7 +620,7 @@ public class HotelController extends BaseController implements HotelApiControlle
         }
         HotelData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "入驻酒店民宿不存在", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻酒店民宿不存在", new JSONObject());
         }
         //更新酒店数据
         kitchen.setClaimStatus(1);
@@ -626,12 +630,15 @@ public class HotelController extends BaseController implements HotelApiControlle
         //更新酒店
         Hotel reserve = new Hotel();
         reserve.setPhone(kitchen.getPhone());
+        reserve.setBusinessStatus(1);
         reserve.setLicence(kitchenReserve.getLicence());
         reserve.setClaimId(kitchen.getUid());
         reserve.setClaimStatus(1);
         reserve.setClaimTime(kitchen.getClaimTime());
         reserve.setUserId(CommonUtils.getMyId());
         travelService.claimKitchen2(reserve);
+        //清除酒店缓存
+        redisUtils.expire(Constants.REDIS_KEY_HOTEL + reserve.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
