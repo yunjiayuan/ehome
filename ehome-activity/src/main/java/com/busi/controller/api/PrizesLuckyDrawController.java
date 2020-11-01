@@ -75,7 +75,7 @@ public class PrizesLuckyDrawController extends BaseController implements PrizesL
 //            return returnData(StatusCode.CODE_PURSE_POINT_NOT_ENOUGH.CODE_VALUE, "家点余额不足!", new JSONObject());
 //        }
         //更新钱包余额和钱包明细
-        mqUtils.sendPurseMQ(CommonUtils.getMyId(), 18, 0, -80);
+        mqUtils.sendPurseMQ(CommonUtils.getMyId(), 18, 2, -80);
         //开始抽奖
         int awardsId = 0;//奖品ID：0背包  1便携音箱  2豆浆机  3精美餐具  4动漫模型  5酒红石榴石手链  6女士太阳镜  7剃须刀  8头戴式耳机  9榨汁机
         String[] cost = {"背包", "便携音箱", "豆浆机", "精美餐具", "动漫模型", "酒红石榴石手链", "女士太阳镜", "剃须刀", "头戴式耳机", "榨汁机"};
