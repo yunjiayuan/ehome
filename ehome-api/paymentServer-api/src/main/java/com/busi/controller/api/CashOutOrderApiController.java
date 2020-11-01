@@ -28,12 +28,13 @@ public interface CashOutOrderApiController {
     /***
      * 查询提现记录列表
      * @param findType -1查询全部 2未到账 1已到账
+     * @param userId   被查询的用户ID 0时为查询所有用户
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
-    @GetMapping("findCashOutList/{findType}/{page}/{count}")
-    ReturnData findRedPacketsList(@PathVariable int findType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findCashOutList/{findType}/{userId}/{page}/{count}")
+    ReturnData findRedPacketsList(@PathVariable int findType,@PathVariable long userId, @PathVariable int page, @PathVariable int count);
 
     /***
      * 获取支付宝登录签名
@@ -41,4 +42,12 @@ public interface CashOutOrderApiController {
      */
     @GetMapping("getAliLoginSign")
     ReturnData getAliLoginSign();
+
+    /***
+     * 修改钱包提现功能的使用状态
+     * @param type 0启用 1禁用
+     * @return
+     */
+    @GetMapping("changePurseCaseOutStatus/{type}")
+    ReturnData changePurseCaseOutStatus(@PathVariable int type);
 }

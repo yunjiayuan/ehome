@@ -91,12 +91,13 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
     /***
      * 查询提现记录列表
      * @param findType -1查询全部 2未到账 1已到账
+     * @param userId   被查询的用户ID 0时为查询所有用户
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
     @Override
-    public ReturnData findRedPacketsList(@PathVariable int findType,@PathVariable int page, @PathVariable int count) {
+    public ReturnData findRedPacketsList(@PathVariable int findType,@PathVariable long userId ,@PathVariable int page, @PathVariable int count) {
         //验证参数
         if(findType<-1||findType>1){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"findType参数有误",new JSONObject());
@@ -109,12 +110,12 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
         }
         //验证身份
         long myId = CommonUtils.getMyId();
-        if(myId!=10076&&myId!=12761&&myId!=12770&&myId!=9389&&myId!=9999&&myId!=13005&&myId!=12774&&myId!=13031&&myId!=12769&&myId!=12796&&myId!=10053){
+        if(CommonUtils.getAdministrator(myId,redisUtils)<1){
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
         }
         //开始查询
         PageBean<CashOutOrder> pageBean;
-        pageBean = cashOutService.findCashOutList(findType,page,count);
+        pageBean = cashOutService.findCashOutList(findType,userId,page,count);
         if(pageBean==null){
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,StatusCode.CODE_SUCCESS.CODE_DESC,new JSONArray());
         }
@@ -145,5 +146,22 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
         Map<String,String> map = new HashMap();
         map.put("sign",AlipayUtils.getLoginSign());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
+    }
+
+    /***
+     * 修改钱包提现功能的使用状态
+     * @param type 0启用 1禁用
+     * @return
+     */
+    @Override
+    public ReturnData changePurseCaseOutStatus(@PathVariable int type) {
+        if(CommonUtils.getAdministrator(CommonUtils.getMyId(),redisUtils)<1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限进行此操作，请联系管理员申请权限!",new JSONObject());
+        }
+        if(type<0||type>1){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误",new JSONObject());
+        }
+        redisUtils.set(Constants.REDIS_KEY_ADMINI_PURSE_CASHOUT_STATUS,type+"",0);//永不失效
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

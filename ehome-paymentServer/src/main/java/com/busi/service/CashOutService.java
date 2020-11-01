@@ -70,11 +70,11 @@ public class CashOutService {
      * @param count
      * @return
      */
-    public PageBean<CashOutOrder> findCashOutList(long findType,int page, int count) {
+    public PageBean<CashOutOrder> findCashOutList(int findType,long userId,int page, int count) {
 
         List<CashOutOrder> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = cashOutDao.findCashOutList(findType);
+        list = cashOutDao.findCashOutList(findType,userId);
         return PageUtils.getPageBean(p, list);
     }
 
