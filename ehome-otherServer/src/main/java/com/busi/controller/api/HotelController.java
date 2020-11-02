@@ -624,12 +624,12 @@ public class HotelController extends BaseController implements HotelApiControlle
      */
     @Override
     public ReturnData claimHotel(@Valid @RequestBody Hotel kitchenReserve, BindingResult bindingResult) {
-        Hotel hotel = travelService.findReserve(CommonUtils.getMyId());
-        if (hotel != null) {
-            if (hotel.getAuditType() == 0) {
+        Hotel hotel1 = travelService.findReserve(CommonUtils.getMyId());
+        if (hotel1 != null) {
+            if (hotel1.getAuditType() == 0) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
             }
-            if (hotel.getAuditType() == 1) {
+            if (hotel1.getAuditType() == 1) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
             }
         }
@@ -638,6 +638,7 @@ public class HotelController extends BaseController implements HotelApiControlle
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻酒店民宿不存在", new JSONObject());
         }
         //新增酒店表
+        Hotel hotel = new Hotel();
         hotel.setAddTime(new Date());
         hotel.setAddress(kitchen.getAddress());
         hotel.setClaimId(kitchen.getUid());

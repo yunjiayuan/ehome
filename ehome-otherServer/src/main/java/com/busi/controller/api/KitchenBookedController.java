@@ -366,12 +366,12 @@ public class KitchenBookedController extends BaseController implements KitchenBo
     @Override
     public ReturnData claimKitchen(@Valid @RequestBody KitchenReserve kitchenReserve, BindingResult bindingResult) {
         long myId = CommonUtils.getMyId();
-        KitchenReserve serviceReserve = kitchenBookedService.findReserve(CommonUtils.getMyId());
-        if (serviceReserve != null) {
-            if (serviceReserve.getAuditType() == 0) {
+        KitchenReserve reserve = kitchenBookedService.findReserve(CommonUtils.getMyId());
+        if (reserve != null) {
+            if (reserve.getAuditType() == 0) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
             }
-            if (serviceReserve.getAuditType() == 1) {
+            if (reserve.getAuditType() == 1) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
             }
         }
@@ -380,6 +380,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻店铺不存在", new JSONObject());
         }
         //新增订座表
+        KitchenReserve serviceReserve = new KitchenReserve();
         serviceReserve.setAddTime(new Date());
         serviceReserve.setAddress(kitchen.getAddress());
         serviceReserve.setClaimId(kitchen.getUid());

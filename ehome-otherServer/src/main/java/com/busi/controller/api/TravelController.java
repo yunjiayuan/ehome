@@ -585,12 +585,12 @@ public class TravelController extends BaseController implements TravelApiControl
      */
     @Override
     public ReturnData claimTravel(@Valid @RequestBody ScenicSpot kitchenReserve, BindingResult bindingResult) {
-        ScenicSpot hotel = travelService.findReserve(CommonUtils.getMyId());
-        if (hotel != null) {
-            if (hotel.getAuditType() == 0) {
+        ScenicSpot spot = travelService.findReserve(CommonUtils.getMyId());
+        if (spot != null) {
+            if (spot.getAuditType() == 0) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
             }
-            if (hotel.getAuditType() == 1) {
+            if (spot.getAuditType() == 1) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
             }
         }
@@ -599,6 +599,7 @@ public class TravelController extends BaseController implements TravelApiControl
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻景区不存在", new JSONObject());
         }
         //新增景点表
+        ScenicSpot hotel = new ScenicSpot();
         hotel.setAddTime(new Date());
         hotel.setAddress(kitchen.getAddress());
         hotel.setClaimId(kitchen.getUid());
