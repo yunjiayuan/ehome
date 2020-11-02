@@ -49,7 +49,7 @@ public class MemberCashbackTimerController {
                     redisUtils.hmset(Constants.REDIS_KEY_USERMEMBERSHIP + membership.getUserId(), userMembershipMap, Constants.USER_TIME_OUT);
 
                     //更新买家缓存、钱包、账单
-                    mqUtils.sendPurseMQ(membership.getUserId(), 2, 0, 100);
+                    mqUtils.sendPurseMQ(membership.getUserId(), 42, 0, 100);
                 }
             }
         }

@@ -586,10 +586,10 @@ public class BirdJournalController extends BaseController implements BirdJournal
                 if (currencyType == 0) {
                     spareMoney = redNum / 100.0;
                     //更新钱包余额和钱包明细
-                    mqUtils.sendPurseMQ(myId, 19, currencyType, spareMoney);
+                    mqUtils.sendPurseMQ(myId, 41, currencyType, spareMoney);
                 } else {
                     //更新钱包余额和钱包明细
-                    mqUtils.sendPurseMQ(myId, 19, currencyType, redNum);
+                    mqUtils.sendPurseMQ(myId, 41, currencyType, redNum);
                 }
                 //添加 领蛋记录
                 BirdEggSmash sEgg = new BirdEggSmash();
