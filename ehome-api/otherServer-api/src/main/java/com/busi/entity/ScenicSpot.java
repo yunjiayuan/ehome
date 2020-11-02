@@ -28,7 +28,7 @@ public class ScenicSpot {
 
     private int deleteType;            // 删除标志:0未删除,1用户删除,2管理员删除
 
-    private int auditType;            // 审核标志:0审核中,1通过,2未通过
+    private int auditType;            // 审核标志:0审核中,1通过,2未通过 3已被其他用户入驻
 
     @Length(max = 14, message = "景区名称不能超过30字")
     private String scenicSpotName;                //景区名称
