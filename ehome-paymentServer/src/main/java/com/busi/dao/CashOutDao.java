@@ -53,6 +53,7 @@ public interface CashOutDao {
     /**
      * 查询红包列表
      * @param findType -1查询全部 2未到账 1已到账
+     * @param userId   被查询的用户ID 0时为查询所有用户
      * @return
      */
     @Select("<script>" +
@@ -61,8 +62,11 @@ public interface CashOutDao {
             "<if test=\"findType != -1 \">"+
                 " and cashOutStatus = #{findType}" +
             "</if>" +
+            "<if test=\"userId > 0 \">"+
+                " and userId = #{userId}" +
+            "</if>" +
             " order by time desc" +
             "</script>")
-    List<CashOutOrder> findCashOutList(@Param("findType") long findType);
+    List<CashOutOrder> findCashOutList(@Param("findType") int findType,@Param("userId") long userId);
 
 }

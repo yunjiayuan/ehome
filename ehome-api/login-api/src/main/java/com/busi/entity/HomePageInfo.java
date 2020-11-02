@@ -65,4 +65,6 @@ public class HomePageInfo {
     private long totalVisitCount;//总访问量  与数据库无关字段
 
     private long todayVisitCount;//今天访问量 与数据库无关字段
+
+    private int purseCashOutStatus;//临时参数 与数据库无关字段 0开启钱包提现功能 1禁用钱包提现功能
 }

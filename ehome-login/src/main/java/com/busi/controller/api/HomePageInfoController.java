@@ -258,6 +258,12 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         }
         homePageInfo.setFlagByAndroid(homepageinfoFlagByAndroid);//临时参数 1禁止安卓部分功能 方便安卓平台审核
         homePageInfo.setVideoshootType(videoshootType);//临时参数 1禁止查看会员中心 方便IOS平台审核
+        int purseCashOutStatus = 0;//0开启钱包提现功能 1禁用钱包提现功能
+        Object obj3 = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_PURSE_CASHOUT_STATUS);
+        if(obj3!=null){
+            purseCashOutStatus = Integer.parseInt(obj3.toString());
+        }
+        homePageInfo.setPurseCashOutStatus(purseCashOutStatus);//临时参数 与数据库无关字段 0开启钱包提现功能 1禁用钱包提现功能
         //设置访问量信息
         Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+userId);
         VisitView visitView = null;
@@ -316,8 +322,8 @@ public class HomePageInfoController extends BaseController implements HomePageIn
      */
     @Override
     public ReturnData adminiSetUp(@PathVariable int type,@PathVariable int status) {
-        if(CommonUtils.getMyId()!=10076){
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限操作管理员设置",new JSONObject());
+        if(CommonUtils.getAdministrator(CommonUtils.getMyId(),redisUtils)<0){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限进行此操作，请联系管理员申请权限!",new JSONObject());
         }
         if(type<0||type>2||status<0||status>1){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误",new JSONObject());
