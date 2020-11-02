@@ -35,7 +35,7 @@ public class KitchenReserve {
 
     private int deleteType;                 // 删除标志:0未删除,1用户删除,2管理员删除
 
-    private int auditType;            // 审核标志:0审核中,1通过,2未通过
+    private int auditType;            // 审核标志:0审核中,1通过,2未通过 3已被其他用户入驻
 
     private String cuisine;            //菜系 [格式：川菜，粤菜（逗号分隔）]  菜系内容：鲁菜、川菜、粤菜、苏菜、闽菜、浙菜、湘菜、徽菜、其他
 

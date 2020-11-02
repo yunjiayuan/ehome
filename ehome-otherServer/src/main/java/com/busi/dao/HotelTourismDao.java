@@ -266,6 +266,50 @@ public interface HotelTourismDao {
     int changeAuditType(@Param("type") int type, @Param("auditType") int auditType, @Param("id") long id);
 
     /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Update("<script>" +
+            "update Hotel set" +
+            " auditType = 3" +
+            " where claimId = #{claimId} and auditType = 0 and businessStatus = 1 and deleteType = 0" +
+            "</script>")
+    int changeAuditType2(@Param("claimId") String claimId);
+
+    /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Update("<script>" +
+            "update ScenicSpot set" +
+            " auditType = 3" +
+            " where claimId = #{claimId} and auditType = 0 and businessStatus = 1 and deleteType = 0" +
+            "</script>")
+    int changeAuditType3(@Param("claimId") String claimId);
+
+    /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Update("<script>" +
+            "update Pharmacy set" +
+            " auditType = 3" +
+            " where claimId = #{claimId} and auditType = 0 and businessStatus = 1 and deleteType = 0" +
+            "</script>")
+    int changeAuditType4(@Param("claimId") String claimId);
+
+    /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Update("<script>" +
+            "update KitchenReserve set" +
+            " auditType = 3" +
+            " where claimId = #{claimId} and auditType = 0 and businessStatus = 1 and deleteType = 0" +
+            "</script>")
+    int changeAuditType5(@Param("claimId") String claimId);
+
+    /***
      * 统计各类审核数量
      * @return
      */
@@ -314,4 +358,44 @@ public interface HotelTourismDao {
             " where deleteType = 0 and healthyCard != ''" +
             "</script>")
     List<Kitchen> countAuditType4();
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Hotel" +
+            " where deleteType = 0 and claimId = #{claimId} and auditType = 0 claimStatus = 1 and businessStatus = 1" +
+            "</script>")
+    List<Hotel> findList(@Param("claimId") String claimId);
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ScenicSpot" +
+            " where deleteType = 0 and claimId = #{claimId} and auditType = 0 claimStatus = 1 and businessStatus = 1" +
+            "</script>")
+    List<ScenicSpot> findList2(@Param("claimId") String claimId);
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    @Select("<script>" +
+            "select * from Pharmacy" +
+            " where deleteType = 0 and claimId = #{claimId} and auditType = 0 claimStatus = 1 and businessStatus = 1" +
+            "</script>")
+    List<Pharmacy> findList3(@Param("claimId") String claimId);
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    @Select("<script>" +
+            "select * from KitchenReserve" +
+            " where deleteType = 0 and claimId = #{claimId} and auditType = 0 claimStatus = 1 and businessStatus = 1" +
+            "</script>")
+    List<KitchenReserve> findList4(@Param("claimId") String claimId);
 }

@@ -202,6 +202,15 @@ public class TravelController extends BaseController implements TravelApiControl
             if (flag) {
                 collection = 1;//1已收藏
             }
+            //判断当前用户审核状态是否为3已被其他用户入驻，并更改其删除状态为2管理员删除
+            ScenicSpot ik = (ScenicSpot) CommonUtils.mapToObject(kitchenMap, ScenicSpot.class);
+            if (ik != null && ik.getAuditType() == 3) {
+                ik.setDeleteType(2);
+                travelService.updateDel(ik);
+                //清除缓存
+                redisUtils.expire(Constants.REDIS_KEY_TRAVEL + userId, 0);
+                return returnData(StatusCode.CODE_TRAVEL_OCCUPY.CODE_VALUE, "您当前的店铺已被其他用户入驻，系统已将您目前的店铺删除，如有疑问请及时联系官方客服！", new JSONObject());
+            }
         }
         kitchenMap.put("collection", collection);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
@@ -545,10 +554,12 @@ public class TravelController extends BaseController implements TravelApiControl
             //新增景区表
             travelService.addKitchen(reserve);
         } else {//更新
-            //更新景区数据表
-            travelService.updateReserveData(kitchenData);
-            //更新景区表
-            travelService.updateKitchen(reserve);
+            if (reserveData.getClaimStatus() == 0) {
+                //更新景区数据表
+                travelService.updateReserveData(kitchenData);
+                //更新景区表
+                travelService.updateKitchen(reserve);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -576,29 +587,50 @@ public class TravelController extends BaseController implements TravelApiControl
     public ReturnData claimTravel(@Valid @RequestBody ScenicSpot kitchenReserve, BindingResult bindingResult) {
         ScenicSpot hotel = travelService.findReserve(CommonUtils.getMyId());
         if (hotel != null) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
+            if (hotel.getAuditType() == 0) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+            }
+            if (hotel.getAuditType() == 1) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
+            }
         }
         ScenicSpotData kitchen = travelService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻景区不存在", new JSONObject());
         }
-        //更新景区数据
-        kitchen.setClaimStatus(1);
-        kitchen.setClaimTime(new Date());
-        kitchen.setUserId(CommonUtils.getMyId());
-        travelService.claimKitchen(kitchen);
-        //更新景区
-        ScenicSpot reserve = new ScenicSpot();
-        reserve.setBusinessStatus(1);
-        reserve.setPhone(kitchen.getPhone());
-        reserve.setLicence(kitchenReserve.getLicence());
-        reserve.setClaimId(kitchen.getUid());
-        reserve.setClaimStatus(1);
-        reserve.setClaimTime(kitchen.getClaimTime());
-        reserve.setUserId(CommonUtils.getMyId());
-        travelService.claimKitchen2(reserve);
-        //清除景区缓存
-        redisUtils.expire(Constants.REDIS_KEY_TRAVEL + reserve.getUserId(), 0);
+        //新增景点表
+        hotel.setAddTime(new Date());
+        hotel.setAddress(kitchen.getAddress());
+        hotel.setClaimId(kitchen.getUid());
+        hotel.setScenicSpotName(kitchen.getName());
+        hotel.setLat(kitchen.getLatitude());
+        hotel.setLon(kitchen.getLongitude());
+        hotel.setPhone(kitchen.getPhone());
+        hotel.setTotalScore(kitchen.getOverallRating());
+        hotel.setAuditType(0);
+        hotel.setBusinessStatus(1);
+        hotel.setClaimStatus(1);
+        hotel.setClaimTime(kitchen.getClaimTime());
+        hotel.setLicence(kitchenReserve.getLicence());
+        hotel.setUserId(CommonUtils.getMyId());
+        travelService.addKitchen(hotel);
+//        //更新景区数据
+//        kitchen.setClaimStatus(1);
+//        kitchen.setClaimTime(new Date());
+//        kitchen.setUserId(CommonUtils.getMyId());
+//        travelService.claimKitchen(kitchen);
+//        //更新景区
+//        ScenicSpot reserve = new ScenicSpot();
+//        reserve.setBusinessStatus(1);
+//        reserve.setPhone(kitchen.getPhone());
+//        reserve.setLicence(kitchenReserve.getLicence());
+//        reserve.setClaimId(kitchen.getUid());
+//        reserve.setClaimStatus(1);
+//        reserve.setClaimTime(kitchen.getClaimTime());
+//        reserve.setUserId(CommonUtils.getMyId());
+//        travelService.claimKitchen2(reserve);
+//        //清除景区缓存
+//        redisUtils.expire(Constants.REDIS_KEY_TRAVEL + reserve.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

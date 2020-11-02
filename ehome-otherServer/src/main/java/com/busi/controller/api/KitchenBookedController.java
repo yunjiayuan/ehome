@@ -155,10 +155,12 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             //新增订座厨房表
             kitchenBookedService.addKitchen(reserve);
         } else {//更新
-            //更新订座数据表
-            kitchenBookedService.updateReserveData(kitchenReserve);
-            //更新订座厨房表
-            kitchenBookedService.updateKitchen(reserve);
+            if (reserveData.getClaimStatus() == 0) {
+                //更新订座数据表
+                kitchenBookedService.updateReserveData(kitchenReserve);
+                //更新订座厨房表
+                kitchenBookedService.updateKitchen(reserve);
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -330,6 +332,15 @@ public class KitchenBookedController extends BaseController implements KitchenBo
             kitchenMap = CommonUtils.objectToMap(kitchen);
             redisUtils.hmset(Constants.REDIS_KEY_KITCHEN + userId + "_" + 1, kitchenMap, Constants.USER_TIME_OUT);
         }
+        //判断当前用户审核状态是否为3已被其他用户入驻，并更改其删除状态为2管理员删除
+        KitchenReserve ik = (KitchenReserve) CommonUtils.mapToObject(kitchenMap, KitchenReserve.class);
+        if (ik != null && ik.getAuditType() == 3) {
+            ik.setDeleteType(2);
+            kitchenBookedService.updateDel(ik);
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_KITCHEN + userId, 0);
+            return returnData(StatusCode.CODE_TRAVEL_OCCUPY.CODE_VALUE, "您当前的店铺已被其他用户入驻，系统已将您目前的店铺删除，如有疑问请及时联系官方客服！", new JSONObject());
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", kitchenMap);
     }
 
@@ -357,38 +368,59 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         long myId = CommonUtils.getMyId();
         KitchenReserve serviceReserve = kitchenBookedService.findReserve(CommonUtils.getMyId());
         if (serviceReserve != null) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
+            if (serviceReserve.getAuditType() == 0) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
+            }
+            if (serviceReserve.getAuditType() == 1) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
+            }
         }
         KitchenReserveData kitchen = kitchenBookedService.findReserveDataId(kitchenReserve.getClaimId());
         if (kitchen == null || kitchen.getClaimStatus() == 1) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻店铺不存在", new JSONObject());
         }
-        //更新订座数据
-        kitchen.setClaimStatus(1);
-        kitchen.setClaimTime(new Date());
-        kitchen.setUserId(CommonUtils.getMyId());
-        kitchenBookedService.claimKitchen(kitchen);
-        //更新订座厨房
-        KitchenReserve reserve = new KitchenReserve();
-        reserve.setBusinessStatus(1);
-        reserve.setRealName(kitchenReserve.getRealName());
-        reserve.setPhone(kitchenReserve.getPhone());
-        reserve.setOrderingPhone(kitchenReserve.getOrderingPhone());
-        reserve.setHealthyCard(kitchenReserve.getHealthyCard());
-        reserve.setClaimId(kitchen.getUid());
-        reserve.setClaimStatus(1);
-        reserve.setClaimTime(kitchen.getClaimTime());
-        reserve.setUserId(CommonUtils.getMyId());
-        kitchenBookedService.claimKitchen2(reserve);
-        //清除缓存中的信息
-        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + reserve.getUserId() + "_" + 1, 0);
+        //新增订座表
+        serviceReserve.setAddTime(new Date());
+        serviceReserve.setAddress(kitchen.getAddress());
+        serviceReserve.setClaimId(kitchen.getUid());
+        serviceReserve.setKitchenName(kitchen.getName());
+        serviceReserve.setLat(kitchen.getLatitude());
+        serviceReserve.setLon(kitchen.getLongitude());
+        serviceReserve.setPhone(kitchen.getPhone());
+        serviceReserve.setTotalScore(kitchen.getOverallRating());
+        serviceReserve.setAuditType(0);
+        serviceReserve.setBusinessStatus(1);
+        serviceReserve.setClaimStatus(1);
+        serviceReserve.setClaimTime(kitchen.getClaimTime());
+        serviceReserve.setHealthyCard(kitchenReserve.getHealthyCard());
+        serviceReserve.setUserId(CommonUtils.getMyId());
+        kitchenBookedService.addKitchen(serviceReserve);
+//        //更新订座数据
+//        kitchen.setClaimStatus(1);
+//        kitchen.setClaimTime(new Date());
+//        kitchen.setUserId(CommonUtils.getMyId());
+//        kitchenBookedService.claimKitchen(kitchen);
+//        //更新订座厨房
+//        KitchenReserve reserve = new KitchenReserve();
+//        reserve.setBusinessStatus(1);
+//        reserve.setRealName(kitchenReserve.getRealName());
+//        reserve.setPhone(kitchenReserve.getPhone());
+//        reserve.setOrderingPhone(kitchenReserve.getOrderingPhone());
+//        reserve.setHealthyCard(kitchenReserve.getHealthyCard());
+//        reserve.setClaimId(kitchen.getUid());
+//        reserve.setClaimStatus(1);
+//        reserve.setClaimTime(kitchen.getClaimTime());
+//        reserve.setUserId(CommonUtils.getMyId());
+//        kitchenBookedService.claimKitchen2(reserve);
+//        //清除缓存中的信息
+//        redisUtils.expire(Constants.REDIS_KEY_KITCHEN + reserve.getUserId() + "_" + 1, 0);
         //新增默认菜品分类
         String[] strings = {"特色菜", "凉菜", "热菜", "主食", "白酒", "红酒", "啤酒", "洋酒", "黄酒", "饮料", "水"};
         for (int i = 0; i < strings.length; i++) {
             KitchenDishesSort sort = new KitchenDishesSort();
             sort.setName(strings[i]);
             sort.setUserId(CommonUtils.getMyId());
-            sort.setKitchenId(reserve.getId());
+            sort.setKitchenId(serviceReserve.getId());
             sort.setBookedState(1);
             kitchenService.addSort(sort);
         }

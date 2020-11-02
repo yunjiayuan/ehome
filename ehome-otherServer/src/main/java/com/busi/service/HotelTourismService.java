@@ -203,6 +203,42 @@ public class HotelTourismService {
     }
 
     /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeAuditType2(String claimId) {
+        return kitchenBookedDao.changeAuditType2(claimId);
+    }
+
+    /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeAuditType3(String claimId) {
+        return kitchenBookedDao.changeAuditType3(claimId);
+    }
+
+    /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeAuditType4(String claimId) {
+        return kitchenBookedDao.changeAuditType4(claimId);
+    }
+
+    /***
+     * 根据唯一标识查询并更新审核状态
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeAuditType5(String claimId) {
+        return kitchenBookedDao.changeAuditType5(claimId);
+    }
+
+    /***
      * 统计各类审核数量
      * @return
      */
@@ -249,6 +285,46 @@ public class HotelTourismService {
     public List<Kitchen> countAuditType4() {
         List<Kitchen> list;
         list = kitchenBookedDao.countAuditType4();
+        return list;
+    }
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    public List<Hotel> findList(String claimId) {
+        List<Hotel> list;
+        list = kitchenBookedDao.findList(claimId);
+        return list;
+    }
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    public List<ScenicSpot> findList2(String claimId) {
+        List<ScenicSpot> list;
+        list = kitchenBookedDao.findList2(claimId);
+        return list;
+    }
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    public List<Pharmacy> findList3(String claimId) {
+        List<Pharmacy> list;
+        list = kitchenBookedDao.findList3(claimId);
+        return list;
+    }
+
+    /***
+     * 查询此店铺是否还有其他人同时在申请入驻
+     * @return
+     */
+    public List<KitchenReserve> findList4(String claimId) {
+        List<KitchenReserve> list;
+        list = kitchenBookedDao.findList4(claimId);
         return list;
     }
 }

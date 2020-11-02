@@ -669,6 +669,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
         }
         //开始更新
+        List list = null;
         int num = kitchenBookedService.changeAuditType(type, auditType, id);
         if (num > 0) {
             if (type == 0) {//0酒店
@@ -676,6 +677,27 @@ public class HotelTourismController extends BaseController implements HotelTouri
                 //清除缓存中的信息
                 redisUtils.expire(Constants.REDIS_KEY_HOTEL + hotel.getUserId(), 0);
                 if (hotel != null && hotel.getAuditType() == 1 && auditType == 0) {
+                    if (!CommonUtils.checkFull(hotel.getClaimId())) {
+                        //更新百度数据为已入驻
+                        HotelData data = new HotelData();
+                        data.setClaimStatus(1);
+                        data.setClaimTime(new Date());
+                        data.setUserId(CommonUtils.getMyId());
+                        hotelService.claimKitchen(data);
+                        //查询此店铺是否还有其他人同时在申请入驻，并更改其审核状态为3已被其他用户入驻
+                        list = kitchenBookedService.findList(hotel.getClaimId());
+                        if (list != null && list.size() >= 0) {
+                            //更新审核状态为3已被其他用户入驻
+                            kitchenBookedService.changeAuditType2(hotel.getClaimId());
+                            for (int i = 0; i < list.size(); i++) {
+                                Hotel hotel1 = (Hotel) list.get(i);
+                                if (hotel1 != null) {
+                                    //清除缓存中的信息
+                                    redisUtils.expire(Constants.REDIS_KEY_HOTEL + hotel1.getUserId(), 0);
+                                }
+                            }
+                        }
+                    }
                     //判断是否有邀请码
                     long myId = hotel.getUserId();
                     double redPacketsMoney = 10;
@@ -717,6 +739,27 @@ public class HotelTourismController extends BaseController implements HotelTouri
                 //清除缓存中的信息
                 redisUtils.expire(Constants.REDIS_KEY_TRAVEL + hotel.getUserId(), 0);
                 if (hotel != null && hotel.getAuditType() == 1 && auditType == 0) {
+                    //查询此店铺是否还有其他人同时在申请入驻，并更改其审核状态为3已被其他用户入驻
+                    if (!CommonUtils.checkFull(hotel.getClaimId())) {
+                        //更新百度数据为已入驻
+                        ScenicSpotData data = new ScenicSpotData();
+                        data.setClaimStatus(1);
+                        data.setClaimTime(new Date());
+                        data.setUserId(CommonUtils.getMyId());
+                        travelService.claimKitchen(data);
+                        list = kitchenBookedService.findList2(hotel.getClaimId());
+                        if (list != null && list.size() >= 0) {
+                            //更新审核状态为3已被其他用户入驻
+                            kitchenBookedService.changeAuditType3(hotel.getClaimId());
+                            for (int i = 0; i < list.size(); i++) {
+                                ScenicSpot hotel1 = (ScenicSpot) list.get(i);
+                                if (hotel1 != null) {
+                                    //清除缓存中的信息
+                                    redisUtils.expire(Constants.REDIS_KEY_TRAVEL + hotel1.getUserId(), 0);
+                                }
+                            }
+                        }
+                    }
                     //判断是否有邀请码
                     long myId = hotel.getUserId();
                     double redPacketsMoney = 10;
@@ -758,6 +801,27 @@ public class HotelTourismController extends BaseController implements HotelTouri
                 //清除缓存中的信息
                 redisUtils.expire(Constants.REDIS_KEY_PHARMACY + hotel.getUserId(), 0);
                 if (hotel != null && hotel.getAuditType() == 1 && auditType == 0) {
+                    //查询此店铺是否还有其他人同时在申请入驻，并更改其审核状态为3已被其他用户入驻
+                    if (!CommonUtils.checkFull(hotel.getClaimId())) {
+                        //更新百度数据为已入驻
+                        PharmacyData data = new PharmacyData();
+                        data.setClaimStatus(1);
+                        data.setClaimTime(new Date());
+                        data.setUserId(CommonUtils.getMyId());
+                        pharmacyService.claimKitchen(data);
+                        list = kitchenBookedService.findList3(hotel.getClaimId());
+                        if (list != null && list.size() >= 0) {
+                            //更新审核状态为3已被其他用户入驻
+                            kitchenBookedService.changeAuditType4(hotel.getClaimId());
+                            for (int i = 0; i < list.size(); i++) {
+                                Pharmacy hotel1 = (Pharmacy) list.get(i);
+                                if (hotel1 != null) {
+                                    //清除缓存中的信息
+                                    redisUtils.expire(Constants.REDIS_KEY_PHARMACY + hotel1.getUserId(), 0);
+                                }
+                            }
+                        }
+                    }
                     //判断是否有邀请码
                     long myId = hotel.getUserId();
                     double redPacketsMoney = 10;
@@ -799,6 +863,27 @@ public class HotelTourismController extends BaseController implements HotelTouri
                 //清除缓存中的信息
                 redisUtils.expire(Constants.REDIS_KEY_KITCHEN + serviceReserve.getUserId() + "_" + 1, 0);
                 if (serviceReserve != null && serviceReserve.getAuditType() == 1 && auditType == 0) {
+                    //查询此店铺是否还有其他人同时在申请入驻，并更改其审核状态为3已被其他用户入驻
+                    if (!CommonUtils.checkFull(serviceReserve.getClaimId())) {
+                        //更新百度数据为已入驻
+                        KitchenReserveData data = new KitchenReserveData();
+                        data.setClaimStatus(1);
+                        data.setClaimTime(new Date());
+                        data.setUserId(CommonUtils.getMyId());
+                        bookedService.claimKitchen(data);
+                        list = kitchenBookedService.findList4(serviceReserve.getClaimId());
+                        if (list != null && list.size() >= 0) {
+                            //更新审核状态为3已被其他用户入驻
+                            kitchenBookedService.changeAuditType5(serviceReserve.getClaimId());
+                            for (int i = 0; i < list.size(); i++) {
+                                KitchenReserve hotel1 = (KitchenReserve) list.get(i);
+                                if (hotel1 != null) {
+                                    //清除缓存中的信息
+                                    redisUtils.expire(Constants.REDIS_KEY_KITCHEN + hotel1.getUserId(), 0);
+                                }
+                            }
+                        }
+                    }
                     //判断是否有邀请码
                     double redPacketsMoney = 10;
                     String proId = "";
