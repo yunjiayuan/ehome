@@ -294,7 +294,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             KitchenReserve kitchen = kitchenBookedService.findReserve(userId);
             if (kitchen == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "success", new JSONObject());
             }
             UserInfo sendInfoCache = null;
             sendInfoCache = userInfoUtils.getUserInfo(userId);
@@ -392,7 +392,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         serviceReserve.setAuditType(0);
         serviceReserve.setBusinessStatus(1);
         serviceReserve.setClaimStatus(1);
-        serviceReserve.setClaimTime(kitchen.getClaimTime());
+        serviceReserve.setClaimTime(new Date());
         serviceReserve.setHealthyCard(kitchenReserve.getHealthyCard());
         serviceReserve.setUserId(CommonUtils.getMyId());
         kitchenBookedService.addKitchen(serviceReserve);

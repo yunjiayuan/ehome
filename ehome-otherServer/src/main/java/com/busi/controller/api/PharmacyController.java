@@ -167,7 +167,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             Pharmacy kitchen = travelService.findReserve(userId);
             if (kitchen == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "success", new JSONObject());
             }
 //            UserInfo sendInfoCache = null;
 //            sendInfoCache = userInfoUtils.getUserInfo(userId);
@@ -605,7 +605,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         hotel.setAuditType(0);
         hotel.setBusinessStatus(1);
         hotel.setClaimStatus(1);
-        hotel.setClaimTime(kitchen.getClaimTime());
+        hotel.setClaimTime(new Date());
         hotel.setLicence(kitchenReserve.getLicence());
         hotel.setUserId(CommonUtils.getMyId());
         travelService.addKitchen(hotel);
