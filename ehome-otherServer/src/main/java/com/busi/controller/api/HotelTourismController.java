@@ -681,7 +681,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
                         //更新百度数据为已入驻
                         HotelData data = new HotelData();
                         data.setClaimStatus(1);
-                        data.setClaimTime(new Date());
+                        data.setUid(hotel.getClaimId());
+                        data.setClaimTime(hotel.getClaimTime());
                         data.setUserId(CommonUtils.getMyId());
                         hotelService.claimKitchen(data);
                         //查询此店铺是否还有其他人同时在申请入驻，并更改其审核状态为3已被其他用户入驻
@@ -744,7 +745,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
                         //更新百度数据为已入驻
                         ScenicSpotData data = new ScenicSpotData();
                         data.setClaimStatus(1);
-                        data.setClaimTime(new Date());
+                        data.setUid(hotel.getClaimId());
+                        data.setClaimTime(hotel.getClaimTime());
                         data.setUserId(CommonUtils.getMyId());
                         travelService.claimKitchen(data);
                         list = kitchenBookedService.findList2(hotel.getClaimId());
@@ -806,7 +808,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
                         //更新百度数据为已入驻
                         PharmacyData data = new PharmacyData();
                         data.setClaimStatus(1);
-                        data.setClaimTime(new Date());
+                        data.setUid(hotel.getClaimId());
+                        data.setClaimTime(hotel.getClaimTime());
                         data.setUserId(CommonUtils.getMyId());
                         pharmacyService.claimKitchen(data);
                         list = kitchenBookedService.findList3(hotel.getClaimId());
@@ -868,7 +871,8 @@ public class HotelTourismController extends BaseController implements HotelTouri
                         //更新百度数据为已入驻
                         KitchenReserveData data = new KitchenReserveData();
                         data.setClaimStatus(1);
-                        data.setClaimTime(new Date());
+                        data.setUid(serviceReserve.getClaimId());
+                        data.setClaimTime(serviceReserve.getClaimTime());
                         data.setUserId(CommonUtils.getMyId());
                         bookedService.claimKitchen(data);
                         list = kitchenBookedService.findList4(serviceReserve.getClaimId());

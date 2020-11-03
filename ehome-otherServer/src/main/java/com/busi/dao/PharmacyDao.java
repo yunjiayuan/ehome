@@ -360,7 +360,7 @@ public interface PharmacyDao {
             " userId=#{userId}," +
             " claimTime=#{claimTime}," +
             " claimStatus=#{claimStatus}" +
-            " where id=#{id}" +
+            " where uid=#{uid}" +
             "</script>")
     int claimKitchen(PharmacyData kitchen);
 

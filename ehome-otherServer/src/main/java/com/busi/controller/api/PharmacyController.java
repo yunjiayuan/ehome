@@ -167,7 +167,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             Pharmacy kitchen = travelService.findReserve(userId);
             if (kitchen == null) {
-                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "success", new JSONObject());
             }
 //            UserInfo sendInfoCache = null;
 //            sendInfoCache = userInfoUtils.getUserInfo(userId);
@@ -579,12 +579,12 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
      */
     @Override
     public ReturnData claimPharmacy(@Valid @RequestBody Pharmacy kitchenReserve, BindingResult bindingResult) {
-        Pharmacy hotel = travelService.findReserve(CommonUtils.getMyId());
-        if (hotel != null) {
-            if (hotel.getAuditType() == 0) {
+        Pharmacy spot = travelService.findReserve(CommonUtils.getMyId());
+        if (spot != null) {
+            if (spot.getAuditType() == 0) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您的店铺正在审核中，审核通过后才能正常营业，请耐心等待", new JSONObject());
             }
-            if (hotel.getAuditType() == 1) {
+            if (spot.getAuditType() == 1) {
                 return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已经有自己的店铺了，可以切换其他账号再进行创建或入驻", new JSONObject());
             }
         }
@@ -593,6 +593,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "入驻药店不存在", new JSONObject());
         }
         //新增药店表
+        Pharmacy hotel = new Pharmacy();
         hotel.setAddTime(new Date());
         hotel.setAddress(kitchen.getAddress());
         hotel.setClaimId(kitchen.getUid());
@@ -604,7 +605,7 @@ public class PharmacyController extends BaseController implements PharmacyApiCon
         hotel.setAuditType(0);
         hotel.setBusinessStatus(1);
         hotel.setClaimStatus(1);
-        hotel.setClaimTime(kitchen.getClaimTime());
+        hotel.setClaimTime(new Date());
         hotel.setLicence(kitchenReserve.getLicence());
         hotel.setUserId(CommonUtils.getMyId());
         travelService.addKitchen(hotel);
