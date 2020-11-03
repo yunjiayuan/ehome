@@ -65,6 +65,7 @@ public interface CashOutDao {
             "<if test=\"userId > 0 \">"+
                 " and userId = #{userId}" +
             "</if>" +
+            " and time > '2020-11-03 00:00:00'"+
             " order by time desc" +
             "</script>")
     List<CashOutOrder> findCashOutList(@Param("findType") int findType,@Param("userId") long userId);
