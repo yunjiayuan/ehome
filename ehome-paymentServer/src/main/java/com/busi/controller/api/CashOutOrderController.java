@@ -99,7 +99,7 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
 
     /***
      * 查询提现记录列表
-     * @param findType -1查询全部 2未到账 1已到账
+     * @param findType -1查询全部 0未到账 1已到账 2已中止
      * @param userId   被查询的用户ID 0时为查询所有用户
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
@@ -108,7 +108,7 @@ public class CashOutOrderController extends BaseController implements CashOutOrd
     @Override
     public ReturnData findRedPacketsList(@PathVariable int findType,@PathVariable long userId ,@PathVariable int page, @PathVariable int count) {
         //验证参数
-        if(findType<-1||findType>1){
+        if(findType<-1||findType>2){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"findType参数有误",new JSONObject());
         }
         if(page<0){

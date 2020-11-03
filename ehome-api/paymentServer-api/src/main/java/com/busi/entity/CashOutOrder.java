@@ -34,9 +34,9 @@ public class CashOutOrder {
     @Min(value= 0 ,message= "payStatus参数有误，超出指定范围")
     private int payStatus;//扣款状态  0未扣款 1已扣款
 
-    @Max(value = 1, message = "payStatus参数有误，超出指定范围")
+    @Max(value = 2, message = "payStatus参数有误，超出指定范围")
     @Min(value= 0 ,message= "payStatus参数有误，超出指定范围")
-    private int cashOutStatus;//提现状态  0未到账 1已到账
+    private int cashOutStatus;//提现状态  0未到账 1已到账 2中止交易
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date time;//提现发起时间
