@@ -320,6 +320,20 @@ public interface ShopFloorGoodsDao {
             "</script>")
     List<ShopFloorGoods> findFGoodsList2(@Param("sort") int sort, @Param("time") int time, @Param("levelOne") int levelOne, @Param("levelTwo") int levelTwo, @Param("levelThree") int levelThree);
 
+    /***
+     * 查询推荐商品
+     * @return
+     */
+    @Select("<script>" +
+            "select * from ShopFloorGoods" +
+            " where deleteType=0" +
+            " and levelOne in (#{levelOne})" +
+            " and levelTwo in (#{levelTwo})" +
+            " and levelThree in (#{levelThree})" +
+            " order by sales desc" +
+            "</script>")
+    List<ShopFloorGoods> findRecommendList(@Param("levelOne") String levelOne, @Param("levelTwo") String levelTwo, @Param("levelThree") String levelThree);
+
 
     /***
      * 新增商品描述

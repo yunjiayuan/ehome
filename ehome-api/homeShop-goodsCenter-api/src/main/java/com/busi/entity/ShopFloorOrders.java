@@ -24,7 +24,7 @@ public class ShopFloorOrders {
 
     private String shopName;            //店铺名称
 
-    private String goods;            //商品ID,标题,数量,价格,图片,规格,基本描述【格式：12,啤酒,5,9,图片,规格;22,啤酒,7,19,图片,规格,基本描述】
+    private String goods;            //商品ID,标题,数量,价格,图片,规格,基本描述,一级分类_二级_三级【格式：12,啤酒,5,9,图片,规格,基本描述,1_2_3;22,啤酒,7,19,图片,规格,基本描述,1_2_3】
 
     private double money;            // 商品总金额
 

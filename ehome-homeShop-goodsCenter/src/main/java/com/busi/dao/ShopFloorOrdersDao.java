@@ -202,6 +202,7 @@ public interface ShopFloorOrdersDao {
             " where 1=1 " +
             " and (buyerId = #{userId} or recipientId = #{userId}) and type!=3" +
             " and ordersState = 0" +
+            " order by addTime desc" +
             "</script>")
     List<ShopFloorOrders> findIdentity(@Param("userId") long userId);
 

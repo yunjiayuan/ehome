@@ -70,7 +70,7 @@ public interface ShopFloorGoodsApiController {
      * @return
      */
     @GetMapping("findFloorGoodsList/{sort}/{discount}/{price}/{stock}/{minPrice}/{maxPrice}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
-    ReturnData findFloorGoodsList(@PathVariable int sort,@PathVariable int discount,@PathVariable int price,@PathVariable int stock, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
+    ReturnData findFloorGoodsList(@PathVariable int sort, @PathVariable int discount, @PathVariable int price, @PathVariable int stock, @PathVariable int minPrice, @PathVariable int maxPrice, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
 
     /***
      * 分页查询商品（商家调用）
@@ -86,6 +86,18 @@ public interface ShopFloorGoodsApiController {
      */
     @GetMapping("findFGoodsList/{sort}/{stock}/{time}/{levelOne}/{levelTwo}/{levelThree}/{page}/{count}")
     ReturnData findFGoodsList(@PathVariable int sort, @PathVariable int stock, @PathVariable int time, @PathVariable int levelOne, @PathVariable int levelTwo, @PathVariable int levelThree, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询推荐商品
+     * @param type  类别: 0详情界面推荐 1购物车界面推荐，2我的界面猜你喜欢
+     * @param levels  分类组合
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findRecommendList/{type}/{levels}/{page}/{count}")
+    ReturnData findRecommendList(@PathVariable int type, @PathVariable String levels, @PathVariable int page, @PathVariable int count);
+
 
     /**
      * @param
