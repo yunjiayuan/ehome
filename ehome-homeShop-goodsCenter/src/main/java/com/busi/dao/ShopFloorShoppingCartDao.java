@@ -21,8 +21,8 @@ public interface ShopFloorShoppingCartDao {
      * @param homeShopGoods
      * @return
      */
-    @Insert("insert into ShopFloorShoppingCart(userId,goodsId,goodsCoverUrl,goodsTitle,basicDescribe,specs,price,addTime,number) " +
-            "values (#{userId},#{goodsId},#{goodsCoverUrl},#{goodsTitle},#{basicDescribe},#{specs},#{price},#{addTime},#{number})")
+    @Insert("insert into ShopFloorShoppingCart(userId,goodsId,goodsCoverUrl,goodsTitle,basicDescribe,specs,price,addTime,number,levelOne,levelTwo,levelThree) " +
+            "values (#{userId},#{goodsId},#{goodsCoverUrl},#{goodsTitle},#{basicDescribe},#{specs},#{price},#{addTime},#{number},#{levelOne},#{levelTwo},#{levelThree})")
     @Options(useGeneratedKeys = true)
     int add(ShopFloorShoppingCart homeShopGoods);
 

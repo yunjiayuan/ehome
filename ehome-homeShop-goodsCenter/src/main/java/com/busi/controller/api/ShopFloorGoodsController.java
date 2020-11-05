@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.ShopFloorGoodsService;
+import com.busi.service.ShopFloorOrdersService;
 import com.busi.service.ShopFloorOtherService;
+import com.busi.service.ShopFloorShoppingCartService;
 import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +44,12 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
 
     @Autowired
     private ShopFloorGoodsService goodsCenterService;
+
+    @Autowired
+    ShopFloorOrdersService shopFloorOrdersService;
+
+    @Autowired
+    private ShopFloorShoppingCartService shopFloorShoppingCartService;
 
     /***
      * 发布商品
@@ -272,6 +281,75 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
+    /***
+     * 查询推荐商品
+     * @param type  类别: 0详情界面推荐 1购物车界面推荐，2我的界面猜你喜欢
+     * @param levels  分类组合 1,2,3 type=0时有效
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findRecommendList(@PathVariable int type, @PathVariable String levels, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        String levelOne = "";           //商品1级分类
+        String levelTwo = "";           //商品2级分类
+        String levelThree = "";           //商品3级分类
+        List cartList = null;
+        PageBean<ShopFloorGoods> pageBean = null;
+        if (!CommonUtils.checkFull(levels)) {
+            if (type == 0) {
+                String[] s = levels.split(",");
+                levelOne = s[0];
+                levelTwo = s[1];
+                levelThree = s[2];
+            }
+            if (type == 1) {
+                cartList = shopFloorShoppingCartService.findList(CommonUtils.getMyId());
+                if (cartList != null && cartList.size() > 0) {
+                    for (int i = 0; i < cartList.size(); i++) {
+                        if (i < 10) {
+                            ShopFloorShoppingCart goods = (ShopFloorShoppingCart) cartList.get(i);
+                            if (goods != null) {
+                                levelOne += goods.getLevelOne() + ",";
+                                levelTwo += goods.getLevelTwo() + ",";
+                                levelThree += goods.getLevelThree() + ",";
+                            }
+                        }
+                    }
+                }
+            }
+            if (type == 2) {
+                cartList = shopFloorOrdersService.findIdentity(CommonUtils.getMyId());//全部
+                if (cartList != null && cartList.size() > 0) {
+                    for (int i = 0; i < cartList.size(); i++) {
+                        if (i < 5) {
+                            ShopFloorOrders goods = (ShopFloorOrders) cartList.get(i);
+                            if (goods != null && !CommonUtils.checkFull(goods.getGoods())) {
+                                String[] strings = goods.getGoods().split(";");
+                                for (int j = 0; j < strings.length; j++) {
+                                    String[] s = strings[7].split("_");
+                                    levelOne += s[0] + ",";
+                                    levelTwo += s[1] + ",";
+                                    levelThree += s[2] + ",";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        pageBean = goodsCenterService.findRecommendList(levelOne, levelTwo, levelThree, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
     /**
      * @param
      * @Description: 统计商品上下架数量
@@ -295,7 +373,8 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
      * @return
      */
     @Override
-    public ReturnData addFGDescribe(@Valid @RequestBody ShopFloorGoodsDescribe goodsDescribe, BindingResult bindingResult) {
+    public ReturnData addFGDescribe(@Valid @RequestBody ShopFloorGoodsDescribe goodsDescribe, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
@@ -312,7 +391,8 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
      * @return
      */
     @Override
-    public ReturnData changeFGDescribe(@Valid @RequestBody ShopFloorGoodsDescribe goodsDescribe, BindingResult bindingResult) {
+    public ReturnData changeFGDescribe(@Valid @RequestBody ShopFloorGoodsDescribe goodsDescribe, BindingResult
+            bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());

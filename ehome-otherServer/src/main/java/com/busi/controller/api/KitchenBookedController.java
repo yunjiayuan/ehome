@@ -294,7 +294,7 @@ public class KitchenBookedController extends BaseController implements KitchenBo
         if (kitchenMap == null || kitchenMap.size() <= 0) {
             KitchenReserve kitchen = kitchenBookedService.findReserve(userId);
             if (kitchen == null) {
-                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "success", new JSONObject());
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
             UserInfo sendInfoCache = null;
             sendInfoCache = userInfoUtils.getUserInfo(userId);

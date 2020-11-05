@@ -154,6 +154,20 @@ public class ShopFloorGoodsService {
     }
 
     /***
+     * 查询推荐商品
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<ShopFloorGoods> findRecommendList(String levelOne, String levelTwo, String levelThree, int page, int count) {
+
+        List<ShopFloorGoods> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = goodsCenterDao.findRecommendList(levelOne, levelTwo, levelThree);
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
      * 新增商品描述
      * @param homeShopGoods
      * @return

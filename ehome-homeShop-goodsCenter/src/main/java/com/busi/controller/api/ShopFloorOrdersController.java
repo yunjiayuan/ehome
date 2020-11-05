@@ -83,6 +83,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
         double money = 0.00; // 商品总金额
         String imgUrl = "";   //图片
         String specs = "";    //规格
+        String levels = "";   //分类ID组合
         List iup = null;
         ShopFloorGoods laf = null;
         if (CommonUtils.checkFull(shopFloorOrders.getGoodsIds()) || CommonUtils.checkFull(shopFloorOrders.getGoodsNumber())) {
@@ -116,7 +117,8 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                             imgUrl = laf.getGoodsCoverUrl();//图片
                         }
                         specs = laf.getSpecs();
-                        goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + "," + basicDescribe + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片,规格,基本描述;
+                        levels = laf.getLevelOne() + "_" + laf.getLevelTwo() + "_" + laf.getLevelThree();
+                        goods += laf.getId() + "," + goodsTitle + "," + Integer.parseInt(fn[j]) + "," + cost + "," + imgUrl + "," + specs + "," + basicDescribe + "," + levels + (i == iup.size() - 1 ? "" : ";");//商品ID,标题,数量,价格，图片,规格,基本描述,分类组合;
                         money += Integer.parseInt(fn[j]) * cost;//总价格
                     }
                 }

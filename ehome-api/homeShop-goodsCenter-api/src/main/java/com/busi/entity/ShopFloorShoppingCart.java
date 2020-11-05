@@ -41,4 +41,10 @@ public class ShopFloorShoppingCart {
     private int number;            //商品数量
 
     private int deleteType;        //删除标志：0正常，1用户删除，2管理人员删除
+
+    private int levelOne;           //商品1级分类
+
+    private int levelTwo;           //商品2级分类
+
+    private int levelThree;           //商品3级分类
 }
