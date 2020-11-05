@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /***
@@ -64,19 +63,19 @@ public class ZhouGongDreamController extends BaseController implements ZhouGongD
         grabGiftsService.add(grabMedium);
 
         //整理数据
-        List list = grabGiftsService.findList();
-        for (int i = 0; i < list.size(); i++) {
-            ZhouGongDream dream = (ZhouGongDream) list.get(i);
-            if (dream != null) {
-                String s = dream.getMessage();
-                if (!CommonUtils.checkFull(s)) {
-                    int index = s.indexOf("</p>");
-                    String newS = s.substring(index);
-                    dream.setMessage(newS);
-                    grabGiftsService.update(dream);
-                }
-            }
-        }
+//        List list = grabGiftsService.findList();
+//        for (int i = 0; i < list.size(); i++) {
+//            ZhouGongDream dream = (ZhouGongDream) list.get(i);
+//            if (dream != null) {
+//                String s = dream.getMessage();
+//                if (!CommonUtils.checkFull(s)) {
+//                    int index = s.indexOf("</p>");
+//                    String newS = s.substring(index + 4);
+//                    dream.setMessage(newS);
+//                    grabGiftsService.update(dream);
+//                }
+//            }
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", gifts);
     }
 

@@ -301,42 +301,41 @@ public class ShopFloorGoodsController extends BaseController implements ShopFloo
         String levelThree = "";           //商品3级分类
         List cartList = null;
         PageBean<ShopFloorGoods> pageBean = null;
-        if (!CommonUtils.checkFull(levels)) {
-            if (type == 0) {
-                String[] s = levels.split(",");
-                levelOne = s[0];
-                levelTwo = s[1];
-                levelThree = s[2];
-            }
-            if (type == 1) {
-                cartList = shopFloorShoppingCartService.findList(CommonUtils.getMyId());
-                if (cartList != null && cartList.size() > 0) {
-                    for (int i = 0; i < cartList.size(); i++) {
-                        if (i < 10) {
-                            ShopFloorShoppingCart goods = (ShopFloorShoppingCart) cartList.get(i);
-                            if (goods != null) {
-                                levelOne += goods.getLevelOne() + ",";
-                                levelTwo += goods.getLevelTwo() + ",";
-                                levelThree += goods.getLevelThree() + ",";
-                            }
+        if (type == 0 && !CommonUtils.checkFull(levels)) {
+            String[] s = levels.split(",");
+            levelOne = s[0];
+            levelTwo = s[1];
+            levelThree = s[2];
+        }
+        if (type == 1) {
+            cartList = shopFloorShoppingCartService.findList(CommonUtils.getMyId());
+            if (cartList != null && cartList.size() > 0) {
+                for (int i = 0; i < cartList.size(); i++) {
+                    if (i < 10) {
+                        ShopFloorShoppingCart goods = (ShopFloorShoppingCart) cartList.get(i);
+                        if (goods != null) {
+                            levelOne += goods.getLevelOne() + ",";
+                            levelTwo += goods.getLevelTwo() + ",";
+                            levelThree += goods.getLevelThree() + ",";
                         }
                     }
                 }
             }
-            if (type == 2) {
-                cartList = shopFloorOrdersService.findIdentity(CommonUtils.getMyId());//全部
-                if (cartList != null && cartList.size() > 0) {
-                    for (int i = 0; i < cartList.size(); i++) {
-                        if (i < 5) {
-                            ShopFloorOrders goods = (ShopFloorOrders) cartList.get(i);
-                            if (goods != null && !CommonUtils.checkFull(goods.getGoods())) {
-                                String[] strings = goods.getGoods().split(";");
-                                for (int j = 0; j < strings.length; j++) {
-                                    String[] s = strings[7].split("_");
-                                    levelOne += s[0] + ",";
-                                    levelTwo += s[1] + ",";
-                                    levelThree += s[2] + ",";
-                                }
+        }
+        if (type == 2) {
+            cartList = shopFloorOrdersService.findIdentity(CommonUtils.getMyId());//全部
+            if (cartList != null && cartList.size() > 0) {
+                for (int i = 0; i < cartList.size(); i++) {
+                    if (i < 5) {
+                        ShopFloorOrders goods = (ShopFloorOrders) cartList.get(i);
+                        if (goods != null && !CommonUtils.checkFull(goods.getGoods()) && goods.getRecipientId() != CommonUtils.getMyId()) {
+                            String[] strings = goods.getGoods().split(";");
+                            for (int j = 0; j < strings.length; j++) {
+                                String[] strings1 = strings[j].split(",");
+                                String[] s = strings1[7].split("_");
+                                levelOne += s[0] + ",";
+                                levelTwo += s[1] + ",";
+                                levelThree += s[2] + ",";
                             }
                         }
                     }

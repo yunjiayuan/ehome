@@ -69,6 +69,9 @@ public class ZhouGongDreamService {
         if (CommonUtils.checkFull(title)) {
             title = null;
         }
+        if (CommonUtils.checkFull(smalllx)) {
+            smalllx = null;
+        }
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = giftsDrawDao.findDreamsSortList(title, biglx, smalllx);
         return PageUtils.getPageBean(p, list);
