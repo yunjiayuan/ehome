@@ -132,6 +132,7 @@ public class HomeBlog {
     private double remunerationMoney; //稿费奖励金额
     private long remunerationUserId;//审核人用户ID
     private Date remunerationTime;//审核时间
+    private String remunerationName;//审核人用户名字
 
     private int isLike;          //是否点赞  0未点赞 1点赞  与数据库无关字段
     private String userName;      //发布者用户名	 与数据库无关字段

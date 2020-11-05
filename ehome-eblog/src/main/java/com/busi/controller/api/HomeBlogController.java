@@ -1007,6 +1007,13 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setUserHead(userInfo.getHead());
                 homeBlog.setProTypeId(userInfo.getProType());
                 homeBlog.setHouseNumber(userInfo.getHouseNumber());
+                //设置审核人信息
+                if(homeBlog.getRemunerationUserId()>0){
+                    UserInfo remunerationInfo = userInfoUtils.getUserInfo(homeBlog.getRemunerationUserId());
+                    if(remunerationInfo!=null){
+                        homeBlog.setRemunerationName(remunerationInfo.getName());
+                    }
+                }
             }
             //添加位置信息
             if(searchType==1){
