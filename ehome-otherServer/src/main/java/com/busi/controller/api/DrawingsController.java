@@ -34,9 +34,6 @@ public class DrawingsController extends BaseController implements DrawingsApiCon
     @Autowired
     UserMembershipUtils userMembershipUtils;
 
-//    @Autowired
-//    CrawlingSignUtils crawlingSign;
-
     /***
      * 新增抽签数据
      * @param drawings

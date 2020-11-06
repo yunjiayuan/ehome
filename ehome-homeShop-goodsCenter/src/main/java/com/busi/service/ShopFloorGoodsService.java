@@ -5,6 +5,7 @@ import com.busi.entity.PageBean;
 import com.busi.entity.PartnerBuyGoods;
 import com.busi.entity.ShopFloorGoods;
 import com.busi.entity.ShopFloorGoodsDescribe;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -162,6 +163,9 @@ public class ShopFloorGoodsService {
     public PageBean<ShopFloorGoods> findRecommendList(String levelOne, String levelTwo, String levelThree, int page, int count) {
 
         List<ShopFloorGoods> list = null;
+        if (CommonUtils.checkFull(levelOne)) {
+            levelOne = null;
+        }
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         list = goodsCenterDao.findRecommendList(levelOne, levelTwo, levelThree);
         return PageUtils.getPageBean(p, list);

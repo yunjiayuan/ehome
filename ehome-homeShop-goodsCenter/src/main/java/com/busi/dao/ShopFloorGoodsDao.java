@@ -327,9 +327,14 @@ public interface ShopFloorGoodsDao {
     @Select("<script>" +
             "select * from ShopFloorGoods" +
             " where deleteType=0" +
+            "<if test=\"levelOne != null and levelOne != ''\">" +
             " and levelOne in (#{levelOne})" +
-            " and levelTwo in (#{levelTwo})" +
-            " and levelThree in (#{levelThree})" +
+            " and (levelTwo in (#{levelTwo})" +
+            " or levelThree in (#{levelThree}))" +
+            "</if>" +
+            "<if test=\"levelOne == null or levelOne == ''\">" +
+            " and discountPrice > 0" +
+            "</if>" +
             " order by sales desc" +
             "</script>")
     List<ShopFloorGoods> findRecommendList(@Param("levelOne") String levelOne, @Param("levelTwo") String levelTwo, @Param("levelThree") String levelThree);
