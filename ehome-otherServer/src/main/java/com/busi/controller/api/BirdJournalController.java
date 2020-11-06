@@ -505,7 +505,7 @@ public class BirdJournalController extends BaseController implements BirdJournal
             if (array[awardsId] == 2) {//红包随机
                 redNum = rand.nextInt(50) + 1;
                 //更新钱包余额和钱包明细
-                mqUtils.sendPurseMQ(myId, 19, 2, redNum);
+                mqUtils.sendPurseMQ(myId, 41, 2, redNum);
             }
             //添加 砸蛋记录
             BirdEggSmash sEgg = new BirdEggSmash();
