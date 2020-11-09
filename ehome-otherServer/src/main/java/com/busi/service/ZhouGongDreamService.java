@@ -68,6 +68,10 @@ public class ZhouGongDreamService {
         List<ZhouGongDream> list;
         if (CommonUtils.checkFull(title)) {
             title = null;
+        } else {
+            //关键字检索时 需要过滤掉关键字中的 “梦见”、“梦到”、“做梦”、“作梦”、“凌晨”、“上午”、“中午”、“午夜”、“深夜”
+            String title2 = title.replaceAll("梦见|梦到|做梦|作梦|凌晨|上午|中午|午夜|深夜", "");
+            title = title2;
         }
         if (CommonUtils.checkFull(smalllx)) {
             smalllx = null;
