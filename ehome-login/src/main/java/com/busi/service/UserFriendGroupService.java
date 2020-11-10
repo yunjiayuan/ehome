@@ -73,6 +73,13 @@ public class UserFriendGroupService {
         userFriendGroup2.setUserId(userId);
         newList.add(userFriendGroup2);
 
+        UserFriendGroup userFriendGroup3 = new UserFriendGroup();
+        userFriendGroup3.setId(-4);////特殊好友分组
+        userFriendGroup3.setGroupType(0);
+        userFriendGroup3.setGroupName("好友");
+        userFriendGroup3.setUserId(userId);
+        newList.add(userFriendGroup2);
+
         return PageUtils.getPageBean(p,newList);
     }
 
