@@ -78,7 +78,7 @@ public class UserFriendGroupService {
         userFriendGroup3.setGroupType(0);
         userFriendGroup3.setGroupName("好友");
         userFriendGroup3.setUserId(userId);
-        newList.add(userFriendGroup2);
+        newList.add(userFriendGroup3);
 
         return PageUtils.getPageBean(p,newList);
     }
