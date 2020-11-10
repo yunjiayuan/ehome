@@ -35,11 +35,11 @@ public class UserRelationShip {
   @Pattern(regexp="[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{0,10}",message = "备注名字格式有误，最大长度为10个汉字，并且不能包含非法字符")
   private String friendRemarkName;//好友备注名  friendId在userId列表中的备注
 
-  @Min(value= -3 ,message= "分组ID groupId参数有误")
-  private long groupId; //分组ID 0：家园好友-1：亲人，-2：陌生人，-3：黑名单
+  @Min(value= -4 ,message= "分组ID groupId参数有误")
+  private long groupId; //分组ID 0：家园好友-1：亲人，-2：陌生人，-3：黑名单 -4：新增特殊好友分组
 
-  @Min(value= -3 ,message= "分组ID groupId参数有误")
-  private long friendGroupId; //分组ID 0：家园好友-1：亲人，-2：陌生人，-3：黑名单
+  @Min(value= -4 ,message= "分组ID groupId参数有误")
+  private long friendGroupId; //分组ID 0：家园好友-1：亲人，-2：陌生人，-3：黑名单 -4：新增特殊好友分组
 
   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
   private Date time;//添加时间
