@@ -148,7 +148,29 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         if (CommonUtils.getMyId() != userId) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + userId + "]的商品信息", new JSONObject());
         }
-        goodsCenterService.updateDels(ids.split(","));
+        String[] strings = ids.split(",");
+        goodsCenterService.updateDels(strings);
+        int num = 0;
+        List shoppingCart = null;
+        for (int i = 0; i < strings.length; i++) {
+            shoppingCart = goodsCenterService.findDeleteGoodsList(userId, Long.parseLong(strings[i]));
+            if (shoppingCart != null && shoppingCart.size() > 1) {
+                for (int j = 0; j < shoppingCart.size(); j++) {
+                    ShopFloorShoppingCart cart = (ShopFloorShoppingCart) shoppingCart.get(j);
+                    if (cart != null) {
+                        num += cart.getNumber();
+                        if (j != shoppingCart.size() - 1) {
+                            goodsCenterService.del(cart.getId());
+                        } else {
+                            if (num > 0) {
+                                cart.setNumber(num);
+                                goodsCenterService.update(cart);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

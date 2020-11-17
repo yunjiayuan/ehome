@@ -68,6 +68,12 @@ public interface ShopFloorShoppingCartDao {
             "</script>")
     int delGoods(@Param("ids") String[] ids);
 
+    @Delete("<script>" +
+            "delete from ShopFloorShoppingCart" +
+            " where deleteType>0 and id = #{id}" +
+            "</script>")
+    int del(@Param("id") long id);
+
     /***
      * 根据userId查询
      * @param userId
@@ -83,10 +89,18 @@ public interface ShopFloorShoppingCartDao {
     List<ShopFloorShoppingCart> findDeleteGoods(@Param("userId") long userId);
 
     /***
+     * 根据userId查询
+     * @param userId
+     */
+    @Select("select * from ShopFloorShoppingCart where userId=#{userId} and deleteType>=1 and goodsId=#{id}")
+    List<ShopFloorShoppingCart> findDeleteGoodsList(@Param("userId") long userId, @Param("id") long id);
+
+    /***
      * 根据goodsId查询
      * @param goodsId
      */
-    @Select("select * from ShopFloorShoppingCart " +
+    @Select("<script>" +
+            "select * from ShopFloorShoppingCart " +
             "where userId=#{userId} " +
             "<if test=\"type == 0\">" +
             " and deleteType=0" +
@@ -94,7 +108,8 @@ public interface ShopFloorShoppingCartDao {
             "<if test=\"type == 1\">" +
             " and deleteType>0" +
             "</if>" +
-            "and goodsId=#{goodsId}")
+            " and goodsId=#{goodsId}" +
+            "</script>")
     ShopFloorShoppingCart findGoodsId(@Param("type") int type, @Param("userId") long userId, @Param("goodsId") long goodsId);
 
     /***

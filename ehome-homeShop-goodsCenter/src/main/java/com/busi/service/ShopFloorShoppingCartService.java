@@ -49,6 +49,11 @@ public class ShopFloorShoppingCartService {
         return goodsCenterDao.delGoods(ids);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int del(long id) {
+        return goodsCenterDao.del(id);
+    }
+
     /***
      * 更新
      * @param homeShopGoods
@@ -78,6 +83,17 @@ public class ShopFloorShoppingCartService {
     public List<ShopFloorShoppingCart> findDeleteGoods(long userId) {
         List<ShopFloorShoppingCart> list = null;
         list = goodsCenterDao.findDeleteGoods(userId);
+        return list;
+    }
+
+    /***
+     * 根据用户ID查询
+     * @param userId
+     * @return
+     */
+    public List<ShopFloorShoppingCart> findDeleteGoodsList(long userId, long id) {
+        List<ShopFloorShoppingCart> list = null;
+        list = goodsCenterDao.findDeleteGoodsList(userId, id);
         return list;
     }
 
