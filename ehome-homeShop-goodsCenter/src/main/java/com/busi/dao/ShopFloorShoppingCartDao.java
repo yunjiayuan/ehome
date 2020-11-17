@@ -47,7 +47,7 @@ public interface ShopFloorShoppingCartDao {
     @Update("<script>" +
             "update ShopFloorShoppingCart set" +
             " deleteType=1" +
-            " where id in" +
+            " where deleteType=0 and goodsId in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
