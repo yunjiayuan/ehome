@@ -47,4 +47,7 @@ public class ShopFloorShoppingCart {
     private int levelTwo;           //商品2级分类
 
     private int levelThree;           //商品3级分类
+
+    // 与数据库无关字段
+    private int entrance;            //0加购物车  1重新购买
 }

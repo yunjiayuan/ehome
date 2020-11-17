@@ -86,8 +86,8 @@ public class ShopFloorShoppingCartService {
      * @param userId
      * @return
      */
-    public ShopFloorShoppingCart findGoodsId(long userId, long goodsId) {
-        return goodsCenterDao.findGoodsId(userId, goodsId);
+    public ShopFloorShoppingCart findGoodsId(int type, long userId, long goodsId) {
+        return goodsCenterDao.findGoodsId(type, userId, goodsId);
     }
 
     /***

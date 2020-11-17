@@ -99,23 +99,35 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         int num = 0;
         num = goodsCenterService.findNum(shopFloorGoods.getUserId());
         if (num >= 1000) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "购物车商品上限", new JSONObject());
         }
         ShopFloorShoppingCart shoppingCart = null;
-        shoppingCart = goodsCenterService.findGoodsId(shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
-        if (shoppingCart == null) {//新增
-            if (CommonUtils.checkFull(shopFloorGoods.getGoodsTitle()) || CommonUtils.checkFull(shopFloorGoods.getGoodsCoverUrl())) {
+        ShopFloorShoppingCart shoppingCart2 = null;
+        //未删除的
+        shoppingCart = goodsCenterService.findGoodsId(0, shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
+        if (shopFloorGoods.getEntrance() == 0) {//0加购物车
+            if (shoppingCart == null) {//新增
+                shopFloorGoods.setNumber(1);
+                shopFloorGoods.setAddTime(new Date());
+                goodsCenterService.add(shopFloorGoods);
+            } else {//更新
+                shoppingCart.setNumber(shoppingCart.getNumber() + 1);
+                goodsCenterService.update(shoppingCart);
+            }
+        } else {//1重新购买
+            //已删除的
+            shoppingCart2 = goodsCenterService.findGoodsId(1, shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
+            if (shoppingCart2 == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            } else {//更新
+                //判断购物车是否有未删除d的相同商品
+                if (shoppingCart != null) {//更新数量
+                    shoppingCart2.setNumber(shoppingCart2.getNumber() + shoppingCart.getNumber());
+                }
+                shoppingCart2.setDeleteType(0);
+                shoppingCart2.setNumber(shoppingCart2.getNumber() + 1);
+                goodsCenterService.update(shoppingCart2);
             }
-            shopFloorGoods.setNumber(1);
-            shopFloorGoods.setAddTime(new Date());
-            goodsCenterService.add(shopFloorGoods);
-        } else {//更新
-            if (shoppingCart.getDeleteType() > 0) {//已删除的
-                shoppingCart.setDeleteType(0);
-            }
-            shoppingCart.setNumber(shoppingCart.getNumber() + 1);
-            goodsCenterService.update(shoppingCart);
         }
         //清空缓存列表
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorGoods.getUserId(), 0);

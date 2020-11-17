@@ -86,8 +86,16 @@ public interface ShopFloorShoppingCartDao {
      * 根据goodsId查询
      * @param goodsId
      */
-    @Select("select * from ShopFloorShoppingCart where userId=#{userId} and goodsId=#{goodsId}")
-    ShopFloorShoppingCart findGoodsId(@Param("userId") long userId, @Param("goodsId") long goodsId);
+    @Select("select * from ShopFloorShoppingCart " +
+            "where userId=#{userId} " +
+            "<if test=\"type == 0\">" +
+            " and deleteType=0" +
+            "</if>" +
+            "<if test=\"type == 1\">" +
+            " and deleteType>0" +
+            "</if>" +
+            "and goodsId=#{goodsId}")
+    ShopFloorShoppingCart findGoodsId(@Param("type") int type, @Param("userId") long userId, @Param("goodsId") long goodsId);
 
     /***
      * 根据Id查询
