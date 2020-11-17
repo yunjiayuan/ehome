@@ -31,12 +31,17 @@ public class ShopFloorShoppingCartService {
 
     /***
      * 批量删除商品
-     * @param ids
+     * @param id
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int updateDels(String[] ids) {
-        return goodsCenterDao.updateDels(ids);
+    public int updateDels(long id) {
+        return goodsCenterDao.updateDels(id);
+    }
+
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateDels(String[] ids, long id) {
+        return goodsCenterDao.updateDels(ids, id);
     }
 
     /***
@@ -45,8 +50,8 @@ public class ShopFloorShoppingCartService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int delGoods(String[] ids) {
-        return goodsCenterDao.delGoods(ids);
+    public int delGoods(String[] ids, long id) {
+        return goodsCenterDao.delGoods(ids, id);
     }
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})

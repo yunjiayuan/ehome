@@ -124,7 +124,7 @@ public class ShopFloorOrdersController extends BaseController implements ShopFlo
                 }
             }
             //移除购物车当前商品
-            goodsCenterService.delGoods(sd);
+            goodsCenterService.delGoods(sd, shopFloorOrders.getBuyerId());
             //清除缓存中购物车的信息
             redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorOrders.getBuyerId(), 0);
         } else {//订单类型: 3合伙购

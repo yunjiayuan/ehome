@@ -76,8 +76,8 @@ public class ShopFloorShoppingCartController extends BaseController implements S
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
         } else {
-            String ids = shopFloorGoods.getId() + "";
-            goodsCenterService.updateDels(ids.split(","));
+            long id = shopFloorGoods.getId();
+            goodsCenterService.updateDels(id);
         }
         //清空缓存列表
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorGoods.getUserId(), 0);
@@ -149,7 +149,7 @@ public class ShopFloorShoppingCartController extends BaseController implements S
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + userId + "]的商品信息", new JSONObject());
         }
         String[] strings = ids.split(",");
-        goodsCenterService.updateDels(strings);
+        goodsCenterService.updateDels(strings, userId);
         int num = 0;
         List shoppingCart = null;
         for (int i = 0; i < strings.length; i++) {

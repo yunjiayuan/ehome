@@ -41,18 +41,31 @@ public interface ShopFloorShoppingCartDao {
 
     /***
      * 批量删除商品
+     * @param id
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorShoppingCart set" +
+            " deleteType=1" +
+            " where deleteType=0 and id = #{id}" +
+            "</script>")
+    int updateDels(@Param("id") long id);
+
+    /***
+     * 批量删除商品
      * @param ids
      * @return
      */
     @Update("<script>" +
             "update ShopFloorShoppingCart set" +
             " deleteType=1" +
-            " where deleteType=0 and goodsId in" +
+            " where deleteType=0 and userId=#{id} and goodsId in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</script>")
-    int updateDels(@Param("ids") String[] ids);
+    int updateDels(@Param("ids") String[] ids, @Param("id") long id);
+
 
     /***
      * 删除购物车商品
@@ -61,12 +74,12 @@ public interface ShopFloorShoppingCartDao {
      */
     @Delete("<script>" +
             "delete from ShopFloorShoppingCart" +
-            " where deleteType=0 and goodsId in" +
+            " where deleteType=0 and userId=#{id} and goodsId in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</script>")
-    int delGoods(@Param("ids") String[] ids);
+    int delGoods(@Param("ids") String[] ids, @Param("id") long id);
 
     @Delete("<script>" +
             "delete from ShopFloorShoppingCart" +
