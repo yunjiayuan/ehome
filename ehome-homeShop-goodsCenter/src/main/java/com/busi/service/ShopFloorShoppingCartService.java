@@ -35,8 +35,8 @@ public class ShopFloorShoppingCartService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int updateDels(long id) {
-        return goodsCenterDao.updateDels(id);
+    public int updateDelss(long id) {
+        return goodsCenterDao.updateDelss(id);
     }
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})

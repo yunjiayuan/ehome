@@ -77,7 +77,7 @@ public class ShopFloorShoppingCartController extends BaseController implements S
             }
         } else {
             long id = shopFloorGoods.getId();
-            goodsCenterService.updateDels(id);
+            goodsCenterService.updateDelss(id);
         }
         //清空缓存列表
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorGoods.getUserId(), 0);

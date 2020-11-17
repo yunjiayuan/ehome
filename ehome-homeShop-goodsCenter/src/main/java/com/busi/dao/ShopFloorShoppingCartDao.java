@@ -49,7 +49,7 @@ public interface ShopFloorShoppingCartDao {
             " deleteType=1" +
             " where deleteType=0 and id = #{id}" +
             "</script>")
-    int updateDels(@Param("id") long id);
+    int updateDelss(@Param("id") long id);
 
     /***
      * 批量删除商品
