@@ -220,6 +220,15 @@ public interface HotelTourismDao {
             "</script>")
     List<Kitchen> findAuditTypeList5(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
 
+    @Select("<script>" +
+            "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-lat*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(lat*PI()/180)*POW(SIN((#{lon}*PI()/180-lon*PI()/180)/2),2)))*1000) AS juli " +
+            " from DoorwayBusiness" +
+            " where deleteType = 0 and licence != ''" +
+            " and auditType = #{auditType}" +
+            " order by juli asc" +
+            "</script>")
+    List<DoorwayBusiness> findAuditTypeList6(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
+
     /***
      * 根据主键ID查询并更新审核状态
      * @return
@@ -358,6 +367,16 @@ public interface HotelTourismDao {
             " where deleteType = 0 and healthyCard != ''" +
             "</script>")
     List<Kitchen> countAuditType4();
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    @Select("<script>" +
+            "select * from DoorwayBusiness" +
+            " where deleteType = 0 and licence != ''" +
+            "</script>")
+    List<DoorwayBusiness> countAuditType5();
 
     /***
      * 查询此店铺是否还有其他人同时在申请入驻

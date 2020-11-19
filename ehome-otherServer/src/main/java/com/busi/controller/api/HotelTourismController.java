@@ -51,6 +51,9 @@ public class HotelTourismController extends BaseController implements HotelTouri
     PharmacyService pharmacyService;
 
     @Autowired
+    DoorwayBusinessService businessService;
+
+    @Autowired
     HotelTourismBookedOrdersService hotelTourismBookedOrdersService;
 
     /***
@@ -407,7 +410,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     /***
      * 统计各种审核状态数量
-     * @param type  0酒店 1景区 2药店 3订座 4厨房
+     * @param type  0酒店 1景区 2药店 3订座 4厨房 5隐形商家
      * @return
      */
     @Override
@@ -497,6 +500,21 @@ public class HotelTourismController extends BaseController implements HotelTouri
                 }
             }
         }
+        if (type == 5) {
+            list = kitchenBookedService.countAuditType5();
+            for (int i = 0; i < list.size(); i++) {
+                DoorwayBusiness hotel = (DoorwayBusiness) list.get(i);
+                if (hotel.getAuditType() == 0) {
+                    num++;
+                }
+                if (hotel.getAuditType() == 1) {
+                    num1++;
+                }
+                if (hotel.getAuditType() == 2) {
+                    num2++;
+                }
+            }
+        }
         Map<String, Object> map = new HashMap<>();
         map.put("auditType", num);//0待审核 1已审核通过 2未审核通过
         map.put("auditType1", num1);
@@ -506,7 +524,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
 
     /***
      * 查询审核列表
-     * @param type  0酒店 1景区 2药店 3订座 4厨房
+     * @param type  0酒店 1景区 2药店 3订座 4厨房 5隐形商家
      * @param auditType  0待审核 1已审核通过 2未审核通过
      * @param lat      纬度
      * @param lon      经度
@@ -651,14 +669,39 @@ public class HotelTourismController extends BaseController implements HotelTouri
             pageBean.setList(list);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
         }
+        if (type == 5) {//5隐形商家
+            PageBean<DoorwayBusiness> pageBean = null;
+            pageBean = kitchenBookedService.findAuditTypeList6(auditType, lat, lon, page, count);
+            if (pageBean == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+            }
+            List list = pageBean.getList();
+            if (list == null || list.size() <= 0) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+            }
+            for (int j = 0; j < list.size(); j++) {
+                DoorwayBusiness kc = (DoorwayBusiness) list.get(j);
+                if (kc != null) {
+                    //计算距离
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(kc.getLon(), kc.getLat(), lon, lat));
+                    kc.setDistance(distance);//距离/m
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
      * 更新审核状态
-     * @param type  0酒店 1景区 2药店 3订座 4厨房
+     * @param type  0酒店 1景区 2药店 3订座 4厨房 5隐形商家
      * @param auditType  0审核通过 1审核未通过
-     * @param id   酒店、景区、药店、订座、厨房 主键ID
+     * @param id   酒店、景区、药店、订座、厨房、隐形商家 主键ID
      * @return
      */
     @Override
@@ -927,6 +970,11 @@ public class HotelTourismController extends BaseController implements HotelTouri
                 Kitchen serviceReserve = kitchenService.findById(id);
                 //清除缓存中的信息
                 redisUtils.expire(Constants.REDIS_KEY_KITCHEN + serviceReserve.getUserId() + "_" + 0, 0);
+            }
+            if (type == 5) {//5隐形商家
+                DoorwayBusiness hotel = businessService.findById(id);
+                //清除缓存中的信息
+                redisUtils.expire(Constants.REDIS_KEY_PHARMACY + hotel.getUserId(), 0);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
