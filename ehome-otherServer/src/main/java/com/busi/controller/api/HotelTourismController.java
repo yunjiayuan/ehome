@@ -974,7 +974,7 @@ public class HotelTourismController extends BaseController implements HotelTouri
             if (type == 5) {//5隐形商家
                 DoorwayBusiness hotel = businessService.findById(id);
                 //清除缓存中的信息
-                redisUtils.expire(Constants.REDIS_KEY_PHARMACY + hotel.getUserId(), 0);
+                redisUtils.expire(Constants.REDIS_KEY_DOORWAYBUSINESS + hotel.getUserId(), 0);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
