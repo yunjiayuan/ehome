@@ -346,6 +346,12 @@ public class PaymentController extends BaseController implements PaymentApiContr
             case 28://支付旅游、酒店民宿中的订座订单
                 payBaseService = hotelTourismBookedOrderService ;
                 break;
+            case 29://支付隐形商家中的商品订单
+//                payBaseService =  ;
+                break;
+            case 30://支付找人倾诉中的订单
+//                payBaseService =  ;
+                break;
             default:
                 break;
         }
