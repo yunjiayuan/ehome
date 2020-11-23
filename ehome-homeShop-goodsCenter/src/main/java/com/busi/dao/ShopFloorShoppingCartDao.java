@@ -41,18 +41,31 @@ public interface ShopFloorShoppingCartDao {
 
     /***
      * 批量删除商品
+     * @param id
+     * @return
+     */
+    @Update("<script>" +
+            "update ShopFloorShoppingCart set" +
+            " deleteType=1" +
+            " where deleteType=0 and id = #{id}" +
+            "</script>")
+    int updateDelss(@Param("id") long id);
+
+    /***
+     * 批量删除商品
      * @param ids
      * @return
      */
     @Update("<script>" +
             "update ShopFloorShoppingCart set" +
             " deleteType=1" +
-            " where id in" +
+            " where deleteType=0 and userId=#{id} and goodsId in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</script>")
-    int updateDels(@Param("ids") String[] ids);
+    int updateDels(@Param("ids") String[] ids, @Param("id") long id);
+
 
     /***
      * 删除购物车商品
@@ -61,12 +74,18 @@ public interface ShopFloorShoppingCartDao {
      */
     @Delete("<script>" +
             "delete from ShopFloorShoppingCart" +
-            " where deleteType=0 and goodsId in" +
+            " where deleteType=0 and userId=#{id} and goodsId in" +
             "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
             " #{item}" +
             "</foreach>" +
             "</script>")
-    int delGoods(@Param("ids") String[] ids);
+    int delGoods(@Param("ids") String[] ids, @Param("id") long id);
+
+    @Delete("<script>" +
+            "delete from ShopFloorShoppingCart" +
+            " where deleteType>0 and id = #{id}" +
+            "</script>")
+    int del(@Param("id") long id);
 
     /***
      * 根据userId查询
@@ -83,11 +102,28 @@ public interface ShopFloorShoppingCartDao {
     List<ShopFloorShoppingCart> findDeleteGoods(@Param("userId") long userId);
 
     /***
+     * 根据userId查询
+     * @param userId
+     */
+    @Select("select * from ShopFloorShoppingCart where userId=#{userId} and deleteType>=1 and goodsId=#{id}")
+    List<ShopFloorShoppingCart> findDeleteGoodsList(@Param("userId") long userId, @Param("id") long id);
+
+    /***
      * 根据goodsId查询
      * @param goodsId
      */
-    @Select("select * from ShopFloorShoppingCart where userId=#{userId} and goodsId=#{goodsId}")
-    ShopFloorShoppingCart findGoodsId(@Param("userId") long userId, @Param("goodsId") long goodsId);
+    @Select("<script>" +
+            "select * from ShopFloorShoppingCart " +
+            "where userId=#{userId} " +
+            "<if test=\"type == 0\">" +
+            " and deleteType=0" +
+            "</if>" +
+            "<if test=\"type == 1\">" +
+            " and deleteType>0" +
+            "</if>" +
+            " and goodsId=#{goodsId}" +
+            "</script>")
+    ShopFloorShoppingCart findGoodsId(@Param("type") int type, @Param("userId") long userId, @Param("goodsId") long goodsId);
 
     /***
      * 根据Id查询

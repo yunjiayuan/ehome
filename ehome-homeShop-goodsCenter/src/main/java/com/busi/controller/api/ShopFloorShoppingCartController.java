@@ -76,8 +76,8 @@ public class ShopFloorShoppingCartController extends BaseController implements S
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
         } else {
-            String ids = shopFloorGoods.getId() + "";
-            goodsCenterService.updateDels(ids.split(","));
+            long id = shopFloorGoods.getId();
+            goodsCenterService.updateDelss(id);
         }
         //清空缓存列表
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorGoods.getUserId(), 0);
@@ -99,23 +99,35 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         int num = 0;
         num = goodsCenterService.findNum(shopFloorGoods.getUserId());
         if (num >= 1000) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "购物车商品上限", new JSONObject());
         }
         ShopFloorShoppingCart shoppingCart = null;
-        shoppingCart = goodsCenterService.findGoodsId(shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
-        if (shoppingCart == null) {//新增
-            if (CommonUtils.checkFull(shopFloorGoods.getGoodsTitle()) || CommonUtils.checkFull(shopFloorGoods.getGoodsCoverUrl())) {
+        ShopFloorShoppingCart shoppingCart2 = null;
+        //未删除的
+        shoppingCart = goodsCenterService.findGoodsId(0, shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
+        if (shopFloorGoods.getEntrance() == 0) {//0加购物车
+            if (shoppingCart == null) {//新增
+                shopFloorGoods.setNumber(1);
+                shopFloorGoods.setAddTime(new Date());
+                goodsCenterService.add(shopFloorGoods);
+            } else {//更新
+                shoppingCart.setNumber(shoppingCart.getNumber() + 1);
+                goodsCenterService.update(shoppingCart);
+            }
+        } else {//1重新购买
+            //已删除的
+            shoppingCart2 = goodsCenterService.findGoodsId(1, shopFloorGoods.getUserId(), shopFloorGoods.getGoodsId());
+            if (shoppingCart2 == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            } else {//更新
+                //判断购物车是否有未删除d的相同商品
+                if (shoppingCart != null) {//更新数量
+                    shoppingCart2.setNumber(shoppingCart2.getNumber() + shoppingCart.getNumber());
+                }
+                shoppingCart2.setDeleteType(0);
+                shoppingCart2.setNumber(shoppingCart2.getNumber() + 1);
+                goodsCenterService.update(shoppingCart2);
             }
-            shopFloorGoods.setNumber(1);
-            shopFloorGoods.setAddTime(new Date());
-            goodsCenterService.add(shopFloorGoods);
-        } else {//更新
-            if (shoppingCart.getDeleteType() > 0) {//已删除的
-                shoppingCart.setDeleteType(0);
-            }
-            shoppingCart.setNumber(shoppingCart.getNumber() + 1);
-            goodsCenterService.update(shoppingCart);
         }
         //清空缓存列表
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + shopFloorGoods.getUserId(), 0);
@@ -136,7 +148,29 @@ public class ShopFloorShoppingCartController extends BaseController implements S
         if (CommonUtils.getMyId() != userId) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限删除用户[" + userId + "]的商品信息", new JSONObject());
         }
-        goodsCenterService.updateDels(ids.split(","));
+        String[] strings = ids.split(",");
+        goodsCenterService.updateDels(strings, userId);
+        int num = 0;
+        List shoppingCart = null;
+        for (int i = 0; i < strings.length; i++) {
+            shoppingCart = goodsCenterService.findDeleteGoodsList(userId, Long.parseLong(strings[i]));
+            if (shoppingCart != null && shoppingCart.size() > 1) {
+                for (int j = 0; j < shoppingCart.size(); j++) {
+                    ShopFloorShoppingCart cart = (ShopFloorShoppingCart) shoppingCart.get(j);
+                    if (cart != null) {
+                        num += cart.getNumber();
+                        if (j != shoppingCart.size() - 1) {
+                            goodsCenterService.del(cart.getId());
+                        } else {
+                            if (num > 0) {
+                                cart.setNumber(num);
+                                goodsCenterService.update(cart);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         //清除缓存中的信息
         redisUtils.expire(Constants.REDIS_KEY_SHOPFLOOR_CARTLIST + userId, 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

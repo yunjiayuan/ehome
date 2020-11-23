@@ -192,6 +192,13 @@ public class HotelTourismService {
         return PageUtils.getPageBean(p, list);
     }
 
+    public PageBean<DoorwayBusiness> findAuditTypeList6(int auditType, double lat, double lon, int page, int count) {
+        List<DoorwayBusiness> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = kitchenBookedDao.findAuditTypeList6(auditType, lat, lon);
+        return PageUtils.getPageBean(p, list);
+    }
+
     /***
      * 根据主键ID查询并更新
      * @return
@@ -285,6 +292,16 @@ public class HotelTourismService {
     public List<Kitchen> countAuditType4() {
         List<Kitchen> list;
         list = kitchenBookedDao.countAuditType4();
+        return list;
+    }
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    public List<DoorwayBusiness> countAuditType5() {
+        List<DoorwayBusiness> list;
+        list = kitchenBookedDao.countAuditType5();
         return list;
     }
 

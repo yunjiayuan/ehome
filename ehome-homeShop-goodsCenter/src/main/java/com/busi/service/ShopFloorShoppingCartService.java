@@ -31,12 +31,17 @@ public class ShopFloorShoppingCartService {
 
     /***
      * 批量删除商品
-     * @param ids
+     * @param id
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int updateDels(String[] ids) {
-        return goodsCenterDao.updateDels(ids);
+    public int updateDelss(long id) {
+        return goodsCenterDao.updateDelss(id);
+    }
+
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateDels(String[] ids, long id) {
+        return goodsCenterDao.updateDels(ids, id);
     }
 
     /***
@@ -45,8 +50,13 @@ public class ShopFloorShoppingCartService {
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public int delGoods(String[] ids) {
-        return goodsCenterDao.delGoods(ids);
+    public int delGoods(String[] ids, long id) {
+        return goodsCenterDao.delGoods(ids, id);
+    }
+
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int del(long id) {
+        return goodsCenterDao.del(id);
     }
 
     /***
@@ -82,12 +92,23 @@ public class ShopFloorShoppingCartService {
     }
 
     /***
+     * 根据用户ID查询
+     * @param userId
+     * @return
+     */
+    public List<ShopFloorShoppingCart> findDeleteGoodsList(long userId, long id) {
+        List<ShopFloorShoppingCart> list = null;
+        list = goodsCenterDao.findDeleteGoodsList(userId, id);
+        return list;
+    }
+
+    /***
      * 根据用户goodsId查询
      * @param userId
      * @return
      */
-    public ShopFloorShoppingCart findGoodsId(long userId, long goodsId) {
-        return goodsCenterDao.findGoodsId(userId, goodsId);
+    public ShopFloorShoppingCart findGoodsId(int type, long userId, long goodsId) {
+        return goodsCenterDao.findGoodsId(type, userId, goodsId);
     }
 
     /***
