@@ -119,14 +119,14 @@ public class DoorwayBusinessService {
      * @param count    条数
      * @return
      */
-    public PageBean<DoorwayBusiness> findKitchenList(long userId, int watchVideos, String name, int province, int city, int district, double lat, double lon, int page, int count) {
+    public PageBean<DoorwayBusiness> findKitchenList(int type, long userId, int watchVideos, String name, int province, int city, int district, double lat, double lon, int page, int count) {
 
         List<DoorwayBusiness> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (CommonUtils.checkFull(name)) {
             name = null;
         }
-        list = kitchenBookedDao.findKitchenList(userId, watchVideos, name, province, city, district, lat, lon);
+        list = kitchenBookedDao.findKitchenList(type, userId, watchVideos, name, province, city, district, lat, lon);
         return PageUtils.getPageBean(p, list);
     }
 
