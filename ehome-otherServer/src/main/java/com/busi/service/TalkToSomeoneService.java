@@ -35,6 +35,15 @@ public class TalkToSomeoneService {
     }
 
     /***
+     * 根据用户ID查询
+     * @param id
+     * @return
+     */
+    public TalkToSomeoneOrder findSomeone2(long id) {
+        return kitchenBookedDao.findSomeone2(id);
+    }
+
+    /***
      * 新建
      * @param kitchen
      * @return

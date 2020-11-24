@@ -128,9 +128,12 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
         }
         homeHospitalService.changeSomeoneState(homeHospital);
         //判断是否已倾诉并且已支付
-        if (homeHospital.getStatus() == 1 && homeHospital.getPayState() == 1) {
-            //转入被倾诉者钱包
-            mqUtils.sendPurseMQ(homeHospital.getUserId(), 45, 0, homeHospital.getMoney());
+        if (homeHospital.getStatus() == 1) {
+            TalkToSomeoneOrder talk = homeHospitalService.findSomeone2(homeHospital.getId());
+            if (talk != null && talk.getPayState() == 1) {
+                //转入被倾诉者钱包
+                mqUtils.sendPurseMQ(homeHospital.getUserId(), 45, 0, talk.getMoney());
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -170,7 +173,7 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
 
     /***
      * 查询记录列表
-     * @param type   类型：0全部 1未倾诉 2已倾诉
+     * @param type   类型：-1全部 0未倾诉 1已倾诉
      * @param page     页码
      * @param count    条数
      * @return

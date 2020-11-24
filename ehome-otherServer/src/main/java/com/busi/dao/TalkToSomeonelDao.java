@@ -1,7 +1,5 @@
 package com.busi.dao;
 
-import com.busi.entity.ScenicSpot;
-import com.busi.entity.ScenicSpotTickets;
 import com.busi.entity.TalkToSomeone;
 import com.busi.entity.TalkToSomeoneOrder;
 import org.apache.ibatis.annotations.*;
@@ -91,7 +89,7 @@ public interface TalkToSomeonelDao {
     @Select("<script>" +
             "select * from TalkToSomeone" +
             " where state = 1" +
-            " order by time asc" +
+            " order by time desc" +
             "</script>")
     List<TalkToSomeone> findSomeoneList();
 
@@ -102,9 +100,11 @@ public interface TalkToSomeonelDao {
      */
     @Select("<script>" +
             "select * from TalkToSomeoneOrder" +
-            " where deleteType = 0" +
-            " and scenicSpotId=#{kitchenId}" +
-            " order by cost asc" +
+            " where 1=1" +
+            "<if test=\"type >= 0\">" +
+            " and status=#{type}" +
+            "</if>" +
+            " order by payTime desc" +
             "</script>")
     List<TalkToSomeoneOrder> findSomeoneHistoryList(@Param("type") int type);
 
@@ -115,4 +115,12 @@ public interface TalkToSomeonelDao {
      */
     @Select("select * from TalkToSomeone where userId=#{userId}")
     TalkToSomeone findSomeone(@Param("userId") long userId);
+
+    /***
+     * 根据ID查询
+     * @param id
+     * @return
+     */
+    @Select("select * from TalkToSomeoneOrder where id=#{id}")
+    TalkToSomeoneOrder findSomeone2(@Param("id") long id);
 }
