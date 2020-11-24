@@ -34,8 +34,8 @@ public interface TalkToSomeonelDao {
      * @param kitchen
      * @return
      */
-    @Insert("insert into TalkToSomeoneOrder(userId,myId,money,addTime,no,payTime,money)" +
-            "values (#{userId},#{myId},#{money},#{addTime},#{no},#{payTime},#{money})")
+    @Insert("insert into TalkToSomeoneOrder(userId,myId,money,addTime,no,payTime)" +
+            "values (#{userId},#{myId},#{money},#{addTime},#{no},#{payTime})")
     @Options(useGeneratedKeys = true)
     int talkToSomeone(TalkToSomeoneOrder kitchen);
 
@@ -46,19 +46,18 @@ public interface TalkToSomeonelDao {
      */
     @Update("<script>" +
             "update TalkToSomeone set" +
-            "<if test=\"state >= 0 \">" +
-            " state=#{state}," +
-            "</if>" +
-            "<if test=\"money >= 0  \">" +
             " money=#{money}," +
-            "</if>" +
-            "<if test=\"remarks != null and remarks != '' \">" +
-            " remarks=#{remarks}," +
-            "</if>" +
-            " id=#{id}" +
+            " remarks=#{remarks}" +
             " where id=#{id}" +
             "</script>")
     int update(TalkToSomeone kitchen);
+
+    @Update("<script>" +
+            "update TalkToSomeone set" +
+            " state=#{state}" +
+            " where id=#{id}" +
+            "</script>")
+    int update2(TalkToSomeone kitchen);
 
     /***
      * 更新

@@ -81,9 +81,11 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
-        homeHospital.setTime(new Date());
-        homeHospitalService.update(homeHospital);
-
+        if (!CommonUtils.checkFull(homeHospital.getRemarks())) {
+            homeHospitalService.update(homeHospital);
+        } else {//更新状态
+            homeHospitalService.update2(homeHospital);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

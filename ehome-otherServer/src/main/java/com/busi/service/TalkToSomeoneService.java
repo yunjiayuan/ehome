@@ -53,7 +53,10 @@ public class TalkToSomeoneService {
     public int update(TalkToSomeone kitchen) {
         return kitchenBookedDao.update(kitchen);
     }
-
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update2(TalkToSomeone kitchen) {
+        return kitchenBookedDao.update2(kitchen);
+    }
     /***
      * 新建
      * @param kitchen
