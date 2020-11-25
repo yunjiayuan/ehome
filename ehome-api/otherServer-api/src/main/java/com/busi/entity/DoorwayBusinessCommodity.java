@@ -36,6 +36,6 @@ public class DoorwayBusinessCommodity {
 
     private int stock;            // 库存
 
-    private int company;            // 单位
+    private String company;            // 单位
 
 }

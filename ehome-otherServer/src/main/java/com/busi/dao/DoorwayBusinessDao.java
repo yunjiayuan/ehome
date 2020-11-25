@@ -3,7 +3,6 @@ package com.busi.dao;
 import com.busi.entity.DoorwayBusiness;
 import com.busi.entity.DoorwayBusinessCollection;
 import com.busi.entity.DoorwayBusinessCommodity;
-import com.busi.entity.ScenicSpot;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -171,7 +170,7 @@ public interface DoorwayBusinessDao {
             "<if test=\"type >= 0\">" +
             " and type = #{type}" +
             "</if>" +
-            " and scenicSpotName LIKE CONCAT('%',#{name},'%')" +
+            " and businessName LIKE CONCAT('%',#{name},'%')" +
             "</if>" +
             "<if test=\"name == null or name == '' \">" +
             " select *" +
