@@ -24,7 +24,7 @@ public class TalkToSomeone {
 
     private int state;                //开关状态：0未开启 1已开启
 
-    private int money;                //资费 0免费
+    private double money;                //资费
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;    //时间

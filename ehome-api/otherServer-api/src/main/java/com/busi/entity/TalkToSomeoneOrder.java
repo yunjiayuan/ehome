@@ -34,7 +34,7 @@ public class TalkToSomeoneOrder {
 
     private int status;     // 状态：0未倾诉 1已倾诉
 
-    private int money;      //资费
+    private double money;      //资费
 
     //与数据库无关字段
     private String name;                //用户名
