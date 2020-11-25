@@ -363,9 +363,9 @@ public class DoorwayBusinessController extends BaseController implements Doorway
     @Override
     public ReturnData findCommodity(@PathVariable long id) {
         DoorwayBusinessCommodity reserveData = travelService.disheSdetails(id);
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", reserveData);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", reserveData);
     }
 
     /***
