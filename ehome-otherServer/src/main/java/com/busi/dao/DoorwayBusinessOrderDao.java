@@ -22,9 +22,9 @@ public interface DoorwayBusinessOrderDao {
      * @return
      */
     @Insert("insert into DoorwayBusinessOrder(userId,myId,pharmacyId,no,dishameCost,ordersState,pharmacyName,addTime,distributionMode,money,smallMap,inspectTicketTime," +
-            "completeTime,address,address_Phone,address_Name,voucherCode,serviceTime,addressId,verificationType)" +
+            "completeTime,address,address_Phone,address_Name,voucherCode,serviceTime,addressId,verificationType,remarks)" +
             "values (#{userId},#{myId},#{pharmacyId},#{no},#{dishameCost},#{ordersState},#{pharmacyName},#{addTime},#{distributionMode},#{money},#{smallMap},#{inspectTicketTime}" +
-            ",#{completeTime},#{address},#{address_Phone},#{address_Name},#{voucherCode},#{serviceTime},#{addressId},#{verificationType})")
+            ",#{completeTime},#{address},#{address_Phone},#{address_Name},#{voucherCode},#{serviceTime},#{addressId},#{verificationType},#{remarks})")
     @Options(useGeneratedKeys = true)
     int addOrders(DoorwayBusinessOrder kitchenBookedOrders);
 
