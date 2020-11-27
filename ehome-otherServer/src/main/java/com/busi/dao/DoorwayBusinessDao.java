@@ -3,7 +3,6 @@ package com.busi.dao;
 import com.busi.entity.DoorwayBusiness;
 import com.busi.entity.DoorwayBusinessCollection;
 import com.busi.entity.DoorwayBusinessCommodity;
-import com.busi.entity.ScenicSpot;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -168,7 +167,10 @@ public interface DoorwayBusinessDao {
             "select * from DoorwayBusiness" +
             " where deleteType = 0 and businessStatus=0 and auditType=1" +
             " and userId != #{userId}" +
-            " and scenicSpotName LIKE CONCAT('%',#{name},'%')" +
+            "<if test=\"type >= 0\">" +
+            " and type = #{type}" +
+            "</if>" +
+            " and businessName LIKE CONCAT('%',#{name},'%')" +
             "</if>" +
             "<if test=\"name == null or name == '' \">" +
             " select *" +
@@ -180,6 +182,9 @@ public interface DoorwayBusinessDao {
             " and deleteType = 0 and businessStatus=0 and auditType=1" +
             "<if test=\"watchVideos == 1\">" +
             " and videoUrl != ''" +
+            "</if>" +
+            "<if test=\"type >= 0\">" +
+            " and type = #{type}" +
             "</if>" +
             "<if test=\"province >= 0\">" +
             " and province = #{province}" +
@@ -198,7 +203,7 @@ public interface DoorwayBusinessDao {
             "</if>" +
             "</if>" +
             "</script>")
-    List<DoorwayBusiness> findKitchenList(@Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("name") String name, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("lat") double lat, @Param("lon") double lon);
+    List<DoorwayBusiness> findKitchenList(@Param("type") int type, @Param("userId") long userId, @Param("watchVideos") int watchVideos, @Param("name") String name, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("lat") double lat, @Param("lon") double lon);
 
     /***
      * 新增商品

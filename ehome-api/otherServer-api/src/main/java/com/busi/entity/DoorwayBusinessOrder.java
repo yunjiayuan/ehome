@@ -72,6 +72,8 @@ public class DoorwayBusinessOrder {
 
     private String voucherCode;                // 凭证码
 
+    private String remarks;                // 买家留言
+
     private int distributionMode;            // 配送方式 0商家配送 1买家自取
 
     //与数据库无关字段

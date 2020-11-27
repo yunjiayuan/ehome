@@ -59,6 +59,7 @@ public interface DoorwayBusinessApiController {
     /***
      * 条件查询商家
      * @param watchVideos 筛选视频：0否 1是
+     * @param type  类型
      * @param name    模糊搜索
      * @param province     省
      * @param city      市
@@ -69,8 +70,8 @@ public interface DoorwayBusinessApiController {
      * @param count    条数
      * @return
      */
-    @GetMapping("findDoorwayBusinessList/{watchVideos}/{name}/{province}/{city}/{district}/{lat}/{lon}/{page}/{count}")
-    ReturnData findDoorwayBusinessList(@PathVariable int watchVideos, @PathVariable String name, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findDoorwayBusinessList/{watchVideos}/{type}/{name}/{province}/{city}/{district}/{lat}/{lon}/{page}/{count}")
+    ReturnData findDoorwayBusinessList(@PathVariable int watchVideos, @PathVariable int type, @PathVariable String name, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count);
 
     /***
      * 新增商品

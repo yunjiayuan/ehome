@@ -255,37 +255,6 @@ public class DoorwayBusinessOrderController extends BaseController implements Do
             if (!io.getVoucherCode().equals(voucherCode)) {
                 return returnData(StatusCode.CODE_PHARMACY_INVALID.CODE_VALUE, "凭证码无效", io);
             }
-
-            //格式化为相同格式
-//            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//            String DateStr1 = dateFormat.format(io.getCheckInTime());
-//            String DateStr2 = dateFormat.format(new Date());
-//            Date dateTime1 = null;
-//            try {
-//                dateTime1 = dateFormat.parse(DateStr1);
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//            Date dateTime2 = null;
-//            try {
-//                dateTime2 = dateFormat.parse(DateStr2);
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//            if (dateTime1 == null || dateTime2 == null) {
-//                return returnData(StatusCode.CODE_PHARMACY_BE_OVERDUE.CODE_VALUE, "凭证码已过期", io);
-//            }
-//            int i = dateTime1.compareTo(dateTime2);
-//            if (i > 0) {
-//                io.setOrdersType(6);
-//                //商家订单放入缓存
-//                redisUtils.hmset(Constants.REDIS_KEY_DOORWAYBUSINESSORDERS + io.getMyId() + "_" + io.getNo(), ordersMap, Constants.USER_TIME_OUT);
-//                return returnData(StatusCode.CODE_PHARMACY_BE_OVERDUE.CODE_VALUE, "凭证码已过期", io);
-//            } else if (i < 0) {
-//                return returnData(StatusCode.CODE_PHARMACY_ADVANCE.CODE_VALUE, "入住日期未到", io);
-//            } else {
-//                io.setOrdersType(1);
-//            }
             //由未验票改为已验票
             io.setCompleteTime(new Date());
             io.setInspectTicketTime(new Date());
@@ -295,7 +264,7 @@ public class DoorwayBusinessOrderController extends BaseController implements Do
             travelOrderService.updateOrders(io);
             Map<String, Object> ordersMap = CommonUtils.objectToMap(io);
             //商家入账
-            mqUtils.sendPurseMQ(io.getUserId(), 40, 0, io.getMoney());
+            mqUtils.sendPurseMQ(io.getUserId(), 43, 0, io.getMoney());
             //清除缓存中的商家 订单信息
             redisUtils.expire(Constants.REDIS_KEY_DOORWAYBUSINESSORDERS + io.getMyId() + "_" + io.getNo(), 0);
             //商家订单放入缓存

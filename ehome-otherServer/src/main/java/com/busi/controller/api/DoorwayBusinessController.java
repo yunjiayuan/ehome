@@ -200,6 +200,7 @@ public class DoorwayBusinessController extends BaseController implements Doorway
     /***
      * 条件查询商家
      * @param watchVideos 筛选视频：0否 1是
+     * @param type  类型
      * @param name    模糊搜索
      * @param province     省
      * @param city      市
@@ -211,14 +212,14 @@ public class DoorwayBusinessController extends BaseController implements Doorway
      * @return
      */
     @Override
-    public ReturnData findDoorwayBusinessList(@PathVariable int watchVideos, @PathVariable String name, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findDoorwayBusinessList(@PathVariable int watchVideos, @PathVariable int type, @PathVariable String name, @PathVariable int province, @PathVariable int city, @PathVariable int district, @PathVariable double lat, @PathVariable double lon, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<DoorwayBusiness> pageBean = null;
-        pageBean = travelService.findKitchenList(CommonUtils.getMyId(), watchVideos, name, province, city, district, lat, lon, page, count);
+        pageBean = travelService.findKitchenList(type, CommonUtils.getMyId(), watchVideos, name, province, city, district, lat, lon, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONObject());
         }
@@ -362,9 +363,9 @@ public class DoorwayBusinessController extends BaseController implements Doorway
     @Override
     public ReturnData findCommodity(@PathVariable long id) {
         DoorwayBusinessCommodity reserveData = travelService.disheSdetails(id);
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", reserveData);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", reserveData);
     }
 
     /***
