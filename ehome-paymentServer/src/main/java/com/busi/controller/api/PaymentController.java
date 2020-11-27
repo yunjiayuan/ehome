@@ -96,6 +96,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private HotelTourismBookedOrderService hotelTourismBookedOrderService;
+
+    @Autowired
+    private DoorwayBusinessOrderService doorwayBusinessOrderService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -347,7 +350,7 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 payBaseService = hotelTourismBookedOrderService ;
                 break;
             case 29://支付隐形商家中的商品订单
-//                payBaseService =  ;
+                payBaseService =  doorwayBusinessOrderService;
                 break;
             case 30://支付找人倾诉中的订单
 //                payBaseService =  ;
