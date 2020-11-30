@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.TalkToSomeoneService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.MqUtils;
-import com.busi.utils.StatusCode;
-import com.busi.utils.UserInfoUtils;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +28,9 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
 
     @Autowired
     MqUtils mqUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
 
     @Autowired
     UserInfoUtils userInfoUtils;
@@ -109,8 +109,11 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
         String noRandom = CommonUtils.strToMD5(noTime + homeHospital.getMyId() + random, 16);
         homeHospital.setNo(noRandom);//订单编号【MD5】
         homeHospitalService.talkToSomeone(homeHospital);
+        //放入缓存
         Map<String, Object> map = new HashMap<>();
         map.put("infoId", homeHospital.getNo());
+        Map<String, Object> ordersMap = CommonUtils.objectToMap(homeHospital);
+        redisUtils.hmset(Constants.REDIS_KEY_TALKTOSOMEONE + homeHospital.getMyId() + "_" + homeHospital.getNo(), ordersMap, Constants.USER_TIME_OUT);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
