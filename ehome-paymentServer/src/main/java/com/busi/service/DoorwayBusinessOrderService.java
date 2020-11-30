@@ -62,8 +62,8 @@ public class DoorwayBusinessOrderService extends BaseController implements PayBa
         redisUtils.hset(Constants.REDIS_KEY_PHARMACYORDERS+pay.getUserId()+"_"+pay.getOrderNumber(),"paymentStatus",1);
         doorwayBusinessOrder.setPaymentStatus(1);
         doorwayBusinessOrder.setPaymentTime(new Date());
-        redisUtils.expire(Constants.REDIS_KEY_PHARMACYORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), 0);
-        redisUtils.hmset(Constants.REDIS_KEY_PHARMACYORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), CommonUtils.objectToMap(doorwayBusinessOrder), Constants.TIME_OUT_MINUTE_15*2);
+        redisUtils.expire(Constants.REDIS_KEY_DOORWAYBUSINESSORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), 0);
+        redisUtils.hmset(Constants.REDIS_KEY_DOORWAYBUSINESSORDERS + pay.getUserId()+"_"+pay.getOrderNumber(), CommonUtils.objectToMap(doorwayBusinessOrder), Constants.TIME_OUT_MINUTE_15*2);
         //开始扣款支付
         mqUtils.sendPurseMQ(pay.getUserId(),44,0,money*-1);//人民币转出
         //回调业务
