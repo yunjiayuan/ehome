@@ -271,6 +271,11 @@ public interface HotelTourismDao {
             " auditType = #{auditType}" +
             " where deleteType = 0 and id=#{id} and healthyCard != '' " +
             "</if>" +
+            "<if test=\"type == 5\">" +
+            "update DoorwayBusiness set" +
+            " auditType = #{auditType}" +
+            " where deleteType = 0 and id=#{id} and licence != '' " +
+            "</if>" +
             "</script>")
     int changeAuditType(@Param("type") int type, @Param("auditType") int auditType, @Param("id") long id);
 
