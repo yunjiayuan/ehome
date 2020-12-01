@@ -426,6 +426,9 @@ public class DoorwayBusinessController extends BaseController implements Doorway
                 String[] strings = io.getPicture().split(",");
                 collect.setPicture(strings[0]);
             }
+            collect.setOpenType(io.getOpenType());
+            collect.setOpenTime(io.getOpenTime());
+            collect.setCloseTime(io.getCloseTime());
             collect.setUserId(io.getUserId());
             collect.setType(io.getType());
             collect.setName(io.getBusinessName());

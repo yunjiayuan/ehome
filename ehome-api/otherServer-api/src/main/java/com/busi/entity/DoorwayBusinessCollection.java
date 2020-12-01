@@ -15,7 +15,7 @@ import java.util.Date;
 @Setter
 @Getter
 public class DoorwayBusinessCollection {
-    
+
     private long id;        //主键ID
 
     private long businessId;        //商家ID
@@ -34,4 +34,9 @@ public class DoorwayBusinessCollection {
 
     private int type;            // 类型
 
+    private int openType;                // 营业类型:0全天 1时间段
+
+    private String openTime;                // 营业时间 openType=1时有效
+
+    private String closeTime;                // 打烊时间 openType=1时有效
 }
