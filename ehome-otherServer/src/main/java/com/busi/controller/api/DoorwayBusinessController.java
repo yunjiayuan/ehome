@@ -31,6 +31,9 @@ public class DoorwayBusinessController extends BaseController implements Doorway
     DoorwayBusinessService travelService;
 
     @Autowired
+    UserInfoUtils userInfoUtils;
+
+    @Autowired
     RedisUtils redisUtils;
 
     @Autowired
@@ -173,14 +176,14 @@ public class DoorwayBusinessController extends BaseController implements Doorway
             if (kitchen == null) {
                 return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
             }
-//            UserInfo sendInfoCache = null;
-//            sendInfoCache = userInfoUtils.getUserInfo(userId);
-//            if (sendInfoCache != null) {
-//                kitchen.setName(sendInfoCache.getName());
-//                kitchen.setHead(sendInfoCache.getHead());
-//                kitchen.setProTypeId(sendInfoCache.getProType());
-//                kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
-//            }
+            UserInfo sendInfoCache = null;
+            sendInfoCache = userInfoUtils.getUserInfo(userId);
+            if (sendInfoCache != null) {
+                kitchen.setName(sendInfoCache.getName());
+                kitchen.setHead(sendInfoCache.getHead());
+                kitchen.setProTypeId(sendInfoCache.getProType());
+                kitchen.setHouseNumber(sendInfoCache.getHouseNumber());
+            }
             //放入缓存
             kitchenMap = CommonUtils.objectToMap(kitchen);
             redisUtils.hmset(Constants.REDIS_KEY_DOORWAYBUSINESS + userId, kitchenMap, Constants.USER_TIME_OUT);
@@ -230,14 +233,14 @@ public class DoorwayBusinessController extends BaseController implements Doorway
                 DoorwayBusiness ik = (DoorwayBusiness) list.get(i);
                 int distance = (int) Math.round(CommonUtils.getShortestDistance(ik.getLon(), ik.getLat(), lon, lat));
                 ik.setDistance(distance);//距离/m
-//                UserInfo sendInfoCache = null;
-//                sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
-//                if (sendInfoCache != null) {
-//                    ik.setName(sendInfoCache.getName());
-//                    ik.setHead(sendInfoCache.getHead());
-//                    ik.setProTypeId(sendInfoCache.getProType());
-//                    ik.setHouseNumber(sendInfoCache.getHouseNumber());
-//                }
+                UserInfo sendInfoCache = null;
+                sendInfoCache = userInfoUtils.getUserInfo(ik.getUserId());
+                if (sendInfoCache != null) {
+                    ik.setName(sendInfoCache.getName());
+                    ik.setHead(sendInfoCache.getHead());
+                    ik.setProTypeId(sendInfoCache.getProType());
+                    ik.setHouseNumber(sendInfoCache.getHouseNumber());
+                }
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", list);
