@@ -318,8 +318,8 @@ public interface DoorwayBusinessDao {
      * @param DoorwayBusinessCollection
      * @return
      */
-    @Insert("insert into DoorwayBusinessCollection(myId,userId,name,picture,time,type,businessId) " +
-            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{businessId})")
+    @Insert("insert into DoorwayBusinessCollection(myId,userId,name,picture,time,type,businessId,openType,openTime,closeTime) " +
+            "values (#{myId},#{userId},#{name},#{picture},#{time},#{type},#{businessId},#{openType},#{openTime},#{closeTime})")
     @Options(useGeneratedKeys = true)
     int addCollect(DoorwayBusinessCollection DoorwayBusinessCollection);
 
