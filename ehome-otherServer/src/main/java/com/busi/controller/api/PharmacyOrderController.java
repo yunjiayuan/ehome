@@ -380,12 +380,14 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
         }
         ko.setUpdateCategory(5);
         travelOrderService.updateOrders(ko);//更新订单
-        if (ko.getVerificationType() == 1 && ko.getPaymentStatus() == 1) {
-            //更新缓存、钱包、账单
-            if (ko.getMoney() > 0) {
-                mqUtils.sendPurseMQ(ko.getMyId(), 40, 0, ko.getMoney());
+        if (ko.getVerificationType() == 3 || ko.getVerificationType() == 4) {
+            if (ko.getPaymentStatus() == 1) {
+                //更新缓存、钱包、账单
+                if (ko.getMoney() > 0) {
+                    mqUtils.sendPurseMQ(ko.getMyId(), 40, 0, ko.getMoney());
+                }
             }
-            //清除缓存中的药店 订单信息
+            //清除缓存中的商家 订单信息
             redisUtils.expire(Constants.REDIS_KEY_PHARMACYORDERS + ko.getMyId() + "_" + ko.getNo(), 0);
             //放入缓存
             Map<String, Object> ordersMap = CommonUtils.objectToMap(ko);
