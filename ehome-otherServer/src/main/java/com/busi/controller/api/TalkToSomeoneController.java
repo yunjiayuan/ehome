@@ -85,6 +85,8 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
             homeHospitalService.update(homeHospital);
         } else {//更新状态
             homeHospitalService.update2(homeHospital);
+            //更新用户找人倾诉状态
+            userInfoUtils.updateTalkToSomeoneStatus(homeHospital.getUserId(), homeHospital.getState());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
