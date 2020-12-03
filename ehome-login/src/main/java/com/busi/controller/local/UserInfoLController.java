@@ -268,5 +268,45 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
         im_map.put("password",newUserInfo.getIm_password());//环信密码
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",im_map);
     }
+    /***
+     * 更新用户找人倾诉状态
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData updateTalkToSomeoneStatus(@RequestBody UserInfo userInfo) {
+        int count = userInfoService.updateTalkToSomeoneStatus(userInfo);
+        if (count <= 0) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "更新用户找人倾诉状态失败", new JSONObject());
+        }
+        //更新缓存数据
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+        if (userMap != null && userMap.size() > 0) {//缓存中存在 才更新 不存在不更新
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER + userInfo.getUserId(), "talkToSomeoneStatus", userInfo.getTalkToSomeoneStatus(), Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER + userInfo.getUserId(), Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+    /***
+     * 更新用户聊天互动状态
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData updateChatnteractionStatus(@RequestBody UserInfo userInfo) {
+        int count = userInfoService.updateChatnteractionStatus(userInfo);
+        if (count <= 0) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "更新用户聊天互动状态失败", new JSONObject());
+        }
+        //更新缓存数据
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+        if (userMap != null && userMap.size() > 0) {//缓存中存在 才更新 不存在不更新
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER + userInfo.getUserId(), "chatnteractionStatus", userInfo.getChatnteractionStatus(), Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER + userInfo.getUserId(), Constants.USER_TIME_OUT);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
 
 }

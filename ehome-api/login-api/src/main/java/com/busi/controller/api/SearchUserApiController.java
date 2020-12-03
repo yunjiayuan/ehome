@@ -35,14 +35,17 @@ public interface SearchUserApiController {
      * @param district      区  -1为不限
      * @param studyrank     学历  0：不限  1:"中专",2:"专科",3:"本科",4:"双学士",5:"硕士",6:"博士",7:"博士后",8:"其他"
      * @param maritalstatus 婚否  0：不限  1:"已婚",2:"未婚",3:"离异",4:"丧偶"
+     * @param talkToSomeoneStatus  倾诉状态 -1 表示不限 0表示不接受倾诉  1表示接受倾诉
+     * @param chatnteractionStatus 聊天互动功能的状态 -1 表示不限 0表示不接受别人找你互动  1表示接受别人找你互动
      * @param page          页码 第几页 起始值1
      * @param count         每页条数
      * @return
      */
-    @GetMapping("fuzzySearchUser/{name}/{beginAge}/{endAge}/{sex}/{province}/{city}/{district}/{studyrank}/{maritalstatus}/{page}/{count}")
+    @GetMapping("fuzzySearchUser/{name}/{beginAge}/{endAge}/{sex}/{province}/{city}/{district}/{studyrank}/{maritalstatus}/{talkToSomeoneStatus}/{chatnteractionStatus}/{page}/{count}")
     ReturnData fuzzySearchUser(@PathVariable String name, @PathVariable int beginAge, @PathVariable int endAge,
                                @PathVariable int sex, @PathVariable int province, @PathVariable int city,
                                @PathVariable int district, @PathVariable int studyrank, @PathVariable int maritalstatus,
+                               @PathVariable int talkToSomeoneStatus, @PathVariable int chatnteractionStatus,
                                @PathVariable int page, @PathVariable int count);
 
     /***
@@ -61,4 +64,13 @@ public interface SearchUserApiController {
      */
     @GetMapping("randomPeople")
     ReturnData randomPeople();
+
+    /***
+     * 找人倾诉、找人互动人员推荐接口
+     * @param talkToSomeoneStatus  倾诉状态 -1 表示不限 0表示不接受倾诉  1表示接受倾诉
+     * @param chatnteractionStatus 聊天互动功能的状态 -1 表示不限 0表示不接受别人找你互动  1表示接受别人找你互动
+     * @return
+     */
+    @GetMapping("talkToSomeoneRecommend/{talkToSomeoneStatus}/{chatnteractionStatus}")
+    ReturnData talkToSomeoneRecommend(@PathVariable int talkToSomeoneStatus, @PathVariable int chatnteractionStatus);
 }

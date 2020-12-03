@@ -96,15 +96,17 @@ public class SearchUserController extends BaseController implements SearchUserAp
     /**
      * 条件找人接口
      *
-     * @param name          用户名
-     * @param beginAge      起始年龄（包含） 默认0
-     * @param endAge        结束年龄（包含） 默认0  endAge>beginAge  0时为上限为不限
-     * @param sex           性别 0不限 1男2女
-     * @param province      省  -1为不限
-     * @param city          市  -1为不限
-     * @param district      区  -1为不限
-     * @param studyrank     学历  0：不限  1:"中专",2:"专科",3:"本科",4:"双学士",5:"硕士",6:"博士",7:"博士后",8:"其他"
-     * @param maritalstatus 婚否  0：不限  1:"已婚",2:"未婚",3:"离异",4:"丧偶"
+     * @param name                 用户名
+     * @param beginAge             起始年龄（包含） 默认0
+     * @param endAge               结束年龄（包含） 默认0  endAge>beginAge  0时为上限为不限
+     * @param sex                  性别 0不限 1男2女
+     * @param province             省  -1为不限
+     * @param city                 市  -1为不限
+     * @param district             区  -1为不限
+     * @param studyrank            学历  0：不限  1:"中专",2:"专科",3:"本科",4:"双学士",5:"硕士",6:"博士",7:"博士后",8:"其他"
+     * @param maritalstatus        婚否  0：不限  1:"已婚",2:"未婚",3:"离异",4:"丧偶"
+     * @param talkToSomeoneStatus  倾诉状态 -1 表示不限 0表示不接受倾诉  1表示接受倾诉
+     * @param chatnteractionStatus 聊天互动功能的状态 -1 表示不限 0表示不接受别人找你互动  1表示接受别人找你互动
      * @param page          页码 第几页 起始值1
      * @param count         每页条数
      * @return
@@ -113,6 +115,7 @@ public class SearchUserController extends BaseController implements SearchUserAp
     public ReturnData fuzzySearchUser(@PathVariable String name, @PathVariable int beginAge, @PathVariable int endAge,
                                       @PathVariable int sex, @PathVariable int province, @PathVariable int city,
                                       @PathVariable int district, @PathVariable int studyrank, @PathVariable int maritalstatus,
+                                      @PathVariable int talkToSomeoneStatus, @PathVariable int chatnteractionStatus,
                                       @PathVariable int page, @PathVariable int count) {
 
         //验证参数
@@ -129,6 +132,12 @@ public class SearchUserController extends BaseController implements SearchUserAp
         if (maritalstatus < 0 || maritalstatus > 4) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "婚否maritalstatus参数有误", new JSONObject());
         }
+        if (talkToSomeoneStatus < -1 || talkToSomeoneStatus > 1) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "倾诉状态talkToSomeoneStatus参数有误", new JSONObject());
+        }
+        if (chatnteractionStatus < -1 || chatnteractionStatus > 1) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "聊天互动功能的状态talkToSomeoneStatus参数有误", new JSONObject());
+        }
         if (sex < 0 || sex > 2) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "性别sex参数有误", new JSONObject());
         }
@@ -140,7 +149,7 @@ public class SearchUserController extends BaseController implements SearchUserAp
         }
         //开始查询
         PageBean<UserInfo> pageBean;
-        pageBean = userInfoService.findList(name, beginAge, endAge, sex, province, city, district, studyrank, maritalstatus, page, count);
+        pageBean = userInfoService.findList(name, beginAge, endAge, sex, province, city, district, studyrank, maritalstatus,talkToSomeoneStatus,chatnteractionStatus, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -273,7 +282,7 @@ public class SearchUserController extends BaseController implements SearchUserAp
         }
         //开始查询
         PageBean<UserInfo> pageBean;
-        pageBean = userInfoService.findList(null, beginAge, endAge, sex, userInfo.getProvince(), userInfo.getCity(), -1, 0, 0, 0, 200);
+        pageBean = userInfoService.findList(null, beginAge, endAge, sex, userInfo.getProvince(), userInfo.getCity(), -1, 0, 0, -1,-1,0, 200);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -289,6 +298,105 @@ public class SearchUserController extends BaseController implements SearchUserAp
                 }
             }
         }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, jsonArray);
+    }
+
+    /***
+     * 找人倾诉、找人互动人员推荐接口
+     * @param talkToSomeoneStatus  倾诉状态 -1 表示不限 0表示不接受倾诉  1表示接受倾诉
+     * @param chatnteractionStatus 聊天互动功能的状态 -1 表示不限 0表示不接受别人找你互动  1表示接受别人找你互动
+     * @return
+     */
+    @Override
+    public ReturnData talkToSomeoneRecommend(@PathVariable int talkToSomeoneStatus, @PathVariable int chatnteractionStatus) {
+        //验证参数
+        if (talkToSomeoneStatus < -1 || talkToSomeoneStatus > 1) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "talkToSomeoneStatus参数有误", new JSONObject());
+        }
+        if (chatnteractionStatus < -1 || chatnteractionStatus > 1) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "chatnteractionStatus参数有误", new JSONObject());
+        }
+        List list = null;
+        UserInfo info = null;
+        UserInfo userInfo = null;
+        int age = 0; //真实年龄
+        int sex = 0; // 性别 0不限 1男2女
+        int beginAge = 0; //起始年龄（包含） 默认0
+        int endAge = 0; //结束年龄（包含） 默认0 endAge>beginAge
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Random random = new Random();
+        JSONArray jsonArray = new JSONArray();
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
+        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+        if (userInfo == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        if (userInfo.getBirthday() != null) {
+            String de = format.format(userInfo.getBirthday());
+            String strBirthdayArr = de.substring(0, 10);
+            age = CommonUtils.getAge(strBirthdayArr) + 1;
+        }
+        //年龄区间前后10
+        if (age > 10) {
+            beginAge = age - 10;
+        }
+        endAge = age + 10;
+        //性别相反
+        if (userInfo.getSex() == 1) {
+            sex = 2;
+        } else {
+            sex = 1;
+        }
+        //开始查询
+        PageBean<UserInfo> pageBean;
+        pageBean = userInfoService.findList(null, beginAge, endAge, sex, userInfo.getProvince(), userInfo.getCity(), -1, 0, 0, talkToSomeoneStatus,chatnteractionStatus,0, 20);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        list = pageBean.getList();
+        if(list.size()<20){//数据不足 补充机器人数据
+            int counts = 40000;//循环多次 补20条
+            for (int i = 0; i < counts; i++) {
+                long newUserId = random.nextInt(40000) + 13870;
+                Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
+                UserInfo newUserInfo = null;
+                if (newUserMap == null || newUserMap.size() <= 0) {
+                    //缓存中没有用户对象信息 查询数据库
+                    UserInfo u = userInfoService.findUserById(newUserId);
+                    if (u == null) {//数据库也没有
+                        continue;
+                    }
+                    newUserMap = CommonUtils.objectToMap(u);
+                    redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, newUserMap, Constants.USER_TIME_OUT);
+                }
+                newUserInfo = (UserInfo) CommonUtils.mapToObject(newUserMap, UserInfo.class);
+                if (newUserInfo == null) {
+                    continue;
+                }
+                if (newUserInfo.getUserId() == CommonUtils.getMyId()) {
+                    continue;
+                }
+                //性别相反
+                if (sex != 0 && newUserInfo.getSex() != userInfo.getSex()) {
+                    continue;
+                }
+                //年龄相近
+                int newAge = 0;
+                if (newUserInfo.getBirthday() != null) {
+                    String de = format.format(newUserInfo.getBirthday());
+                    String strBirthdayArr = de.substring(0, 10);
+                    newAge = CommonUtils.getAge(strBirthdayArr) + 1;
+                }
+                if(newAge<beginAge||newAge>endAge){
+                    continue;
+                }
+                list.add(CommonUtils.objectToMap(newUserInfo));
+                if(list.size()>=20){//最多20条数据
+                    break;
+                }
+            }
+        }
+
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, jsonArray);
     }
 }

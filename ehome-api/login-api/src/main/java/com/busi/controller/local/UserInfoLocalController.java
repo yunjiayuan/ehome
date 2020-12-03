@@ -52,6 +52,22 @@ public interface UserInfoLocalController {
     ReturnData updateUserCe(@RequestBody UserInfo userInfo);
 
     /***
+     * 更新用户找人倾诉状态
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateTalkToSomeoneStatus")
+    ReturnData updateTalkToSomeoneStatus(@RequestBody UserInfo userInfo);
+
+    /***
+     * 更新用户聊天互动状态
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateChatnteractionStatus")
+    ReturnData updateChatnteractionStatus(@RequestBody UserInfo userInfo);
+
+    /***
      * 更新生活圈首次视频发布状态
      * @param userInfo
      * @return

@@ -139,6 +139,10 @@ public class UserInfo {
 
 	private int type;//0表示手机号完善资料 1表示第三方平台完善资料  与数据库无关字段
 
+	private int talkToSomeoneStatus;//倾诉状态 0表示不接受倾诉  1表示接受倾诉
+
+	private int chatnteractionStatus;//聊天互动功能的状态 0表示不接受别人找你互动  1表示接受别人找你互动
+
 	private String token;//用户令牌 与数据库无关字段
 
 	private String clientId;//设备唯一标识 与数据库无关字段

@@ -163,6 +163,24 @@ public class UserInfoService {
     public int updateUserCe(UserInfo userInfo) {
         return userInfoDao.updateUserCe(userInfo);
     }
+    /***
+     * 更新用户找人倾诉状态
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateTalkToSomeoneStatus(UserInfo userInfo) {
+        return userInfoDao.updateTalkToSomeoneStatus(userInfo);
+    }
+    /***
+     * 更新用户聊天互动状态
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateChatnteractionStatus(UserInfo userInfo) {
+        return userInfoDao.updateChatnteractionStatus(userInfo);
+    }
 
     /***
      * 修改生活圈首次视频发布状态
@@ -231,14 +249,15 @@ public class UserInfoService {
      * @return
      */
     public PageBean<UserInfo> findList(String name, int beginAge, int endAge, int sex, int province, int city,
-                                       int district, int studyrank, int maritalstatus, int page, int count) {
+                                       int district, int studyrank, int maritalstatus,int talkToSomeoneStatus,int chatnteractionStatus,
+                                       int page, int count) {
         //对可为空的参数进行特殊处理 避免mybatis空值拼接检索匹配不到的问题
         if (CommonUtils.checkFull(name)) {
             name = null;
         }
         List<UserInfo> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = userInfoDao.findList(name, beginAge, endAge, sex, province, city, district, studyrank, maritalstatus);
+        list = userInfoDao.findList(name, beginAge, endAge, sex, province, city, district, studyrank, maritalstatus,talkToSomeoneStatus,chatnteractionStatus);
         for (int i = 0; i < list.size(); i++) {
             UserInfo u = list.get(i);
             if (u != null) {

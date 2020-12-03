@@ -69,4 +69,28 @@ public class UserInfoUtils {
         userInfo.setUser_ce(type);
         userInfoLocalControllerFegin.updateUserCe(userInfo);
     }
+
+    /***
+     * 更新用户找人倾诉状态
+     * @param type    倾诉状态 0表示不接受倾诉  1表示接受倾诉
+     * @param userId  当前用户ID
+     */
+    public void updateTalkToSomeoneStatus(long userId ,int type) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userId);
+        userInfo.setTalkToSomeoneStatus(type);
+        userInfoLocalControllerFegin.updateTalkToSomeoneStatus(userInfo);
+    }
+
+    /***
+     * 更新用户聊天互动状态
+     * @param type    聊天互动功能的状态 0表示不接受别人找你互动  1表示接受别人找你互动
+     * @param userId  当前用户ID
+     */
+    public void updateChatnteractionStatus(long userId ,int type) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userId);
+        userInfo.setChatnteractionStatus(type);
+        userInfoLocalControllerFegin.updateChatnteractionStatus(userInfo);
+    }
 }

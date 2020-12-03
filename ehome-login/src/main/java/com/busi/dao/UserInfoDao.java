@@ -106,6 +106,12 @@ public interface UserInfoDao {
             "<if test=\"maritalstatus > 0 \">" +
             " and maritalstatus = #{maritalstatus}" +
             "</if>" +
+            "<if test=\"talkToSomeoneStatus != -1 \">" +
+                " and talkToSomeoneStatus = #{talkToSomeoneStatus}" +
+            "</if>" +
+            "<if test=\"chatnteractionStatus != -1 \">" +
+                " and chatnteractionStatus = #{chatnteractionStatus}" +
+            "</if>" +
             " and accountStatus = 0" +
             " order by time desc" +
             "</script>")
@@ -113,7 +119,8 @@ public interface UserInfoDao {
     List<UserInfo> findList(@Param("name") String name, @Param("beginAge") int beginAge, @Param("endAge") int endAge,
                             @Param("sex") int sex, @Param("province") int province, @Param("city") int city,
                             @Param("district") int district, @Param("studyrank") int studyrank,
-                            @Param("maritalstatus") int maritalstatus);
+                            @Param("maritalstatus") int maritalstatus,@Param("talkToSomeoneStatus") int talkToSomeoneStatus,
+                            @Param("chatnteractionStatus") int chatnteractionStatus);
 
     /***
      * 更新用户信息
@@ -271,6 +278,31 @@ public interface UserInfoDao {
             " where userId=#{userId}" +
             "</script>")
     int updateUserCe(UserInfo userInfo);
+
+    /**
+     * 用户找人倾诉状态
+     *
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set" +
+            " talkToSomeoneStatus=#{talkToSomeoneStatus}" +
+            " where userId=#{userId}" +
+            "</script>")
+    int updateTalkToSomeoneStatus(UserInfo userInfo);
+/**
+     * 更新用户聊天互动状态
+     *
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set" +
+            " chatnteractionStatus=#{chatnteractionStatus}" +
+            " where userId=#{userId}" +
+            "</script>")
+    int updateChatnteractionStatus(UserInfo userInfo);
 
     /**
      * 修改生活圈首次视频发布状态
