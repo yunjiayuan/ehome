@@ -349,14 +349,15 @@ public class SearchUserController extends BaseController implements SearchUserAp
         }
         //开始查询
         PageBean<UserInfo> pageBean;
-        pageBean = userInfoService.findList(null, beginAge, endAge, sex, userInfo.getProvince(), userInfo.getCity(), -1, 0, 0, talkToSomeoneStatus,chatnteractionStatus,0, 20);
+        pageBean = userInfoService.findList(null, beginAge, endAge, sex, userInfo.getProvince(), userInfo.getCity(), -1, 0, 0, talkToSomeoneStatus,chatnteractionStatus,0, 1000);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         list = pageBean.getList();
         if(list.size()<20){//数据不足 补充机器人数据
             int counts = 40000;//循环多次 补20条
-            for (int i = 0; i < counts; i++) {
+            int start = random.nextInt(5000)+1;//随机起始值
+            for (int i = start; i < counts; i++) {
                 long newUserId = random.nextInt(40000) + 13870;
                 Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
                 UserInfo newUserInfo = null;
@@ -395,6 +396,18 @@ public class SearchUserController extends BaseController implements SearchUserAp
                     break;
                 }
             }
+        }else{//数据超过20条 随机挑出20条返回给客户端
+            List newList = new ArrayList();
+            boolean falg  = true;
+            while (falg){
+                int count = random.nextInt(list.size());
+                newList.add(list.get(count));
+                list.remove(count);
+                if(newList.size()>=20){
+                    falg = false;
+                }
+            }
+            pageBean.setList(newList);
         }
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, jsonArray);
