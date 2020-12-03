@@ -317,7 +317,6 @@ public class SearchUserController extends BaseController implements SearchUserAp
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "chatnteractionStatus参数有误", new JSONObject());
         }
         List list = null;
-        UserInfo info = null;
         UserInfo userInfo = null;
         int age = 0; //真实年龄
         int sex = 0; // 性别 0不限 1男2女
@@ -325,9 +324,10 @@ public class SearchUserController extends BaseController implements SearchUserAp
         int endAge = 0; //结束年龄（包含） 默认0 endAge>beginAge
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Random random = new Random();
-        JSONArray jsonArray = new JSONArray();
-        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
-        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+        //下面代码临时处理 1周后再还原  20201203
+        userInfo = userInfoService.findUserById(CommonUtils.getMyId());
+//        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
+//        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
         if (userInfo == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -359,8 +359,9 @@ public class SearchUserController extends BaseController implements SearchUserAp
             int start = random.nextInt(5000)+1;//随机起始值
             for (int i = start; i < counts; i++) {
                 long newUserId = random.nextInt(40000) + 13870;
-                Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
                 UserInfo newUserInfo = null;
+                //下面代码临时处理 1周后再还原  20201203
+                /*Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
                 if (newUserMap == null || newUserMap.size() <= 0) {
                     //缓存中没有用户对象信息 查询数据库
                     UserInfo u = userInfoService.findUserById(newUserId);
@@ -370,7 +371,8 @@ public class SearchUserController extends BaseController implements SearchUserAp
                     newUserMap = CommonUtils.objectToMap(u);
                     redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, newUserMap, Constants.USER_TIME_OUT);
                 }
-                newUserInfo = (UserInfo) CommonUtils.mapToObject(newUserMap, UserInfo.class);
+                newUserInfo = (UserInfo) CommonUtils.mapToObject(newUserMap, UserInfo.class);*/
+                newUserInfo = userInfoService.findUserById(newUserId);
                 if (newUserInfo == null) {
                     continue;
                 }
@@ -410,6 +412,6 @@ public class SearchUserController extends BaseController implements SearchUserAp
             pageBean.setList(newList);
         }
 
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, jsonArray);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 }
