@@ -411,6 +411,6 @@ public class SearchUserController extends BaseController implements SearchUserAp
             pageBean.setPageSize(20);
             pageBean.setList(newList);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new ArrayList<>());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 }
