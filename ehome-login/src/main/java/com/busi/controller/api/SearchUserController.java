@@ -409,6 +409,9 @@ public class SearchUserController extends BaseController implements SearchUserAp
                     falg = false;
                 }
             }
+            pageBean.setSize(20);
+            pageBean.setTotal(20);
+            pageBean.setPageSize(20);
             pageBean.setList(newList);
         }
 
