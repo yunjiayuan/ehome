@@ -11,6 +11,7 @@ import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
+import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResult;
@@ -309,112 +310,112 @@ public class SearchUserController extends BaseController implements SearchUserAp
      */
     @Override
     public ReturnData talkToSomeoneRecommend(@PathVariable int talkToSomeoneStatus, @PathVariable int chatnteractionStatus) {
-        //验证参数
-        if (talkToSomeoneStatus < -1 || talkToSomeoneStatus > 1) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "talkToSomeoneStatus参数有误", new JSONObject());
-        }
-        if (chatnteractionStatus < -1 || chatnteractionStatus > 1) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "chatnteractionStatus参数有误", new JSONObject());
-        }
-        List list = null;
-        UserInfo userInfo = null;
-        int age = 0; //真实年龄
-        int sex = 0; // 性别 0不限 1男2女
-        int beginAge = 0; //起始年龄（包含） 默认0
-        int endAge = 0; //结束年龄（包含） 默认0 endAge>beginAge
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Random random = new Random();
-        //下面代码临时处理 1周后再还原  20201203
-        userInfo = userInfoService.findUserById(CommonUtils.getMyId());
+//        //验证参数
+//        if (talkToSomeoneStatus < -1 || talkToSomeoneStatus > 1) {
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "talkToSomeoneStatus参数有误", new JSONObject());
+//        }
+//        if (chatnteractionStatus < -1 || chatnteractionStatus > 1) {
+//            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "chatnteractionStatus参数有误", new JSONObject());
+//        }
+//        List list = null;
+//        UserInfo userInfo = null;
+//        int age = 0; //真实年龄
+//        int sex = 0; // 性别 0不限 1男2女
+//        int beginAge = 0; //起始年龄（包含） 默认0
+//        int endAge = 0; //结束年龄（包含） 默认0 endAge>beginAge
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        Random random = new Random();
 //        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
 //        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
-        if (userInfo == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-        }
-        if (userInfo.getBirthday() != null) {
-            String de = format.format(userInfo.getBirthday());
-            String strBirthdayArr = de.substring(0, 10);
-            age = CommonUtils.getAge(strBirthdayArr) + 1;
-        }
-        //年龄区间前后10
-        if (age > 10) {
-            beginAge = age - 10;
-        }
-        endAge = age + 10;
-        //性别相反
-        if (userInfo.getSex() == 1) {
-            sex = 2;
-        } else {
-            sex = 1;
-        }
-        //开始查询
-        PageBean<UserInfo> pageBean;
-        pageBean = userInfoService.findList(null, beginAge, endAge, sex, userInfo.getProvince(), userInfo.getCity(), -1, 0, 0, talkToSomeoneStatus,chatnteractionStatus,0, 1000);
-        if (pageBean == null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
-        }
-        list = pageBean.getList();
-        if(list.size()<20){//数据不足 补充机器人数据
-            int counts = 40000;//循环多次 补20条
-            int start = random.nextInt(5000)+1;//随机起始值
-            for (int i = start; i < counts; i++) {
-                long newUserId = random.nextInt(40000) + 13870;
-                UserInfo newUserInfo = null;
-                //下面代码临时处理 1周后再还原  20201203
-                /*Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
-                if (newUserMap == null || newUserMap.size() <= 0) {
-                    //缓存中没有用户对象信息 查询数据库
-                    UserInfo u = userInfoService.findUserById(newUserId);
-                    if (u == null) {//数据库也没有
-                        continue;
-                    }
-                    newUserMap = CommonUtils.objectToMap(u);
-                    redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, newUserMap, Constants.USER_TIME_OUT);
-                }
-                newUserInfo = (UserInfo) CommonUtils.mapToObject(newUserMap, UserInfo.class);*/
-                newUserInfo = userInfoService.findUserById(newUserId);
-                if (newUserInfo == null) {
-                    continue;
-                }
-                if (newUserInfo.getUserId() == CommonUtils.getMyId()) {
-                    continue;
-                }
-                //性别相反
-                if (sex != 0 && newUserInfo.getSex() != userInfo.getSex()) {
-                    continue;
-                }
-                //年龄相近
-                int newAge = 0;
-                if (newUserInfo.getBirthday() != null) {
-                    String de = format.format(newUserInfo.getBirthday());
-                    String strBirthdayArr = de.substring(0, 10);
-                    newAge = CommonUtils.getAge(strBirthdayArr) + 1;
-                }
-                if(newAge<beginAge||newAge>endAge){
-                    continue;
-                }
-                list.add(CommonUtils.objectToMap(newUserInfo));
-                if(list.size()>=20){//最多20条数据
-                    break;
-                }
+//        if (userInfo == null) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+//        }
+//        if (userInfo.getBirthday() != null) {
+//            String de = format.format(userInfo.getBirthday());
+//            String strBirthdayArr = de.substring(0, 10);
+//            age = CommonUtils.getAge(strBirthdayArr) + 1;
+//        }
+//        //年龄区间前后10
+//        if (age > 10) {
+//            beginAge = age - 10;
+//        }
+//        endAge = age + 10;
+//        //性别相反
+//        if (userInfo.getSex() == 1) {
+//            sex = 2;
+//        } else {
+//            sex = 1;
+//        }
+//        //开始查询
+//        PageBean<UserInfo> pageBean;
+//        pageBean = userInfoService.findList(null, beginAge, endAge, sex, userInfo.getProvince(), userInfo.getCity(), -1, 0, 0, talkToSomeoneStatus,chatnteractionStatus,0, 1000);
+//        if (pageBean == null) {
+//            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+//        }
+//        list = pageBean.getList();
+//        if(list.size()<20){//数据不足 补充机器人数据
+//            int counts = 40000;//循环多次 补20条
+//            int start = random.nextInt(5000)+1;//随机起始值
+//            for (int i = start; i < counts; i++) {
+//                long newUserId = random.nextInt(40000) + 13870;
+//                UserInfo newUserInfo = null;
+//                Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
+//                if (newUserMap == null || newUserMap.size() <= 0) {
+//                    //缓存中没有用户对象信息 查询数据库
+//                    UserInfo u = userInfoService.findUserById(newUserId);
+//                    if (u == null) {//数据库也没有
+//                        continue;
+//                    }
+//                    newUserMap = CommonUtils.objectToMap(u);
+//                    redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, newUserMap, Constants.USER_TIME_OUT);
+//                }
+//                newUserInfo = (UserInfo) CommonUtils.mapToObject(newUserMap, UserInfo.class);
+//                if (newUserInfo == null) {
+//                    continue;
+//                }
+//                if (newUserInfo.getUserId() == CommonUtils.getMyId()) {
+//                    continue;
+//                }
+//                //性别相反
+//                if (sex != 0 && newUserInfo.getSex() != userInfo.getSex()) {
+//                    continue;
+//                }
+//                //年龄相近
+//                int newAge = 0;
+//                if (newUserInfo.getBirthday() != null) {
+//                    String de = format.format(newUserInfo.getBirthday());
+//                    String strBirthdayArr = de.substring(0, 10);
+//                    newAge = CommonUtils.getAge(strBirthdayArr) + 1;
+//                }
+//                if(newAge<beginAge||newAge>endAge){
+//                    continue;
+//                }
+//                list.add(CommonUtils.objectToMap(newUserInfo));
+//                if(list.size()>=20){//最多20条数据
+//                    break;
+//                }
+//            }
+//        }else{//数据超过20条 随机挑出20条返回给客户端
+//            List newList = new ArrayList();
+//            boolean falg  = true;
+//            while (falg){
+//                int count = random.nextInt(list.size());
+//                newList.add(list.get(count));
+//                list.remove(count);
+//                if(newList.size()>=20){
+//                    falg = false;
+//                }
+//            }
+//            pageBean.setSize(20);
+//            pageBean.setTotal(20);
+//            pageBean.setPageSize(20);
+//            pageBean.setList(newList);
+//        }
+        for(int i = 0;i<99999;i++){
+            if(redisUtils.isExistKey(Constants.REDIS_KEY_USER + i)){
+                redisUtils.delKey(Constants.REDIS_KEY_USER + i);
             }
-        }else{//数据超过20条 随机挑出20条返回给客户端
-            List newList = new ArrayList();
-            boolean falg  = true;
-            while (falg){
-                int count = random.nextInt(list.size());
-                newList.add(list.get(count));
-                list.remove(count);
-                if(newList.size()>=20){
-                    falg = false;
-                }
-            }
-            pageBean.setSize(20);
-            pageBean.setTotal(20);
-            pageBean.setPageSize(20);
-            pageBean.setList(newList);
         }
-
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new ArrayList<>());
     }
 }
