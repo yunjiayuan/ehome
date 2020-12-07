@@ -53,7 +53,7 @@ public interface TalkToSomeonelDao {
     @Update("<script>" +
             "update TalkToSomeone set" +
             " state=#{state}" +
-            " where id=#{id}" +
+            " where userId=#{userId}" +
             "</script>")
     int update2(TalkToSomeone kitchen);
 
