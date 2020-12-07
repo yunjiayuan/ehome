@@ -11,6 +11,7 @@ import com.busi.utils.CommonUtils;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
+import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResult;
@@ -324,10 +325,8 @@ public class SearchUserController extends BaseController implements SearchUserAp
         int endAge = 0; //结束年龄（包含） 默认0 endAge>beginAge
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Random random = new Random();
-        //下面代码临时处理 1周后再还原  20201203
-        userInfo = userInfoService.findUserById(CommonUtils.getMyId());
-//        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
-//        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
+        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
         if (userInfo == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -360,8 +359,7 @@ public class SearchUserController extends BaseController implements SearchUserAp
             for (int i = start; i < counts; i++) {
                 long newUserId = random.nextInt(40000) + 13870;
                 UserInfo newUserInfo = null;
-                //下面代码临时处理 1周后再还原  20201203
-                /*Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
+                Map<String, Object> newUserMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
                 if (newUserMap == null || newUserMap.size() <= 0) {
                     //缓存中没有用户对象信息 查询数据库
                     UserInfo u = userInfoService.findUserById(newUserId);
@@ -371,8 +369,7 @@ public class SearchUserController extends BaseController implements SearchUserAp
                     newUserMap = CommonUtils.objectToMap(u);
                     redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, newUserMap, Constants.USER_TIME_OUT);
                 }
-                newUserInfo = (UserInfo) CommonUtils.mapToObject(newUserMap, UserInfo.class);*/
-                newUserInfo = userInfoService.findUserById(newUserId);
+                newUserInfo = (UserInfo) CommonUtils.mapToObject(newUserMap, UserInfo.class);
                 if (newUserInfo == null) {
                     continue;
                 }
@@ -414,7 +411,6 @@ public class SearchUserController extends BaseController implements SearchUserAp
             pageBean.setPageSize(20);
             pageBean.setList(newList);
         }
-
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, pageBean);
     }
 }
