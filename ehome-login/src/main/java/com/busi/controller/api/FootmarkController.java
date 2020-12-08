@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -223,9 +221,23 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
         }
         List list = null;
         list = redisUtils.getList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0, -1);
-        list.add(face);
-        redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
         if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
+                //判断是否已在房间并且位置相近
+                if (footprints.getUserId() == CommonUtils.getMyId()) {
+                    int distance = (int) Math.round(CommonUtils.getShortestDistance(footprints.getLon(), footprints.getLat(), lon, lat));
+                    if (distance > 100) {
+                        list.remove(footprints);
+                        list.add(face);
+                        //清除缓存中信息
+                        redisUtils.expire(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0);
+                        //放入缓存
+                        redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+                        break;
+                    }
+                }
+            }
             for (int i = 0; i < list.size(); i++) {
                 FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
                 int distance = (int) Math.round(CommonUtils.getShortestDistance(footprints.getLon(), footprints.getLat(), lon, lat));
@@ -233,24 +245,11 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
                     list.remove(footprints);
                     continue;
                 }
-                userInfo = null;
-                userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + footprints.getUserId());
-                if (userMap == null || userMap.size() <= 0) {
-                    //缓存中没有用户对象信息 查询数据库
-                    UserInfo u = userInfoService.findUserById(footprints.getUserId());
-                    if (u != null) {
-                        userMap = CommonUtils.objectToMap(u);
-                        redisUtils.hmset(Constants.REDIS_KEY_USER + footprints.getUserId(), userMap, Constants.USER_TIME_OUT);
-                    }
-                }
-                userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
-                if (userInfo != null) {
-                    face.setName(userInfo.getName());
-                    face.setHead(userInfo.getHead());
-                    face.setProTypeId(userInfo.getProType());
-                    face.setHouseNumber(userInfo.getHouseNumber());
-                }
             }
+        } else {
+            list.add(face);
+            //放入缓存
+            redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
