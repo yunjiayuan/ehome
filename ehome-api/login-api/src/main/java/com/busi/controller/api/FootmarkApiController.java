@@ -49,4 +49,14 @@ public interface FootmarkApiController {
     @GetMapping("findAuthority")
     ReturnData findAuthority();
 
+    /***
+     * 查找房间
+     * @param roomName  房间名称
+     * @param lat  纬度
+     * @param lon   经度
+     * @return
+     */
+    @GetMapping("findFootRoom/{roomName}/{lat}/{lon}")
+    ReturnData findFootRoom(@PathVariable String roomName, @PathVariable double lat, @PathVariable double lon);
+
 }

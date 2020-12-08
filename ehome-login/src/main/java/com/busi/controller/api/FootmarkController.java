@@ -2,15 +2,11 @@ package com.busi.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
-import com.busi.entity.Footmark;
-import com.busi.entity.Footmarkauthority;
-import com.busi.entity.PageBean;
-import com.busi.entity.ReturnData;
+import com.busi.entity.*;
 import com.busi.service.FootmarkService;
+import com.busi.service.UserInfoService;
 import com.busi.service.UserRelationShipService;
-import com.busi.utils.CommonUtils;
-import com.busi.utils.MqUtils;
-import com.busi.utils.StatusCode;
+import com.busi.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +31,12 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
 
     @Autowired
     MqUtils mqUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
+
+    @Autowired
+    UserInfoService userInfoService;
 
     @Autowired
     FootmarkService footmarkService;
@@ -81,6 +86,46 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
                     pageBean = footmarkService.findList(userId, footmarkType, startTime, endTime, page, count);
                 }
             }
+        }
+        if (pageBean != null) {
+            List list = null;
+            String newUsers = "";//用户id + 名字 + 头像   逗号分隔
+            list = pageBean.getList();
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    Footmark ik = (Footmark) list.get(i);
+                    if (ik != null && !CommonUtils.checkFull(ik.getUsers())) {
+                        String[] strings = ik.getUsers().split(",");
+                        for (int j = 0; j < strings.length; j++) {
+                            long newUserId = Long.parseLong(strings[j]);
+                            Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
+                            UserInfo userInfo = null;
+                            if (userMap == null || userMap.size() <= 0) {
+                                //缓存中没有用户对象信息 查询数据库
+                                UserInfo u = userInfoService.findUserById(newUserId);
+                                if (u != null) {
+                                    userMap = CommonUtils.objectToMap(u);
+                                    redisUtils.hmset(Constants.REDIS_KEY_USER + newUserId, userMap, Constants.USER_TIME_OUT);
+                                }
+                            }
+                            userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+                            if (userInfo != null) {
+                                if (j == strings.length - 1) {
+                                    newUsers += newUserId + "," + userInfo.getName() + "," + userInfo.getHead();
+                                    ik.setUsers(newUsers);
+                                } else {
+                                    newUsers += newUserId + "," + userInfo.getName() + "," + userInfo.getHead() + ";";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            pageBean = new PageBean<>();
+            pageBean.setSize(list.size());
+            pageBean.setPageNum(page);
+            pageBean.setPageSize(count);
+            pageBean.setList(list);
         }
         //新增任务
         mqUtils.sendTaskMQ(userId, 0, 3);
@@ -143,6 +188,71 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
         }
         map.put("authority", posts.getAuthority());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 查找房间
+     * @param roomName  房间名称
+     * @param lat  纬度
+     * @param lon   经度
+     * @return
+     */
+    @Override
+    public ReturnData findFootRoom(@PathVariable String roomName, @PathVariable double lat, @PathVariable double lon) {
+        FaceToFaceFootprints face = new FaceToFaceFootprints();
+        face.setUserId(CommonUtils.getMyId());
+        face.setRoomName(roomName);
+        face.setLat(lat);
+        face.setLon(lon);
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + CommonUtils.getMyId());
+        UserInfo userInfo = null;
+        if (userMap == null || userMap.size() <= 0) {
+            //缓存中没有用户对象信息 查询数据库
+            UserInfo u = userInfoService.findUserById(CommonUtils.getMyId());
+            if (u != null) {
+                userMap = CommonUtils.objectToMap(u);
+                redisUtils.hmset(Constants.REDIS_KEY_USER + CommonUtils.getMyId(), userMap, Constants.USER_TIME_OUT);
+            }
+        }
+        userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+        if (userInfo != null) {
+            face.setName(userInfo.getName());
+            face.setHead(userInfo.getHead());
+            face.setProTypeId(userInfo.getProType());
+            face.setHouseNumber(userInfo.getHouseNumber());
+        }
+        List list = null;
+        list = redisUtils.getList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0, -1);
+        list.add(face);
+        redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
+                int distance = (int) Math.round(CommonUtils.getShortestDistance(footprints.getLon(), footprints.getLat(), lon, lat));
+                if (distance > 1000) {//只查找1公里范围内的房间人员
+                    list.remove(footprints);
+                    continue;
+                }
+                userInfo = null;
+                userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + footprints.getUserId());
+                if (userMap == null || userMap.size() <= 0) {
+                    //缓存中没有用户对象信息 查询数据库
+                    UserInfo u = userInfoService.findUserById(footprints.getUserId());
+                    if (u != null) {
+                        userMap = CommonUtils.objectToMap(u);
+                        redisUtils.hmset(Constants.REDIS_KEY_USER + footprints.getUserId(), userMap, Constants.USER_TIME_OUT);
+                    }
+                }
+                userInfo = (UserInfo) CommonUtils.mapToObject(userMap, UserInfo.class);
+                if (userInfo != null) {
+                    face.setName(userInfo.getName());
+                    face.setHead(userInfo.getHead());
+                    face.setProTypeId(userInfo.getProType());
+                    face.setHouseNumber(userInfo.getHouseNumber());
+                }
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 
 }

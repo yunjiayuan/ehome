@@ -32,7 +32,7 @@ public class Notepad {
 
     private long thisDateId;    //选择的时间搓 用于后台查询某时间段或者 某天记录 20160201
 
-    private String imgUrls;                //图片缩略图  9张
+    private String imgUrls;     //图片缩略图  9张
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date alarmTime;    //闹铃时间
@@ -45,6 +45,8 @@ public class Notepad {
     private String videoCover;        //视频封面
 
     private String videoUrl;        //视频地址
+
+    private String users;        //用户ID组合：逗号分隔
 
     //与数据库无关字段
     private String delImgUrls;//将要删除的图片地址组合 “,”分隔

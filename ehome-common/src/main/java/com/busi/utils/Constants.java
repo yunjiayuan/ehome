@@ -324,6 +324,7 @@ public class Constants {
     public static final String REDIS_KEY_HOMEHOSPITAL = "homeHospital_";//userId与医馆对象关系对照
     public static final String REDIS_KEY_LVSHI = "lvshi_";//userId与律师对象关系对照
     public static final String REDIS_KEY_EPIDEMICSITUATION = "epidemicSituation";//最新疫情
+    public static final String REDIS_KEY_FACETOFACE_FOOTPRINTS = "faceToFace_Footprints_";//面对面足迹与房间密码关系对照
     public static final String REDIS_KEY_SHOPFLOOR_COMMENT = "shopFloor_comment_list_";//楼店评论关系对照
     public static final String REDIS_KEY_SHOPFLOOR_REPLY = "shopFloor_reply_list_";//楼店评论回复关系对照
     public static final String REDIS_KEY_COMMUNITY_COMMENT = "community_comment_list_";//居委会留言关系对照

@@ -22,8 +22,8 @@ public interface FootmarkDao {
      * @param footmark
      * @return
      */
-    @Insert("insert into footmark(userId,title,addTime,imgUrl,videoUrl,audioUrl,infoId,footmarkStatus,footmarkType) " +
-            "values (#{userId},#{title},#{addTime},#{imgUrl},#{videoUrl},#{audioUrl},#{infoId},#{footmarkStatus},#{footmarkType})")
+    @Insert("insert into footmark(userId,title,addTime,imgUrl,videoUrl,audioUrl,infoId,footmarkStatus,footmarkType,users) " +
+            "values (#{userId},#{title},#{addTime},#{imgUrl},#{videoUrl},#{audioUrl},#{infoId},#{footmarkStatus},#{footmarkType},#{users})")
     @Options(useGeneratedKeys = true)
     int add(Footmark footmark);
 
