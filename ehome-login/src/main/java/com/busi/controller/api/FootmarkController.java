@@ -228,12 +228,8 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
                 if (footprints.getUserId() == CommonUtils.getMyId()) {
                     int distance = (int) Math.round(CommonUtils.getShortestDistance(footprints.getLon(), footprints.getLat(), lon, lat));
                     if (distance > 100) {
-                        list.remove(footprints);
-                        list.add(face);
-                        //清除缓存中信息
-                        redisUtils.expire(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0);
-                        //放入缓存
-                        redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+                        //更新缓存中信息
+                        redisUtils.updateListByIndex(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, i, face);
                         break;
                     }
                 }
