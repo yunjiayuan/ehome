@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -220,15 +221,27 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
             face.setHouseNumber(userInfo.getHouseNumber());
         }
         List list = null;
-        List list1 = null;
+        List<FaceToFaceFootprints> list1 = new ArrayList<>();
+        int is = 0;
         list = redisUtils.getList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0, -1);
         if (list != null && list.size() > 0) {
-            //更新缓存中信息
-            list.add(face);
-            //清除缓存
-            redisUtils.expire(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0);
-            //放入缓存
-            redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+            for (int i = 0; i < list.size(); i++) {
+                FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
+                if (footprints.getUserId() == CommonUtils.getMyId()) {
+                    is = 1;
+                    //更新缓存中信息
+                    redisUtils.updateListByIndex(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, i, face);
+                    break;
+                }
+            }
+            if (is == 0) {//房间中不存在当前用户
+                //更新缓存中信息
+                list.add(face);
+                //清除缓存
+                redisUtils.expire(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0);
+                //放入缓存
+                redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+            }
             for (int i = 0; i < list.size(); i++) {
                 FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
                 int distance = (int) Math.round(CommonUtils.getShortestDistance(footprints.getLon(), footprints.getLat(), lon, lat));
