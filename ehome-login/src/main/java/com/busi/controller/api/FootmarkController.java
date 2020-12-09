@@ -220,34 +220,29 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
             face.setHouseNumber(userInfo.getHouseNumber());
         }
         List list = null;
+        List list1 = null;
         list = redisUtils.getList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0, -1);
         if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
-                //判断是否已在房间并且位置相近
-                if (footprints.getUserId() == CommonUtils.getMyId()) {
-                    int distance = (int) Math.round(CommonUtils.getShortestDistance(footprints.getLon(), footprints.getLat(), lon, lat));
-                    if (distance > 100) {
-                        //更新缓存中信息
-                        redisUtils.updateListByIndex(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, i, face);
-                        break;
-                    }
-                }
-            }
+            //更新缓存中信息
+            list.add(face);
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0);
+            //放入缓存
+            redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
             for (int i = 0; i < list.size(); i++) {
                 FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
                 int distance = (int) Math.round(CommonUtils.getShortestDistance(footprints.getLon(), footprints.getLat(), lon, lat));
-                if (distance > 1000) {//只查找1公里范围内的房间人员
-                    list.remove(footprints);
-                    continue;
+                if (distance <= 1000) {//只查找1公里范围内的房间人员
+                    list1.add(footprints);
                 }
             }
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list1);
         } else {
             list.add(face);
             //放入缓存
             redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
         }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 
 }
