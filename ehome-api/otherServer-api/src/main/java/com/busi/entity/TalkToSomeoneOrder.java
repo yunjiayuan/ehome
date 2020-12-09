@@ -44,4 +44,15 @@ public class TalkToSomeoneOrder {
     private int proTypeId;                //	省简称ID
 
     private long houseNumber;        // 门牌号
+
+    private int province; // 省
+
+    private int city; // 城市
+
+    private int district; // 地区或县
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
+    private Date birthday; // 生日
+
+    private int sex; // 性别
 }

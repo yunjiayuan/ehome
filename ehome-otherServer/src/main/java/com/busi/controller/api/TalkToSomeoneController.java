@@ -46,9 +46,9 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
     @Override
     public ReturnData findSomeone(@PathVariable long userId) {
         TalkToSomeone reserveData = homeHospitalService.findSomeone(userId);
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", reserveData);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("data", reserveData);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", reserveData);
     }
 
     /***
@@ -204,6 +204,11 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
                     ik.setHead(sendInfoCache.getHead());
                     ik.setProTypeId(sendInfoCache.getProType());
                     ik.setHouseNumber(sendInfoCache.getHouseNumber());
+                    ik.setSex(sendInfoCache.getSex());
+                    ik.setBirthday(sendInfoCache.getBirthday());
+                    ik.setProvince(sendInfoCache.getProvince());
+                    ik.setCity(sendInfoCache.getCity());
+                    ik.setDistrict(sendInfoCache.getDistrict());
                 }
             }
         }
