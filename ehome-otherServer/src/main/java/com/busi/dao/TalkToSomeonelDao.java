@@ -100,13 +100,14 @@ public interface TalkToSomeonelDao {
      */
     @Select("<script>" +
             "select * from TalkToSomeoneOrder" +
-            " where 1=1" +
+            " where myId=#{myId}" +
             "<if test=\"type >= 0\">" +
             " and status=#{type}" +
             "</if>" +
+            " and payState=1" +
             " order by payTime desc" +
             "</script>")
-    List<TalkToSomeoneOrder> findSomeoneHistoryList(@Param("type") int type);
+    List<TalkToSomeoneOrder> findSomeoneHistoryList(@Param("myId") long myId, @Param("type") int type);
 
     /***
      * 根据ID查询

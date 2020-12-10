@@ -45,10 +45,21 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
      */
     @Override
     public ReturnData findSomeone(@PathVariable long userId) {
-        TalkToSomeone reserveData = homeHospitalService.findSomeone(userId);
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("data", reserveData);
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", reserveData);
+        //查询缓存 缓存中不存在 查询数据库
+        Map<String, Object> kitchenMap = redisUtils.hmget(Constants.REDIS_KEY_TALKTO_SOMEONE + userId);
+        if (kitchenMap == null || kitchenMap.size() <= 0) {
+            TalkToSomeone reserveData = homeHospitalService.findSomeone(userId);
+            if (reserveData != null) {
+                //放入缓存
+                kitchenMap = CommonUtils.objectToMap(reserveData);
+                redisUtils.hmset(Constants.REDIS_KEY_TALKTO_SOMEONE + reserveData.getUserId(), kitchenMap, Constants.USER_TIME_OUT);
+            }
+        }
+        TalkToSomeone ik = (TalkToSomeone) CommonUtils.mapToObject(kitchenMap, TalkToSomeone.class);
+        if (ik != null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ik);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
     /***
@@ -88,6 +99,8 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
             //更新用户找人倾诉状态
             userInfoUtils.updateTalkToSomeoneStatus(homeHospital.getUserId(), homeHospital.getState());
         }
+        //清除缓存
+        redisUtils.expire(Constants.REDIS_KEY_TALKTO_SOMEONE + homeHospital.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
@@ -191,7 +204,7 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
         }
         //开始查询
         PageBean<TalkToSomeoneOrder> pageBean;
-        pageBean = homeHospitalService.findSomeoneHistoryList(type, page, count);
+        pageBean = homeHospitalService.findSomeoneHistoryList(CommonUtils.getMyId(), type, page, count);
         List list = null;
         list = pageBean.getList();
         if (list != null && list.size() > 0) {

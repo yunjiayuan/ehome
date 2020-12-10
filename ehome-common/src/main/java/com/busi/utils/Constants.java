@@ -250,6 +250,7 @@ public class Constants {
     public static final String REDIS_KEY_BONDORDER = "bondOrder_";//userId与楼店保证金订单的关系对照
     public static final String REDIS_KEY_CONSULTATIONORDER = "consultationOrder_";//userId与医生或律师咨询订单的关系对照
     public static final String REDIS_KEY_TALKTOSOMEONE = "talkToSomeone_";//找人倾诉付费信息关系对照
+    public static final String REDIS_KEY_TALKTO_SOMEONE = "talkTo_someone_";//userId与找人倾诉信息关系对照
     public static final String REDIS_KEY_CONSULTATION = "consultation_";//医生或律师咨询付费信息关系对照
     public static final String REDIS_KEY_SELFCHANNELVIP_ORDER = "selfChannelVipOrder_";//userId与自频道会员订单对象关系对照
     public static final String REDIS_KEY_GOODNUMBER_ORDER = "goodNumber_order_";//userId与靓号订单对象关系对照

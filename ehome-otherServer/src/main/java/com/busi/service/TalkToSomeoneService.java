@@ -62,10 +62,12 @@ public class TalkToSomeoneService {
     public int update(TalkToSomeone kitchen) {
         return kitchenBookedDao.update(kitchen);
     }
+
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int update2(TalkToSomeone kitchen) {
         return kitchenBookedDao.update2(kitchen);
     }
+
     /***
      * 新建
      * @param kitchen
@@ -119,11 +121,11 @@ public class TalkToSomeoneService {
      * @param type
      * @return
      */
-    public PageBean<TalkToSomeoneOrder> findSomeoneHistoryList(int type, int page, int count) {
+    public PageBean<TalkToSomeoneOrder> findSomeoneHistoryList(long myId, int type, int page, int count) {
 
         List<TalkToSomeoneOrder> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = kitchenBookedDao.findSomeoneHistoryList(type);
+        list = kitchenBookedDao.findSomeoneHistoryList(myId, type);
 
         return PageUtils.getPageBean(p, list);
     }
