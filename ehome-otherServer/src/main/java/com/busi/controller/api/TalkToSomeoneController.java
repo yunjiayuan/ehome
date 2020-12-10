@@ -56,7 +56,10 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
             }
         }
         TalkToSomeone ik = (TalkToSomeone) CommonUtils.mapToObject(kitchenMap, TalkToSomeone.class);
-        ik.setUserId(userId);
+        if (ik == null) {
+            ik = new TalkToSomeone();
+            ik.setUserId(userId);
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ik);
     }
 
