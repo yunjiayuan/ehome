@@ -56,10 +56,8 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
             }
         }
         TalkToSomeone ik = (TalkToSomeone) CommonUtils.mapToObject(kitchenMap, TalkToSomeone.class);
-        if (ik != null) {
-            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ik);
-        }
-        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        ik.setUserId(userId);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ik);
     }
 
     /***
@@ -91,6 +89,15 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        //查询数据库
+        TalkToSomeone reserveData = homeHospitalService.findSomeone(homeHospital.getUserId());
+        if (reserveData == null) {
+            homeHospital.setTime(new Date());
+            homeHospitalService.add(homeHospital);
+            //更新用户找人倾诉状态
+            userInfoUtils.updateTalkToSomeoneStatus(homeHospital.getUserId(), homeHospital.getState());
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         if (!CommonUtils.checkFull(homeHospital.getRemarks())) {
             homeHospitalService.update(homeHospital);

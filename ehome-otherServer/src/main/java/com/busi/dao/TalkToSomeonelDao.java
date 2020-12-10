@@ -46,7 +46,7 @@ public interface TalkToSomeonelDao {
             "update TalkToSomeone set" +
             " money=#{money}," +
             " remarks=#{remarks}" +
-            " where id=#{id}" +
+            " where userId=#{userId}" +
             "</script>")
     int update(TalkToSomeone kitchen);
 
