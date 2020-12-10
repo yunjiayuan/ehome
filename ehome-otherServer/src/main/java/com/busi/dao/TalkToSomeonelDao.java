@@ -32,8 +32,8 @@ public interface TalkToSomeonelDao {
      * @param kitchen
      * @return
      */
-    @Insert("insert into TalkToSomeoneOrder(userId,myId,money,addTime,no,payTime)" +
-            "values (#{userId},#{myId},#{money},#{addTime},#{no},#{payTime})")
+    @Insert("insert into TalkToSomeoneOrder(userId,myId,money,addTime,no,payTime,payState)" +
+            "values (#{userId},#{myId},#{money},#{addTime},#{no},#{payTime},#{payState})")
     @Options(useGeneratedKeys = true)
     int talkToSomeone(TalkToSomeoneOrder kitchen);
 
@@ -65,7 +65,7 @@ public interface TalkToSomeonelDao {
     @Update("<script>" +
             "update TalkToSomeoneOrder set" +
             " status=#{status}" +
-            " where id=#{id} and userId=#{userId}" +
+            " where no=#{no}" +
             "</script>")
     int changeSomeoneState(TalkToSomeoneOrder kitchen);
 
@@ -118,10 +118,10 @@ public interface TalkToSomeonelDao {
     TalkToSomeone findSomeone(@Param("userId") long userId);
 
     /***
-     * 根据ID查询
-     * @param id
+     * 根据订单编号查询
+     * @param no
      * @return
      */
-    @Select("select * from TalkToSomeoneOrder where id=#{id}")
-    TalkToSomeoneOrder findSomeone2(@Param("id") long id);
+    @Select("select * from TalkToSomeoneOrder where no=#{no}")
+    TalkToSomeoneOrder findSomeone2(@Param("no") String no);
 }

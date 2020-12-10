@@ -35,12 +35,12 @@ public class TalkToSomeoneService {
     }
 
     /***
-     * 根据用户ID查询
-     * @param id
+     * 根据订单编号查询
+     * @param no
      * @return
      */
-    public TalkToSomeoneOrder findSomeone2(long id) {
-        return kitchenBookedDao.findSomeone2(id);
+    public TalkToSomeoneOrder findSomeone2(String no) {
+        return kitchenBookedDao.findSomeone2(no);
     }
 
     /***

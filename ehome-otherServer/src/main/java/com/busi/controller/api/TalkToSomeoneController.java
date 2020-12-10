@@ -133,6 +133,10 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
         String random = CommonUtils.getRandom(6, 1);
         String noRandom = CommonUtils.strToMD5(noTime + homeHospital.getMyId() + random, 16);
         homeHospital.setNo(noRandom);//订单编号【MD5】
+        if (homeHospital.getMoney() <= 0) {//免费订单默认已支付
+            homeHospital.setPayState(1);
+            homeHospital.setPayTime(date);
+        }
         homeHospitalService.talkToSomeone(homeHospital);
         //放入缓存
         Map<String, Object> map = new HashMap<>();
@@ -157,7 +161,7 @@ public class TalkToSomeoneController extends BaseController implements TalkToSom
         homeHospitalService.changeSomeoneState(homeHospital);
         //判断是否已倾诉并且已支付
         if (homeHospital.getStatus() == 1) {
-            TalkToSomeoneOrder talk = homeHospitalService.findSomeone2(homeHospital.getId());
+            TalkToSomeoneOrder talk = homeHospitalService.findSomeone2(homeHospital.getNo());
             if (talk != null && talk.getPayState() == 1) {
                 //转入被倾诉者钱包
                 mqUtils.sendPurseMQ(homeHospital.getUserId(), 45, 0, talk.getMoney());
