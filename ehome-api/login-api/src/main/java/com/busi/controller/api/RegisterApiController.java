@@ -89,8 +89,8 @@ public interface RegisterApiController {
      * @param userInfo
      * @return
      */
-    @PutMapping("updateChatnteractionStatus")
-    ReturnData updateChatnteractionStatus (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
+    @PutMapping("updateChatnStatus")
+    ReturnData updateChatnStatus (@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 
     /***
      * 修改账号状态接口 启用、停用

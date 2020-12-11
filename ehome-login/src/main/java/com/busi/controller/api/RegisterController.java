@@ -643,7 +643,7 @@ public class RegisterController extends BaseController implements RegisterApiCon
      * @return
      */
     @Override
-    public ReturnData updateChatnteractionStatus(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
+    public ReturnData updateChatnStatus(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
         //验证参数格式
         if(bindingResult.hasErrors()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
