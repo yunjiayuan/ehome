@@ -126,6 +126,7 @@ public interface FootmarkDao {
     @Select("<script>" +
             "select * from footmark" +
             " where 1=1" +
+            " and footmarkStatus = 0" +
             "<if test=\"userId > 0\">" +
             " and userId=#{userId}" +
             "</if>" +
@@ -139,13 +140,13 @@ public interface FootmarkDao {
             " <![CDATA[ and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) and UNIX_TIMESTAMP(addTime) <= UNIX_TIMESTAMP(#{endDate}) ]]>" +
 //            " <![CDATA[ and addTime >= date_sub(#{beginDate}, interval 0 day) and addTime <= date_add(#{endDate}, interval 1 day) ]]>" +  后新增可用语句
 //            " <![CDATA[ and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\") and addTime <= DATE_FORMAT(#{endTime},\"%Y-%m-%d %T\") ]]>" +
+            " order by addTime asc" +
             "</if>" +
             "<if test=\"endDate == null\">" +
             " and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) " +
 //            " and addTime >= date_sub(#{beginDate}, interval 0 day) " +
-            "</if>" +
-            " and footmarkStatus = 0" +
             " order by addTime desc" +
+            "</if>" +
             "</script>")
     List<Footmark> findTimeList(@Param("userId") long userId, @Param("footmarkType") int footmarkType, @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
 
