@@ -67,4 +67,8 @@ public class HomePageInfo {
     private long todayVisitCount;//今天访问量 与数据库无关字段
 
     private int purseCashOutStatus;//临时参数 与数据库无关字段 0开启钱包提现功能 1禁用钱包提现功能
+
+    private int talkToSomeoneStatus;//倾诉状态 0表示不接受倾诉  1表示接受倾诉
+
+    private int chatnteractionStatus;//聊天互动功能的状态 0表示不接受别人找你互动  1表示接受别人找你互动
 }

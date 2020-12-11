@@ -353,7 +353,7 @@ public class SearchUserController extends BaseController implements SearchUserAp
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         list = pageBean.getList();
-        if(list.size()<20){//数据不足 补充机器人数据
+        if(list.size()<200){//数据不足 补充机器人数据
             int counts = 40000;//循环多次 补20条
             int start = random.nextInt(5000)+1;//随机起始值
             for (int i = start; i < counts; i++) {

@@ -291,7 +291,7 @@ public interface UserInfoDao {
             " where userId=#{userId}" +
             "</script>")
     int updateTalkToSomeoneStatus(UserInfo userInfo);
-/**
+    /**
      * 更新用户聊天互动状态
      *
      * @param userInfo
