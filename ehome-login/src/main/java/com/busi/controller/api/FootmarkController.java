@@ -240,7 +240,7 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
                 //清除缓存
                 redisUtils.expire(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, 0);
                 //放入缓存
-                redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+                redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list, Constants.TIME_OUT_MINUTE_60_24_1);
             }
             for (int i = 0; i < list.size(); i++) {
                 FaceToFaceFootprints footprints = (FaceToFaceFootprints) list.get(i);
@@ -253,7 +253,7 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
         } else {
             list.add(face);
             //放入缓存
-            redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list);
+            redisUtils.pushList(Constants.REDIS_KEY_FACETOFACE_FOOTPRINTS + roomName, list, Constants.TIME_OUT_MINUTE_60_24_1);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
         }
     }
