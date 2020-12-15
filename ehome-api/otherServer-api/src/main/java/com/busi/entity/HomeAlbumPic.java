@@ -34,4 +34,5 @@ public class HomeAlbumPic {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;    //上传时间
 
+    private int newTime;    //上传日期  格式20201212   用于查询
 }

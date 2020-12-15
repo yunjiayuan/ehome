@@ -1,10 +1,7 @@
 package com.busi.service;
 
 import com.busi.dao.HomeAlbumDao;
-import com.busi.entity.HomeAlbum;
-import com.busi.entity.HomeAlbumPic;
-import com.busi.entity.HomeAlbumPwd;
-import com.busi.entity.PageBean;
+import com.busi.entity.*;
 import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
@@ -98,6 +95,11 @@ public class HomeAlbumService {
         return homeAlbumDao.uploadPic(homeAlbumPic);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int add(HomeAlbumPicWhole homeAlbumPic) {
+        return homeAlbumDao.add(homeAlbumPic);
+    }
+
     /***
      * 编辑图片
      * @param homeAlbumPic
@@ -126,6 +128,11 @@ public class HomeAlbumService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updatePwd(HomeAlbumPwd homeAlbumPwd) {
         return homeAlbumDao.updatePwd(homeAlbumPwd);
+    }
+
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update(HomeAlbumPicWhole homeAlbumPwd) {
+        return homeAlbumDao.update(homeAlbumPwd);
     }
 
     /***
@@ -164,6 +171,10 @@ public class HomeAlbumService {
      */
     public HomeAlbum findById(long id) {
         return homeAlbumDao.findById(id);
+    }
+
+    public HomeAlbumPicWhole findWhole(long id, int time) {
+        return homeAlbumDao.findWhole(id, time);
     }
 
     /***
@@ -207,7 +218,11 @@ public class HomeAlbumService {
         List<HomeAlbum> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
         if (CommonUtils.checkFull(name)) {
-            list = homeAlbumDao.findPaging2(userId, roomType);
+            if (roomType == 3 || roomType == 4 || roomType == 5 || roomType == 6 || roomType == 9) {
+                list = homeAlbumDao.findPaging3(userId, roomType);
+            } else {
+                list = homeAlbumDao.findPaging2(userId, roomType);
+            }
         } else {
             list = homeAlbumDao.findPaging(userId, roomType, name);
         }
@@ -232,6 +247,21 @@ public class HomeAlbumService {
         } else {
             list = homeAlbumDao.findAlbumPic(userId, albumId, name);
         }
+        return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 分页查询图片
+     * @param userId  用户ID
+     * @param date  指定日期  0表示查所有   格式：20201212
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<HomeAlbumPic> findPicList(long userId, int date, int page, int count) {
+        List<HomeAlbumPic> list;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        list = homeAlbumDao.findPicList(userId, date);
         return PageUtils.getPageBean(p, list);
     }
 
@@ -265,6 +295,12 @@ public class HomeAlbumService {
         return list;
     }
 
+    public List<HomeAlbumPicWhole> findPicDate(long userId, int startTime, int endTime) {
+        List<HomeAlbumPicWhole> list;
+        list = homeAlbumDao.findPicDate(userId, startTime, endTime);
+        return list;
+    }
+
     /***
      * 删除图片
      * @param ids
@@ -276,4 +312,17 @@ public class HomeAlbumService {
         return homeAlbumDao.deletePic(userId, albumId, ids);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int delPic(long userId, String[] ids) {
+        return homeAlbumDao.delPic(userId, ids);
+    }
+
+    /***
+     * 更新图片记录
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upPicNum(long num, long id) {
+        return homeAlbumDao.upPicNum(num, id);
+    }
 }

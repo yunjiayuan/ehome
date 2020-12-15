@@ -115,11 +115,18 @@ public interface HomeAlbumApiController {
     ReturnData uploadPic(@Valid @RequestBody HomeAlbumPic homeAlbumPic, BindingResult bindingResult);
 
     /**
-     * @Description: 删除图片
+     * @Description: 删除相册图片
      * @return:
      */
     @DeleteMapping("delAlbumPic/{userId}/{albumId}/{ids}")
     ReturnData delAlbumPic(@PathVariable long userId, @PathVariable long albumId, @PathVariable String ids);
+
+    /**
+     * @Description: 删除图片
+     * @return:
+     */
+    @DeleteMapping("delPic/{userId}/{ids}")
+    ReturnData delPic(@PathVariable long userId, @PathVariable String ids);
 
     /**
      * 更新图片信息
@@ -144,4 +151,22 @@ public interface HomeAlbumApiController {
     ReturnData findAlbumPic(@PathVariable long userId, @PathVariable int albumId, @PathVariable String name, @PathVariable String password, @PathVariable int page, @PathVariable int count);
 
 
+    /***
+     * 分页查询图片
+     * @param userId  用户ID
+     * @param date  指定日期  0表示查所有
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findPicList/{userId}/{date}/{page}/{count}")
+    ReturnData findPicList(@PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 查询上传图片日期
+     * @param startTime   选择日期
+     * @return
+     */
+    @GetMapping("findPicDate/{findType}/{startTime}")
+    ReturnData findPicDate(@PathVariable int findType, @PathVariable int startTime);
 }

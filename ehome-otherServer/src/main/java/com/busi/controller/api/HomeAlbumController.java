@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,9 +37,8 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
     @Autowired
     UserMembershipUtils userMembershipUtils;
 
-    /**
+    /***
      * 新建相册
-     *
      * @param homeAlbum
      * @return
      */
@@ -72,6 +72,9 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
             homeAlbumService.addPwd(pwd);
             purviewId = pwd.getId();
         }
+        if (homeAlbum.getRoomType() == 0) {
+            homeAlbum.setRoomType(9);//默认类型为其他
+        }
         homeAlbum.setAlbumState(0);//0正常
         homeAlbum.setPhotoSize(0); //相册图片数量
         homeAlbum.setCreateTime(new Date()); //相册创建时间
@@ -81,9 +84,8 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /**
+    /***
      * 更新相册
-     *
      * @param homeAlbum
      * @return
      */
@@ -420,18 +422,16 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
-    /**
+    /***
      * 新增图片
-     *
      * @param homeAlbumPic
      * @param bindingResult
      * @return
      */
     @Override
     public ReturnData uploadPic(@Valid @RequestBody HomeAlbumPic homeAlbumPic, BindingResult bindingResult) {
-        HomeAlbum alb = homeAlbumService.findById(homeAlbumPic.getAlbumId());
-        if (alb == null) {
-            return returnData(StatusCode.CODE_FOLDER_NOT_FOUND.CODE_VALUE, "相册不存在", new JSONObject());
+        if (CommonUtils.checkFull(homeAlbumPic.getImgUrl())) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
         //获取会员等级 根据用户会员等级 获取最大次数 后续添加
         UserMembership memberMap = userMembershipUtils.getUserMemberInfo(homeAlbumPic.getUserId());
@@ -447,19 +447,41 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         }
         int num = homeAlbumService.countPic(homeAlbumPic.getUserId());
         if (num >= numLimit) {
-            return returnData(StatusCode.CODE_FILE_MAX.CODE_VALUE, "相册图片达到上限", new JSONObject());
+            return returnData(StatusCode.CODE_FILE_MAX.CODE_VALUE, "图片上传达到上限", new JSONObject());
         }
         //判断是否需要设为封面
-        long phoneSize = alb.getPhotoSize();
         String homePicArray[] = homeAlbumPic.getImgUrl().split(",");
-        if (phoneSize <= 0 && CommonUtils.checkFull(alb.getImgCover())) {
-            alb.setImgCover(homePicArray[0]);
-            homeAlbumService.updateAlbumCover(alb);
+        if (homeAlbumPic.getAlbumId() > 0) {//是否是相册上传
+            HomeAlbum alb = homeAlbumService.findById(homeAlbumPic.getAlbumId());
+            if (alb == null) {
+                return returnData(StatusCode.CODE_FOLDER_NOT_FOUND.CODE_VALUE, "相册不存在", new JSONObject());
+            }
+            long phoneSize = alb.getPhotoSize();
+            if (phoneSize <= 0 && CommonUtils.checkFull(alb.getImgCover())) {
+                alb.setImgCover(homePicArray[0]);
+                homeAlbumService.updateAlbumCover(alb);
+            }
         }
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        int time = Integer.valueOf(format.format(new Date()));//当前系统时间(Date转int)
         for (int i = 0; i < homePicArray.length; i++) {
             homeAlbumPic.setImgUrl(homePicArray[i]);
             homeAlbumPic.setTime(new Date());
+            homeAlbumPic.setNewTime(time);
             homeAlbumService.uploadPic(homeAlbumPic);
+        }
+        //新增存储室图片记录
+        //查询当前时间有无图片上传记录
+        HomeAlbumPicWhole whole = homeAlbumService.findWhole(homeAlbumPic.getUserId(), time);
+        if (whole == null) {
+            whole = new HomeAlbumPicWhole();
+            whole.setNum(homePicArray.length);
+            whole.setTime(time);
+            whole.setUserId(homeAlbumPic.getUserId());
+            homeAlbumService.add(whole);
+        } else {
+            whole.setNum(whole.getNum() + homePicArray.length);
+            homeAlbumService.update(whole);
         }
         //新增任务
         mqUtils.sendTaskMQ(CommonUtils.getMyId(), 0, 6);
@@ -499,9 +521,57 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
-    /**
+    /***
+     * 删除图片（新）
+     * @param userId
+     * @param ids    格式：图片ID,图片日期;图片ID,图片日期
+     *               或
+     * @param ids    格式：20201212#1,2,3;//日期#图片ID，ID，ID；
+     * @return
+     */
+    @Override
+    public ReturnData delPic(@PathVariable long userId, @PathVariable String ids) {
+        //验证修改人权限
+        if (CommonUtils.getMyId() != userId) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + userId + "]的图片信息", new JSONObject());
+        }
+        if (CommonUtils.checkFull(ids)) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+        }
+        String idss = "";
+        String[] strings = ids.split(";");
+//        for (int i = 0; i < strings.length; i++) {
+//            idss += strings[i].split(",")[0];//第一种图片ID组合  格式：图片ID,图片日期;图片ID,图片日期
+//        }
+        for (int i = 0; i < strings.length; i++) {
+            String[] num = strings[i].split("#");//获取图片ID
+            idss += num[1] + ",";//图片ID组合
+        }
+        if (idss.split(",").length > 100) {//暂定单次删除上限为100张
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "超出上限，最多删除100张", new JSONObject());
+        }
+        for (int i = 0; i < strings.length; i++) {//第二种图片ID组合  格式：20201212#1,2,3;//日期#图片ID，ID，ID；
+            String[] num = strings[i].split("#");
+            //查询当前时间有无图片上传记录
+            HomeAlbumPicWhole whole = homeAlbumService.findWhole(userId, Integer.parseInt(num[0]));
+            if (whole == null) {
+                continue;
+            }
+            //更新图片上传数量
+            int num2 = num[1].length();
+            homeAlbumService.upPicNum(whole.getNum() - num2, whole.getId());
+        }
+        //删除图片
+        if (!CommonUtils.checkFull(idss)) {
+            homeAlbumService.delPic(userId, idss.split(","));
+            //调用MQ同步 图片到图片删除记录表
+            mqUtils.sendDeleteImageMQ(userId, idss);
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
      * 更新图片信息
-     *
      * @param homeAlbumPic
      * @return
      */
@@ -511,9 +581,11 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         if (CommonUtils.getMyId() != homeAlbumPic.getUserId()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误，当前用户[" + CommonUtils.getMyId() + "]无权限修改用户[" + homeAlbumPic.getUserId() + "]的图片信息", new JSONObject());
         }
-        HomeAlbum alb = homeAlbumService.findById(homeAlbumPic.getAlbumId());
-        if (alb == null) {
-            return returnData(StatusCode.CODE_FOLDER_NOT_FOUND.CODE_VALUE, "相册不存在", new JSONObject());
+        if (homeAlbumPic.getAlbumId() > 0) {
+            HomeAlbum alb = homeAlbumService.findById(homeAlbumPic.getAlbumId());
+            if (alb == null) {
+                return returnData(StatusCode.CODE_FOLDER_NOT_FOUND.CODE_VALUE, "相册不存在", new JSONObject());
+            }
         }
         HomeAlbumPic albumPic = homeAlbumService.findAlbumInfo(homeAlbumPic.getId());
         if (albumPic == null) {
@@ -573,5 +645,60 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 分页查询图片
+     * @param userId  用户ID
+     * @param date  指定日期  0表示查所有   格式：20201212
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findPicList(@PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //开始查询
+        PageBean<HomeAlbumPic> pageBean = null;
+        pageBean = homeAlbumService.findPicList(userId, date, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 查询上传图片日期
+     * @param findType   查询带标记的日期  findType=0时 格式：201802  findType=1时 格式：2018
+     * @param startTime   选择日期
+     * @return
+     */
+    @Override
+    public ReturnData findPicDate(@PathVariable int findType, @PathVariable int startTime) {
+        String time = "";
+        int endTime = 0;
+        List list = null;
+        if (findType == 0) {//查询带标记的日期  findType=0时 格式：201802  findType=1时 格式：2018
+            endTime = ((startTime + 1) * 100);
+            startTime = startTime * 100;
+        } else {
+            endTime = ((startTime + 1) * 10000);
+            startTime = startTime * 10000;
+        }
+        list = homeAlbumService.findPicDate(CommonUtils.getMyId(), startTime, endTime);
+        if (list.size() > 0 && list != null) {
+            int len = list.size();
+            HomeAlbumPicWhole notepad = null;
+            for (int i = 0; i < len; i++) {
+                notepad = (HomeAlbumPicWhole) list.get(i);
+                time += notepad.getTime() + (i == len - 1 ? "" : ",");
+            }
+        }
+        Map<String, String> map = new HashMap<>();
+        map.put("time", time);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 }

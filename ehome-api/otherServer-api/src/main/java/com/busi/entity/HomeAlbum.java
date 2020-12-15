@@ -30,7 +30,7 @@ public class HomeAlbum {
 
     private String shootTime;    //拍摄时间
 
-    private String albumType;    //相册类型
+    private String albumType;    //相册类型 【暂不用】
 
     private String albumDescribe;    //相册描述
 

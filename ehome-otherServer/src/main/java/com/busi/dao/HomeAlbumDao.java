@@ -2,6 +2,7 @@ package com.busi.dao;
 
 import com.busi.entity.HomeAlbum;
 import com.busi.entity.HomeAlbumPic;
+import com.busi.entity.HomeAlbumPicWhole;
 import com.busi.entity.HomeAlbumPwd;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -111,6 +112,11 @@ public interface HomeAlbumDao {
     @Options(useGeneratedKeys = true)
     int uploadPic(HomeAlbumPic homeAlbumPic);
 
+    @Insert("insert into HomeAlbumPicWhole(userId,num,time) " +
+            "values (#{userId},#{num},#{time})")
+    @Options(useGeneratedKeys = true)
+    int add(HomeAlbumPicWhole homeAlbumPic);
+
     /***
      * 更新图片
      * @param homeAlbumPic
@@ -169,6 +175,13 @@ public interface HomeAlbumDao {
             "</script>")
     int updatePwdId(HomeAlbum homeAlbum);
 
+    @Update("<script>" +
+            "update HomeAlbumPicWhole set" +
+            " num=#{num}" +
+            " where id=#{id}" +
+            "</script>")
+    int update(HomeAlbumPicWhole homeAlbum);
+
     /***
      * 统计该用户相册数量
      * @param userId
@@ -197,6 +210,9 @@ public interface HomeAlbumDao {
      */
     @Select("select * from homeAlbum where id = #{id} and albumState=0")
     HomeAlbum findById(@Param("id") long id);
+
+    @Select("select * from HomeAlbumPicWhole where userId = #{id} and time=#{time}")
+    HomeAlbumPicWhole findWhole(@Param("id") long id, @Param("time") int time);
 
     /***
      * 根据ID查询用户图片
@@ -261,6 +277,18 @@ public interface HomeAlbumDao {
             "</script>")
     List<HomeAlbum> findPaging2(@Param("userId") long userId, @Param("roomType") int roomType);
 
+    @Select("<script>" +
+            "select * from HomeAlbum" +
+            " where 1=1" +
+            "<if test=\"roomType > -1\">" +
+            " and roomType in(3,4,5,6,9)" +
+            "</if>" +
+            " and albumState=0" +
+            " and userId=#{userId}" +
+            " order by createTime desc" +
+            "</script>")
+    List<HomeAlbum> findPaging3(@Param("userId") long userId, @Param("roomType") int roomType);
+
 
     /***
      * 分页查询指定相册图片
@@ -295,6 +323,27 @@ public interface HomeAlbumDao {
             "</script>")
     List<HomeAlbumPic> findAlbumPic2(@Param("userId") long userId, @Param("albumId") long albumId);
 
+    /***
+     * 分页查询图片
+     * @param userId  用户ID
+     * @param date  指定日期  0表示查所有   格式：20201212
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeAlbumPic" +
+            " where 1=1" +
+            " and albumId=-1" +
+            " and picState=0" +
+            " and userId=#{userId}" +
+            "<if test=\"date > 0\">" +
+            " and newTime=#{date}" +
+            " order by time asc" +
+            "</if>" +
+            "<if test=\"date == 0\">" +
+            " order by time desc" +
+            "</if>" +
+            "</script>")
+    List<HomeAlbumPic> findPicList(@Param("userId") long userId, @Param("date") int date);
 
     /***
      * 根据ID查询用户相册
@@ -351,4 +400,39 @@ public interface HomeAlbumDao {
             "</script>")
     int deletePic(@Param("userId") long userId, @Param("albumId") long albumId, @Param("ids") String[] ids);
 
+    @Update("<script>" +
+            "update HomeAlbumPic set" +
+            " picState=1" +
+            " where id in" +
+            "<foreach collection='ids' index='index' item='item' open='(' separator=',' close=')'>" +
+            " #{item}" +
+            "</foreach>" +
+            "</script>")
+    int delPic(@Param("userId") long userId, @Param("ids") String[] ids);
+
+    @Select("<script>" +
+            "select * from HomeAlbumPicWhole" +
+            " where 1=1" +
+            " and userId=#{userId}" +
+            " and time BETWEEN #{startTime} and #{endTime}" +
+            "</script>")
+    List<HomeAlbumPicWhole> findPicDate(@Param("userId") long userId, @Param("startTime") int startTime, @Param("endTime") int endTime);
+
+    /***
+     * 更新图片记录
+     * @param id
+     * @return
+     */
+    @Delete("<script>" +
+            "<if test=\"num > 0\">" +
+            "update HomeAlbumPicWhole set" +
+            " num=#{num}" +
+            " where id =#{id}" +
+            "</if>" +
+            "<if test=\"num == 0\">" +
+            "delete from HomeAlbumPicWhole" +
+            " where id =#{id}" +
+            "</if>" +
+            "</script>")
+    int upPicNum(@Param("num") long num, @Param("id") long id);
 }
