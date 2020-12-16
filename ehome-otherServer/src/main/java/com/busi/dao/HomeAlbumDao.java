@@ -332,7 +332,7 @@ public interface HomeAlbumDao {
     @Select("<script>" +
             "select * from HomeAlbumPic" +
             " where 1=1" +
-            " and albumId=-1" +
+//            " and albumId=-1" +
             " and picState=0" +
             " and userId=#{userId}" +
             "<if test=\"date > 0\">" +

@@ -524,7 +524,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
     /***
      * 删除图片（新）
      * @param userId
-     * @param ids    格式：图片ID,图片日期;图片ID,图片日期
+     * @param ids    格式：图片ID,图片日期;图片ID,图片日期【暂不用】
      *               或
      * @param ids    格式：20201212#1,2,3;//日期#图片ID，ID，ID；
      * @return
