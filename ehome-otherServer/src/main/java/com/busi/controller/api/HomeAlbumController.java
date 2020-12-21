@@ -72,9 +72,9 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
             homeAlbumService.addPwd(pwd);
             purviewId = pwd.getId();
         }
-        if (homeAlbum.getRoomType() == 0) {
-            homeAlbum.setRoomType(9);//默认类型为其他
-        }
+//        if (homeAlbum.getRoomType() == 0) {
+//            homeAlbum.setRoomType(9);//默认类型为其他
+//        }
         homeAlbum.setAlbumState(0);//0正常
         homeAlbum.setPhotoSize(0); //相册图片数量
         homeAlbum.setCreateTime(new Date()); //相册创建时间
@@ -649,6 +649,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
 
     /***
      * 分页查询图片
+     * @param type  查询入口：0日期、全部图片界面  1搜索界面
      * @param userId  用户ID
      * @param date  指定日期  0表示查所有   格式：20201212
      * @param page  页码 第几页 起始值1
@@ -656,14 +657,16 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
      * @return
      */
     @Override
-    public ReturnData findPicList(@PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findPicList(@PathVariable int type, @PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<HomeAlbumPic> pageBean = null;
-        pageBean = homeAlbumService.findPicList(userId, date, page, count);
+//        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+//        int time = Integer.valueOf(format.format(new Date()));//当前系统时间(Date转int)
+        pageBean = homeAlbumService.findPicList(userId, date, type, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }

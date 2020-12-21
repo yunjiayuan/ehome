@@ -154,13 +154,14 @@ public interface HomeAlbumApiController {
     /***
      * 分页查询图片
      * @param userId  用户ID
-     * @param date  指定日期  0表示查所有
+     * @param date  指定日期  0表示查所有   格式：20201212
+     * @param type  查询入口：0日期、全部图片界面  1搜索界面
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return
      */
-    @GetMapping("findPicList/{userId}/{date}/{page}/{count}")
-    ReturnData findPicList(@PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findPicList/{type}/{userId}/{date}/{page}/{count}")
+    ReturnData findPicList(@PathVariable int type, @PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count);
 
     /***
      * 查询上传图片日期

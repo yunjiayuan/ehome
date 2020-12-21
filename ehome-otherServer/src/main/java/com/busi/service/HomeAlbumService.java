@@ -258,10 +258,10 @@ public class HomeAlbumService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<HomeAlbumPic> findPicList(long userId, int date, int page, int count) {
+    public PageBean<HomeAlbumPic> findPicList(long userId, int date, int type, int page, int count) {
         List<HomeAlbumPic> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeAlbumDao.findPicList(userId, date);
+        list = homeAlbumDao.findPicList(userId, date, type);
         return PageUtils.getPageBean(p, list);
     }
 
