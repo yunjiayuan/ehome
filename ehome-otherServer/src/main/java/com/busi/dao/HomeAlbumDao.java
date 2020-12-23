@@ -107,8 +107,8 @@ public interface HomeAlbumDao {
      * @param homeAlbumPic
      * @return
      */
-    @Insert("insert into homeAlbumPic(userId,albumId,name,picDescribe,roomType,picState,imgUrl,time) " +
-            "values (#{userId},#{albumId},#{name},#{picDescribe},#{roomType},#{picState},#{imgUrl},#{time})")
+    @Insert("insert into homeAlbumPic(userId,albumId,name,picDescribe,roomType,picState,imgUrl,time,newTime) " +
+            "values (#{userId},#{albumId},#{name},#{picDescribe},#{roomType},#{picState},#{imgUrl},#{time},#{newTime})")
     @Options(useGeneratedKeys = true)
     int uploadPic(HomeAlbumPic homeAlbumPic);
 
