@@ -93,7 +93,7 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
             if (list != null && list.size() > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     Footmark ik = (Footmark) list.get(i);
-                    if (ik != null && ik.getFootmarkType() == 6) {
+                    if (ik != null && !CommonUtils.checkFull(ik.getInfoId()) && ik.getFootmarkType() == 6) {
                         String[] strings = ik.getInfoId().split(",");
                         for (int j = 0; j < strings.length; j++) {
                             long newUserId = Long.parseLong(strings[j]);
@@ -112,6 +112,7 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
                                 if (j == strings.length - 1) {
                                     newUsers += newUserId + "," + userInfo.getName() + "," + userInfo.getHead();
                                     ik.setUsers(newUsers);
+                                    newUsers = "";
                                 } else {
                                     newUsers += newUserId + "," + userInfo.getName() + "," + userInfo.getHead() + ";";
                                 }
