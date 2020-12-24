@@ -332,9 +332,11 @@ public interface HomeAlbumDao {
     @Select("<script>" +
             "select * from HomeAlbumPic" +
             " where 1=1" +
-//            " and albumId=-1" +
             " and picState=0" +
             " and userId=#{userId}" +
+            "<if test=\"albumId > 0\">" +
+            " and albumId=#{albumId}" +
+            "</if>" +
             "<if test=\"date > 0\">" +
             "<if test=\"type == 0\">" +
             " and newTime = #{date}" +
@@ -348,7 +350,7 @@ public interface HomeAlbumDao {
             " order by time desc" +
             "</if>" +
             "</script>")
-    List<HomeAlbumPic> findPicList(@Param("userId") long userId, @Param("date") int date, @Param("type") int type);
+    List<HomeAlbumPic> findPicList(@Param("albumId") long albumId, @Param("userId") long userId, @Param("date") int date, @Param("type") int type);
 
     /***
      * 根据ID查询用户相册
