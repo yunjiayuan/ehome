@@ -97,7 +97,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
         if (!CommonUtils.checkFull(notepad.getVideoUrl())) {
             mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), notepad.getVideoCover(), notepad.getVideoUrl(), null, notepad.getUsers(), type);
         } else {
-            mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), notepad.getImgUrls(), null, null, notepad.getId() + "", type);
+            mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), notepad.getImgUrls(), null, null, notepad.getUsers(), type);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

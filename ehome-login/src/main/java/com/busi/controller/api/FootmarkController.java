@@ -93,8 +93,8 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
             if (list != null && list.size() > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     Footmark ik = (Footmark) list.get(i);
-                    if (ik != null && !CommonUtils.checkFull(ik.getUsers())) {
-                        String[] strings = ik.getUsers().split(",");
+                    if (ik != null && ik.getFootmarkType() == 6) {
+                        String[] strings = ik.getInfoId().split(",");
                         for (int j = 0; j < strings.length; j++) {
                             long newUserId = Long.parseLong(strings[j]);
                             Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
