@@ -112,8 +112,8 @@ public interface HomeAlbumDao {
     @Options(useGeneratedKeys = true)
     int uploadPic(HomeAlbumPic homeAlbumPic);
 
-    @Insert("insert into HomeAlbumPicWhole(userId,num,time) " +
-            "values (#{userId},#{num},#{time})")
+    @Insert("insert into HomeAlbumPicWhole(userId,num,time,albumId) " +
+            "values (#{userId},#{num},#{time},#{albumId})")
     @Options(useGeneratedKeys = true)
     int add(HomeAlbumPicWhole homeAlbumPic);
 
@@ -336,16 +336,16 @@ public interface HomeAlbumDao {
             " and picState=0" +
             " and userId=#{userId}" +
             "<if test=\"date > 0\">" +
-                "<if test=\"type == 0\">" +
-                    " and newTime = #{date}" +
-                "</if>" +
-                "<if test=\"type == 1\">" +
-                    " and newTime >= #{date}" +
-                "</if>" +
-                " order by time asc" +
+            "<if test=\"type == 0\">" +
+            " and newTime = #{date}" +
+            "</if>" +
+            "<if test=\"type == 1\">" +
+            " and newTime >= #{date}" +
+            "</if>" +
+            " order by time asc" +
             "</if>" +
             "<if test=\"date == 0\">" +
-                " order by time desc" +
+            " order by time desc" +
             "</if>" +
             "</script>")
     List<HomeAlbumPic> findPicList(@Param("userId") long userId, @Param("date") int date, @Param("type") int type);
@@ -419,9 +419,12 @@ public interface HomeAlbumDao {
             "select * from HomeAlbumPicWhole" +
             " where 1=1" +
             " and userId=#{userId}" +
+            "<if test=\"albumId > 0\">" +
+            " and albumId=#{albumId}" +
+            "</if>" +
             " and time BETWEEN #{startTime} and #{endTime}" +
             "</script>")
-    List<HomeAlbumPicWhole> findPicDate(@Param("userId") long userId, @Param("startTime") int startTime, @Param("endTime") int endTime);
+    List<HomeAlbumPicWhole> findPicDate(@Param("userId") long userId, @Param("startTime") int startTime, @Param("endTime") int endTime, @Param("albumId") long albumId);
 
     /***
      * 更新图片记录
@@ -434,7 +437,7 @@ public interface HomeAlbumDao {
             " num=#{num}" +
             " where id =#{id}" +
             "</if>" +
-            "<if test=\"num == 0\">" +
+            "<if test=\"num &lt;= 0\">" +
             "delete from HomeAlbumPicWhole" +
             " where id =#{id}" +
             "</if>" +

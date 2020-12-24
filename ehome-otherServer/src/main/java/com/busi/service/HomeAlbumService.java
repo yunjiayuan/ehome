@@ -295,9 +295,9 @@ public class HomeAlbumService {
         return list;
     }
 
-    public List<HomeAlbumPicWhole> findPicDate(long userId, int startTime, int endTime) {
+    public List<HomeAlbumPicWhole> findPicDate(long userId, int startTime, int endTime, long albumId) {
         List<HomeAlbumPicWhole> list;
-        list = homeAlbumDao.findPicDate(userId, startTime, endTime);
+        list = homeAlbumDao.findPicDate(userId, startTime, endTime, albumId);
         return list;
     }
 

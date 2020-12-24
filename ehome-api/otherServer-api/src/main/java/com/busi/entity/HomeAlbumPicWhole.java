@@ -14,6 +14,8 @@ public class HomeAlbumPicWhole {
 
     private long id;        //主键
 
+    private long albumId;    //相册ID
+
     private long userId;    //用户
 
     private long num;    //数量
