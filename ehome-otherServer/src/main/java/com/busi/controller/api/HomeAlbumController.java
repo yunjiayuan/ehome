@@ -477,6 +477,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
             whole = new HomeAlbumPicWhole();
             whole.setNum(homePicArray.length);
             whole.setTime(time);
+            whole.setAlbumId(homeAlbumPic.getAlbumId());
             whole.setUserId(homeAlbumPic.getUserId());
             homeAlbumService.add(whole);
         } else {
