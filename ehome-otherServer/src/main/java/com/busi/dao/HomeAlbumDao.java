@@ -211,8 +211,8 @@ public interface HomeAlbumDao {
     @Select("select * from homeAlbum where id = #{id} and albumState=0")
     HomeAlbum findById(@Param("id") long id);
 
-    @Select("select * from HomeAlbumPicWhole where userId = #{id} and time=#{time}")
-    HomeAlbumPicWhole findWhole(@Param("id") long id, @Param("time") int time);
+    @Select("select * from HomeAlbumPicWhole where userId = #{id} and time=#{time} and albumId=#{albumId}")
+    HomeAlbumPicWhole findWhole(@Param("id") long id, @Param("time") int time, @Param("albumId") long albumId);
 
     /***
      * 根据ID查询用户图片

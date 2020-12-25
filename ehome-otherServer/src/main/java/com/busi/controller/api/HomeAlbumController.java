@@ -449,21 +449,22 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         if (num >= numLimit) {
             return returnData(StatusCode.CODE_FILE_MAX.CODE_VALUE, "图片上传达到上限", new JSONObject());
         }
-        //判断是否需要设为封面
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         String homePicArray[] = homeAlbumPic.getImgUrl().split(",");
+        int time = Integer.valueOf(format.format(new Date()));//当前系统时间(Date转int)
         if (homeAlbumPic.getAlbumId() > 0) {//是否是相册上传
             HomeAlbum alb = homeAlbumService.findById(homeAlbumPic.getAlbumId());
             if (alb == null) {
                 return returnData(StatusCode.CODE_FOLDER_NOT_FOUND.CODE_VALUE, "相册不存在", new JSONObject());
             }
             long phoneSize = alb.getPhotoSize();
+            //判断是否需要设为封面
             if (phoneSize <= 0 && CommonUtils.checkFull(alb.getImgCover())) {
                 alb.setImgCover(homePicArray[0]);
                 homeAlbumService.updateAlbumCover(alb);
             }
         }
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        int time = Integer.valueOf(format.format(new Date()));//当前系统时间(Date转int)
+        //入库
         for (int i = 0; i < homePicArray.length; i++) {
             homeAlbumPic.setImgUrl(homePicArray[i]);
             homeAlbumPic.setTime(new Date());
@@ -472,7 +473,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         }
         //新增存储室图片记录
         //查询当前时间有无图片上传记录
-        HomeAlbumPicWhole whole = homeAlbumService.findWhole(homeAlbumPic.getUserId(), time);
+        HomeAlbumPicWhole whole = homeAlbumService.findWhole(homeAlbumPic.getUserId(), time, homeAlbumPic.getAlbumId());
         if (whole == null) {
             whole = new HomeAlbumPicWhole();
             whole.setNum(homePicArray.length);
@@ -555,7 +556,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         for (int i = 0; i < strings.length; i++) {//图片ID组合  格式：20201212#1,2,3;//日期#图片ID，ID，ID；
             String[] num = strings[i].split("#");
             //查询当前时间有无图片上传记录
-            HomeAlbumPicWhole whole = homeAlbumService.findWhole(userId, Integer.parseInt(num[0]));
+            HomeAlbumPicWhole whole = homeAlbumService.findWhole(userId, Integer.parseInt(num[0]), 0);
             if (whole == null) {
                 continue;
             }
@@ -646,7 +647,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
     /***
      * 分页查询图片
      * @param albumId 相册ID  0时查全部图片  >0时查指定相册的
-     * @param type  查询入口：0日期、全部图片界面  1搜索界面
+     * @param type  查询方式：0查询指定一天的  1查询指定日期往后的
      * @param userId  用户ID
      * @param date  指定日期  0表示查所有   格式：20201212
      * @param page  页码 第几页 起始值1

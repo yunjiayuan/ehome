@@ -173,8 +173,8 @@ public class HomeAlbumService {
         return homeAlbumDao.findById(id);
     }
 
-    public HomeAlbumPicWhole findWhole(long id, int time) {
-        return homeAlbumDao.findWhole(id, time);
+    public HomeAlbumPicWhole findWhole(long id, int time, long albumId) {
+        return homeAlbumDao.findWhole(id, time, albumId);
     }
 
     /***
