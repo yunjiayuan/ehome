@@ -51,8 +51,9 @@ public interface HomeAlbumDao {
             " imgCover=#{imgCover}," +
             "</if>" +
             " albumPurview=#{albumPurview}," +
-            " albumSeat=#{albumSeat}" +
-            " where id=#{id} and roomType=#{roomType}" +
+            " albumSeat=#{albumSeat}," +
+            " roomType=#{roomType}" +
+            " where id=#{id}" +
             "</script>")
     int updateAlbum(HomeAlbum homeAlbum);
 
