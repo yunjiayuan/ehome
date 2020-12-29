@@ -36,7 +36,7 @@ public interface SelectionApiController {
     /***
      * 分页查询参加活动的人员列表
      * @param searchType  排序 0按条件查询 1按编号查询 2按名字查询
-     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星   4青年创业
+     * @param selectionType  评选类型  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
      * @param findType   查询类型： 0表示默认，1表示查询有视频的
      * @param infoId  被查询参加活动人员的活动ID
      * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
@@ -73,7 +73,7 @@ public interface SelectionApiController {
     /**
      * 查询用户是否参加过活动
      *
-     * @param selectionType 评选类型 1城市小姐  2校花  3城市之星   4青年创业
+     * @param selectionType 评选类型 0云家园招募令  1城市小姐  2校花  3城市之星   4青年创业
      * @return
      */
     @GetMapping("isJoin/{selectionType}")
@@ -100,7 +100,7 @@ public interface SelectionApiController {
     /***
      * 分页查询投票历史
      * @param userId  用户ID
-     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星   4青年创业
+     * @param selectionType  评选类型  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return

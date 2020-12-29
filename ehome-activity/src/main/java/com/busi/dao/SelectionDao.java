@@ -57,14 +57,8 @@ public interface SelectionDao {
             "<if test=\"s_birthday != null\">" +
             " s_birthday=#{s_birthday}," +
             "</if>" +
-            "<if test=\"selectionType ==2\">" +
-            " s_city=-1," +
-            " s_district=-1," +
-            "</if>" +
-            "<if test=\"selectionType ==1\">" +
             " s_city=#{s_city}," +
             " s_district=#{s_district}," +
-            "</if>" +
             " s_sex=2," +
             " s_job=#{s_job}," +
             " activityVideo=#{activityVideo}," +
@@ -129,18 +123,18 @@ public interface SelectionDao {
             "select * from SelectionActivities" +
             " where 1=1" +
             " and status = 0" +
-            " and (selectionType=0 or selectionType=1)" +
+            " and selectionType=#{selectionType}" +
             "<if test=\"findType == 1\">" +
             " and activityVideo is not null" +
             "</if>" +
-            " <if test=\"s_province>=0 and s_city>=0 and s_district>=0\">" +
-            " and s_province=#{s_province} and s_city=#{s_city} and s_district=#{s_district}" +
-            "</if>" +
-            " <if test=\"s_province>=0 and s_city>=0 and s_district==-1\">" +
-            " and s_province=#{s_province} and s_city=#{s_city}" +
-            "</if>" +
-            " <if test=\"s_province>=0 and s_city==-1 and s_district==-1\">" +
+            " <if test=\"s_province>=0\">" +
             " and s_province=#{s_province}" +
+            "</if>" +
+            " <if test=\"s_city>=0\">" +
+            " and s_city=#{s_city}" +
+            "</if>" +
+            " <if test=\"s_district>=0\">" +
+            " and s_district=#{s_district}" +
             "</if>" +
             " <if test=\"orderVoteCountType!=0\">" +
             " ORDER BY votesCounts ASC" +
@@ -150,7 +144,7 @@ public interface SelectionDao {
             "</if>" +
             "</script>")
     List<SelectionActivities> findsSelectionList1(@Param("findType") int findType, @Param("orderVoteCountType") int orderVoteCountType,
-                                                  @Param("s_province") int s_province, @Param("s_city") int s_city, @Param("s_district") int s_district);
+                                                  @Param("s_province") int s_province, @Param("s_city") int s_city, @Param("s_district") int s_district, @Param("selectionType") int selectionType);
 
     /***
      * 分页查询参加活动的人员列表
@@ -169,11 +163,11 @@ public interface SelectionDao {
             "<if test=\"findType == 1\">" +
             " and activityVideo is not null" +
             "</if>" +
-            " <if test=\"s_province>0 and s_job &lt;= 0\">" +
+            " <if test=\"s_province>0\">" +
             " and s_province=#{s_province}" +
             "</if>" +
-            " <if test=\"s_province>0 and s_job>0\">" +
-            " and s_province=#{s_province} and s_job=#{s_job}" +
+            " <if test=\"s_job>0\">" +
+            " and s_job=#{s_job}" +
             "</if>" +
             " <if test=\"orderVoteCountType!=0\">" +
             " ORDER BY votesCounts ASC" +
@@ -198,14 +192,15 @@ public interface SelectionDao {
             "select * from SelectionActivities" +
             " where 1=1" +
             " and status = 0" +
+            " and selectionType=#{selectionType}" +
             "<if test=\"findType == 1\">" +
             " and activityVideo is not null" +
             "</if>" +
             "<if test=\"searchType == 1\">" +
-            " and id=#{infoId} and selectionType=#{selectionType}" +
+            " and id=#{infoId}" +
             "</if>" +
             "<if test=\"s_name != null and s_name != '' and searchType == 2 \">" +
-            " and s_name LIKE CONCAT('%',#{s_name},'%') and selectionType=#{selectionType}" +
+            " and s_name LIKE CONCAT('%',#{s_name},'%')" +
             "</if>" +
             "</script>")
     List<SelectionActivities> findsSelectionList3(@Param("searchType") int searchType, @Param("selectionType") int selectionType, @Param("findType") int findType, @Param("infoId") long infoId, @Param("s_name") String s_name);

@@ -23,7 +23,7 @@ public class SelectionVote {
 
     private long userId;   //被投票者
 
-    private int selectionType;//活动类型  1城市小姐  2城市之星 3青年创业
+    private int selectionType;//活动类型  0云家园招募令 1城市小姐  2城市之星 3青年创业 4青年创业
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;
