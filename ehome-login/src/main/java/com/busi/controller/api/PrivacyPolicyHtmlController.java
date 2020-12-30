@@ -13,11 +13,14 @@ import java.util.HashMap;
 @Controller
 public class PrivacyPolicyHtmlController implements PrivacyPolicyHtmlApiController{
 
+    @Override
     public String privacyPolicy(HashMap<String, Object> map) {
         return "privacyPolicy/privacyPolicy.html";
     }
 
-    public String downLoad(@PathVariable String shareCode) {
-        return "downLoad/index.html?shareCode="+shareCode;
+    @Override
+    public String downLoad(HashMap<String, Object> map,@PathVariable String shareCode) {
+        map.put("shareCode",shareCode);
+        return "downLoad/index.html";
     }
 }

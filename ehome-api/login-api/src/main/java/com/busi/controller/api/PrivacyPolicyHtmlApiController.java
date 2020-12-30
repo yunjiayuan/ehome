@@ -16,5 +16,5 @@ public interface PrivacyPolicyHtmlApiController {
     String privacyPolicy(HashMap<String, Object> map) ;
 
     @GetMapping("/downLoad/{shareCode}")
-    String downLoad(@PathVariable String shareCode) ;
+    String downLoad(HashMap<String, Object> map,@PathVariable String shareCode) ;
 }
