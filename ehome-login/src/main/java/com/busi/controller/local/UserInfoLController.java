@@ -327,12 +327,13 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
             redisUtils.hset(Constants.REDIS_KEY_USER + userInfo.getUserId(), "spokesmanName", userInfo.getSpokesmanName(), Constants.USER_TIME_OUT);
             redisUtils.expire(Constants.REDIS_KEY_USER + userInfo.getUserId(), Constants.USER_TIME_OUT);
         }
-        for (int i = 0; i < 60000; i++) {
-            String cc = "user_"+i;
-            if(redisUtils.isExistKey(cc)){
-                redisUtils.delKey(cc);
-            }
-        }
+        //此处为清除缓存中的所有用户实体
+//        for (int i = 0; i < 60000; i++) {
+//            String cc = "user_"+i;
+//            if(redisUtils.isExistKey(cc)){
+//                redisUtils.delKey(cc);
+//            }
+//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
