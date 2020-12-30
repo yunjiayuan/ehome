@@ -71,4 +71,8 @@ public class HomePageInfo {
     private int talkToSomeoneStatus;//倾诉状态 0表示不接受倾诉  1表示接受倾诉
 
     private int chatnteractionStatus;//聊天互动功能的状态 0表示不接受别人找你互动  1表示接受别人找你互动
+
+    private int isSpokesman;//代言人类型  0不是 1是地区代言人
+
+    private String spokesmanName;//代言人名称 例如：北京海淀代言人
 }

@@ -361,4 +361,18 @@ public interface UserInfoDao {
      */
     @Select("select * from userInfo where (userId > 10000 and 13870 > userId) or (userId > 53870 ) ")
     List<UserInfo> findCondition();
+
+    /**
+     * 更新用户代言人身份标识
+     *
+     * @param userInfo
+     * @return
+     */
+    @Update("<script>" +
+            "update userInfo set" +
+            " isSpokesman=#{isSpokesman}," +
+            " spokesmanName=#{spokesmanName}" +
+            " where userId=#{userId}" +
+            "</script>")
+    int updateSpokesmanStatus(UserInfo userInfo);
 }

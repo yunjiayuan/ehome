@@ -308,5 +308,32 @@ public class UserInfoLController extends BaseController implements UserInfoLocal
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
+    /***
+     * 更新用户代言人身份标识
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public ReturnData updateSpokesmanStatus(@RequestBody UserInfo userInfo) {
+        int count = userInfoService.updateSpokesmanStatus(userInfo);
+        if (count <= 0) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "更新用户代言人身份标识失败", new JSONObject());
+        }
+        //更新缓存数据
+        Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + userInfo.getUserId());
+        if (userMap != null && userMap.size() > 0) {//缓存中存在 才更新 不存在不更新
+            //更新缓存 自己修改自己的用户信息 不考虑并发问题
+            redisUtils.hset(Constants.REDIS_KEY_USER + userInfo.getUserId(), "isSpokesman", userInfo.getIsSpokesman(), Constants.USER_TIME_OUT);
+            redisUtils.hset(Constants.REDIS_KEY_USER + userInfo.getUserId(), "spokesmanName", userInfo.getSpokesmanName(), Constants.USER_TIME_OUT);
+            redisUtils.expire(Constants.REDIS_KEY_USER + userInfo.getUserId(), Constants.USER_TIME_OUT);
+        }
+        for (int i = 0; i < 60000; i++) {
+            String cc = "user_"+i;
+            if(redisUtils.isExistKey(cc)){
+                redisUtils.delKey(cc);
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
 
 }

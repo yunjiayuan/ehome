@@ -107,4 +107,12 @@ public interface UserInfoLocalController {
     @PutMapping("addGoodNumberToUser")
     ReturnData addGoodNumberToUser(@RequestBody UserInfo userInfo);
 
+    /***
+     * 更新用户代言人身份标识
+     * @param userInfo
+     * @return
+     */
+    @PutMapping("updateSpokesmanStatus")
+    ReturnData updateSpokesmanStatus(@RequestBody UserInfo userInfo);
+
 }

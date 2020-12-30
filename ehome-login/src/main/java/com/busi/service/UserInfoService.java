@@ -267,33 +267,6 @@ public class UserInfoService {
         }
         return PageUtils.getPageBean(p, list);
     }
-//    public String getFindListSql(@Param("name") String name, @Param("beginAge") int beginAge, @Param("endAge") int endAge,
-//                                 @Param("sex") int sex, @Param("province") int province, @Param("city") int city,
-//                                 @Param("district") int district, @Param("studyrank") int studyrank,
-//                                 @Param("maritalstatus") int maritalstatus){
-//        StringBuffer sql = new StringBuffer("select * from userinfo where 1=1 ");
-//        if(!CommonUtils.checkFull(name)){
-//            sql.append(" and name like CONCAT('%',#{name},'%')");
-//        }
-//        if(beginAge>0){
-//            sql.append(" and TIMESTAMPDIFF(YEAR,birthday,CURDATE()) >= #{beginAge}");
-//        }
-//        if(endAge>0&&endAge>beginAge){
-//            sql.append(" and TIMESTAMPDIFF(YEAR,birthday,CURDATE()) <= #{endAge}");
-//        }
-//        if(province!=-1){
-//            sql.append(" and province = #{province}");
-//        }
-//        if(city!=-1){
-//            sql.append(" and city = #{city}");
-//        }
-//        if(district!=-1){
-//            sql.append(" and district = #{district}");
-//        }
-//        sql.append(" and studyrank = #{studyrank}");
-//        sql.append(" and maritalstatus = #{maritalstatus}");
-//        return sql.toString();
-//    }
 
     /***
      * 条件查找用户信息
@@ -303,5 +276,15 @@ public class UserInfoService {
         List<UserInfo> list;
         list = userInfoDao.findCondition();
         return list;
+    }
+
+    /***
+     * 更新用户代言人身份标识
+     * @param userInfo
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateSpokesmanStatus(UserInfo userInfo) {
+        return userInfoDao.updateSpokesmanStatus(userInfo);
     }
 }

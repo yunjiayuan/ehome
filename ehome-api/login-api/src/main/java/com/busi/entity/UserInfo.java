@@ -165,4 +165,8 @@ public class UserInfo {
 
 	private long vestId;//马甲主键ID 与数据库无关字段
 
+	private int isSpokesman;//代言人类型  0不是 1是地区代言人
+
+	private String spokesmanName;//代言人名称 例如：北京海淀代言人
+
 }
