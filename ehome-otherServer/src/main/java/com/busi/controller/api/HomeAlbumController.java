@@ -449,21 +449,22 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         if (num >= numLimit) {
             return returnData(StatusCode.CODE_FILE_MAX.CODE_VALUE, "图片上传达到上限", new JSONObject());
         }
-        //判断是否需要设为封面
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         String homePicArray[] = homeAlbumPic.getImgUrl().split(",");
+        int time = Integer.valueOf(format.format(new Date()));//当前系统时间(Date转int)
         if (homeAlbumPic.getAlbumId() > 0) {//是否是相册上传
             HomeAlbum alb = homeAlbumService.findById(homeAlbumPic.getAlbumId());
             if (alb == null) {
                 return returnData(StatusCode.CODE_FOLDER_NOT_FOUND.CODE_VALUE, "相册不存在", new JSONObject());
             }
             long phoneSize = alb.getPhotoSize();
+            //判断是否需要设为封面
             if (phoneSize <= 0 && CommonUtils.checkFull(alb.getImgCover())) {
                 alb.setImgCover(homePicArray[0]);
                 homeAlbumService.updateAlbumCover(alb);
             }
         }
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        int time = Integer.valueOf(format.format(new Date()));//当前系统时间(Date转int)
+        //入库
         for (int i = 0; i < homePicArray.length; i++) {
             homeAlbumPic.setImgUrl(homePicArray[i]);
             homeAlbumPic.setTime(new Date());
@@ -472,11 +473,12 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         }
         //新增存储室图片记录
         //查询当前时间有无图片上传记录
-        HomeAlbumPicWhole whole = homeAlbumService.findWhole(homeAlbumPic.getUserId(), time);
+        HomeAlbumPicWhole whole = homeAlbumService.findWhole(homeAlbumPic.getUserId(), time, homeAlbumPic.getAlbumId());
         if (whole == null) {
             whole = new HomeAlbumPicWhole();
             whole.setNum(homePicArray.length);
             whole.setTime(time);
+            whole.setAlbumId(homeAlbumPic.getAlbumId());
             whole.setUserId(homeAlbumPic.getUserId());
             homeAlbumService.add(whole);
         } else {
@@ -524,8 +526,6 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
     /***
      * 删除图片（新）
      * @param userId
-     * @param ids    格式：图片ID,图片日期;图片ID,图片日期【暂不用】
-     *               或
      * @param ids    格式：20201212#1,2,3;//日期#图片ID，ID，ID；
      * @return
      */
@@ -540,9 +540,6 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         }
         String idss = "";
         String[] strings = ids.split(";");
-//        for (int i = 0; i < strings.length; i++) {
-//            idss += strings[i].split(",")[0];//第一种图片ID组合  格式：图片ID,图片日期;图片ID,图片日期
-//        }
         for (int i = 0; i < strings.length; i++) {
             String[] num = strings[i].split("#");//获取图片ID
             idss += num[1] + ",";//图片ID组合
@@ -550,22 +547,22 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         if (idss.split(",").length > 100) {//暂定单次删除上限为100张
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "超出上限，最多删除100张", new JSONObject());
         }
-        for (int i = 0; i < strings.length; i++) {//第二种图片ID组合  格式：20201212#1,2,3;//日期#图片ID，ID，ID；
-            String[] num = strings[i].split("#");
-            //查询当前时间有无图片上传记录
-            HomeAlbumPicWhole whole = homeAlbumService.findWhole(userId, Integer.parseInt(num[0]));
-            if (whole == null) {
-                continue;
-            }
-            //更新图片上传数量
-            int num2 = num[1].length();
-            homeAlbumService.upPicNum(whole.getNum() - num2, whole.getId());
-        }
         //删除图片
         if (!CommonUtils.checkFull(idss)) {
             homeAlbumService.delPic(userId, idss.split(","));
             //调用MQ同步 图片到图片删除记录表
             mqUtils.sendDeleteImageMQ(userId, idss);
+        }
+        for (int i = 0; i < strings.length; i++) {//图片ID组合  格式：20201212#1,2,3;//日期#图片ID，ID，ID；
+            String[] num = strings[i].split("#");
+            //查询当前时间有无图片上传记录
+            HomeAlbumPicWhole whole = homeAlbumService.findWhole(userId, Integer.parseInt(num[0]), 0);
+            if (whole == null) {
+                continue;
+            }
+            //更新图片上传数量
+            int num2 = num[1].split(",").length;
+            homeAlbumService.upPicNum(whole.getNum() - num2, whole.getId());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -649,7 +646,8 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
 
     /***
      * 分页查询图片
-     * @param type  查询入口：0日期、全部图片界面  1搜索界面
+     * @param albumId 相册ID  0时查全部图片  >0时查指定相册的
+     * @param type  查询方式：0查询指定一天的  1查询指定日期往后的
      * @param userId  用户ID
      * @param date  指定日期  0表示查所有   格式：20201212
      * @param page  页码 第几页 起始值1
@@ -657,7 +655,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
      * @return
      */
     @Override
-    public ReturnData findPicList(@PathVariable int type, @PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findPicList(@PathVariable long albumId, @PathVariable int type, @PathVariable long userId, @PathVariable int date, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
@@ -666,7 +664,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
         PageBean<HomeAlbumPic> pageBean = null;
 //        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 //        int time = Integer.valueOf(format.format(new Date()));//当前系统时间(Date转int)
-        pageBean = homeAlbumService.findPicList(userId, date, type, page, count);
+        pageBean = homeAlbumService.findPicList(albumId, userId, date, type, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
@@ -675,12 +673,13 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
 
     /***
      * 查询上传图片日期
+     * @param albumId 相册ID  0时查全部图片  >0时查指定相册的
      * @param findType   查询带标记的日期  findType=0时 格式：201802  findType=1时 格式：2018
      * @param startTime   选择日期
      * @return
      */
     @Override
-    public ReturnData findPicDate(@PathVariable int findType, @PathVariable int startTime) {
+    public ReturnData findPicDate(@PathVariable long albumId, @PathVariable int findType, @PathVariable int startTime) {
         String time = "";
         int endTime = 0;
         List list = null;
@@ -691,7 +690,7 @@ public class HomeAlbumController extends BaseController implements HomeAlbumApiC
             endTime = ((startTime + 1) * 10000);
             startTime = startTime * 10000;
         }
-        list = homeAlbumService.findPicDate(CommonUtils.getMyId(), startTime, endTime);
+        list = homeAlbumService.findPicDate(CommonUtils.getMyId(), startTime, endTime, albumId);
         if (list.size() > 0 && list != null) {
             int len = list.size();
             HomeAlbumPicWhole notepad = null;

@@ -87,6 +87,7 @@ public class SelectionController extends BaseController implements SelectionApiC
 //        }
         selectionActivities.setS_birthday(selectionActivities.getS_birthday() + " 00:00:00");
         selectionActivities.setTime(new Date());
+        selectionActivities.setS_name(userAccountSecurity.getRealName());
         selectionService.addSelection(selectionActivities);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
@@ -121,7 +122,7 @@ public class SelectionController extends BaseController implements SelectionApiC
     /***
      * 分页查询参加活动的人员列表
      * @param searchType  排序 0按条件查询 1按编号查询 2按名字查询
-     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星  4青年创业
+     * @param selectionType  评选类型 0云家园招募令 1城市小姐  2校花  3城市之星  4青年创业
      * @param findType   查询类型： 0表示默认，1表示查询有视频的
      * @param infoId  被查询参加活动人员的活动ID
      * @param orderVoteCountType  排序规则 0按票数从高到低 1按票数从低到高
@@ -191,7 +192,7 @@ public class SelectionController extends BaseController implements SelectionApiC
     /**
      * 查询用户是否参加过活动
      *
-     * @param selectionType 评选类型 1城市小姐  2校花  3城市之星   4青年创业
+     * @param selectionType 评选类型  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
      * @return
      */
     @Override
@@ -294,7 +295,7 @@ public class SelectionController extends BaseController implements SelectionApiC
     /***
      * 分页查询被投票历史记录
      * @param userId  被查询用户ID
-     * @param selectionType  评选类型 1城市小姐  2校花  3城市之星   4青年创业
+     * @param selectionType  评选类型  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return

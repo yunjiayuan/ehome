@@ -36,5 +36,6 @@ public class Footmark {
 
     private int footmarkType;    //足迹类型 0.默认全部 1.发布公告 2.发布家博 3.图片上传 4.音频上传 5.视频上传  6记事  7日程
 
-    private String users;        //用户ID组合：逗号分隔
+    //与数据库无关字段
+    private String users;        //用户ID+名字+头像：逗号分隔；多个之间分号分隔
 }

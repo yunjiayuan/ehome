@@ -23,7 +23,7 @@ public class SelectionActivities {
     @Min(value = 1, message = "userId参数有误")
     private long userId;//用户ID
 
-    private int selectionType;//评选类型 1城市小姐  2校花  3城市之星   4青年创业
+    private int selectionType;//评选类型 0云家园招募令  1城市小姐  2校花  3城市之星  4青年创业
 
     private int s_province;//省ID
 

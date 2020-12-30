@@ -51,8 +51,9 @@ public interface HomeAlbumDao {
             " imgCover=#{imgCover}," +
             "</if>" +
             " albumPurview=#{albumPurview}," +
-            " albumSeat=#{albumSeat}" +
-            " where id=#{id} and roomType=#{roomType}" +
+            " albumSeat=#{albumSeat}," +
+            " roomType=#{roomType}" +
+            " where id=#{id}" +
             "</script>")
     int updateAlbum(HomeAlbum homeAlbum);
 
@@ -112,8 +113,8 @@ public interface HomeAlbumDao {
     @Options(useGeneratedKeys = true)
     int uploadPic(HomeAlbumPic homeAlbumPic);
 
-    @Insert("insert into HomeAlbumPicWhole(userId,num,time) " +
-            "values (#{userId},#{num},#{time})")
+    @Insert("insert into HomeAlbumPicWhole(userId,num,time,albumId) " +
+            "values (#{userId},#{num},#{time},#{albumId})")
     @Options(useGeneratedKeys = true)
     int add(HomeAlbumPicWhole homeAlbumPic);
 
@@ -211,8 +212,8 @@ public interface HomeAlbumDao {
     @Select("select * from homeAlbum where id = #{id} and albumState=0")
     HomeAlbum findById(@Param("id") long id);
 
-    @Select("select * from HomeAlbumPicWhole where userId = #{id} and time=#{time}")
-    HomeAlbumPicWhole findWhole(@Param("id") long id, @Param("time") int time);
+    @Select("select * from HomeAlbumPicWhole where userId = #{id} and time=#{time} and albumId=#{albumId}")
+    HomeAlbumPicWhole findWhole(@Param("id") long id, @Param("time") int time, @Param("albumId") long albumId);
 
     /***
      * 根据ID查询用户图片
@@ -332,23 +333,25 @@ public interface HomeAlbumDao {
     @Select("<script>" +
             "select * from HomeAlbumPic" +
             " where 1=1" +
-//            " and albumId=-1" +
             " and picState=0" +
             " and userId=#{userId}" +
+            "<if test=\"albumId > 0\">" +
+            " and albumId=#{albumId}" +
+            "</if>" +
             "<if test=\"date > 0\">" +
-                "<if test=\"type == 0\">" +
-                    " and newTime = #{date}" +
-                "</if>" +
-                "<if test=\"type == 1\">" +
-                    " and newTime >= #{date}" +
-                "</if>" +
-                " order by time asc" +
+            "<if test=\"type == 0\">" +
+            " and newTime = #{date}" +
+            "</if>" +
+            "<if test=\"type == 1\">" +
+            " and newTime >= #{date}" +
+            "</if>" +
+            " order by time asc" +
             "</if>" +
             "<if test=\"date == 0\">" +
-                " order by time desc" +
+            " order by time desc" +
             "</if>" +
             "</script>")
-    List<HomeAlbumPic> findPicList(@Param("userId") long userId, @Param("date") int date, @Param("type") int type);
+    List<HomeAlbumPic> findPicList(@Param("albumId") long albumId, @Param("userId") long userId, @Param("date") int date, @Param("type") int type);
 
     /***
      * 根据ID查询用户相册
@@ -419,9 +422,12 @@ public interface HomeAlbumDao {
             "select * from HomeAlbumPicWhole" +
             " where 1=1" +
             " and userId=#{userId}" +
+            "<if test=\"albumId > 0\">" +
+            " and albumId=#{albumId}" +
+            "</if>" +
             " and time BETWEEN #{startTime} and #{endTime}" +
             "</script>")
-    List<HomeAlbumPicWhole> findPicDate(@Param("userId") long userId, @Param("startTime") int startTime, @Param("endTime") int endTime);
+    List<HomeAlbumPicWhole> findPicDate(@Param("userId") long userId, @Param("startTime") int startTime, @Param("endTime") int endTime, @Param("albumId") long albumId);
 
     /***
      * 更新图片记录
@@ -434,7 +440,7 @@ public interface HomeAlbumDao {
             " num=#{num}" +
             " where id =#{id}" +
             "</if>" +
-            "<if test=\"num == 0\">" +
+            "<if test=\"num &lt;= 0\">" +
             "delete from HomeAlbumPicWhole" +
             " where id =#{id}" +
             "</if>" +

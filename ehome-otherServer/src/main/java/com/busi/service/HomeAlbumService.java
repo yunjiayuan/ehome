@@ -173,8 +173,8 @@ public class HomeAlbumService {
         return homeAlbumDao.findById(id);
     }
 
-    public HomeAlbumPicWhole findWhole(long id, int time) {
-        return homeAlbumDao.findWhole(id, time);
+    public HomeAlbumPicWhole findWhole(long id, int time, long albumId) {
+        return homeAlbumDao.findWhole(id, time, albumId);
     }
 
     /***
@@ -258,10 +258,10 @@ public class HomeAlbumService {
      * @param count 每页条数
      * @return
      */
-    public PageBean<HomeAlbumPic> findPicList(long userId, int date, int type, int page, int count) {
+    public PageBean<HomeAlbumPic> findPicList(long albumId, long userId, int date, int type, int page, int count) {
         List<HomeAlbumPic> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = homeAlbumDao.findPicList(userId, date, type);
+        list = homeAlbumDao.findPicList(albumId, userId, date, type);
         return PageUtils.getPageBean(p, list);
     }
 
@@ -295,9 +295,9 @@ public class HomeAlbumService {
         return list;
     }
 
-    public List<HomeAlbumPicWhole> findPicDate(long userId, int startTime, int endTime) {
+    public List<HomeAlbumPicWhole> findPicDate(long userId, int startTime, int endTime, long albumId) {
         List<HomeAlbumPicWhole> list;
-        list = homeAlbumDao.findPicDate(userId, startTime, endTime);
+        list = homeAlbumDao.findPicDate(userId, startTime, endTime, albumId);
         return list;
     }
 

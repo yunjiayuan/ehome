@@ -93,8 +93,14 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
             if (list != null && list.size() > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     Footmark ik = (Footmark) list.get(i);
-                    if (ik != null && !CommonUtils.checkFull(ik.getUsers())) {
-                        String[] strings = ik.getUsers().split(",");
+                    if (ik != null && !CommonUtils.checkFull(ik.getInfoId()) && ik.getFootmarkType() == 6) {
+                        boolean is = ik.getInfoId().contains("_");//是否包含_
+                        if (!is) {
+                            continue;
+                        }
+                        String[] strings1 = ik.getInfoId().split("_");//记事主键ID_参与者id
+                        String[] strings = strings1[1].split(",");//参与者id
+                        ik.setInfoId(strings1[0]);//用于详情接口
                         for (int j = 0; j < strings.length; j++) {
                             long newUserId = Long.parseLong(strings[j]);
                             Map<String, Object> userMap = redisUtils.hmget(Constants.REDIS_KEY_USER + newUserId);
@@ -112,6 +118,7 @@ public class FootmarkController extends BaseController implements FootmarkApiCon
                                 if (j == strings.length - 1) {
                                     newUsers += newUserId + "," + userInfo.getName() + "," + userInfo.getHead();
                                     ik.setUsers(newUsers);
+                                    newUsers = "";
                                 } else {
                                     newUsers += newUserId + "," + userInfo.getName() + "," + userInfo.getHead() + ";";
                                 }

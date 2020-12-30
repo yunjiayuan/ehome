@@ -110,7 +110,7 @@ public class SelectionService {
         if (searchType == 0) {
             if (selectionType <= 1) {
                 list = selectionDao.findsSelectionList1(findType, orderVoteCountType,
-                        s_province, s_city, s_district);
+                        s_province, s_city, s_district, selectionType);
             }
             if (selectionType == 2) {
                 list = selectionDao.findsSelectionList2(findType, orderVoteCountType,

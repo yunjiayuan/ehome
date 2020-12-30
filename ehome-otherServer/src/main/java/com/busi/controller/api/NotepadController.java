@@ -94,11 +94,22 @@ public class NotepadController extends BaseController implements NotepadApiContr
         //新增任务
         mqUtils.sendTaskMQ(notepad.getUserId(), 1, 9);
         //新增足迹
+        String videoUrl = null;        //视频地址
+        String videoCover = null;        //视频封面
         if (!CommonUtils.checkFull(notepad.getVideoUrl())) {
-            mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), notepad.getVideoCover(), notepad.getVideoUrl(), null, notepad.getUsers(), type);
+            videoCover = notepad.getVideoCover();
+            videoUrl = notepad.getVideoUrl();
         } else {
-            mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), notepad.getImgUrls(), null, null, notepad.getId() + "", type);
+            videoCover = notepad.getImgUrls();
         }
+        String users = "";        //用户ID组合：逗号分隔
+        if (!CommonUtils.checkFull(notepad.getUsers())) {
+            users = notepad.getId() + "_" + notepad.getUsers();//主键加用户ID组合
+        } else {
+            users += notepad.getId();
+        }
+        //新增足迹
+        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), videoCover, videoUrl, null, users, type);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

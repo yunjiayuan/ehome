@@ -189,6 +189,7 @@ public interface NotepadDao {
             " and userId=#{userId}" +
             " and thisDateId = #{thisDateId}" +
             " and addType = #{options}" +
+            " order by time desc" +
             "</script>")
     List<Notepad> findThisDateId(@Param("userId") long userId, @Param("thisDateId") long thisDateId, @Param("options") int options);
 
