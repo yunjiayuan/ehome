@@ -93,4 +93,18 @@ public class UserInfoUtils {
         userInfo.setChatnteractionStatus(type);
         userInfoLocalControllerFegin.updateChatnteractionStatus(userInfo);
     }
+
+    /***
+     * 更新用户代言人标识
+     * @param type    代言人类型  0不是 1是地区代言人
+     * @param name    代言人名称 例如：北京海淀代言人
+     * @param userId  当前用户ID
+     */
+    public void updateSpokesmanStatus(long userId ,int type ,String name) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userId);
+        userInfo.setIsSpokesman(type);
+        userInfo.setSpokesmanName(name);
+        userInfoLocalControllerFegin.updateSpokesmanStatus(userInfo);
+    }
 }
