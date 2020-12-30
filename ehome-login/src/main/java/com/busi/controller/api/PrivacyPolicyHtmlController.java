@@ -14,4 +14,8 @@ public class PrivacyPolicyHtmlController implements PrivacyPolicyHtmlApiControll
     public String privacyPolicy(HashMap<String, Object> map) {
         return "privacyPolicy/privacyPolicy.html";
     }
+
+    public String downLoad(HashMap<String, Object> map) {
+        return "downLoad/index.html";
+    }
 }

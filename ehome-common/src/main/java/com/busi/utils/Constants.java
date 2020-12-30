@@ -99,7 +99,7 @@ public class Constants {
     public static final String WEIXIN_MCH_NAME = "北京历程家园网络科技有限公司";//商户号
     public static final String WEIXIN_CERT_PATH = "/usr/local/webAppServer/paymentServer/apiclient_cert.p12";//证书地址
     public static final String WEIXIN_API_KEY = "a3ece05030d973cbad8b8943732960bf";//API秘钥
-    public static final String WEIXIN_APIV3_KEY = "a5f3a5276a278354564dd6f9df0c7469";//APIV3秘钥
+    public static final String WEIXIN_APIV3_KEY = "034ad8d8f65b8ce48c4c9fb12b4e973e";//APIV3秘钥 lichengwang20201224  进行MD5加密获得
     /** 微信支付提现业务 企业付款到零钱 结束**/
 
     /**支付宝提现业务 单笔转账 开始**/
