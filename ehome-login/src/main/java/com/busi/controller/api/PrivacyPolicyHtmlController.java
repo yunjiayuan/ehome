@@ -1,6 +1,8 @@
 package com.busi.controller.api;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.HashMap;
 
 /**
@@ -15,7 +17,7 @@ public class PrivacyPolicyHtmlController implements PrivacyPolicyHtmlApiControll
         return "privacyPolicy/privacyPolicy.html";
     }
 
-    public String downLoad(HashMap<String, Object> map) {
-        return "downLoad/index.html";
+    public String downLoad(@PathVariable String shareCode) {
+        return "downLoad/index.html?shareCode="+shareCode;
     }
 }
