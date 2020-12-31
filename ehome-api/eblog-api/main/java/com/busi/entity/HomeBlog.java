@@ -140,6 +140,8 @@ public class HomeBlog {
     private int proTypeId;      //发布者省简称ID 与数据库无关字段
     private long houseNumber;   //发布者门牌号   与数据库无关字段
     private double distance;    //距离	 与数据库无关字段
+    private int isSpokesman;//代言人类型  0不是 1是地区代言人 与数据库无关字段
+    private String spokesmanName;//代言人名称 例如：北京海淀代言人 与数据库无关字段
 //  private String shareName;	  //shareUserId 用户名称
 //  private String origUserName;//原始博主用户名 转载使用
 
