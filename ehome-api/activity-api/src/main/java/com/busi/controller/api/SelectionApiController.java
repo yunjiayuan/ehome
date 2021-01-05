@@ -108,4 +108,37 @@ public interface SelectionApiController {
     @GetMapping("findVoteHistory/{userId}/{selectionType}/{page}/{count}")
     ReturnData findVoteHistory(@PathVariable long userId, @PathVariable int selectionType, @PathVariable int page, @PathVariable int count);
 
+    /***
+     * 统计各种审核状态数量
+     * @param type  0云家园招募令 1城市小姐  2校花
+     * @return
+     */
+    @GetMapping("countAuditState/{type}")
+    ReturnData countAuditState(@PathVariable int type);
+
+    /***
+     * 查询审核人员列表
+     * @param selectionType  评选类型  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
+     * @param infoId  编号（主键ID）
+     * @param s_name  名字
+     * @param auditType  0待审核,1通过
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @GetMapping("findMyRecordList/{selectionType}/{infoId}/{s_name}/{auditType}/{page}/{count}")
+    ReturnData findMyRecordList(@PathVariable int selectionType, @PathVariable long infoId,
+                                @PathVariable String s_name, @PathVariable int auditType,
+                                @PathVariable int page, @PathVariable int count);
+
+    /***
+     * 更新代言人状态
+     * @param auditType  0设为地区代言人 1取消地区代言人
+     * @param id   云家园招募令、城市小姐、校花 主键ID
+     * @param name  代言人名称
+     * @return
+     */
+    @GetMapping("changeAuditState/{auditType}/{id}/{name}")
+    ReturnData changeAuditState(@PathVariable int auditType, @PathVariable long id, @PathVariable String name);
+
 }
