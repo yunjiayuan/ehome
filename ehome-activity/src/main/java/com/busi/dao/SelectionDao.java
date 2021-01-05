@@ -278,6 +278,7 @@ public interface SelectionDao {
             "<if test=\"s_name != null and s_name != '' \">" +
             " and s_name LIKE CONCAT('%',#{s_name},'%')" +
             "</if>" +
+            " ORDER BY votesCounts DESC" +
             "</script>")
     List<SelectionActivities> findMyRecordList(@Param("selectionType") int selectionType, @Param("infoId") long infoId, @Param("s_name") String s_name, @Param("auditType") int auditType);
 
