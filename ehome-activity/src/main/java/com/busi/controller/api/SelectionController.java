@@ -419,13 +419,14 @@ public class SelectionController extends BaseController implements SelectionApiC
         if (activities == null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
         }
-        //更新用户代言人状态
-        activities.setAuditType(auditType);
-        selectionService.changeAuditState(activities);
-        //更新用户代言人标识
         if (auditType == 0) {
             name = "";
         }
+        //更新用户代言人状态
+        activities.setSpokesmanName(name);
+        activities.setAuditType(auditType);
+        selectionService.changeAuditState(activities);
+        //更新用户代言人标识
         userInfoUtils.updateSpokesmanStatus(activities.getUserId(), auditType, name);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }

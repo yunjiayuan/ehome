@@ -85,7 +85,8 @@ public interface SelectionDao {
 
     @Update("<script>" +
             "update selectionActivities set" +
-            " auditType=#{auditType}" +
+            " auditType=#{auditType}," +
+            " spokesmanName=#{spokesmanName}" +
             " where id=#{id}" +
             "</script>")
     int changeAuditState(SelectionActivities selectionActivities);
