@@ -1,10 +1,10 @@
 package com.busi.service;
 
 import com.busi.dao.SelectionDao;
-import com.busi.entity.Hotel;
 import com.busi.entity.PageBean;
 import com.busi.entity.SelectionActivities;
 import com.busi.entity.SelectionVote;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -193,6 +193,9 @@ public class SelectionService {
 
         List<SelectionActivities> list = null;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (CommonUtils.checkFull(s_name)) {
+            s_name = null;
+        }
         list = selectionDao.findMyRecordList(selectionType, infoId, s_name, auditType);
         return PageUtils.getPageBean(p, list);
     }
