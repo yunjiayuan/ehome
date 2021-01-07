@@ -45,14 +45,19 @@ public class NotepadController extends BaseController implements NotepadApiContr
      */
     @Override
     public ReturnData addNotepad(@Valid @RequestBody Notepad notepad, BindingResult bindingResult) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //获取时分秒
+        Calendar now = Calendar.getInstance();
+        int shi = now.get(Calendar.HOUR_OF_DAY);//时
+        int fen = now.get(Calendar.MINUTE);//分
+        int miao = now.get(Calendar.SECOND);//秒
         String newDate = "" + notepad.getThisDateId();
         String regex = "(\\d{4})(\\d{2})(\\d{2})";
         newDate = newDate.replaceAll(regex, "$1-$2-$3");
+        newDate = newDate + " " + shi + ":" + fen + ":" + miao;
         Date thenTime = null;
         try {
-            thenTime = sdf.parse(newDate);
+            thenTime = dateformat.parse(newDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -69,6 +74,7 @@ public class NotepadController extends BaseController implements NotepadApiContr
             if (num >= 10) {
                 return returnData(StatusCode.CODE_NOTEPAD_REPEAT_ERROR.CODE_VALUE, "新增记事数量超过上限,新增失败", new JSONObject());
             }
+            notepad.setTime(thenTime);
             type = 6;
         } else {
             //判断该用户日程数量   每天最多10条
@@ -85,10 +91,10 @@ public class NotepadController extends BaseController implements NotepadApiContr
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            notepad.setTime(new Date());
             notepad.setAlarmTime(time);
             type = 7;
         }
-        notepad.setTime(new Date());
         notepad.setThenTime(thenTime);
         notepadService.add(notepad);
         //新增任务
