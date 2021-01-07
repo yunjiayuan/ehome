@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /***
@@ -32,7 +34,16 @@ public class FootmarkLController extends BaseController implements FootmarkLocal
     @Override
     public ReturnData addFootmark(@RequestBody Footmark footmark) {
         //添加足迹
-        footmark.setAddTime(new Date());
+        if (footmark.getFootmarkType() == 6) {
+            SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                footmark.setAddTime(dateformat.parse(footmark.getAudioUrl()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            footmark.setAddTime(new Date());
+        }
         footmarkService.add(footmark);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

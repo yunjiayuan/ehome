@@ -115,7 +115,10 @@ public class NotepadController extends BaseController implements NotepadApiContr
             users += notepad.getId();
         }
         //新增足迹
-        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), videoCover, videoUrl, null, users, type);
+        if (type == 7) {
+            newDate = null;
+        }
+        mqUtils.sendFootmarkMQ(notepad.getUserId(), notepad.getContent(), videoCover, videoUrl, newDate, users, type);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

@@ -133,20 +133,14 @@ public interface FootmarkDao {
             "<if test=\"footmarkType > 0\">" +
             " and footmarkType=#{footmarkType}" +
             "</if>" +
-            "<if test=\"footmarkType == -1\">" +
-            " <![CDATA[ and footmarkType < 6 ]]>" +
+            "<if test=\"footmarkType &lt; 0\">" +
+            " and footmarkType &lt; 6" +
+            "<if test=\"beginDate != null\">" +
+            " and addTime >= date_add(#{beginDate}, interval 0 DAY)" +
+            " and addTime &lt;= date_add(#{endDate}, interval 0 DAY)" +
             "</if>" +
-            "<if test=\"endDate != null\">" +
-            " <![CDATA[ and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) and UNIX_TIMESTAMP(addTime) <= UNIX_TIMESTAMP(#{endDate}) ]]>" +
-//            " <![CDATA[ and addTime >= date_sub(#{beginDate}, interval 0 day) and addTime <= date_add(#{endDate}, interval 1 day) ]]>" +  后新增可用语句
-//            " <![CDATA[ and addTime >= DATE_FORMAT(#{startTime},\"%Y-%m-%d %T\") and addTime <= DATE_FORMAT(#{endTime},\"%Y-%m-%d %T\") ]]>" +
+            "</if>" +
             " order by addTime desc" +
-            "</if>" +
-            "<if test=\"endDate == null\">" +
-            " and UNIX_TIMESTAMP(addTime) >= UNIX_TIMESTAMP(#{beginDate}) " +
-//            " and addTime >= date_sub(#{beginDate}, interval 0 day) " +
-            " order by addTime desc" +
-            "</if>" +
             "</script>")
     List<Footmark> findTimeList(@Param("userId") long userId, @Param("footmarkType") int footmarkType, @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
 

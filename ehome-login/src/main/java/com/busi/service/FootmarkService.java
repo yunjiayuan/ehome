@@ -145,7 +145,7 @@ public class FootmarkService {
                 }
                 if (!CommonUtils.checkFull(endTime)) {
                     endDate = format.parse(endTime);
-                    end = format2.parse(format2.format(endDate.getTime() + 86400000));
+                    end = format2.parse(format2.format(endDate));
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
