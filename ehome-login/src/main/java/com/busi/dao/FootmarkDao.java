@@ -130,17 +130,28 @@ public interface FootmarkDao {
             "<if test=\"userId > 0\">" +
             " and userId=#{userId}" +
             "</if>" +
+            //查全部
+            "<if test=\"footmarkType == 0\">" +
+            "<if test=\"beginDate != null\">" +
+            " and addTime >= date_add(#{beginDate}, interval 0 DAY)" +
+            " and addTime &lt;= date_add(#{endDate}, interval 0 DAY)" +
+            " order by addTime asc" +
+            "</if>" +
+            "</if>" +
+            //按类别查
             "<if test=\"footmarkType > 0\">" +
             " and footmarkType=#{footmarkType}" +
+            " order by addTime desc" +
             "</if>" +
+            //当日其他
             "<if test=\"footmarkType &lt; 0\">" +
             " and footmarkType &lt; 6" +
             "<if test=\"beginDate != null\">" +
             " and addTime >= date_add(#{beginDate}, interval 0 DAY)" +
             " and addTime &lt;= date_add(#{endDate}, interval 0 DAY)" +
             "</if>" +
-            "</if>" +
             " order by addTime desc" +
+            "</if>" +
             "</script>")
     List<Footmark> findTimeList(@Param("userId") long userId, @Param("footmarkType") int footmarkType, @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
 
