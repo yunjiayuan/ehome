@@ -31,6 +31,14 @@ public interface HomeHospitalApiController {
     ReturnData changeHospital(@Valid @RequestBody HomeHospital homeHospital, BindingResult bindingResult);
 
     /***
+     * 身份认证
+     * @param homeHospital
+     * @return
+     */
+    @PutMapping("identityAuthentication")
+    ReturnData identityAuthentication(@Valid @RequestBody HomeHospital homeHospital, BindingResult bindingResult);
+
+    /***
      * 更新营业状态
      * @param homeHospital
      * @return

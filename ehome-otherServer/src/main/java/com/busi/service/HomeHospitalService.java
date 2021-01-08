@@ -47,6 +47,11 @@ public class HomeHospitalService {
         return homeHospitalDao.update(hourlyWorker);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int update2(HomeHospital hourlyWorker) {
+        return homeHospitalDao.update2(hourlyWorker);
+    }
+
     /***
      * 更新营业状态
      * @param hourlyWorker
@@ -64,6 +69,10 @@ public class HomeHospitalService {
      */
     public HomeHospital findByUserId(long userId) {
         return homeHospitalDao.findByUserId(userId);
+    }
+
+    public HomeHospital findById(long id) {
+        return homeHospitalDao.findById(id);
     }
 
     /***

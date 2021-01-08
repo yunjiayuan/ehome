@@ -108,4 +108,6 @@ public class HomeHospital {
 
     private long houseNumber;        // 门牌号
 
+    private int distance;            //距离
+
 }

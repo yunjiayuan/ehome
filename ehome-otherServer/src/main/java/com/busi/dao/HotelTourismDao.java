@@ -229,6 +229,15 @@ public interface HotelTourismDao {
             "</script>")
     List<DoorwayBusiness> findAuditTypeList6(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
 
+    @Select("<script>" +
+            "select *, ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{lat}*PI()/180-latitude*PI()/180)/2),2)+COS(#{lat}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{lon}*PI()/180-longitude*PI()/180)/2),2)))*1000) AS juli " +
+            " from HomeHospital" +
+            " where deleteType = 0 and imgUrl != ''" +
+            " and auditType = #{auditType}" +
+            " order by juli asc" +
+            "</script>")
+    List<HomeHospital> findAuditTypeList7(@Param("auditType") int auditType, @Param("lat") double lat, @Param("lon") double lon);
+
     /***
      * 根据主键ID查询并更新审核状态
      * @return
@@ -275,6 +284,11 @@ public interface HotelTourismDao {
             "update DoorwayBusiness set" +
             " auditType = #{auditType}" +
             " where deleteType = 0 and id=#{id} and licence != '' " +
+            "</if>" +
+            "<if test=\"type == 6\">" +
+            "update HomeHospital set" +
+            " auditType = #{auditType}" +
+            " where deleteType = 0 and id=#{id} and imgUrl != '' " +
             "</if>" +
             "</script>")
     int changeAuditType(@Param("type") int type, @Param("auditType") int auditType, @Param("id") long id);
@@ -382,6 +396,16 @@ public interface HotelTourismDao {
             " where deleteType = 0 and licence != ''" +
             "</script>")
     List<DoorwayBusiness> countAuditType5();
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    @Select("<script>" +
+            "select * from HomeHospital" +
+            " where deleteType = 0 and imgUrl != ''" +
+            "</script>")
+    List<HomeHospital> countAuditType6();
 
     /***
      * 查询此店铺是否还有其他人同时在申请入驻
