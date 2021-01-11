@@ -134,9 +134,11 @@ public interface FootmarkDao {
             "<if test=\"footmarkType == 0\">" +
             "<if test=\"beginDate != null\">" +
             " and addTime >= date_add(#{beginDate}, interval 0 DAY)" +
-            " and addTime &lt;= date_add(#{endDate}, interval 0 DAY)" +
-            " order by addTime asc" +
             "</if>" +
+            "<if test=\"endDate != null\">" +
+            " and addTime &lt;= date_add(#{endDate}, interval 0 DAY)" +
+            "</if>" +
+            " order by addTime asc" +
             "</if>" +
             //按类别查
             "<if test=\"footmarkType > 0\">" +
@@ -147,8 +149,7 @@ public interface FootmarkDao {
             "<if test=\"footmarkType &lt; 0\">" +
             " and footmarkType &lt; 6" +
             "<if test=\"beginDate != null\">" +
-            " and addTime >= date_add(#{beginDate}, interval 0 DAY)" +
-            " and addTime &lt;= date_add(#{endDate}, interval 0 DAY)" +
+            " and TO_DAYS(addTime)=TO_DAYS(beginDate)" +
             "</if>" +
             " order by addTime desc" +
             "</if>" +
