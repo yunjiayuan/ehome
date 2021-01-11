@@ -352,16 +352,14 @@ public class SelectionController extends BaseController implements SelectionApiC
         List list = null;
         int num = 0;
         int num1 = 0;
-        if (type == 0) {
-            list = selectionService.countAuditType(type);
-            for (int i = 0; i < list.size(); i++) {
-                SelectionActivities hotel = (SelectionActivities) list.get(i);
-                if (hotel.getAuditType() == 0) {
-                    num++;
-                }
-                if (hotel.getAuditType() == 1) {
-                    num1++;
-                }
+        list = selectionService.countAuditType(type);
+        for (int i = 0; i < list.size(); i++) {
+            SelectionActivities hotel = (SelectionActivities) list.get(i);
+            if (hotel.getAuditType() == 0) {
+                num++;
+            }
+            if (hotel.getAuditType() == 1) {
+                num1++;
             }
         }
         Map<String, Object> map = new HashMap<>();

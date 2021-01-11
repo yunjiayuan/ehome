@@ -149,7 +149,8 @@ public interface FootmarkDao {
             "<if test=\"footmarkType &lt; 0\">" +
             " and footmarkType &lt; 6" +
             "<if test=\"beginDate != null\">" +
-            " and TO_DAYS(addTime)=TO_DAYS(beginDate)" +
+            " and addTime >= date_add(#{beginDate}, interval 0 DAY)" +
+            " and addTime &lt;= date_add(#{beginDate}, interval 1 DAY)" +
             "</if>" +
             " order by addTime desc" +
             "</if>" +
