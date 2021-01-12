@@ -67,7 +67,7 @@ public class HomeHospitalController extends BaseController implements HomeHospit
         if (ik != null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "新增医馆失败，医馆已存在！", new JSONObject());
         }
-        homeHospital.setAuditType(1);
+//        homeHospital.setAuditType(1);
         homeHospital.setBusinessStatus(1);//默认关闭
         homeHospital.setAddTime(new Date());
 
@@ -108,7 +108,7 @@ public class HomeHospitalController extends BaseController implements HomeHospit
     @Override
     public ReturnData identityAuthentication(@Valid @RequestBody HomeHospital homeHospital, BindingResult bindingResult) {
         HomeHospital hospital = homeHospitalService.findByUserId(homeHospital.getUserId());
-        if (hospital == null || hospital.getAuditType() == 1) {
+        if (hospital == null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "认证失败", new JSONObject());
         }
         //判断该用户是否实名
