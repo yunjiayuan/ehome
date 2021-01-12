@@ -373,7 +373,7 @@ public class SelectionController extends BaseController implements SelectionApiC
      * @param selectionType  评选类型  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
      * @param infoId  编号（主键ID）
      * @param s_name  名字
-     * @param auditType  0待审核,1通过
+     * @param auditType -1不限 0待审核,1通过
      * @param page  页码 第几页 起始值1
      * @param count 每页条数
      * @return

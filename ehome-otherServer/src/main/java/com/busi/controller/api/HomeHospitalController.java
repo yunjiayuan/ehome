@@ -107,10 +107,6 @@ public class HomeHospitalController extends BaseController implements HomeHospit
      */
     @Override
     public ReturnData identityAuthentication(@Valid @RequestBody HomeHospital homeHospital, BindingResult bindingResult) {
-        //验证参数格式是否正确
-        if (bindingResult.hasErrors()) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
-        }
         HomeHospital hospital = homeHospitalService.findByUserId(homeHospital.getUserId());
         if (hospital == null || hospital.getAuditType() == 1) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "认证失败", new JSONObject());

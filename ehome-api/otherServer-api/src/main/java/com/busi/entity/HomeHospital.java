@@ -45,10 +45,10 @@ public class HomeHospital {
     @Length(max = 6, message = "医师姓名不能超过6字")
     private String physicianName;                //医师姓名
 
-    @NotEmpty(message = "医院不能为空")
+//    @NotEmpty(message = "医院不能为空")
     private String hospital;                //医院
 
-    @NotEmpty(message = "擅长不能为空")
+//    @NotEmpty(message = "擅长不能为空")
     @Length(max = 300, message = "擅长不能超过300字")
     private String major;                // 擅长
 
@@ -57,10 +57,10 @@ public class HomeHospital {
 
     private String imgUrl;                //资格证
 
-    @NotEmpty(message = "头像不能为空")
+//    @NotEmpty(message = "头像不能为空")
     private String headCover;        //头像
 
-    @NotEmpty(message = "简介不能为空")
+//    @NotEmpty(message = "简介不能为空")
     private String content;                //简介
 
     @Min(value = 0, message = "jobStatus参数有误，数值超出指定范围")

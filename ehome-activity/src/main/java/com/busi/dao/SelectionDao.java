@@ -275,7 +275,9 @@ public interface SelectionDao {
             "<if test=\"infoId > 0\">" +
             " and id= #{infoId}" +
             "</if>" +
+            "<if test=\"auditType >= 0\">" +
             " and auditType=#{auditType}" +
+            "</if>" +
             "<if test=\"s_name != null and s_name != '' \">" +
             " and s_name LIKE CONCAT('%',#{s_name},'%')" +
             "</if>" +
