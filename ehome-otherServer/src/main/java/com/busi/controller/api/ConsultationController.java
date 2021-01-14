@@ -63,7 +63,8 @@ public class ConsultationController extends BaseController implements Consultati
         int type = consultationOrders.getType();
         if (type < 2) {
             type = 0;
-        } else {
+        }
+        if (type == 2) {
             type = 1;
         }
         List<ConsultationFee> list = null;
@@ -88,15 +89,21 @@ public class ConsultationController extends BaseController implements Consultati
                 }
             }
         }
-        int duration[] = {5, 15, 30, 60};
-        int times = duration[consultationOrders.getDuration()];
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                ConsultationFee consultationFee = list.get(i);
-                if (consultationFee.getDuration() == times) {
-                    consultationOrders.setDuration(times);
-                    consultationOrders.setMoney(consultationFee.getCost());
-                    break;
+        int times = -1;
+        if (type == 3 && consultationOrders.getOccupation() == 0) {
+            consultationOrders.setDuration(times);
+            consultationOrders.setMoney(consultationOrders.getMoney());
+        } else {
+            int duration[] = {5, 15, 30, 60};
+            times = duration[consultationOrders.getDuration()];
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    ConsultationFee consultationFee = list.get(i);
+                    if (consultationFee.getDuration() == times) {
+                        consultationOrders.setDuration(times);
+                        consultationOrders.setMoney(consultationFee.getCost());
+                        break;
+                    }
                 }
             }
         }
