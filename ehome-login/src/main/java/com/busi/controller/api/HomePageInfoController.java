@@ -243,7 +243,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         homePageInfo.setTalkToSomeoneStatus(Integer.parseInt(userMap.get("talkToSomeoneStatus").toString()));//设置找人倾诉状态
         homePageInfo.setChatnteractionStatus(Integer.parseInt(userMap.get("chatnteractionStatus").toString()));//设置找人互动状态
         homePageInfo.setIsSpokesman(Integer.parseInt(userMap.get("isSpokesman").toString()));//设置代言人类型
-        homePageInfo.setSpokesmanName(userMap.get("spokesmanName").toString());//设置代言人名称
+        if(userMap.get("spokesmanName")!=null){
+            homePageInfo.setSpokesmanName(userMap.get("spokesmanName").toString());//设置代言人名称
+        }
         int homepageinfoFlag = 0;//苹果“屏蔽主界面部分功能按钮”状态  0默认关闭  1开启
         Object obj = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG);
         if(obj!=null){
