@@ -62,6 +62,10 @@ public class SelectionActivities {
 
     private String activityCover;//活动封面
 
+    private int auditType;      // 审核标志:0待审核,1通过
+
+    private String spokesmanName;//代言人名称 例如：北京海淀代言人
+
     //与数据库无关字段
     private String delUrls;//将要删除的地址组合 “,”分隔
 

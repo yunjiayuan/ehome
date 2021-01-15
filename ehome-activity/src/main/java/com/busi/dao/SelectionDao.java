@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.Hotel;
 import com.busi.entity.SelectionActivities;
 import com.busi.entity.SelectionVote;
 import org.apache.ibatis.annotations.*;
@@ -81,6 +82,14 @@ public interface SelectionDao {
             " where id=#{id} and userId=#{userId}" +
             "</script>")
     int updateNumber(SelectionActivities selectionActivities);
+
+    @Update("<script>" +
+            "update selectionActivities set" +
+            " auditType=#{auditType}," +
+            " spokesmanName=#{spokesmanName}" +
+            " where id=#{id}" +
+            "</script>")
+    int changeAuditState(SelectionActivities selectionActivities);
 
     /***
      * 更新封面&活动图片&视频地址
@@ -238,6 +247,42 @@ public interface SelectionDao {
             " and selectionType = #{selectionType}" +
             " order by time desc" +
             "</script>")
-    List<SelectionVote> findVoteList(@Param("userId") long userId, @Param("selectionType") long selectionType);
+    List<SelectionVote> findVoteList(@Param("userId") long userId, @Param("selectionType") int selectionType);
+
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    @Select("<script>" +
+            "select * from SelectionActivities" +
+            " where status = 0 and selectionType= #{selectionType}" +
+            "</script>")
+    List<SelectionActivities> countAuditType(@Param("selectionType") int selectionType);
+
+    /***
+     * 分页查询参加活动的人员列表
+     * @param selectionType  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
+     * @param infoId  被查询参加活动人员的活动ID
+     * @param s_name  名字
+     * @param auditType   0待审核,1通过
+     * @return
+     */
+    @Select("<script>" +
+            "select * from SelectionActivities" +
+            " where 1=1" +
+            " and status = 0" +
+            " and selectionType=#{selectionType}" +
+            "<if test=\"infoId > 0\">" +
+            " and id= #{infoId}" +
+            "</if>" +
+            "<if test=\"auditType >= 0\">" +
+            " and auditType=#{auditType}" +
+            "</if>" +
+            "<if test=\"s_name != null and s_name != '' \">" +
+            " and s_name LIKE CONCAT('%',#{s_name},'%')" +
+            "</if>" +
+            " ORDER BY votesCounts DESC" +
+            "</script>")
+    List<SelectionActivities> findMyRecordList(@Param("selectionType") int selectionType, @Param("infoId") long infoId, @Param("s_name") String s_name, @Param("auditType") int auditType);
 
 }

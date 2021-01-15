@@ -424,6 +424,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
             homeBlog.setUserHead(userInfo.getHead());
             homeBlog.setProTypeId(userInfo.getProType());
             homeBlog.setHouseNumber(userInfo.getHouseNumber());
+            homeBlog.setIsSpokesman(userInfo.getIsSpokesman());
+            homeBlog.setSpokesmanName(userInfo.getSpokesmanName());
         }
         //设置是否喜欢过
         boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+blogId,CommonUtils.getMyId());
@@ -621,6 +623,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setUserHead(userInfo.getHead());
                 homeBlog.setProTypeId(userInfo.getProType());
                 homeBlog.setHouseNumber(userInfo.getHouseNumber());
+                homeBlog.setIsSpokesman(userInfo.getIsSpokesman());
+                homeBlog.setSpokesmanName(userInfo.getSpokesmanName());
             }
             //设置是否喜欢过状态
             boolean isMember = redisUtils.isMember(Constants.EBLOG_LIKE_LIST+homeBlog.getId(),CommonUtils.getMyId());
@@ -1007,6 +1011,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                 homeBlog.setUserHead(userInfo.getHead());
                 homeBlog.setProTypeId(userInfo.getProType());
                 homeBlog.setHouseNumber(userInfo.getHouseNumber());
+                homeBlog.setIsSpokesman(userInfo.getIsSpokesman());
+                homeBlog.setSpokesmanName(userInfo.getSpokesmanName());
                 //设置审核人信息
                 if(homeBlog.getRemunerationUserId()>0){
                     UserInfo remunerationInfo = userInfoUtils.getUserInfo(homeBlog.getRemunerationUserId());
@@ -1083,6 +1089,8 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     homeBlog.setUserHead(userInfo.getHead());
                     homeBlog.setProTypeId(userInfo.getProType());
                     homeBlog.setHouseNumber(userInfo.getHouseNumber());
+                    homeBlog.setIsSpokesman(userInfo.getIsSpokesman());
+                    homeBlog.setSpokesmanName(userInfo.getSpokesmanName());
                 }
                 //添加位置信息
                 int radius = random.nextInt(10000)+500;

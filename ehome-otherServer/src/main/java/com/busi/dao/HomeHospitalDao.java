@@ -59,6 +59,17 @@ public interface HomeHospitalDao {
             "</script>")
     int update(HomeHospital kitchen);
 
+    @Update("<script>" +
+            "update HomeHospital set" +
+            " physicianName=#{physicianName}," +
+            " age=#{age}," +
+            " sex=#{sex}," +
+            " imgUrl=#{imgUrl}," +
+            " practiceNumber=#{practiceNumber}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int update2(HomeHospital kitchen);
+
     /***
      * 更新删除状态
      * @param kitchen
@@ -102,6 +113,9 @@ public interface HomeHospitalDao {
      */
     @Select("select * from HomeHospital where userId=#{userId}")
     HomeHospital findByUserId(@Param("userId") long userId);
+
+    @Select("select * from HomeHospital where id=#{id}")
+    HomeHospital findById(@Param("id") long id);
 
     /***
      * 查询列表

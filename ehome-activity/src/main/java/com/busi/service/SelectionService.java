@@ -4,6 +4,7 @@ import com.busi.dao.SelectionDao;
 import com.busi.entity.PageBean;
 import com.busi.entity.SelectionActivities;
 import com.busi.entity.SelectionVote;
+import com.busi.utils.CommonUtils;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -63,6 +64,16 @@ public class SelectionService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateNumber(SelectionActivities selectionActivities) {
         return selectionDao.updateNumber(selectionActivities);
+    }
+
+    /***
+     * 更新审核状态
+     * @param selectionActivities
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeAuditState(SelectionActivities selectionActivities) {
+        return selectionDao.changeAuditState(selectionActivities);
     }
 
     /***
@@ -158,5 +169,34 @@ public class SelectionService {
         return PageUtils.getPageBean(p, list);
     }
 
+    /***
+     * 统计各类审核数量
+     * @return
+     */
+    public List<SelectionActivities> countAuditType(int selectionType) {
+        List<SelectionActivities> list;
+        list = selectionDao.countAuditType(selectionType);
+        return list;
+    }
 
+    /***
+     * 分页查询参加活动的人员列表
+     * @param selectionType  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
+     * @param infoId  被查询参加活动人员的活动ID
+     * @param s_name  名字
+     * @param auditType   0待审核,1通过
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    public PageBean<SelectionActivities> findMyRecordList(int selectionType, long infoId, String s_name, int auditType, int page, int count) {
+
+        List<SelectionActivities> list = null;
+        Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
+        if (CommonUtils.checkFull(s_name)) {
+            s_name = null;
+        }
+        list = selectionDao.findMyRecordList(selectionType, infoId, s_name, auditType);
+        return PageUtils.getPageBean(p, list);
+    }
 }

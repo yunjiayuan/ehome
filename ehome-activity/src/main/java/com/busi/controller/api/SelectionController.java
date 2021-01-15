@@ -335,4 +335,97 @@ public class SelectionController extends BaseController implements SelectionApiC
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
+
+    /***
+     * 统计各种审核状态数量
+     * @param type  0云家园招募令 1城市小姐  2校花
+     * @return
+     */
+    @Override
+    public ReturnData countAuditState(@PathVariable int type) {
+        //判断是否有审核权限
+        int levels = CommonUtils.getAdministrator(CommonUtils.getMyId(), redisUtils);
+        if (levels < 0) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
+        //开始统计
+        List list = null;
+        int num = 0;
+        int num1 = 0;
+        list = selectionService.countAuditType(type);
+        for (int i = 0; i < list.size(); i++) {
+            SelectionActivities hotel = (SelectionActivities) list.get(i);
+            if (hotel.getAuditType() == 0) {
+                num++;
+            }
+            if (hotel.getAuditType() == 1) {
+                num1++;
+            }
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("auditType", num);//0待审核 1已审核通过
+        map.put("auditType1", num1);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+    }
+
+    /***
+     * 查询审核人员列表
+     * @param selectionType  评选类型  0云家园招募令 1城市小姐  2校花  3城市之星   4青年创业
+     * @param infoId  编号（主键ID）
+     * @param s_name  名字
+     * @param auditType -1不限 0待审核,1通过
+     * @param page  页码 第几页 起始值1
+     * @param count 每页条数
+     * @return
+     */
+    @Override
+    public ReturnData findMyRecordList(@PathVariable int selectionType, @PathVariable long infoId,
+                                       @PathVariable String s_name, @PathVariable int auditType,
+                                       @PathVariable int page, @PathVariable int count) {
+        //验证参数
+        if (page < 0 || count <= 0) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
+        }
+        //判断是否有权限
+        int levels = CommonUtils.getAdministrator(CommonUtils.getMyId(), redisUtils);
+        if (levels < 0) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
+        PageBean<SelectionActivities> pageBean = null;
+        pageBean = selectionService.findMyRecordList(selectionType, infoId, s_name, auditType, page, count);
+        if (pageBean == null) {
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
+    }
+
+    /***
+     * 更新代言人状态
+     * @param auditType  0取消地区代言人 1设为地区代言人
+     * @param id   云家园招募令、城市小姐、校花 主键ID
+     * @param name  代言人名称  仅在auditType=1时有效
+     * @return
+     */
+    @Override
+    public ReturnData changeAuditState(@PathVariable int auditType, @PathVariable long id, @PathVariable String name) {
+        //判断是否有审核权限
+        int levels = CommonUtils.getAdministrator(CommonUtils.getMyId(), redisUtils);
+        if (levels < 0) {
+            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您无权限进行此操作，请联系管理员申请权限!", new JSONObject());
+        }
+        SelectionActivities activities = selectionService.findById(id);
+        if (activities == null) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "参数有误", new JSONObject());
+        }
+        if (auditType == 0) {
+            name = "";
+        }
+        //更新用户代言人状态
+        activities.setSpokesmanName(name);
+        activities.setAuditType(auditType);
+        selectionService.changeAuditState(activities);
+        //更新用户代言人标识
+        userInfoUtils.updateSpokesmanStatus(activities.getUserId(), auditType, name);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
 }

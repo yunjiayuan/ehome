@@ -304,7 +304,7 @@ public interface HomeAlbumDao {
             " and name LIKE CONCAT('%',#{name},'%')" +
             " and picState=0" +
             " and userId=#{userId}" +
-            " order by time desc" +
+            " order by id desc" +
             "</script>")
     List<HomeAlbumPic> findAlbumPic(@Param("userId") long userId, @Param("albumId") long albumId, @Param("name") String name);
 
@@ -320,7 +320,7 @@ public interface HomeAlbumDao {
             " and albumId=#{albumId}" +
             " and picState=0" +
             " and userId=#{userId}" +
-            " order by time desc" +
+            " order by id desc" +
             "</script>")
     List<HomeAlbumPic> findAlbumPic2(@Param("userId") long userId, @Param("albumId") long albumId);
 
@@ -345,10 +345,10 @@ public interface HomeAlbumDao {
             "<if test=\"type == 1\">" +
             " and newTime >= #{date}" +
             "</if>" +
-            " order by time asc" +
+            " order by id asc" +
             "</if>" +
             "<if test=\"date == 0\">" +
-            " order by time desc" +
+            " order by id desc" +
             "</if>" +
             "</script>")
     List<HomeAlbumPic> findPicList(@Param("albumId") long albumId, @Param("userId") long userId, @Param("date") int date, @Param("type") int type);
