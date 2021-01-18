@@ -60,6 +60,7 @@ public class ConsultationController extends BaseController implements Consultati
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        List<ConsultationFee> list = null;
         int type = consultationOrders.getType();
         if (type < 2) {
             type = 0;
@@ -67,15 +68,24 @@ public class ConsultationController extends BaseController implements Consultati
         if (type == 2) {
             type = 1;
         }
-        List<ConsultationFee> list = null;
+        int times = -1;
         if (consultationOrders.getOccupation() == 0) {//医生
-            //查询缓存 缓存中不存在 查询数据库
-            list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, 0, -1);
-            if (list == null || list.size() <= 0) {
-                list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), type);
-                //放入缓存
-                if (list != null && list.size() > 0) {
-                    redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, list, Constants.USER_TIME_OUT);
+            if (type < 2) {// 咨询类型：0语音  1视频  2图文  3上门服务
+                //查询缓存 缓存中不存在 查询数据库
+                list = redisUtils.getList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, 0, -1);
+                if (list == null || list.size() <= 0) {
+                    list = consultationService.findList(consultationOrders.getOccupation(), consultationOrders.getTitle(), type);
+                    //放入缓存
+                    if (list != null && list.size() > 0) {
+                        redisUtils.pushList(Constants.REDIS_KEY_CONSULTATION + consultationOrders.getOccupation() + "_" + consultationOrders.getTitle() + "_" + type, list, Constants.USER_TIME_OUT);
+                    }
+                }
+            } else {
+                consultationOrders.setDuration(times);
+                if (consultationOrders.getTitle() == 0) {
+                    consultationOrders.setMoney(200);
+                } else {
+                    consultationOrders.setMoney(100);
                 }
             }
         } else {//律师
@@ -89,11 +99,7 @@ public class ConsultationController extends BaseController implements Consultati
                 }
             }
         }
-        int times = -1;
-        if (type == 3 && consultationOrders.getOccupation() == 0) {
-            consultationOrders.setDuration(times);
-            consultationOrders.setMoney(consultationOrders.getMoney());
-        } else {
+        if (type < 2) {
             int duration[] = {5, 15, 30, 60};
             times = duration[consultationOrders.getDuration()];
             if (list != null && list.size() > 0) {
