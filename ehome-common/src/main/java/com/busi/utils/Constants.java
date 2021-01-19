@@ -354,6 +354,7 @@ public class Constants {
     public static final int REDIS_KEY_EBLOGLIST_COUNT = 20000;//生活秀首页列表条数临界值
     public static final String EBLOG_LIKE_LIST = "eblog_like_list_";//生活圈ID对应点赞人员记录Set
     public static final String REDIS_KEY_HOMEBLOGTAG = "eblog_tag";//生活圈标签
+    public static final String REDIS_KEY_HOMEBLOG_REMUNERATIO_DATE = "eblog_remuneration_date_";//生活圈稿费发放日期 每月一变
 
     /** redis配置 结束**/
 
