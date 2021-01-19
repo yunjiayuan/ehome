@@ -262,6 +262,7 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                                         homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
                                         homeBlog.setRemunerationTime(homeBlog.getTime());
                                         mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
+                                        log.info("用户 ["+homeBlog.getUserId()+"] 符合今日发放稿费资格，本次稿费奖励金额为：[ "+homeBlog.getRemunerationMoney()+" ] 元");
                                     }else{
                                         log.info("用户 ["+homeBlog.getUserId()+"] 符合今日发放稿费资格，但是加上本次稿费后，总金额超出80元，所以本次将不再给其稿费奖励");
                                     }
