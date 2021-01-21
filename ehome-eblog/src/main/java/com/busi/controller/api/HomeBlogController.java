@@ -10,18 +10,19 @@ import com.busi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResult;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.data.geo.GeoResult;
-import org.springframework.data.geo.GeoResults;
-import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
 
 /**
  * 生活圈相关接口
@@ -193,14 +194,14 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
                     homeBlog.setRemunerationTime(homeBlog.getTime());
                 }
-            }else{//非首发视频 每次发视频60%-70%概率得10或20  总奖励累积到达80不给稿费
+            }else{//非首发视频 总奖励累积到达80不给稿费
                   /*1、用户发布的视频60%的概率会成为稿费作品。
-                    2、同一个用户、同一天发布的视频，最多给2两个视频为稿费作品。
+                    2、同一个用户、同一天发布的视频，最多给1视频为稿费作品。
                     3、稿费累积达到80元以后，系统则不再给该用户稿费奖励。
-                    4、稿费金额90%为10元，10%为20元。
+                    4、稿费金额80%为2元，20%为5元。
                   * */
                 if(!flag){
-                    //判断奖励系统是否累计达到80（70-90）  达到80元则不再给稿费
+                    //判断奖励系统是否累计达到80  达到80元则不再给稿费
                     Map<String, Object> rewardTotalMoneyLogMap = redisUtils.hmget(Constants.REDIS_KEY_REWARD_TOTAL_MONEY + homeBlog.getUserId());
                     RewardTotalMoneyLog rewardTotalMoneyLog = null;
                     if (rewardTotalMoneyLogMap == null || rewardTotalMoneyLogMap.size() <= 0) {
@@ -210,38 +211,69 @@ public class HomeBlogController extends BaseController implements HomeBlogApiCon
                     }
                     if(rewardTotalMoneyLog!=null&&rewardTotalMoneyLog.getRewardTotalMoney()<Constants.REWARD_TOTAL_MONEY_LIMIT){
                         Random random = new Random();
-                        int count = random.nextInt(100)+1;
                         int grade = 7;
                         List<RewardLog> list = null;
-                        if(count<=60){
-                            //判断今日是否给过稿费 同一个用户每天最多给1个视频稿费
-                            list = rewardLogLocalControllerFegin.findRewardLogListByUserId(homeBlog.getUserId());
-//                            int size = random.nextInt(3);
-                            if(list==null||list.size()==0){
-                                int r = random.nextInt(100)+1;
-                                if(r>90&&rewardTotalMoneyLog.getRewardTotalMoney()<=60){//10%的得20  总金额不能超过80
-                                    rewardMoney=20;
-                                    grade = 8;
+                        boolean remuneratioFlag = false;
+                        String remuneratio_date = "";
+                        int cc = random.nextInt(100)+1;
+                        if(cc<=60){//60%的概率会成为稿费作品
+                            //获取缓存中的稿费发放日期
+                            Calendar nowDate = Calendar.getInstance();
+                            Integer month = nowDate.get(Calendar.MONTH)+1;
+                            Integer day = nowDate.get(Calendar.DAY_OF_MONTH);
+                            Object dateObj = redisUtils.getKey(Constants.REDIS_KEY_HOMEBLOG_REMUNERATIO_DATE+month);
+                            if(dateObj==null){//缓存中不存在
+                                //新增本月稿费随机发放日期
+                                for (int i = 1; i <=8 ; i++) {
+                                    int randomDate = random.nextInt(3)+1+i*3;
+                                    remuneratio_date +=randomDate + ",";
                                 }
-                                mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
-                                //更新用户状态
-//                        userInfo.setHomeBlogStatus(1);//改为：已发送
-//                        userInfoUtils.updateHomeBlogStatus(userInfo);
-                                if(rewardMoney==10){
-                                    homeBlog.setRemunerationStatus(1);
-                                }else{
-                                    homeBlog.setRemunerationStatus(2);
-                                }
-                                homeBlog.setRemunerationMoney(rewardMoney);
-                                homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
-                                homeBlog.setRemunerationTime(homeBlog.getTime());
-                                int countss = list.size()+1;
-                                log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励 ["+homeBlog.getRemunerationMoney()+"元]，今日已获得稿费奖励：["+countss+"]次");
+                                remuneratio_date = "1,"+remuneratio_date+"28";
+                                //放入缓存中 30天后失效
+                                redisUtils.set(Constants.REDIS_KEY_HOMEBLOG_REMUNERATIO_DATE+month,remuneratio_date,Constants.TIME_OUT_MINUTE_60_24_30);
                             }else{
-                                log.info("用户 ["+homeBlog.getUserId()+"] 今日已得 ["+list.size()+"] 次视频稿费奖励，本次将不再给其稿费奖励");
+                                remuneratio_date = dateObj.toString();
+                            }
+                            String[] array = remuneratio_date.split(",");
+                            if(array!=null){
+                                for (int i = 0; i <array.length ; i++) {
+                                    if(day==Integer.parseInt(array[i])){
+                                        remuneratioFlag = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(remuneratioFlag){//今天是稿费发放日
+                                //判断今日是否给过稿费 同一个用户每天最多给1个视频稿费
+                                list = rewardLogLocalControllerFegin.findRewardLogListByUserId(homeBlog.getUserId());
+                                if(list==null||list.size()==0){//今天还未给稿费 开始随机给稿费 2元 5元 10元
+                                    int count = random.nextInt(100)+1;
+                                    if(count<=80){//百分之八十给2元
+                                        rewardMoney = 2;
+                                        grade = 7;
+                                    }else{
+                                        rewardMoney = 5;
+                                        grade = 7;
+                                    }
+                                    //保证给钱后总金额不能超过80
+                                    if(rewardTotalMoneyLog.getRewardTotalMoney()+rewardMoney<=Constants.REWARD_TOTAL_MONEY_LIMIT){
+                                        homeBlog.setRemunerationStatus(1);
+                                        homeBlog.setRemunerationMoney(rewardMoney);
+                                        homeBlog.setRemunerationUserId(-1);//-1暂时代表系统审核
+                                        homeBlog.setRemunerationTime(homeBlog.getTime());
+                                        mqUtils.addRewardLog(homeBlog.getUserId(),grade,0,rewardMoney,homeBlog.getId());
+                                        log.info("用户 ["+homeBlog.getUserId()+"] 符合今日发放稿费资格，本次稿费奖励金额为：[ "+homeBlog.getRemunerationMoney()+" ] 元");
+                                    }else{
+                                        log.info("用户 ["+homeBlog.getUserId()+"] 符合今日发放稿费资格，但是加上本次稿费后，总金额超出80元，所以本次将不再给其稿费奖励");
+                                    }
+                                }else{
+                                    log.info("用户 ["+homeBlog.getUserId()+"] 今日已得视频稿费奖励，本次将不再给其稿费奖励");
+                                }
+                            }else{
+                                log.info("今日为不给稿费日，用户 ["+homeBlog.getUserId()+"] 发布的视频不给稿费奖励，稿费日为："+remuneratio_date);
                             }
                         }else{
-                            log.info("用户 ["+homeBlog.getUserId()+"] 发布的视频，根据概率分配机制，未进入到稿费奖励分派系统");
+                            log.info("根据系统概率分配规则，60%用户发视频获得稿费奖励，该用户 ["+homeBlog.getUserId()+"] 当前视频未获得稿费资格");
                         }
                     }else{
                         log.info("用户 ["+homeBlog.getUserId()+"] 获得视频稿费奖励总金额 ["+rewardTotalMoneyLog.getRewardTotalMoney()+"元]，系统将不再自动给稿费奖励");
