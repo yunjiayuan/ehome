@@ -129,6 +129,9 @@ public interface HomeHospitalDao {
             "select * from HomeHospital" +
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
+            "<if test=\"department >= 0\">" +
+            " and department=#{department}" +
+            "</if>" +
             " and (physicianName LIKE CONCAT('%',#{search},'%')" +
             " or hospital LIKE CONCAT('%',#{search},'%')" +
             " or major LIKE CONCAT('%',#{search},'%'))" +
@@ -146,7 +149,7 @@ public interface HomeHospitalDao {
             "</if>" +
             " order by helpNumber desc" +
             "</script>")
-    List<HomeHospital> findList2(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("search") String search, @Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<HomeHospital> findList2(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("search") String search, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("department") int department);
 
     /***
      * 查询列表
@@ -159,6 +162,9 @@ public interface HomeHospitalDao {
             "select * from HomeHospital" +
             " where businessStatus=0 and deleteType = 0 and auditType=1 " +
             " and userId != #{userId}" +
+            "<if test=\"department >= 0\">" +
+            " and department=#{department}" +
+            "</if>" +
             "<if test=\"district >= 0\">" +
             " and district = #{district}" +
             "</if>" +
@@ -173,32 +179,7 @@ public interface HomeHospitalDao {
             "</if>" +
             " order by helpNumber desc" +
             "</script>")
-    List<HomeHospital> findList3(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district);
-
-    /***
-     * 查询列表
-     * @param userId
-     * @param department    科室
-     * @return
-     */
-    @Select("<script>" +
-            "select * from HomeHospital" +
-            " where businessStatus=0 and deleteType = 0 and auditType=1 " +
-            " and userId != #{userId} and department=#{department}" +
-            "<if test=\"watchVideos == 1\">" +
-            " and videoUrl != ''" +
-            "</if>" +
-            "<if test=\"district >= 0\">" +
-            " and district = #{district}" +
-            "</if>" +
-            "<if test=\"city >= 0\">" +
-            " and city = #{city}" +
-            "</if>" +
-            "<if test=\"province >= 0\">" +
-            " and province = #{province}" +
-            "</if>" +
-            "</script>")
-    List<HomeHospital> findList(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("department") int department, @Param("province") int province, @Param("city") int city, @Param("district") int district);
+    List<HomeHospital> findList3(@Param("watchVideos") int watchVideos, @Param("userId") long userId, @Param("province") int province, @Param("city") int city, @Param("district") int district, @Param("department") int department);
 
     /***
      * 查询列表
