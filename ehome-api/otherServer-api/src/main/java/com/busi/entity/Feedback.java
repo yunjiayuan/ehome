@@ -29,6 +29,6 @@ public class Feedback {
                       // 19.家门口功能相关 20.设置相关 21.家门口社区相关 22.家门口物业相关 23.其他
     //opinionType=1时为投诉类别：0、聊天互动类1、公共信息类2、家博信息类3、个人资料类4、活动、求助类5、其他类
 
-    private int opinionType;  //意见类型  0：反馈  1：投诉
+    private int opinionType;  //意见类型  0：反馈  1：投诉  2：举报
 
 }
