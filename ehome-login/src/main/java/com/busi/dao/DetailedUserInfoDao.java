@@ -109,9 +109,9 @@ public interface DetailedUserInfoDao {
             "<if test=\"lifeSkills != 0 \">"+
             " lifeSkills=#{lifeSkills}," +
             "</if>" +
-            "<if test=\"introduction != null and introduction != ''\">"+
+//            "<if test=\"introduction != null and introduction != ''\">"+
             " introduction=#{introduction}," +
-            "</if>" +
+//            "</if>" +
             "<if test=\"mateRegion != null and mateRegion != ''\">"+
             " mateRegion=#{mateRegion}," +
             "</if>" +
