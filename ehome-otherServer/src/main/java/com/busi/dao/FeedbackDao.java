@@ -39,7 +39,6 @@ public interface FeedbackDao {
             "<if test=\"sort >= 0\">" +
             " and sort=#{sort}" +
             "</if>" +
-            " and userId=#{userId}" +
             "</script>")
     List<Feedback> findList(@Param("userId") long userId, @Param("opinionType") int opinionType, @Param("sort") int sort);
 }
