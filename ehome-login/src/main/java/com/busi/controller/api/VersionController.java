@@ -20,7 +20,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -88,7 +87,8 @@ public class VersionController extends BaseController implements VersionApiContr
         Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_ADVERTPICADDRESS);
         if(map==null||map.size()<=0){
             AdvertPic advertPic = new AdvertPic();
-            advertPic.setAdvertPicAddress("image/advertPic/20200118/guoduye.png");
+//            advertPic.setAdvertPicAddress("image/advertPic/20200118/guoduye.png");
+            advertPic.setAdvertPicAddress("image/advertPic/20210208/ceshi.png");
             advertPic.setShowType(0);
             //默认图放到缓存中
             redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS,CommonUtils.objectToMap(advertPic));
