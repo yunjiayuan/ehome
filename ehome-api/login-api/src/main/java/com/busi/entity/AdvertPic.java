@@ -1,10 +1,7 @@
 package com.busi.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
 
 /**
  * 过渡页广告图实体
@@ -15,8 +12,10 @@ import java.util.Date;
 @Getter
 public class AdvertPic {
 
-  private String AdvertPicAddress;//客户端类型 1表示Android 2表示IOS
+  private String AdvertPicAddress;//图片地址
 
   private int showType;//0默认显示  1默认隐藏
+
+  private int version;//过渡页最新版本号  客户端根据服务端版本号动态更换本地过渡页广告图
 
 }

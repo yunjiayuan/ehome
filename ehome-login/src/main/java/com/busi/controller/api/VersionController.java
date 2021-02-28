@@ -78,7 +78,7 @@ public class VersionController extends BaseController implements VersionApiContr
     }
 
     /***
-     * 查询广告图
+     * 查询过渡页
      * @param type 0表示苹果  1表示安卓
      * @return
      */
@@ -90,6 +90,7 @@ public class VersionController extends BaseController implements VersionApiContr
 //            advertPic.setAdvertPicAddress("image/advertPic/20200118/guoduye.png");
             advertPic.setAdvertPicAddress("image/advertPic/20210208/ceshi.png");
             advertPic.setShowType(0);
+            advertPic.setVersion(191);
             //默认图放到缓存中
             redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS,CommonUtils.objectToMap(advertPic));
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",advertPic);
