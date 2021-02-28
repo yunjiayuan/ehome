@@ -87,8 +87,8 @@ public class VersionController extends BaseController implements VersionApiContr
         Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_ADVERTPICADDRESS);
         if(map==null||map.size()<=0){
             AdvertPic advertPic = new AdvertPic();
-//            advertPic.setAdvertPicAddress("image/advertPic/20200118/guoduye.png");
-            advertPic.setAdvertPicAddress("image/advertPic/20210208/ceshi.png");
+            advertPic.setAdvertPicAddress("image/advertPic/20200118/guoduye.png");
+//            advertPic.setAdvertPicAddress("image/advertPic/20210208/ceshi.png");
             advertPic.setShowType(0);
             advertPic.setVersion(191);
             //默认图放到缓存中
