@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 public class AdvertPic {
 
-  private String AdvertPicAddress;//图片地址
+  private String advertPicAddress;//图片地址
 
   private int type;//0表示IOS 1表示安卓
 
