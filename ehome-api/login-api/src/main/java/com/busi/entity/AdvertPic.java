@@ -14,7 +14,7 @@ public class AdvertPic {
 
   private String AdvertPicAddress;//图片地址
 
-  private int showType;//0默认显示  1默认隐藏
+  private int type;//0表示IOS 1表示安卓
 
   private int version;//过渡页最新版本号  客户端根据服务端版本号动态更换本地过渡页广告图
 

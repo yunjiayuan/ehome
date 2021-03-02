@@ -83,15 +83,15 @@ public class VersionController extends BaseController implements VersionApiContr
      */
     @Override
     public ReturnData findAdvertPic(@PathVariable int type) {
-        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_ADVERTPICADDRESS);
+        Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_ADVERTPICADDRESS+"_"+type);
         if(map==null||map.size()<=0){
             AdvertPic advertPic = new AdvertPic();
             advertPic.setAdvertPicAddress("image/advertPic/20200118/guoduye.png");
 //            advertPic.setAdvertPicAddress("image/advertPic/20210208/ceshi.png");
-            advertPic.setShowType(0);
-            advertPic.setVersion(191);
+            advertPic.setType(type);
+            advertPic.setVersion(1);
             //默认图放到缓存中
-            redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS,CommonUtils.objectToMap(advertPic));
+            redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS+"_"+type,CommonUtils.objectToMap(advertPic));
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",advertPic);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
@@ -105,7 +105,7 @@ public class VersionController extends BaseController implements VersionApiContr
     @Override
     public ReturnData setAdvertPic(@Valid @RequestBody AdvertPic advertPic, BindingResult bindingResult) {
         //将新过渡页放到缓存中
-        redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS,CommonUtils.objectToMap(advertPic));
+        redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS+"_"+advertPic.getType(),CommonUtils.objectToMap(advertPic));
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }
