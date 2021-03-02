@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
@@ -96,5 +95,17 @@ public class VersionController extends BaseController implements VersionApiContr
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",advertPic);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
+    }
+
+    /***
+     * 更新过渡页
+     * @param advertPic
+     * @return
+     */
+    @Override
+    public ReturnData setAdvertPic(@Valid @RequestBody AdvertPic advertPic, BindingResult bindingResult) {
+        //将新过渡页放到缓存中
+        redisUtils.hmset(Constants.REDIS_KEY_ADVERTPICADDRESS,CommonUtils.objectToMap(advertPic));
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
     }
 }

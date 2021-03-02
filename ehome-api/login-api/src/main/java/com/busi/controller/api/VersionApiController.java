@@ -1,9 +1,14 @@
 package com.busi.controller.api;
 
+import com.busi.entity.AdvertPic;
 import com.busi.entity.ReturnData;
 import com.busi.entity.Version;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import javax.validation.Valid;
 
 /**
@@ -28,10 +33,18 @@ public interface VersionApiController {
     ReturnData findVersion(@PathVariable int type);
 
     /***
-     * 查询广告图
+     * 查询过渡页
      * @param type 0表示苹果 1表示安卓
      * @return
      */
     @GetMapping("findAdvertPic/{type}")
     ReturnData findAdvertPic(@PathVariable int type);
+
+    /***
+     * 更新过渡页
+     * @param advertPic
+     * @return
+     */
+    @PutMapping("setAdvertPic")
+    ReturnData setAdvertPic(@Valid @RequestBody AdvertPic advertPic , BindingResult bindingResult);
 }
