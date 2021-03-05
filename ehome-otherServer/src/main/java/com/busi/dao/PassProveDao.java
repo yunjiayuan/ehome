@@ -15,8 +15,8 @@ public interface PassProveDao {
      * @param communityEventReporting
      * @return
      */
-    @Insert("insert into PassProve(communityId,communityHouseId,communityHouseUserId,userId,eventReportingType,villageName,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time,departTime,leaseContract,communityProve,remarks,type) " +
-            "values (#{communityId},#{communityHouseId},#{communityHouseUserId},#{userId},#{eventReportingType},#{villageName},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time},#{departTime},#{leaseContract},#{communityProve},#{remarks},#{type})")
+    @Insert("insert into PassProve(communityId,communityHouseId,communityHouseUserId,userId,eventReportingType,villageName,houseNumber,houseCompany,unitNumber,unitCompany,roomNumber,roomState,idCard,realName,phone,review,time,leaseContract,communityProve,remarks,type) " +
+            "values (#{communityId},#{communityHouseId},#{communityHouseUserId},#{userId},#{eventReportingType},#{villageName},#{houseNumber},#{houseCompany},#{unitNumber},#{unitCompany},#{roomNumber},#{roomState},#{idCard},#{realName},#{phone},#{review},#{time},#{leaseContract},#{communityProve},#{remarks},#{type})")
     @Options(useGeneratedKeys = true)
     int addPassProve(PassProve communityEventReporting);
 
