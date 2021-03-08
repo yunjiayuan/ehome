@@ -132,7 +132,7 @@ public class PassProveController extends BaseController implements PassProveApiC
      * @return
      */
     @Override
-    public ReturnData findPassProve(long id) {
+    public ReturnData findPassProve(@PathVariable long id) {
         PassProve communityEventReporting = passProveService.findPassProve(id);
         if (communityEventReporting == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
