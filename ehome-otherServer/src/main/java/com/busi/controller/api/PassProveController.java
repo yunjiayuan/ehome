@@ -194,7 +194,7 @@ public class PassProveController extends BaseController implements PassProveApiC
         int num = 0;
         int num1 = 0;
         int num2 = 0;
-        list = passProveService.countAuditType(type);
+        list = passProveService.countAuditType(type, communityId);
         for (int i = 0; i < list.size(); i++) {
             PassProve hotel = (PassProve) list.get(i);
             if (hotel.getReview() == 0) {

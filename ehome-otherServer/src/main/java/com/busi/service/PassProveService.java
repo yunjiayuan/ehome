@@ -83,9 +83,9 @@ public class PassProveService {
      * 统计各类审核数量
      * @return
      */
-    public List<PassProve> countAuditType(int type) {
+    public List<PassProve> countAuditType(int type, long communityId) {
         List<PassProve> list;
-        list = passProveDao.countAuditType(type);
+        list = passProveDao.countAuditType(type, communityId);
         return list;
     }
 }

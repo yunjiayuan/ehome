@@ -100,8 +100,8 @@ public interface PassProveDao {
      */
     @Select("<script>" +
             "select * from PassProve" +
-            " where type = #{type}" +
+            " where type = #{type} and communityId=#{communityId}" +
             "</script>")
-    List<PassProve> countAuditType(@Param("type") int type);
+    List<PassProve> countAuditType(@Param("type") int type, @Param("communityId") long communityId);
 
 }
