@@ -33,6 +33,11 @@ public class PassProveService {
         return passProveDao.toExaminePassProve(communityEventReporting);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changePassProve(PassProve communityEventReporting) {
+        return passProveDao.changePassProve(communityEventReporting);
+    }
+
     /***
      * 新增出入证、证明
      * @param communityEventReporting
@@ -54,6 +59,11 @@ public class PassProveService {
 
     public PassProve findPassProve2(long communityId, long userId, int type) {
         return passProveDao.findPassProve2(communityId, userId, type);
+    }
+
+    //判断是否重复新增
+    public PassProve find(long communityHouseId, String villageName, String idCard, int type) {
+        return passProveDao.find(communityHouseId, villageName, idCard, type);
     }
 
     /***

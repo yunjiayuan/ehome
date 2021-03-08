@@ -50,9 +50,31 @@ public class PassProveController extends BaseController implements PassProveApiC
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        //判断是否重复新增
+        PassProve passProve = passProveService.find(communityEventReporting.getCommunityHouseId(), communityEventReporting.getVillageName(), communityEventReporting.getIdCard(), communityEventReporting.getType());
+        if (passProve != null) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已申请该房屋的出入证", new JSONObject());
+        }
         communityEventReporting.setReview(0);
         communityEventReporting.setTime(new Date());
         passProveService.addPassProve(communityEventReporting);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+    /***
+     * 更新出入证、证明
+     * @param scenicSpot
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData changePassProve(@Valid PassProve scenicSpot, BindingResult bindingResult) {
+        //验证参数格式是否正确
+        if (bindingResult.hasErrors()) {
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
+        }
+        scenicSpot.setReview(0);
+        passProveService.changePassProve(scenicSpot);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 

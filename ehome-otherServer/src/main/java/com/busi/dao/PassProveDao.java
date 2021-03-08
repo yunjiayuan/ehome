@@ -33,6 +33,27 @@ public interface PassProveDao {
             "</script>")
     int toExaminePassProve(PassProve communityEventReporting);
 
+    @Update("<script>" +
+            "update PassProve set" +
+            " houseNumber=#{houseNumber}," +
+            " houseCompany=#{houseCompany}," +
+            " unitNumber=#{unitNumber}," +
+            " unitCompany=#{unitCompany}," +
+            " roomNumber=#{roomNumber}," +
+            " roomState=#{roomState}," +
+            " idCard=#{idCard}," +
+            " realName=#{realName}," +
+            " phone=#{phone}," +
+            " remarks=#{remarks}," +
+            " message=#{message}," +
+            " leaseContract=#{leaseContract}," +
+            " communityProve=#{communityProve}," +
+            " review=#{review}," +
+            " villageName=#{villageName}" +
+            " where id=#{id}" +
+            "</script>")
+    int changePassProve(PassProve communityEventReporting);
+
     /***
      * 查询出入证、证明列表
      * @param communityId  居委会ID
@@ -65,6 +86,9 @@ public interface PassProveDao {
 
     @Select("select * from PassProve where communityId = #{communityId} and userId = #{userId} and type = #{type}")
     PassProve findPassProve2(@Param("communityId") long communityId, @Param("userId") long userId, @Param("type") int type);
+
+    @Select("select * from PassProve where communityHouseId = #{communityHouseId} and villageName = #{villageName} and idCard = #{idCard} and type = #{type}")
+    PassProve find(@Param("communityHouseId") long communityHouseId, @Param("villageName") String villageName, @Param("idCard") String idCard, @Param("type") int type);
 
     /***
      * 统计各类审核数量

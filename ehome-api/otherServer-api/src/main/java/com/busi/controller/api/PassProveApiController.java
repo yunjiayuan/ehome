@@ -1,6 +1,7 @@
 package com.busi.controller.api;
 
 import com.busi.entity.PassProve;
+import com.busi.entity.Pharmacy;
 import com.busi.entity.ReturnData;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,14 @@ public interface PassProveApiController {
      */
     @PostMapping("addPassProve")
     ReturnData addPassProve(@Valid @RequestBody PassProve communityEventReporting, BindingResult bindingResult);
+
+    /***
+     * 更新出入证、证明
+     * @param scenicSpot
+     * @return
+     */
+    @PutMapping("changePassProve")
+    ReturnData changePassProve(@Valid @RequestBody PassProve scenicSpot, BindingResult bindingResult);
 
     /***
      * 审核出入证、证明
