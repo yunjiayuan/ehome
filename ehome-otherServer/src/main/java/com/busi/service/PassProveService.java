@@ -62,8 +62,8 @@ public class PassProveService {
     }
 
     //判断是否重复新增
-    public PassProve find(long communityHouseId, String villageName, String idCard, int type) {
-        return passProveDao.find(communityHouseId, villageName, idCard, type);
+    public PassProve find(long communityHouseId, String villageName, String idCard, int type, long communityId, long userId, String houseNumber, int houseCompany, String unitNumber, int unitCompany, String roomNumber) {
+        return passProveDao.find(communityHouseId, villageName, idCard, type, communityId, userId, houseNumber, houseCompany, unitNumber, unitCompany, roomNumber);
     }
 
     /***

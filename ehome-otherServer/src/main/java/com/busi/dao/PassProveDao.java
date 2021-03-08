@@ -87,8 +87,12 @@ public interface PassProveDao {
     @Select("select * from PassProve where communityId = #{communityId} and userId = #{userId} and type = #{type}")
     PassProve findPassProve2(@Param("communityId") long communityId, @Param("userId") long userId, @Param("type") int type);
 
-    @Select("select * from PassProve where communityHouseId = #{communityHouseId} and villageName = #{villageName} and idCard = #{idCard} and type = #{type}")
-    PassProve find(@Param("communityHouseId") long communityHouseId, @Param("villageName") String villageName, @Param("idCard") String idCard, @Param("type") int type);
+    @Select("select * from PassProve where communityHouseId = #{communityHouseId} and villageName = #{villageName} and idCard = #{idCard} and type = #{type}" +
+            " and communityId=#{communityId} and userId=#{userId} and houseNumber=#{houseNumber} and houseCompany=#{houseCompany} and unitNumber=#{unitNumber}" +
+            " and unitCompany=#{unitCompany} and roomNumber=#{roomNumber}")
+    PassProve find(@Param("communityHouseId") long communityHouseId, @Param("villageName") String villageName, @Param("idCard") String idCard, @Param("type") int type,
+                   @Param("communityId") long communityId, @Param("userId") long userId, @Param("houseNumber") String houseNumber, @Param("houseCompany") int houseCompany
+            , @Param("unitNumber") String unitNumber, @Param("unitCompany") int unitCompany, @Param("roomNumber") String roomNumber);
 
     /***
      * 统计各类审核数量

@@ -40,24 +40,26 @@ public class PassProveController extends BaseController implements PassProveApiC
 
     /***
      * 新增出入证、证明
-     * @param communityEventReporting
+     * @param prove
      * @param bindingResult
      * @return
      */
     @Override
-    public ReturnData addPassProve(@Valid @RequestBody PassProve communityEventReporting, BindingResult bindingResult) {
+    public ReturnData addPassProve(@Valid @RequestBody PassProve prove, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //判断是否重复新增
-        PassProve passProve = passProveService.find(communityEventReporting.getCommunityHouseId(), communityEventReporting.getVillageName(), communityEventReporting.getIdCard(), communityEventReporting.getType());
+        PassProve passProve = passProveService.find(prove.getCommunityHouseId(), prove.getVillageName(), prove.getIdCard(), prove.getType(), prove.getCommunityId(), prove.getUserId(), prove.getHouseNumber(), prove.getHouseCompany(), prove.getUnitNumber(), prove.getUnitCompany(), prove.getRoomNumber());
         if (passProve != null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已申请该房屋的出入证", new JSONObject());
         }
-        communityEventReporting.setReview(0);
-        communityEventReporting.setTime(new Date());
-        passProveService.addPassProve(communityEventReporting);
+        //判断实名信息是否匹配
+
+        prove.setReview(0);
+        prove.setTime(new Date());
+        passProveService.addPassProve(prove);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
