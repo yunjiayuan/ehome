@@ -51,7 +51,7 @@ public class PassProveController extends BaseController implements PassProveApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
         //判断是否重复新增
-        PassProve passProve = passProveService.find(prove.getCommunityHouseId(), prove.getVillageName(), prove.getIdCard(), prove.getType(), prove.getCommunityId(), prove.getUserId(), prove.getHouseNumber(), prove.getHouseCompany(), prove.getUnitNumber(), prove.getUnitCompany(), prove.getRoomNumber());
+        PassProve passProve = passProveService.find(prove.getCommunityHouseId(), prove.getVillageName(), prove.getIdCard(), prove.getType(), prove.getCommunityId(), prove.getHouseNumber(), prove.getHouseCompany(), prove.getUnitNumber(), prove.getUnitCompany(), prove.getRoomNumber());
         if (passProve != null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已申请该房屋的出入证", new JSONObject());
         }
@@ -116,11 +116,11 @@ public class PassProveController extends BaseController implements PassProveApiC
         if (list == null || list.size() <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "在线办理居委会证明，请先完善住房信息", new JSONObject());
         }
-        PassProve communityEventReporting = passProveService.findPassProve2(communityId, userId, type);
-        if (communityEventReporting == null && type == 0) {
+        List list1 = passProveService.findPassProve2(communityId, userId, type);
+        if (list1 == null && list1.size() <= 0 && type == 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "未办理出入证", new JSONObject());
         }
-        if (communityEventReporting == null && type == 1) {
+        if (list1 == null && list1.size() <= 0 && type == 1) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "未办理我的证明", new JSONObject());
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

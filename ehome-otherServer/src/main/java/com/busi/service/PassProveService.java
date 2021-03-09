@@ -57,13 +57,15 @@ public class PassProveService {
         return passProveDao.findPassProve(id);
     }
 
-    public PassProve findPassProve2(long communityId, long userId, int type) {
-        return passProveDao.findPassProve2(communityId, userId, type);
+    public List<PassProve> findPassProve2(long communityId, long userId, int type) {
+        List<PassProve> list;
+        list = passProveDao.findPassProve2(communityId, userId, type);
+        return list;
     }
 
     //判断是否重复新增
-    public PassProve find(long communityHouseId, String villageName, String idCard, int type, long communityId, long userId, String houseNumber, int houseCompany, String unitNumber, int unitCompany, String roomNumber) {
-        return passProveDao.find(communityHouseId, villageName, idCard, type, communityId, userId, houseNumber, houseCompany, unitNumber, unitCompany, roomNumber);
+    public PassProve find(long communityHouseId, String villageName, String idCard, int type, long communityId, String houseNumber, int houseCompany, String unitNumber, int unitCompany, String roomNumber) {
+        return passProveDao.find(communityHouseId, villageName, idCard, type, communityId, houseNumber, houseCompany, unitNumber, unitCompany, roomNumber);
     }
 
     /***
