@@ -29,7 +29,7 @@ public class PassProve {
 
     private long communityHouseUserId;    //业主用户ID
 
-    @Min(value = 1, message = "userId参数有误，超出指定范围")
+//    @Min(value = 1, message = "userId参数有误，超出指定范围")
     private long userId;//用户ID 可能是业主 也可能是租户
 
     private int eventReportingType;//住户类型  0业主  1租户
