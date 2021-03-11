@@ -70,7 +70,7 @@ public class PassProveController extends BaseController implements PassProveApiC
      * @return
      */
     @Override
-    public ReturnData changePassProve(@Valid PassProve scenicSpot, BindingResult bindingResult) {
+    public ReturnData changePassProve(@Valid @RequestBody PassProve scenicSpot, BindingResult bindingResult) {
         //验证参数格式是否正确
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
