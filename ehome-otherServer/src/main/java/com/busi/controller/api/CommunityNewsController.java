@@ -127,6 +127,12 @@ public class CommunityNewsController extends BaseController implements Community
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         PageBean<CommunityNews> pageBean = null;
+        PageBean<CommunityNews> pageBean2 = null;
+        pageBean2 = new PageBean<>();
+        pageBean2.setSize(0);
+        pageBean2.setPageNum(page);
+        pageBean2.setPageSize(count);
+        pageBean2.setList(null);
         pageBean = todayNewsService.findListByAdmin(communityId, newsType, noticeType, page, count);
         CommunityResident sa = null;
         PropertyResident resident = null;
@@ -136,7 +142,7 @@ public class CommunityNewsController extends BaseController implements Community
             if (newsType == 0 && noticeType == 1) {//居委会
                 sa = communityService.findResident(communityId, userId);
                 if (sa == null) {
-                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean2);
                 }
             }
         }
@@ -144,7 +150,7 @@ public class CommunityNewsController extends BaseController implements Community
             if (newsType == 0) {
                 sa = communityService.findResident(communityId, userId);
                 if (sa == null) {
-                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean2);
                 }
                 if (sa.getIdentity() > 0) {
                     return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
@@ -220,7 +226,7 @@ public class CommunityNewsController extends BaseController implements Community
             if (newsType == 1) {
                 resident = propertyService.findResident(communityId, userId);
                 if (resident == null) {
-                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "没有权限", new JSONArray());
+                    return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean2);
                 }
                 if (resident.getIdentity() > 0) {
                     pageBean = todayNewsService.findListByAdmin(communityId, newsType, noticeType, page, count);
