@@ -552,13 +552,25 @@ public class UserAccountSecurityController extends BaseController implements Use
             redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY +  CommonUtils.getMyId(), userAccountSecurityMap, Constants.USER_TIME_OUT);
             map.put("userId",CommonUtils.getMyId());
             map.put("realName",uas.getRealName());
-            map.put("idCard",uas.getIdCard());
+            String newIdCard =  "";
+            if(!CommonUtils.checkFull(uas.getIdCard())){
+                newIdCard = uas.getIdCard().substring(0,3)+"******"+uas.getIdCard().substring(14);
+            }
+            map.put("idCard",newIdCard);
         }else{
             UserAccountSecurity uas = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap, UserAccountSecurity.class);
             if(uas!=null){
                 map.put("userId",CommonUtils.getMyId());
                 map.put("realName",uas.getRealName());
-                map.put("idCard",uas.getIdCard());
+                String newIdCard =  "";
+                if(!CommonUtils.checkFull(uas.getIdCard())){
+                    newIdCard = uas.getIdCard().substring(0,3)+"******"+uas.getIdCard().substring(14);
+                }
+                map.put("idCard",newIdCard);
+            }else{
+                map.put("userId",CommonUtils.getMyId());
+                map.put("realName","");
+                map.put("idCard","");
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
