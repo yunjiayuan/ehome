@@ -87,6 +87,13 @@ public interface UserAccountSecurityApiController {
     ReturnData checkRealName(@Valid @RequestBody RealNameInfo realNameInfo, BindingResult bindingResult);
 
     /***
+     * 查询当前用户的实名信息
+     * @return
+     */
+    @GetMapping("findRealName")
+    ReturnData findRealName();
+
+    /***
      * 门牌号绑定微信、QQ、新浪微博等第三方平台账号
      * @param userAccountSecurity
      * @return
