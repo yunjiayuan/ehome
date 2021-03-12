@@ -6,7 +6,9 @@ import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CommunityHouseService;
 import com.busi.service.PassProveService;
+import com.busi.service.UserAccountSecurityService;
 import com.busi.utils.CommonUtils;
+import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class PassProveController extends BaseController implements PassProveApiC
     @Autowired
     CommunityHouseService communityHouseService;
 
+    @Autowired
+    UserAccountSecurityService userAccountSecurityService;
+
     /***
      * 新增出入证、证明
      * @param prove
@@ -55,10 +60,27 @@ public class PassProveController extends BaseController implements PassProveApiC
         if (passProve != null) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "您已申请该房屋的出入证", new JSONObject());
         }
-        //判断实名信息是否匹配
-
+        //判断该用户是否实名
+        Map<String, Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + prove.getUserId());
+        if (map == null || map.size() <= 0) {
+            UserAccountSecurity userAccountSecurity = userAccountSecurityService.findUserAccountSecurityByUserId(prove.getUserId());
+            if (userAccountSecurity == null) {
+                return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+            } else {
+                userAccountSecurity.setRedisStatus(1);//数据库中已有记录
+            }
+            //放到缓存中
+            map = CommonUtils.objectToMap(userAccountSecurity);
+            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + prove.getUserId(), map, Constants.USER_TIME_OUT);
+        }
+        UserAccountSecurity userAccountSecurity = (UserAccountSecurity) CommonUtils.mapToObject(map, UserAccountSecurity.class);
+        if (userAccountSecurity == null || CommonUtils.checkFull(userAccountSecurity.getRealName()) || CommonUtils.checkFull(userAccountSecurity.getIdCard())) {
+            return returnData(StatusCode.CODE_NOT_REALNAME.CODE_VALUE, "该用户未实名认证", new JSONObject());
+        }
         prove.setReview(0);
         prove.setTime(new Date());
+        prove.setIdCard(userAccountSecurity.getIdCard());
+        prove.setRealName(userAccountSecurity.getRealName());
         passProveService.addPassProve(prove);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
