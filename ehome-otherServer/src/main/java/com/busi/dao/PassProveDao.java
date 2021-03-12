@@ -41,8 +41,8 @@ public interface PassProveDao {
             " unitCompany=#{unitCompany}," +
             " roomNumber=#{roomNumber}," +
             " roomState=#{roomState}," +
-            " idCard=#{idCard}," +
-            " realName=#{realName}," +
+//            " idCard=#{idCard}," +
+//            " realName=#{realName}," +
             " phone=#{phone}," +
             " remarks=#{remarks}," +
             " message=#{message}," +

@@ -52,7 +52,7 @@ public class PassProve {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;//新增时间
 
-    @IdCardConstraint(message = "身份证格式有误")
+//    @IdCardConstraint(message = "身份证格式有误")
     private String idCard;//身份证号码
 
     //    @Pattern(regexp = "[\\d\\w\\u4e00-\\u9fa5,\\.;\\:\"'?!\\-]{2,30}", message = "名字格式有误，长度为2-10，并且不能包含非法字符")
