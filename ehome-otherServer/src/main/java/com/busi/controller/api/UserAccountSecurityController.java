@@ -564,7 +564,7 @@ public class UserAccountSecurityController extends BaseController implements Use
                 map.put("realName",uas.getRealName());
                 String newIdCard =  "";
                 if(!CommonUtils.checkFull(uas.getIdCard())){
-                    newIdCard = uas.getIdCard().substring(0,3)+"******"+uas.getIdCard().substring(17);
+                    newIdCard = uas.getIdCard().substring(0,3)+"******"+uas.getIdCard().substring(14);
                 }
                 map.put("idCard",newIdCard);
             }
