@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletionStage;
 
 /**
  * 用户账户安全接口
@@ -528,6 +527,38 @@ public class UserAccountSecurityController extends BaseController implements Use
         //清除安全中心缓存
         redisUtils.expire(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + realNameInfo.getUserId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+    }
+
+
+    /***
+     * 查询当前用户的实名信息
+     * @return
+     */
+    @Override
+    public ReturnData findRealName() {
+        Map<String, Object> userAccountSecurityMap = redisUtils.hmget(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY + CommonUtils.getMyId());
+        UserAccountSecurity userAccountSecurity = new UserAccountSecurity();
+        if (userAccountSecurityMap == null || userAccountSecurityMap.size() <= 0) {
+            //缓存中没有用户对象信息 查询数据库
+            UserAccountSecurity uas = userAccountSecurityService.findUserAccountSecurityByUserId(CommonUtils.getMyId());
+            if (uas == null) {//数据库也没有
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", userAccountSecurity);
+            }
+            uas.setRedisStatus(1);
+            userAccountSecurityMap = CommonUtils.objectToMap(uas);
+            redisUtils.hmset(Constants.REDIS_KEY_USER_ACCOUNT_SECURITY +  CommonUtils.getMyId(), userAccountSecurityMap, Constants.USER_TIME_OUT);
+            userAccountSecurity.setUserId(CommonUtils.getMyId());
+            userAccountSecurity.setRealName(uas.getRealName());
+            userAccountSecurity.setIdCard(uas.getIdCard());
+        }else{
+            UserAccountSecurity uas = (UserAccountSecurity) CommonUtils.mapToObject(userAccountSecurityMap, UserAccountSecurity.class);
+            if(uas!=null){
+                userAccountSecurity.setUserId(CommonUtils.getMyId());
+                userAccountSecurity.setRealName(uas.getRealName());
+                userAccountSecurity.setIdCard(uas.getIdCard());
+            }
+        }
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", userAccountSecurity);
     }
 
     /***
