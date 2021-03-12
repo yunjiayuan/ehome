@@ -567,6 +567,10 @@ public class UserAccountSecurityController extends BaseController implements Use
                     newIdCard = uas.getIdCard().substring(0,3)+"******"+uas.getIdCard().substring(14);
                 }
                 map.put("idCard",newIdCard);
+            }else{
+                map.put("userId",CommonUtils.getMyId());
+                map.put("realName","");
+                map.put("idCard","");
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
