@@ -69,7 +69,7 @@ public class PassProve {
 
     private String remarks;        // 备注
 
-    private String message; // 居委会反馈：请及时留意居委会信息反馈
+    private String message; // type=0:居委会反馈    type=1:证明类型
 
     private String leaseContract;        //租房合同
 
