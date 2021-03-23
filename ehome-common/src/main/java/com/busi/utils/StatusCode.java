@@ -272,7 +272,10 @@ public enum StatusCode {
 	CODE_HOTEL_ADVANCE(903,"入住日期未到"),
 
 	//家门口买药
-	CODE_PHARMACY_INVALID(1001,"取药凭证码无效")
+	CODE_PHARMACY_INVALID(1001,"取药凭证码无效"),
+
+	//社区居委会
+	CODE_COMMUNITY_NOTHING(1011,"您还未加入居委会")
 
 	;
 	/*-----------业务状态码------------*/

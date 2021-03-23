@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
 import com.busi.entity.*;
 import com.busi.service.CommunityHouseService;
+import com.busi.service.CommunityService;
 import com.busi.service.PassProveService;
 import com.busi.service.UserAccountSecurityService;
 import com.busi.utils.CommonUtils;
@@ -33,6 +34,9 @@ public class PassProveController extends BaseController implements PassProveApiC
 
     @Autowired
     RedisUtils redisUtils;
+
+    @Autowired
+    CommunityService communityService;
 
     @Autowired
     PassProveService passProveService;
@@ -128,6 +132,11 @@ public class PassProveController extends BaseController implements PassProveApiC
      */
     @Override
     public ReturnData findUserPassProve(@PathVariable long communityId, @PathVariable long userId, @PathVariable int type) {
+        //判断是否加入了居委会
+        CommunityResident sa = communityService.findResident(communityId, userId);
+        if (sa == null) {
+            return returnData(StatusCode.CODE_COMMUNITY_NOTHING.CODE_VALUE, "您还未加入居委会", new JSONObject());
+        }
         PageBean<CommunityHouse> pageBean = null;
         String uId = "";
         if (userId > 0) {
@@ -139,11 +148,13 @@ public class PassProveController extends BaseController implements PassProveApiC
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "在线办理居委会证明，请先完善住房信息", new JSONObject());
         }
         List list1 = passProveService.findPassProve2(communityId, userId, type);
-        if (list1 == null && list1.size() <= 0 && type == 0) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "未办理出入证", new JSONObject());
-        }
-        if (list1 == null && list1.size() <= 0 && type == 1) {
-            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "未办理我的证明", new JSONObject());
+        if (list1 == null || list1.size() <= 0) {
+            if (type == 0) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "未办理出入证", new JSONObject());
+            }
+            if (type == 1) {
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "未办理我的证明", new JSONObject());
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
