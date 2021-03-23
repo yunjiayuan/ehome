@@ -23,11 +23,18 @@ public interface RegisterApiController {
     ReturnData registerByHouseNumber(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 
     /***
-     * 生成验证码
+     * 生成验证码(停用)
      * @return
      */
     @GetMapping("createCode/{type}/{phone}")
     ReturnData createCode(@PathVariable int type , @PathVariable String phone);
+
+    /***
+     * 生成验证码
+     * @return
+     */
+    @GetMapping("createCodeNew/{type}/{phone}")
+    ReturnData createCodeNew(@PathVariable int type , @PathVariable String phone);
 
     /***
      * 校验服务端验证码
@@ -37,12 +44,20 @@ public interface RegisterApiController {
     ReturnData checkCode(@PathVariable String code);
 
     /***
-     * 手机号注册接口
+     * 手机号注册接口（停用）
      * @param userInfo
      * @return
      */
     @PostMapping("registerByPhone")
     ReturnData registerByPhone(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
+
+    /***
+     * 手机号注册接口
+     * @param userInfo
+     * @return
+     */
+    @PostMapping("registerByPhoneNew")
+    ReturnData registerByPhoneNew(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult);
 
     /***
      * 完善资料接口
