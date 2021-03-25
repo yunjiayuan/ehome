@@ -27,9 +27,13 @@ public interface PassProveDao {
      */
     @Update("<script>" +
             "update PassProve set" +
-            " review=#{review}," +
+            "<if test=\"communityProve != null and communityProve != ''\">" +
             " communityProve=#{communityProve}," +
-            " message=#{message}" +
+            "</if>" +
+            "<if test=\"message != null and message != ''\">" +
+            " message=#{message}," +
+            "</if>" +
+            " review=#{review}" +
             " where id=#{id}" +
             "</script>")
     int toExaminePassProve(PassProve communityEventReporting);
