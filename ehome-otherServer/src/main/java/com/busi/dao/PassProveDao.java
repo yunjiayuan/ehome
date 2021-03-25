@@ -28,6 +28,7 @@ public interface PassProveDao {
     @Update("<script>" +
             "update PassProve set" +
             " review=#{review}," +
+            " communityProve=#{communityProve}," +
             " message=#{message}" +
             " where id=#{id}" +
             "</script>")
