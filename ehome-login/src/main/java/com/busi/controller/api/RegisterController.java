@@ -144,13 +144,111 @@ public class RegisterController extends BaseController implements RegisterApiCon
     }
 
     /***
-     * 生成验证码
+     * 生成验证码(停用)
      * @param type 0生成服务端验证码（默认）  1生成短信验证码
      * @param phone 手机号 仅当参数type=1时有效
      * @return
      */
     @Override
     public ReturnData createCode(@PathVariable int type , @PathVariable String phone) {
+        //生成临 时token
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        String clientId = request.getHeader("clientId");//客户端设备的唯一标识（手机端/PC端）
+        if(CommonUtils.checkFull(clientId)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"客户端设备唯一标识clientId不能为空",new JSONObject());
+        }
+        String regToken = CommonUtils.strToMD5(clientId+System.currentTimeMillis()+CommonUtils.getRandom(6,0), 16);//注册用户的临时key
+        String code = CommonUtils.getRandom(4,1);
+        //同一手机号每小时限制
+        String accountHourTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_ACCOUNT_HOUR_TOTAL,phone+""));
+        if(!CommonUtils.checkFull(accountHourTotal)&&Integer.parseInt(accountHourTotal)>Constants.PHONE_HOUR_TOTAL){
+            return returnData(StatusCode.CODE_SMS_USEROVER_ERROR.CODE_VALUE,"您当前手机号发送的短信次数过多,请一个小时后再试，如有疑问请联系官方客服",new JSONObject());
+        }
+        //同一手机号每天时限制
+        String accountDayTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_ACCOUNT_DAY_TOTAL,phone+""));
+        if(!CommonUtils.checkFull(accountDayTotal)&&Integer.parseInt(accountDayTotal)>Constants.PHONE_DAY_TOTAL){
+            return returnData(StatusCode.CODE_SMS_USEROVER_ERROR.CODE_VALUE,"您当前手机号发送的短信次数过多,系统已自动停用当前账号使用短信功能一天，如有疑问请联系官方客服",new JSONObject());
+        }
+        //同一客户端设备每小时限制
+        String clientHourTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+""));
+        if(!CommonUtils.checkFull(clientHourTotal)&&Integer.parseInt(clientHourTotal)>Constants.CLIENT_HOUR_TOTAL){
+            return returnData(StatusCode.CODE_SMS_PHONEOVER_ERROR.CODE_VALUE,"您当前设备发送的短信次数过多,请一个小时后再试，如有疑问请联系官方客服",new JSONObject());
+        }
+        //同一客户端设备每天时限制
+        String clientDayTotal = String.valueOf(redisUtils.hget(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+""));
+        if(!CommonUtils.checkFull(clientDayTotal)&&Integer.parseInt(clientDayTotal)>Constants.ACCOUNT_DAY_TOTAL){
+            return returnData(StatusCode.CODE_SMS_PHONEOVER_ERROR.CODE_VALUE,"您当前设备发送的短信次数过多,系统已自动停用当前账号使用短信功能一天，如有疑问请联系官方客服",new JSONObject());
+        }
+        if(type==1){//生成短信验证码
+            //验证要注册的手机号是否被占用
+            if(CommonUtils.checkFull(phone)||!CommonUtils.checkPhone(phone)){
+                return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"手机号格式有误",new JSONObject());
+            }
+            Object userId = redisUtils.hget(Constants.REDIS_KEY_PHONENUMBER,phone);
+            if(userId!=null){//存在 则证明该手机号已被注册过
+                return returnData(StatusCode.CODE_SMS_PHONEBOUND_ERROR.CODE_VALUE,"该手机号已被注册过",new JSONObject());
+            }
+            //调用MQ进行发送短信
+            mqUtils.sendPhoneMessage(phone,code,0);
+//            JSONObject root = new JSONObject();
+//            JSONObject header = new JSONObject();
+//            header.put("interfaceType", "0");//interfaceType 0 表示发送手机短信  1表示发送邮件  2表示新用户注册转发
+//            JSONObject content = new JSONObject();
+//            content.put("phone",phone);//将要发送短信的手机号
+//            content.put("phoneType",0);//短信类型 0表示注册时发送短信
+//            content.put("phoneCode",code);//短信验证码
+//            root.put("header", header);
+//            root.put("content", content);
+//            String sendMsg = root.toJSONString();
+//            ActiveMQQueue activeMQQueue = new ActiveMQQueue(Constants.MSG_REGISTER_MQ);
+//            mqProducer.sendMsg(activeMQQueue,sendMsg);
+            //将验证码存入缓存 后边注册时使用
+            redisUtils.set(Constants.REDIS_KEY_REG_TOKEN+regToken,phone+"_"+code,60*10);//验证码10分钟内有效
+            code = "";//手机验证码不返回客户端
+            //更新同一手机号每小时限制
+            if(CommonUtils.checkFull(accountHourTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_ACCOUNT_HOUR_TOTAL,phone+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_ACCOUNT_HOUR_TOTAL,phone+"",1);
+            }
+            //更新同一手机号每天时限制
+            if(CommonUtils.checkFull(accountDayTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_ACCOUNT_DAY_TOTAL,phone+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_ACCOUNT_DAY_TOTAL,phone+"",1);
+            }
+        }else{
+            //将验证码存入缓存 后边注册时使用
+            redisUtils.set(Constants.REDIS_KEY_REG_TOKEN+regToken,code,60*10);//验证码10分钟内有效
+            //更新同一客户端设备每小时限制
+            if(CommonUtils.checkFull(clientHourTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_HOUR_TOTAL,clientId+"",1);
+            }
+            //更新同一客户端设备每天时限制
+            if(CommonUtils.checkFull(clientDayTotal)){//第一次
+                redisUtils.hset(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+"",1,24*60*60);//设置1天后失效
+            }else{
+                redisUtils.hashIncr(Constants.REDIS_KEY_CLIENT_DAY_TOTAL,clientId+"",1);
+            }
+        }
+        //响应客户端
+        Map<String,String> map = new HashMap();
+        map.put("regToken",regToken);
+        map.put("code",code);
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",map);
+    }
+
+    /***
+     * 生成验证码
+     * @param type 0生成服务端验证码（默认）  1生成短信验证码
+     * @param phone 手机号 仅当参数type=1时有效
+     * @return
+     */
+    @Override
+    public ReturnData createCodeNew(@PathVariable int type , @PathVariable String phone) {
         //生成临 时token
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -264,13 +362,68 @@ public class RegisterController extends BaseController implements RegisterApiCon
     }
 
     /***
-     * 手机号注册接口
+     * 手机号注册接口(停用)
      * @param userInfo
      * @param bindingResult
      * @return
      */
     @Override
     public ReturnData registerByPhone(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
+        //验证参数格式
+        if(bindingResult.hasErrors()){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
+        }
+        //验证手机端注册token是否正确
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        String token = request.getHeader("token");//用户注册的临时令牌 用于标识临时用户访问数据的唯一性
+        if(CommonUtils.checkFull(token)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"客户端参数token为空",new JSONObject());
+        }
+        String serverCode = (String) redisUtils.getKey(Constants.REDIS_KEY_REG_TOKEN+token);
+        if(CommonUtils.checkFull(serverCode)){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"该验证码无效或者已过期",new JSONObject());
+        }
+        //验证要注册的手机号是否被占用
+        Object userId = redisUtils.hget(Constants.REDIS_KEY_PHONENUMBER,userInfo.getPhone());
+        if(userId!=null){//存在 则证明该手机号已被注册过
+            return returnData(StatusCode.CODE_SMS_PHONEBOUND_ERROR.CODE_VALUE,"该手机号已被注册过",new JSONObject());
+        }
+        //验证注册手机号是否与发短信手机号相同
+        String[] codeArray = serverCode.split("_");
+        if(codeArray==null||codeArray.length!=2){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"该验证码已过期,请重新获取",new JSONObject());
+        }
+        if(!codeArray[0].equals(userInfo.getPhone())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"手机号输入有误，注册手机号与接收短信的手机号必须相同",new JSONObject());
+        }
+        //验证手机验证码是否正确
+        if(!codeArray[1].equals(userInfo.getCode().trim())){
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"手机验证码输入有误",new JSONObject());
+        }
+        //验证成功 清除验证码
+        redisUtils.expire(Constants.REDIS_KEY_REG_TOKEN+token,0);//设置过期时间 0秒后失效
+        //开始注册
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setPhone(userInfo.getPhone());
+        newUserInfo.setPassword(userInfo.getPassword());
+        newUserInfo.setIm_password(CommonUtils.strToMD5(userInfo.getPassword(),32));//环信密码为两遍MD5
+        newUserInfo.setTime(new Date());
+        newUserInfo.setAccountStatus(1);//未激活
+        userInfoService.add(newUserInfo);
+        //对于手机号和第三方平台注册用户 需要自动绑定安全中心中的相关数据
+        mqUtils.sendUserAccountSecurityMQ(newUserInfo.getUserId(),newUserInfo.getPhone(),newUserInfo.getOtherPlatformType(),newUserInfo.getOtherPlatformAccount(),newUserInfo.getOtherPlatformKey());
+        return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE,"success",new JSONObject());
+    }
+
+    /***
+     * 手机号注册接口
+     * @param userInfo
+     * @param bindingResult
+     * @return
+     */
+    @Override
+    public ReturnData registerByPhoneNew(@Valid @RequestBody UserInfo userInfo, BindingResult bindingResult) {
         //验证参数格式
         if(bindingResult.hasErrors()){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,checkParams(bindingResult),new JSONObject());
