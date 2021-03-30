@@ -54,7 +54,7 @@ public interface RentAhouseOrderDao {
             "select * from RentAhouseOrder" +
             " where ordersState=0" +
             "<if test=\"ordersType >= 0\">" +
-            " and ordersType = #{ordersType}" +
+            " and roomState = #{ordersType}" +
             "</if>" +
             " and myId = #{userId}" +
             " order by addTime desc" +
