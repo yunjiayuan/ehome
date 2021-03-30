@@ -1,6 +1,7 @@
 package com.busi.dao;
 
 import com.busi.entity.RentAhouseOrder;
+import com.busi.entity.UsedDealOrders;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -59,4 +60,17 @@ public interface RentAhouseOrderDao {
             " order by addTime desc" +
             "</script>")
     List<RentAhouseOrder> findHList(@Param("userId") long userId, @Param("ordersType") int ordersType);
+
+    /***
+     * 更新付款状态
+     * @param usedDealOrders
+     * @return
+     */
+    @Update("<script>" +
+            "update RentAhouseOrder set" +
+            " paymentStatus=#{paymentStatus}," +
+            " paymentTime=#{paymentTime}" +
+            " where no = #{no} and myId=#{myId}" +
+            "</script>")
+    int updatePayType(RentAhouseOrder usedDealOrders);
 }

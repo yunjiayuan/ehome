@@ -3,6 +3,7 @@ package com.busi.service;
 import com.busi.dao.RentAhouseOrderDao;
 import com.busi.entity.PageBean;
 import com.busi.entity.RentAhouseOrder;
+import com.busi.entity.UsedDealOrders;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -57,5 +58,15 @@ public class RentAhouseOrderService {
         list = kitchenBookedDao.findHList(userId, ordersType);
 
         return PageUtils.getPageBean(p, list);
+    }
+
+    /***
+     * 更新订单付款状态
+     * @param usedDealOrders
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updatePayType(RentAhouseOrder usedDealOrders) {
+        return kitchenBookedDao.updatePayType(usedDealOrders);
     }
 }
