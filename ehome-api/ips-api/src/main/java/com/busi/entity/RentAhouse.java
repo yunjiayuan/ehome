@@ -57,7 +57,7 @@ public class RentAhouse {
     @Digits(integer = 3, fraction = 6, message = "lon参数格式有误")
     private double lon;                    //经度
 
-    @NotEmpty(message = "小区名称不能为空")
+    @NotEmpty(message = "楼栋编号不能为空")
     private String houseNumber;          //楼栋编号
 
     private int houseCompany;         //单位：0号楼、1栋、2幢、3座、4无

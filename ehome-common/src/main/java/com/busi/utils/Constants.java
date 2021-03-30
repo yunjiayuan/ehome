@@ -333,6 +333,7 @@ public class Constants {
     public static final String REDIS_KEY_COMMUNITY_NEWS = "community_news_";//居委会资讯关系对照
     public static final String REDIS_KEY_COMMUNITY = "community_";//居委会与主键Id关系对照
     public static final String REDIS_KEY_RENTAHOUSE = "rentAhouse_";//买房租房与主键Id关系对照
+    public static final String REDIS_KEY_RENTAHOUSE_ORDER = "rentAhouse_order_";//买房租房订单与订单编号关系对照
     public static final String REDIS_KEY_PROPERTY = "property_";//物业与主键Id关系对照
     public static final String REDIS_KEY_COMMUNITY_TAG = "community_tag_";//居委会标签
     public static final String REDIS_KEY_REWARD_TOTAL_MONEY = "reward_total_money_";//奖励系统总金额 reward_total_money_userId
