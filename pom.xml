@@ -30,7 +30,6 @@
         <module>ehome-homeShop-shopCenter</module>
         <module>ehome-homeShop-goodsCenter</module>
         <module>ehome-https</module>
-        <module>ehome-page</module>
     </modules>
 
     <packaging>pom</packaging>
