@@ -39,12 +39,13 @@ public class PurseService implements MessageAdapter {
             // 22购买靓号支出,23小时工支出,24小时工转入,25订座点菜支出,26订座点菜转入,27楼店交易转入,28楼店交易支出,29楼店缴纳保证金支出
             // 30医生圈资费支出,31律师圈资费支出,32医生圈资费转入,33律师圈资费转入,34旅游费用支出,35旅游费用转入,36转账退款,37酒店民宿支出，
             // 38酒店民宿转入，39药费支出，40药费转入，41砸蛋奖励转入,42元老级会员返现，43隐形商家费用转入,44隐形商家费用支出，45找人倾诉费用转入,46找人倾诉费用支出
+            // 47需求汇租房费用转入,48需求汇租房费用支出，49需求汇购房费用转入,50需求汇购房费用支出
             int tradeType = Integer.parseInt(body.getString("tradeType"));
             //交易支付类型 0钱(真实人民币),1家币,2家点
             int currencyType = Integer.parseInt(body.getString("currencyType"));
             //交易金额
             Double tradeMoney = Double.parseDouble(body.getString("tradeMoney"));
-            if(userId<0||tradeType<0||tradeType>46||currencyType<0||currencyType>2){
+            if(userId<0||tradeType<0||tradeType>50||currencyType<0||currencyType>2){
                 log.info("消息服务平台处理用户更新钱包余额功能并更新钱包明细操作失败，参数有误："+body.toJSONString());
                 return;
             }
