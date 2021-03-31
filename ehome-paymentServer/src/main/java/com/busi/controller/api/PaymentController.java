@@ -102,6 +102,9 @@ public class PaymentController extends BaseController implements PaymentApiContr
 
     @Autowired
     private TalkToSomeoneOrderService talkToSomeoneOrderService;
+
+    @Autowired
+    private RentAhouseOrdersLService rentAhouseOrdersLService;
     /***
      * 获取私钥  一次一密，10分钟有效，使用后失效，只能使用一次
      * @return
@@ -357,6 +360,12 @@ public class PaymentController extends BaseController implements PaymentApiContr
                 break;
             case 30://支付找人倾诉中的订单
                 payBaseService =  talkToSomeoneOrderService;
+                break;
+            case 31://支付需求汇中租房订单
+                payBaseService =  rentAhouseOrdersLService;
+                break;
+            case 32://支付需求汇中购房订单
+                payBaseService =  rentAhouseOrdersLService;
                 break;
             default:
                 break;
