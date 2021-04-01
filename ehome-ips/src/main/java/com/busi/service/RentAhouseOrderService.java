@@ -3,7 +3,6 @@ package com.busi.service;
 import com.busi.dao.RentAhouseOrderDao;
 import com.busi.entity.PageBean;
 import com.busi.entity.RentAhouseOrder;
-import com.busi.entity.UsedDealOrders;
 import com.busi.utils.PageUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -26,13 +25,23 @@ public class RentAhouseOrderService {
     private RentAhouseOrderDao kitchenBookedDao;
 
     /***
-     * 新增房源
+     * 新增订单
      * @param kitchenBooked
      * @return
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int addOrders(RentAhouseOrder kitchenBooked) {
         return kitchenBookedDao.addCommunity(kitchenBooked);
+    }
+
+    /***
+     * 更新订单
+     * @param kitchenBooked
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int upOrders(RentAhouseOrder kitchenBooked) {
+        return kitchenBookedDao.upOrders(kitchenBooked);
     }
 
     /***
@@ -45,7 +54,7 @@ public class RentAhouseOrderService {
     }
 
     /***
-     * home推荐列表用
+     * 查询订单列表
      * @param userId   用户ID
      * @param page  页码 第几页 起始值1
      * @param count 每页条数

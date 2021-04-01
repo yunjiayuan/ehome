@@ -64,11 +64,13 @@ public class RentAhouseOrder {
 
     private int money;             //roomState=0时为售价  roomState=1时为租金
 
-    private int price;             //支付总金额
+    private int price;             //本次支付总金额
 
     private int paymentMethod;       //支付方式 0押一付一 1押一付三 2季付 3半年付 4年付
 
     private int paymentStatus;           //支付状态  0未付款 1已付款
+
+    private int makeMoneyStatus;           //给房主打款状态  0未打款 1已打款
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;            // 下单时间
@@ -84,4 +86,6 @@ public class RentAhouseOrder {
     private int rentMoney;            //已累计支付房租金额
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2房主删除 3全部删除
+
+    private int renewalState;        // 续租状态:0未续租  1已续租
 }

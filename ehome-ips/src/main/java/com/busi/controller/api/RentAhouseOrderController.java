@@ -55,6 +55,57 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         if (bindingResult.hasErrors()) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, checkParams(bindingResult), new JSONObject());
         }
+        Map<String, Object> map = new HashMap<>();
+        //判断是否是续租
+        if (!CommonUtils.checkFull(order.getNo())) {
+            //查询缓存 缓存中不存在 查询数据库
+            RentAhouseOrder io = null;
+            Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_RENTAHOUSE_ORDER + CommonUtils.getMyId() + "_" + order.getNo());
+            if (ordersMap == null || ordersMap.size() <= 0) {
+                io = rentAhouseOrderService.findNo(order.getNo());
+                if (io == null) {
+                    return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
+                }
+                //放入缓存
+                ordersMap = CommonUtils.objectToMap(io);
+                redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + io.getMyId() + "_" + order.getNo(), ordersMap, Constants.USER_TIME_OUT);
+            }
+            RentAhouseOrder ahouseOrder = (RentAhouseOrder) CommonUtils.mapToObject(ordersMap, RentAhouseOrder.class);
+            if (ahouseOrder == null) {
+                return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "您要查看的订单不存在", new JSONObject());
+            }
+            ahouseOrder.setRenewalState(1);
+            ahouseOrder.setMakeMoneyStatus(0);
+            int num = 0;
+            int paymentMethod = ahouseOrder.getPaymentMethod();  //支付方式 0押一付一 1押一付三 2季付 3半年付 4年付
+            ahouseOrder.setPaymentMethod(paymentMethod);
+            if (paymentMethod == 0) {
+                num = 1;
+            }
+            if (paymentMethod == 1 || paymentMethod == 2) {
+                num = 3;
+            }
+            if (paymentMethod == 3) {
+                num = 6;
+            }
+            if (paymentMethod == 4) {
+                num = 12;
+            }
+            ahouseOrder.setPrice(num * ahouseOrder.getDeposit());//本次支付总金额
+            ahouseOrder.setDuration(ahouseOrder.getDuration() + num); //已累计支付房租时长
+            ahouseOrder.setRentMoney(num * ahouseOrder.getDeposit() + ahouseOrder.getRentMoney());//已累计支付房租金额
+            rentAhouseOrderService.upOrders(ahouseOrder);
+            map.put("infoId", ahouseOrder.getNo());
+            //清除缓存
+            redisUtils.expire(Constants.REDIS_KEY_RENTAHOUSE_ORDER + ahouseOrder.getMyId() + "_" + ahouseOrder.getNo(), 0);
+
+            //放入缓存
+            // 付款超时 45分钟
+            redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + ahouseOrder.getMyId() + "_" + ahouseOrder.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+            return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
+        }
+
+        //*******第一次下单********
         RentAhouse sa = communityService.findRentAhouse(order.getHouseId());
         if (sa == null) {
             return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "房源不存在!", new JSONObject());
@@ -94,7 +145,6 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setRoomType(sa.getRoomType());
         order.setBedroomType(sa.getBedroomType());
         order.setDeposit(sa.getExpectedPrice());
-        order.setMoney(sa.getExpectedPrice());
         int num = 0;
         int paymentMethod = sa.getPaymentMethod();
         order.setPaymentMethod(paymentMethod);
@@ -110,17 +160,18 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         if (paymentMethod == 4) {
             num = 12;
         }
+        order.setMoney(num * sa.getExpectedPrice());
         order.setPrice(sa.getExpectedPrice() + num * sa.getExpectedPrice());
         order.setAddTime(new Date());
         order.setDuration(num);
         order.setRentMoney(num * sa.getExpectedPrice());
         rentAhouseOrderService.addOrders(order);
-        Map<String, Object> map = new HashMap<>();
         map.put("infoId", order.getNo());
 
         //放入缓存
+        // 付款超时 45分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(order);
-        redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getMyId() + "_" + order.getNo(), ordersMap, Constants.USER_TIME_OUT);
+        redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getMyId() + "_" + order.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 

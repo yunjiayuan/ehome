@@ -1,5 +1,6 @@
 package com.busi.dao;
 
+import com.busi.entity.PassProve;
 import com.busi.entity.RentAhouseOrder;
 import com.busi.entity.UsedDealOrders;
 import org.apache.ibatis.annotations.*;
@@ -36,6 +37,22 @@ public interface RentAhouseOrderDao {
             ",#{rentMoney},#{ordersState})")
     @Options(useGeneratedKeys = true)
     int addCommunity(RentAhouseOrder kitchenBooked);
+
+    /***
+     * 更新订单
+     * @param rentAhouseOrder
+     * @return
+     */
+    @Update("<script>" +
+            "update RentAhouseOrder set" +
+            " renewalState=#{renewalState}," +
+            " duration=#{duration}," +
+            " rentMoney=#{rentMoney}," +
+            " makeMoneyStatus=#{makeMoneyStatus}," +
+            " price=#{price}" +
+            " where id=#{id}" +
+            "</script>")
+    int upOrders(RentAhouseOrder rentAhouseOrder);
 
     /***
      * 根据Id查询房源
