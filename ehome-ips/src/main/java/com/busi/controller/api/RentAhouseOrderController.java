@@ -77,23 +77,23 @@ public class RentAhouseOrderController extends BaseController implements RentAho
             ahouseOrder.setRenewalState(1);
             ahouseOrder.setMakeMoneyStatus(0);
             int num = 0;
-            int paymentMethod = ahouseOrder.getPaymentMethod();  //支付方式 0押一付一 1押一付三 2季付 3半年付 4年付
+            int paymentMethod = ahouseOrder.getPaymentMethod();  //支付方式 0押一付一  1押一付三  2半年付  3年付
             ahouseOrder.setPaymentMethod(paymentMethod);
             if (paymentMethod == 0) {
                 num = 1;
             }
-            if (paymentMethod == 1 || paymentMethod == 2) {
+            if (paymentMethod == 1) {
                 num = 3;
             }
-            if (paymentMethod == 3) {
+            if (paymentMethod == 2) {
                 num = 6;
             }
-            if (paymentMethod == 4) {
+            if (paymentMethod == 3) {
                 num = 12;
             }
-            ahouseOrder.setPrice(num * ahouseOrder.getDeposit());//本次支付总金额
+            ahouseOrder.setPrice(num * ahouseOrder.getMoney());//本次支付总金额
             ahouseOrder.setDuration(ahouseOrder.getDuration() + num); //已累计支付房租时长
-            ahouseOrder.setRentMoney(num * ahouseOrder.getDeposit() + ahouseOrder.getRentMoney());//已累计支付房租金额
+            ahouseOrder.setRentMoney(num * ahouseOrder.getMoney() + ahouseOrder.getRentMoney());//已累计支付房租金额
             rentAhouseOrderService.upOrders(ahouseOrder);
             map.put("infoId", ahouseOrder.getNo());
             //清除缓存
@@ -144,24 +144,27 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setToilet(sa.getToilet());
         order.setRoomType(sa.getRoomType());
         order.setBedroomType(sa.getBedroomType());
-        order.setDeposit(sa.getExpectedPrice());
         int num = 0;
+        int num2 = 0;
         int paymentMethod = sa.getPaymentMethod();
         order.setPaymentMethod(paymentMethod);
         if (paymentMethod == 0) {
             num = 1;
+            num2 = sa.getExpectedPrice();
         }
-        if (paymentMethod == 1 || paymentMethod == 2) {
+        if (paymentMethod == 1) {
             num = 3;
+            num2 = sa.getExpectedPrice();
         }
-        if (paymentMethod == 3) {
+        if (paymentMethod == 2) {
             num = 6;
         }
-        if (paymentMethod == 4) {
+        if (paymentMethod == 3) {
             num = 12;
         }
-        order.setMoney(num * sa.getExpectedPrice());
-        order.setPrice(sa.getExpectedPrice() + num * sa.getExpectedPrice());
+        order.setDeposit(num2);
+        order.setMoney(sa.getExpectedPrice());
+        order.setPrice((num + 1) * sa.getExpectedPrice());
         order.setAddTime(new Date());
         order.setDuration(num);
         order.setRentMoney(num * sa.getExpectedPrice());

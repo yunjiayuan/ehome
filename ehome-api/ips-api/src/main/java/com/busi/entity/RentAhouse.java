@@ -92,7 +92,7 @@ public class RentAhouse {
 
     private int expectedPrice;             //roomState=0时为期望售价  roomState=1时为期望租金
 
-    private int paymentMethod;             //支付方式 0押一付一 1押一付三 2季付 3半年付 4年付
+    private int paymentMethod;             //支付方式 0押一付一  1押一付三  2半年付  3年付
 
     private int lookHomeTime;             //看房时间  0随时看房 1 周末看房  2下班后看房  3电话预约
 

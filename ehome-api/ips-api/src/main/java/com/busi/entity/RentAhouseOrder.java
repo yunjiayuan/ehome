@@ -62,11 +62,11 @@ public class RentAhouseOrder {
 
     private int deposit;             //押金
 
-    private int money;             //roomState=0时为售价  roomState=1时为租金
+    private int money;             //roomState=0时为售价  roomState=1时为 月/租金
 
     private int price;             //本次支付总金额
 
-    private int paymentMethod;       //支付方式 0押一付一 1押一付三 2季付 3半年付 4年付
+    private int paymentMethod;       //支付方式 0押一付一  1押一付三  2半年付  3年付
 
     private int paymentStatus;           //支付状态  0未付款 1已付款
 
