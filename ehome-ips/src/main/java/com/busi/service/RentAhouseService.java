@@ -66,6 +66,16 @@ public class RentAhouseService {
     }
 
     /***
+     * 更新房源状态
+     * @param kitchenBooked
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int changeCommunityState(RentAhouse kitchenBooked) {
+        return kitchenBookedDao.changeCommunityState(kitchenBooked);
+    }
+
+    /***
      * 条件查询房源
      * @param userId    用户ID
      * @param sellState  -1不限 roomState=0时：0出售中  1已售出  roomState=1时：0出租中  1已出租

@@ -60,7 +60,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         if (!CommonUtils.checkFull(order.getNo())) {
             //查询缓存 缓存中不存在 查询数据库
             RentAhouseOrder io = null;
-            Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_RENTAHOUSE_ORDER + CommonUtils.getMyId() + "_" + order.getNo());
+            Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getNo());
             if (ordersMap == null || ordersMap.size() <= 0) {
                 io = rentAhouseOrderService.findNo(order.getNo());
                 if (io == null) {
@@ -68,7 +68,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
                 }
                 //放入缓存
                 ordersMap = CommonUtils.objectToMap(io);
-                redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + io.getMyId() + "_" + order.getNo(), ordersMap, Constants.USER_TIME_OUT);
+                redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getNo(), ordersMap, Constants.USER_TIME_OUT);
             }
             RentAhouseOrder ahouseOrder = (RentAhouseOrder) CommonUtils.mapToObject(ordersMap, RentAhouseOrder.class);
             if (ahouseOrder == null) {
@@ -97,11 +97,11 @@ public class RentAhouseOrderController extends BaseController implements RentAho
             rentAhouseOrderService.upOrders(ahouseOrder);
             map.put("infoId", ahouseOrder.getNo());
             //清除缓存
-            redisUtils.expire(Constants.REDIS_KEY_RENTAHOUSE_ORDER + ahouseOrder.getMyId() + "_" + ahouseOrder.getNo(), 0);
+            redisUtils.expire(Constants.REDIS_KEY_RENTAHOUSE_ORDER + ahouseOrder.getNo(), 0);
 
             //放入缓存
             // 付款超时 45分钟
-            redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + ahouseOrder.getMyId() + "_" + ahouseOrder.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+            redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + ahouseOrder.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
         }
 
@@ -169,12 +169,17 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setDuration(num);
         order.setRentMoney(num * sa.getExpectedPrice());
         rentAhouseOrderService.addOrders(order);
-        map.put("infoId", order.getNo());
+
+        //更新房源状态为已出租
+        sa.setSellState(1);
+        communityService.changeCommunityState(sa);
 
         //放入缓存
         // 付款超时 45分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(order);
-        redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getMyId() + "_" + order.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+        redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+
+        map.put("infoId", order.getNo());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
     }
 
@@ -187,7 +192,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
     public ReturnData houseOrdersDetails(@PathVariable String no) {
         //查询缓存 缓存中不存在 查询数据库
         RentAhouseOrder io = null;
-        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_RENTAHOUSE_ORDER + CommonUtils.getMyId() + "_" + no);
+        Map<String, Object> ordersMap = redisUtils.hmget(Constants.REDIS_KEY_RENTAHOUSE_ORDER + no);
         if (ordersMap == null || ordersMap.size() <= 0) {
             io = rentAhouseOrderService.findNo(no);
             if (io == null) {
@@ -203,7 +208,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
 //            }
             //放入缓存
             ordersMap = CommonUtils.objectToMap(io);
-            redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + io.getMyId() + "_" + no, ordersMap, Constants.USER_TIME_OUT);
+            redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + no, ordersMap, Constants.USER_TIME_OUT);
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", ordersMap);
     }

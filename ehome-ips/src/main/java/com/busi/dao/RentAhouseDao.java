@@ -88,6 +88,19 @@ public interface RentAhouseDao {
     int updateBooked(RentAhouse kitchenBooked);
 
     /***
+     * 更新房源
+     * @param kitchenBooked
+     * @return
+     */
+    @Update("<script>" +
+            "update RentAhouse set" +
+            " sellState=#{sellState}" +
+            " where id=#{id} and userId=#{userId}" +
+            "</script>")
+    int changeCommunityState(RentAhouse kitchenBooked);
+
+
+    /***
      * 删除房源
      * @param ids
      * @return
