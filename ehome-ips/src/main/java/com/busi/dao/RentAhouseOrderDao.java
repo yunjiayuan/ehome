@@ -28,13 +28,13 @@ public interface RentAhouseOrderDao {
             "unitNumber,unitCompany,roomNumber,residence," +
             "livingRoom,toilet,roomType," +
             "bedroomType,leaseContract,deposit,money,price," +
-            "paymentMethod,paymentStatus,addTime,paymentTime,nextPaymentTime,duration,rentMoney,ordersState)" +
+            "paymentMethod,paymentStatus,addTime,paymentTime,nextPaymentTime,duration,rentMoney,ordersState,telephone)" +
             "values (#{userId},#{roomState},#{myId},#{houseId},#{picture},#{no}," +
             "#{villageName},#{province},#{city},#{district},#{houseNumber},#{houseCompany}," +
             "#{unitNumber},#{unitCompany},#{roomNumber},#{residence},#{livingRoom},#{toilet}," +
             "#{roomType},#{bedroomType},#{leaseContract},#{deposit}," +
             "#{money},#{price},#{paymentMethod},#{paymentStatus},#{addTime},#{paymentTime},#{nextPaymentTime},#{duration}" +
-            ",#{rentMoney},#{ordersState})")
+            ",#{rentMoney},#{ordersState},#{telephone})")
     @Options(useGeneratedKeys = true)
     int addCommunity(RentAhouseOrder kitchenBooked);
 

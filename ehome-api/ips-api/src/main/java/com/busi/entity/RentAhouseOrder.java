@@ -88,4 +88,6 @@ public class RentAhouseOrder {
     private int ordersState;        // 订单状态:0正常 1买家删除 2房主删除 3全部删除
 
     private int renewalState;        // 续租状态:0未续租  1已续租
+
+    private String telephone;        // 电话
 }
