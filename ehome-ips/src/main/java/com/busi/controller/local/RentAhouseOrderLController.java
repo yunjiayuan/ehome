@@ -7,6 +7,7 @@ import com.busi.entity.ReturnData;
 import com.busi.service.RentAhouseOrderService;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,7 +28,7 @@ public class RentAhouseOrderLController extends BaseController implements RentAh
      * @return:
      */
     @Override
-    public ReturnData updatePayType(RentAhouseOrder rentAhouseOrder) {
+    public ReturnData updatePayType(@RequestBody RentAhouseOrder rentAhouseOrder) {
         rentAhouseOrderService.updatePayType(rentAhouseOrder);
 
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

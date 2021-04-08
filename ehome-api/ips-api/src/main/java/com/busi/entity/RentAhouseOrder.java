@@ -68,7 +68,7 @@ public class RentAhouseOrder {
 
     private int paymentMethod;       //支付方式 0押一付一  1押一付三  2半年付  3年付
 
-    private int paymentStatus;           //支付状态  0未付款 1已付款
+    private int paymentStatus;           //支付状态  0未付款 1已付款  2已过期
 
     private int makeMoneyStatus;           //给房主打款状态  0未打款 1已打款
 
