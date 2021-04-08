@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @program: ehome
@@ -171,11 +169,20 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setAddTime(new Date());
         order.setDuration(num);
         order.setRentMoney(num * sa.getExpectedPrice());
-        rentAhouseOrderService.addOrders(order);
 
-        //更新房源状态为已出租
-//        sa.setSellState(1);
-//        communityService.changeCommunityState(sa);
+        //下次支付时间
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        Date date = new Date();
+        System.out.println(df.format(date)); // 当前系统时间        
+        Date newDate = stepMonth(date, num);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(newDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 12); // 控制时
+        calendar.set(Calendar.MINUTE, 0);       // 控制分
+        calendar.set(Calendar.SECOND, 0);       // 控制秒
+        order.setNextPaymentTime(calendar.getTime());
+        rentAhouseOrderService.addOrders(order);
 
         //放入缓存
         // 付款超时 45分钟
@@ -240,4 +247,14 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         list = pageBean.getList();
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
+
+    //在原有的时间上添加几个月
+    public static Date stepMonth(Date sourceDate, int month) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(sourceDate);
+        c.add(Calendar.MONTH, month);
+
+        return c.getTime();
+    }
+
 }

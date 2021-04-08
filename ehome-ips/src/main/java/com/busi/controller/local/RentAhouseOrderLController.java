@@ -2,9 +2,11 @@ package com.busi.controller.local;
 
 import com.alibaba.fastjson.JSONObject;
 import com.busi.controller.BaseController;
+import com.busi.entity.RentAhouse;
 import com.busi.entity.RentAhouseOrder;
 import com.busi.entity.ReturnData;
 import com.busi.service.RentAhouseOrderService;
+import com.busi.service.RentAhouseService;
 import com.busi.utils.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class RentAhouseOrderLController extends BaseController implements RentAhouseOrderLocalController {
 
     @Autowired
+    RentAhouseService rentAhouseService;
+
+    @Autowired
     RentAhouseOrderService rentAhouseOrderService;
 
     /**
@@ -30,7 +35,11 @@ public class RentAhouseOrderLController extends BaseController implements RentAh
     @Override
     public ReturnData updatePayType(@RequestBody RentAhouseOrder rentAhouseOrder) {
         rentAhouseOrderService.updatePayType(rentAhouseOrder);
-
+        //更新房源状态为已出租
+        RentAhouse sa = new RentAhouse();
+        sa.setSellState(1);
+        sa.setId(rentAhouseOrder.getHouseId());
+        rentAhouseService.changeCommunityState(sa);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 }
