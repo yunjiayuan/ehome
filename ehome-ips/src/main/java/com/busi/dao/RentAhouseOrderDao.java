@@ -63,20 +63,27 @@ public interface RentAhouseOrderDao {
     RentAhouseOrder findByUserId(@Param("no") String no);
 
     /***
-     * 分页条件查询 按userId查询
-     * @param userId   用户ID
+     * 分页查询订单列表
+     * @param type  房屋类型: -1默认全部 0购房  1租房
+     * @param ordersType 订单类型:  type=0时：0购房  1出售  type=1时：0租房  1出租
      * @return
      */
     @Select("<script>" +
             "select * from RentAhouseOrder" +
             " where ordersState=0" +
-            "<if test=\"ordersType >= 0\">" +
-            " and roomState = #{ordersType}" +
+            "<if test=\"type >= 0\">" +
+            " and roomState = #{type}" +
             "</if>" +
+            "<if test=\"ordersType == 0\">" +
             " and myId = #{userId}" +
+            "</if>" +
+            "<if test=\"ordersType == 1\">" +
+            " and userId = #{userId}" +
+            " and paymentStatus = 1" +
+            "</if>" +
             " order by addTime desc" +
             "</script>")
-    List<RentAhouseOrder> findHList(@Param("userId") long userId, @Param("ordersType") int ordersType);
+    List<RentAhouseOrder> findHList(@Param("userId") long userId, @Param("type") int type, @Param("ordersType") int ordersType);
 
     /***
      * 更新付款状态

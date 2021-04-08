@@ -18,7 +18,7 @@ public class RentAhouseOrder {
 
     private long id;                    // 主键
 
-    private int roomState;             //0买房 1租房
+    private int roomState;             //0购房 1租房
 
     private long myId;                // 租户或购房者ID
 

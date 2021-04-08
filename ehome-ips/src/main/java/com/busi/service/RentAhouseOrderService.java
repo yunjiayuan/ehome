@@ -54,17 +54,18 @@ public class RentAhouseOrderService {
     }
 
     /***
-     * 查询订单列表
-     * @param userId   用户ID
-     * @param page  页码 第几页 起始值1
-     * @param count 每页条数
+     * 分页查询订单列表
+     * @param type  房屋类型: -1默认全部 0购房  1租房
+     * @param ordersType 订单类型:  type=0时：0购房  1出售  type=1时：0租房  1出租
+     * @param page     页码 第几页 起始值1
+     * @param count    每页条数
      * @return
      */
-    public PageBean<RentAhouseOrder> findOrderList(long userId, int ordersType, int page, int count) {
+    public PageBean<RentAhouseOrder> findOrderList(long userId, int type, int ordersType, int page, int count) {
 
         List<RentAhouseOrder> list;
         Page p = PageHelper.startPage(page, count);//为此行代码下面的第一行sql查询结果进行分页
-        list = kitchenBookedDao.findHList(userId, ordersType);
+        list = kitchenBookedDao.findHList(userId, type, ordersType);
 
         return PageUtils.getPageBean(p, list);
     }

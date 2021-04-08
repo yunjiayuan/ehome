@@ -108,7 +108,10 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         //*******第一次下单********
         RentAhouse sa = communityService.findRentAhouse(order.getHouseId());
         if (sa == null) {
-            return returnData(StatusCode.CODE_SERVER_ERROR.CODE_VALUE, "房源不存在!", new JSONObject());
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "房源不存在", new JSONObject());
+        }
+        if (sa.getUserId() == CommonUtils.getMyId()) {//不能购买自己的
+            return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "不能购买自己的", new JSONObject());
         }
         //判断协议是否签署（暂不启用）
 //        if (order.getLeaseContract() == 0) {
@@ -171,8 +174,8 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         rentAhouseOrderService.addOrders(order);
 
         //更新房源状态为已出租
-        sa.setSellState(1);
-        communityService.changeCommunityState(sa);
+//        sa.setSellState(1);
+//        communityService.changeCommunityState(sa);
 
         //放入缓存
         // 付款超时 45分钟
@@ -215,45 +218,26 @@ public class RentAhouseOrderController extends BaseController implements RentAho
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1默认全部 0买房  1租房
+     * @param type  房屋类型: 0购房  1租房
+     * @param ordersType 订单类型:  type=0时：0购房  1出售  type=1时：0租房  1出租
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
     @Override
-    public ReturnData findHouseOrdersList(@PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
+    public ReturnData findHouseOrdersList(@PathVariable int type, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count) {
         //验证参数
         if (page < 0 || count <= 0) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "分页参数有误", new JSONObject());
         }
         //开始查询
         PageBean<RentAhouseOrder> pageBean;
-        pageBean = rentAhouseOrderService.findOrderList(CommonUtils.getMyId(), ordersType, page, count);
+        pageBean = rentAhouseOrderService.findOrderList(CommonUtils.getMyId(), type, ordersType, page, count);
         if (pageBean == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, new JSONArray());
         }
         List list = null;
         list = pageBean.getList();
-//        RentAhouseOrder t = null;
-//        UserInfo userCache = null;
-//        if (list != null && list.size() > 0) {
-//            for (int i = 0; i < list.size(); i++) {
-//                t = (RentAhouseOrder) list.get(i);
-//                if (t != null) {
-//                    if (identity == 1) {
-//                        userCache = userInfoUtils.getUserInfo(t.getUserId());
-//                    } else {
-//                        userCache = userInfoUtils.getUserInfo(t.getMyId());
-//                    }
-//                    if (userCache != null) {
-//                        t.setName(userCache.getName());
-//                        t.setHead(userCache.getHead());
-//                        t.setProTypeId(userCache.getProType());
-//                        t.setHouseNumber(userCache.getHouseNumber());
-//                    }
-//                }
-//            }
-//        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, StatusCode.CODE_SUCCESS.CODE_DESC, list);
     }
 }

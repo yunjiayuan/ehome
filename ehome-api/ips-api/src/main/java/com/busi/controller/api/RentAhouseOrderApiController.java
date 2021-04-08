@@ -36,12 +36,13 @@ public interface RentAhouseOrderApiController {
 
     /***
      * 分页查询订单列表
-     * @param ordersType 订单类型: -1默认全部 0买房  1租房
+     * @param type  房屋类型: -1默认全部 0购房  1租房
+     * @param ordersType 订单类型:  type=0时：0购房  1出售  type=1时：0租房  1出租
      * @param page     页码 第几页 起始值1
      * @param count    每页条数
      * @return
      */
-    @GetMapping("findHouseOrdersList/{ordersType}/{page}/{count}")
-    ReturnData findHouseOrdersList(@PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
+    @GetMapping("findHouseOrdersList/{type}/{ordersType}/{page}/{count}")
+    ReturnData findHouseOrdersList(@PathVariable int type, @PathVariable int ordersType, @PathVariable int page, @PathVariable int count);
 
 }
