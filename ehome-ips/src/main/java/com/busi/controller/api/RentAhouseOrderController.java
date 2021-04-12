@@ -184,10 +184,18 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setNextPaymentTime(calendar.getTime());
         rentAhouseOrderService.addOrders(order);
 
+        //更新房源状态为已出租
+        RentAhouse rentAhouse = new RentAhouse();
+        rentAhouse.setSellState(1);
+        rentAhouse.setId(order.getHouseId());
+        communityService.changeCommunityState(rentAhouse);
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_RENTAHOUSE + rentAhouse.getId(), 0);
+
         //放入缓存
-        // 付款超时 45分钟
+        // 付款超时 15分钟
         Map<String, Object> ordersMap = CommonUtils.objectToMap(order);
-        redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_45);
+        redisUtils.hmset(Constants.REDIS_KEY_RENTAHOUSE_ORDER + order.getNo(), ordersMap, Constants.TIME_OUT_MINUTE_15);
 
         map.put("infoId", order.getNo());
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", map);
