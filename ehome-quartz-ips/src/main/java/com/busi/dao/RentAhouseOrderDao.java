@@ -48,7 +48,7 @@ public interface RentAhouseOrderDao {
      */
     @Update("<script>" +
             "update RentAhouseOrder set" +
-            " paymentStatus=#{paymentStatus}," +
+            " paymentStatus=#{paymentStatus}" +
             " where no = #{no}" +
             "</script>")
     int updatePayType(RentAhouseOrder usedDealOrders);
