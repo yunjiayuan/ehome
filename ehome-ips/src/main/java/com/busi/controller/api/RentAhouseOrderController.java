@@ -105,7 +105,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
 
         //*******第一次下单********
         RentAhouse sa = communityService.findRentAhouse(order.getHouseId());
-        if (sa == null) {
+        if (sa == null || sa.getSellState() == 1) {
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE, "房源不存在", new JSONObject());
         }
         if (sa.getUserId() == CommonUtils.getMyId()) {//不能购买自己的

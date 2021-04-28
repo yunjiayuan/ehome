@@ -1,6 +1,5 @@
 package com.busi.dao;
 
-import com.busi.entity.LoveAndFriends;
 import com.busi.entity.RentAhouse;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -95,7 +94,7 @@ public interface RentAhouseDao {
     @Update("<script>" +
             "update RentAhouse set" +
             " sellState=#{sellState}" +
-            " where id=#{id} and userId=#{userId}" +
+            " where id=#{id}" +
             "</script>")
     int changeCommunityState(RentAhouse kitchenBooked);
 
