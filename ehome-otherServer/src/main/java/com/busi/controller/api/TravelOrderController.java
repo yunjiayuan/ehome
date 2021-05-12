@@ -483,8 +483,12 @@ public class TravelOrderController extends BaseController implements TravelOrder
             //更新回复数
             ScenicSpotComment num = travelOrderService.findById(shopTravelComment.getFatherId());
             if (num != null) {
+                //移除缓存评论
+                redisUtils.removeList(Constants.REDIS_KEY_TRAVEL_COMMENT + num.getId(), 1, num);
                 shopTravelComment.setReplyNumber(num.getReplyNumber() + 1);
                 travelOrderService.updateCommentNum(shopTravelComment);
+                //放入缓存(七天失效)
+                redisUtils.addListLeft(Constants.REDIS_KEY_TRAVEL_COMMENT + num.getId(), num, Constants.USER_TIME_OUT);
             }
         }
         travelOrderService.addComment(shopTravelComment);

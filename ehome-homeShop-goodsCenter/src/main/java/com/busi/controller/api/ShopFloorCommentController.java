@@ -90,8 +90,12 @@ public class ShopFloorCommentController extends BaseController implements ShopFl
             //更新回复数
             ShopFloorComment num = shopFloorCommentService.findById(shopFloorComment.getFatherId());
             if (num != null) {
+                //移除缓存评论
+                redisUtils.removeList(Constants.REDIS_KEY_SHOPFLOOR_COMMENT + num.getGoodsId(), 1, num);
                 shopFloorComment.setReplyNumber(num.getReplyNumber() + 1);
                 shopFloorCommentService.updateCommentNum(shopFloorComment);
+                //放入缓存(七天失效)
+                redisUtils.addListLeft(Constants.REDIS_KEY_SHOPFLOOR_COMMENT + num.getGoodsId(), num, Constants.USER_TIME_OUT);
             }
         }
         //更新评论数

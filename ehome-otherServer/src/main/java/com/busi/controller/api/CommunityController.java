@@ -631,8 +631,12 @@ public class CommunityController extends BaseController implements CommunityApiC
             //更新回复数
             CommunityMessageBoard num = communityService.findById(shopFloorComment.getFatherId());
             if (num != null) {
+                //移除缓存评论
+                redisUtils.removeList(Constants.REDIS_KEY_COMMUNITY_COMMENT + num.getCommunityId() + "_" + num.getType(), 1, num);
                 num.setReplyNumber(num.getReplyNumber() + 1);
                 communityService.updateCommentNum(num);
+                //放入缓存(七天失效)
+                redisUtils.addListLeft(Constants.REDIS_KEY_COMMUNITY_COMMENT + num.getCommunityId() + "_" + num.getType(), num, Constants.USER_TIME_OUT);
             }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());

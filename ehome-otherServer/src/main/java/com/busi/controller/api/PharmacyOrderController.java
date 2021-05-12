@@ -514,8 +514,12 @@ public class PharmacyOrderController extends BaseController implements PharmacyO
             //更新回复数
             PharmacyComment num = travelOrderService.findById(shopPharmacyComment.getFatherId());
             if (num != null) {
+                //移除缓存评论
+                redisUtils.removeList(Constants.REDIS_KEY_PHARMACY_COMMENT + num.getId(), 1, num);
                 shopPharmacyComment.setReplyNumber(num.getReplyNumber() + 1);
                 travelOrderService.updateCommentNum(shopPharmacyComment);
+                //放入缓存(七天失效)
+                redisUtils.addListLeft(Constants.REDIS_KEY_PHARMACY_COMMENT + num.getId(), num, Constants.USER_TIME_OUT);
             }
         }
         travelOrderService.addComment(shopPharmacyComment);
