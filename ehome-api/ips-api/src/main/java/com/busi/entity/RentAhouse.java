@@ -90,7 +90,7 @@ public class RentAhouse {
 
     private int houseType;             //房源类型 0业主直租 1中介
 
-    private int expectedPrice;             //roomState=0时为期望售价  roomState=1时为期望租金
+    private double expectedPrice;             //roomState=0时为期望售价  roomState=1时为期望租金
 
     private int paymentMethod;             //支付方式 0押一付一  1押一付三  2半年付  3年付
 

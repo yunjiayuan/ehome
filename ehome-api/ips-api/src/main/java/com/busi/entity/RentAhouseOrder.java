@@ -60,11 +60,11 @@ public class RentAhouseOrder {
 
     private int leaseContract;        //租房协议 0未签署  1已签署
 
-    private int deposit;             //押金
+    private double deposit;             //押金
 
-    private int money;             //roomState=0时为售价  roomState=1时为 月/租金
+    private double money;             //roomState=0时为售价  roomState=1时为 月/租金
 
-    private int price;             //本次支付总金额
+    private double price;             //本次支付总金额
 
     private int paymentMethod;       //支付方式 0押一付一  1押一付三  2半年付  3年付
 
@@ -83,7 +83,7 @@ public class RentAhouseOrder {
 
     private int duration;            //已累计支付房租时长
 
-    private int rentMoney;            //已累计支付房租金额
+    private double rentMoney;            //已累计支付房租金额
 
     private int ordersState;        // 订单状态:0正常 1买家删除 2房主删除 3全部删除
 

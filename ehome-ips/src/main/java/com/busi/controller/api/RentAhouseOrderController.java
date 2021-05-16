@@ -146,7 +146,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setRoomType(sa.getRoomType());
         order.setBedroomType(sa.getBedroomType());
         int num = 0;
-        int num2 = 0;
+        double num2 = 0;
         int paymentMethod = sa.getPaymentMethod();
         order.setPaymentMethod(paymentMethod);
         if (paymentMethod == 0) {
