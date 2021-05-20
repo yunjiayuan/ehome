@@ -145,6 +145,8 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setToilet(sa.getToilet());
         order.setRoomType(sa.getRoomType());
         order.setBedroomType(sa.getBedroomType());
+        order.setHousingArea(sa.getHousingArea());
+        order.setOrientation(sa.getOrientation());
         int num = 0;
         double num2 = 0;
         int paymentMethod = sa.getPaymentMethod();
@@ -170,18 +172,20 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setDuration(num);
         order.setRentMoney(num * sa.getExpectedPrice());
 
-        //下次支付时间
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-        Date date = new Date();
-        System.out.println(df.format(date)); // 当前系统时间        
-        Date newDate = stepMonth(date, num);
+        if (order.getRoomState() == 1) {
+            //下次支付时间
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+            Date date = new Date();
+            System.out.println(df.format(date)); // 当前系统时间        
+            Date newDate = stepMonth(date, num);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(newDate);
-        calendar.set(Calendar.HOUR_OF_DAY, 12); // 控制时
-        calendar.set(Calendar.MINUTE, 0);       // 控制分
-        calendar.set(Calendar.SECOND, 0);       // 控制秒
-        order.setNextPaymentTime(calendar.getTime());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(newDate);
+            calendar.set(Calendar.HOUR_OF_DAY, 12); // 控制时
+            calendar.set(Calendar.MINUTE, 0);       // 控制分
+            calendar.set(Calendar.SECOND, 0);       // 控制秒
+            order.setNextPaymentTime(calendar.getTime());
+        }
         rentAhouseOrderService.addOrders(order);
 
         //更新房源状态为已出租

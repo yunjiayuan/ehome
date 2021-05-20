@@ -1,8 +1,6 @@
 package com.busi.dao;
 
-import com.busi.entity.PassProve;
 import com.busi.entity.RentAhouseOrder;
-import com.busi.entity.UsedDealOrders;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -26,13 +24,13 @@ public interface RentAhouseOrderDao {
     @Insert("insert into RentAhouseOrder(userId,roomState,myId,houseId,picture,no," +
             "villageName,province,city,district,houseNumber,houseCompany," +
             "unitNumber,unitCompany,roomNumber,residence," +
-            "livingRoom,toilet,roomType," +
+            "livingRoom,toilet,roomType,housingArea,orientation," +
             "bedroomType,leaseContract,deposit,money,price," +
             "paymentMethod,paymentStatus,addTime,paymentTime,nextPaymentTime,duration,rentMoney,ordersState,telephone)" +
             "values (#{userId},#{roomState},#{myId},#{houseId},#{picture},#{no}," +
             "#{villageName},#{province},#{city},#{district},#{houseNumber},#{houseCompany}," +
             "#{unitNumber},#{unitCompany},#{roomNumber},#{residence},#{livingRoom},#{toilet}," +
-            "#{roomType},#{bedroomType},#{leaseContract},#{deposit}," +
+            "#{roomType},#{housingArea},#{orientation},#{bedroomType},#{leaseContract},#{deposit}," +
             "#{money},#{price},#{paymentMethod},#{paymentStatus},#{addTime},#{paymentTime},#{nextPaymentTime},#{duration}" +
             ",#{rentMoney},#{ordersState},#{telephone})")
     @Options(useGeneratedKeys = true)

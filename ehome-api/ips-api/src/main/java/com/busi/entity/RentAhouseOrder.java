@@ -90,4 +90,8 @@ public class RentAhouseOrder {
     private int renewalState;        // 续租状态:0未续租  1已续租
 
     private String telephone;        // 电话
+
+    private int housingArea;         //房屋面积
+
+    private int orientation;         //房屋朝向 0南北、1东北、2东南、3西南、4西北、5东西、6南、7北、8东、9西
 }
