@@ -205,6 +205,7 @@ public class Constants {
     public static final String REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG_ANDROID = "admini_homePageInfo_flag_android";//安卓屏蔽主界面部分功能按钮 0关闭 1开启
     public static final String REDIS_KEY_ADMINI_VIDEOSHOOT_TYPE = "admini_videoShoot_type";//修改“生活圈拍摄视频时的拍摄类型” 0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
     public static final String REDIS_KEY_ADMINI_PURSE_CASHOUT_STATUS = "admini_purse_cashout_status";//0开启钱包提现功能 1禁用钱包提现功能
+    public static final String REDIS_KEY_ADMINI_SHOPFLOOR_STATUS = "admini_shopFloor_status";//0表示家门口隐形超市只允许礼品类商品加入购物车  1表示店铺正常并且无任何限制  2表示隐形超市功能暂时停用
     public static final String REDIS_KEY_USER = "user_";//用户实体key
     public static final String REDIS_KEY_PHONENUMBER = "phoneNumber";//手机号与用户ID对应关系
     public static final String REDIS_KEY_OTHERNUMBER = "otherNumber";//第三方平台账号与用户ID对应关系

@@ -270,6 +270,14 @@ public class HomePageInfoController extends BaseController implements HomePageIn
             purseCashOutStatus = Integer.parseInt(obj3.toString());
         }
         homePageInfo.setPurseCashOutStatus(purseCashOutStatus);//临时参数 与数据库无关字段 0开启钱包提现功能 1禁用钱包提现功能
+
+        int shopFloorStatus = 0;//0开启钱包提现功能 1禁用钱包提现功能
+        Object obj4 = redisUtils.getKey(Constants.REDIS_KEY_ADMINI_SHOPFLOOR_STATUS);
+        if(obj4!=null){
+            shopFloorStatus = Integer.parseInt(obj4.toString());
+        }
+        homePageInfo.setShopFloorStatus(shopFloorStatus);//临时参数 与数据库无关字段 0表示家门口隐形超市只允许礼品类商品加入购物车  1表示店铺正常并且无任何限制  2表示隐形超市功能暂时停用
+
         //设置访问量信息
         Map<String,Object> map = redisUtils.hmget(Constants.REDIS_KEY_USER_VISIT+userId);
         VisitView visitView = null;

@@ -68,6 +68,8 @@ public class HomePageInfo {
 
     private int purseCashOutStatus;//临时参数 与数据库无关字段 0开启钱包提现功能 1禁用钱包提现功能
 
+    private int shopFloorStatus;//临时参数 与数据库无关字段 0表示家门口隐形超市只允许礼品类商品加入购物车  1表示店铺正常并且无任何限制  2表示隐形超市功能暂时停用
+
     private int talkToSomeoneStatus;//倾诉状态 0表示不接受倾诉  1表示接受倾诉
 
     private int chatnteractionStatus;//聊天互动功能的状态 0表示不接受别人找你互动  1表示接受别人找你互动
