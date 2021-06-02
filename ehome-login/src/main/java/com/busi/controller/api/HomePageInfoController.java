@@ -330,8 +330,10 @@ public class HomePageInfoController extends BaseController implements HomePageIn
      * @param type   设置类型 type=0 修改苹果“屏蔽主界面部分功能按钮”状态
      *                         type=1 修改“生活圈拍摄视频时的拍摄类型”
      *                         type=2 修改安卓“屏蔽主界面部分功能按钮”状态
+     *                         type=3 修改“家门口隐藏超市使用权限”
      * @param status type=0或者2时 status为状态值 0默认关闭  1开启
      *                type=1时 status：0默认使用七牛拍摄 1使用APP自研拍摄 2使用其他平台拍摄
+     *                type=3时 status：0表示家门口隐形超市只允许礼品类商品加入购物车  1表示店铺正常并且无任何限制  2表示隐形超市功能暂时停用
      * @return
      */
     @Override
@@ -339,7 +341,7 @@ public class HomePageInfoController extends BaseController implements HomePageIn
         if(CommonUtils.getAdministrator(CommonUtils.getMyId(),redisUtils)<0){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"您无权限进行此操作，请联系管理员申请权限!",new JSONObject());
         }
-        if(type<0||type>2||status<0||status>1){
+        if(type<0||type>3||status<0||status>2){
             return returnData(StatusCode.CODE_PARAMETER_ERROR.CODE_VALUE,"参数有误",new JSONObject());
         }
         switch (type) {
@@ -351,6 +353,9 @@ public class HomePageInfoController extends BaseController implements HomePageIn
                 break;
             case 2://修改安卓“屏蔽主界面部分功能按钮”状态
                 redisUtils.set(Constants.REDIS_KEY_ADMINI_HOMEPAGEINFO_FLAG_ANDROID,status+"",0);//永不失效
+                break;
+            case 3://修改“家门口隐藏超市使用权限”状态
+                redisUtils.set(Constants.REDIS_KEY_ADMINI_SHOPFLOOR_STATUS,status+"",0);//永不失效
                 break;
             default:
                 break;
