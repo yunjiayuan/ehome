@@ -75,7 +75,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
             ahouseOrder.setRenewalState(1);
             ahouseOrder.setMakeMoneyStatus(0);
             int num = 0;
-            int paymentMethod = ahouseOrder.getPaymentMethod();  //支付方式 0押一付一  1押一付三  2半年付  3年付
+            int paymentMethod = ahouseOrder.getPaymentMethod();  //支付方式 0押一付一  1押一付三  2押一半年付  3押一年付
             ahouseOrder.setPaymentMethod(paymentMethod);
             if (paymentMethod == 0) {
                 num = 1;
@@ -148,16 +148,13 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         order.setHousingArea(sa.getHousingArea());
         order.setOrientation(sa.getOrientation());
         int num = 0;
-        double num2 = 0;
         int paymentMethod = sa.getPaymentMethod();
         order.setPaymentMethod(paymentMethod);
         if (paymentMethod == 0) {
             num = 1;
-            num2 = sa.getExpectedPrice();
         }
         if (paymentMethod == 1) {
             num = 3;
-            num2 = sa.getExpectedPrice();
         }
         if (paymentMethod == 2) {
             num = 6;
@@ -165,7 +162,7 @@ public class RentAhouseOrderController extends BaseController implements RentAho
         if (paymentMethod == 3) {
             num = 12;
         }
-        order.setDeposit(num2);
+        order.setDeposit(sa.getExpectedPrice());
         order.setMoney(sa.getExpectedPrice());
         order.setPrice((num + 1) * sa.getExpectedPrice());
         order.setAddTime(new Date());

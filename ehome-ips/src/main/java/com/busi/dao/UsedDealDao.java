@@ -193,9 +193,9 @@ public interface UsedDealDao {
             " and sellingPrice >= #{minPrice} and sellingPrice <= #{maxPrice}" +
             "  ]]> " +
             "</if>" +
-            "<if test=\"maxPrice &lt;= 0\">" +
-            " and sellingPrice &lt;= #{minPrice}" +
-            "</if>" +
+//            "<if test=\"maxPrice &lt;= 0\">" +
+//            " and sellingPrice &lt;= #{minPrice}" +
+//            "</if>" +
             " and auditType = 2" +
             "<if test=\"sort &lt;= 1\">" +
             " order by refreshTime desc" +
