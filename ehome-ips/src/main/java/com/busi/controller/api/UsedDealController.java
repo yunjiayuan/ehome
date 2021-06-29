@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -176,7 +175,15 @@ public class UsedDealController extends BaseController implements UsedDealApiCon
         int num4 = 0;
         num4 = usedDealService.findNum(usedDeal.getUserId(), 1);//已上架
         usedDeal.setSellingNumber(num4);
-        //放入缓存(更新以前发布的宝贝详情在卖宝贝数量)
+        UserInfo userInfo = null;
+        userInfo = userInfoUtils.getUserInfo(usedDeal.getUserId());
+        if (userInfo != null) {
+            usedDeal.setName(userInfo.getName());
+            usedDeal.setHead(userInfo.getHead());
+            usedDeal.setProTypeId(userInfo.getProType());
+            usedDeal.setHouseNumber(userInfo.getHouseNumber());
+        }
+        //放入缓存(更新在卖宝贝数量)
         otherPostsMap = CommonUtils.objectToMap(usedDeal);
         redisUtils.hmset(Constants.REDIS_KEY_IPS_USEDDEAL + usedDeal.getId(), otherPostsMap, Constants.USER_TIME_OUT);
 
