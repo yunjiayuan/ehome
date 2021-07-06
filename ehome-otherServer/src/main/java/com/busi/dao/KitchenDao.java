@@ -371,7 +371,7 @@ public interface KitchenDao {
      */
     @Select("<script>" +
             "select * from KitchenEvaluate" +
-            " where id = #{id} and state =0 and bookedState=#{type}" +
+            " where kitchenId = #{id} and state =0 and bookedState=#{type}" +
             "</script>")
     List<KitchenEvaluate> findKitchenList6(@Param("id") long id, @Param("type") int type);
 

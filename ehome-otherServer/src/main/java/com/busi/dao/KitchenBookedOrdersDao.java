@@ -58,7 +58,7 @@ public interface KitchenBookedOrdersDao {
             " and ordersState = 0" +
             "</if>" +
             "<if test=\"type == 7\">" +
-            " and ordersState = 0 and ordersType = 5 and userId=#{userId}" +
+            " and ordersState = 0 and ordersType = 5 and myId=#{userId}" +
             "</if>" +
             "</script>")
     KitchenBookedOrders findById(@Param("id") long id, @Param("userId") long userId, @Param("type") int type);
@@ -141,14 +141,14 @@ public interface KitchenBookedOrdersDao {
             " and myId = #{userId}" +
             "</if>" +
             "<if test=\"identity == 2 \">" +
-            " and userId = #{userId}" +
+            " and userId = #{userId} and paymentStatus = 1" +
             "</if>" +
-            "<if test=\"ordersType > 0 and ordersType &lt; 3\">" +
+            "<if test=\"ordersType > 0 and ordersType &lt; 4\">" +
             " and ordersType = #{ordersType}" +
             "</if>" +
-            "<if test=\"ordersType == 3\">" +
-            " and ordersType = 3" +
-            "</if>" +
+//            "<if test=\"ordersType == 3\">" +
+//            " and ordersType = 3" +
+//            "</if>" +
             "<if test=\"ordersType == 4\">" +
             " and ordersType = 5" +
             "</if>" +

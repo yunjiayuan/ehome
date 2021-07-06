@@ -155,7 +155,7 @@ public interface KitchenOrdersDao {
             " and myId = #{userId}" +
             "</if>" +
             "<if test=\"identity == 2 \">" +
-            " and userId = #{userId}" +
+            " and userId = #{userId} and paymentTime != ''" +
             "</if>" +
             "<if test=\"ordersType >= 0 and ordersType &lt; 5\">" +
             " and ordersType = #{ordersType}" +
