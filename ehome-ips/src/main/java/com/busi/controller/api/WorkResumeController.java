@@ -473,18 +473,19 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         if (h == null) {
             return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
         }
-        list = workResumeService.findList(h.getUserId());
         //设置前重置默认(清除上次默认设置)
-        if (list != null && list.size() > 0) {
-            s = (WorkResume) list.get(0);
-            if (s != null) {
-                s.setDefaultResume(0);
-                workResumeService.updateDefault(s);
-            }
+        WorkResume resume = null;
+        resume = workResumeService.findDefault(h.getUserId());
+        if (resume != null) {
+            resume.setDefaultResume(0);
+            workResumeService.updateDefault(resume);
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_WORKRESUME + resume.getId(), 0);
         }
         h.setDefaultResume(1);
         workResumeService.updateDefault(h);
-
+        //清除缓存中的信息
+        redisUtils.expire(Constants.REDIS_KEY_IPS_WORKRESUME + h.getId(), 0);
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
     }
 
