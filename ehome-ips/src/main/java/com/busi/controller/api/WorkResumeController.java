@@ -965,6 +965,7 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             workDowRecord.setHead(is.getHeadImgUrl());
             workDowRecord.setWorkExperience(is.getWorkExperience());
             workDowRecord.setName(is.getName());
+            workDowRecord.setPositionName(is.getPositionName());
             workResumeService.addDow(workDowRecord);
 
             //更新简历被下载量

@@ -47,6 +47,8 @@ public class WorkDowRecord {
     private String corporateName;    //公司名称
 
     private String head;        //简历头像
+
+    private String positionName;        //职位名称
     //与数据库无关字段
 //    private int age;        //年龄
 //
