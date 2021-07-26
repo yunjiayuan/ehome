@@ -960,12 +960,16 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             workDowRecord.setHighestEducation(is.getHighestEducation());
             workDowRecord.setHighlights(is.getHighlights());
             workDowRecord.setJobProvince(is.getJobProvince());
+            workDowRecord.setJobType1(is.getJobType1());
             workDowRecord.setJobType2(is.getJobType2());
             workDowRecord.setSex(is.getSex());
             workDowRecord.setHead(is.getHeadImgUrl());
             workDowRecord.setWorkExperience(is.getWorkExperience());
             workDowRecord.setName(is.getName());
             workDowRecord.setPositionName(is.getPositionName());
+            if (!CommonUtils.checkFull(is.getBirthDay())) {
+                workDowRecord.setAge(CommonUtils.getAge(is.getBirthDay()));//年龄
+            }
             workResumeService.addDow(workDowRecord);
 
             //更新简历被下载量

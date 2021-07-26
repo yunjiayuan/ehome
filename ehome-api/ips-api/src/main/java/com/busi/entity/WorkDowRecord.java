@@ -40,6 +40,8 @@ public class WorkDowRecord {
 
     private String highlights;            // 我的亮点：逗号分隔！例：沟通力强，学习力强，责任心强
 
+    private int jobType1;            // 一级求职类型
+
     private int jobType2;            // 二级求职类型
 
     private int jobProvince;        // 求职区域：省
@@ -49,11 +51,13 @@ public class WorkDowRecord {
     private String head;        //简历头像
 
     private String positionName;        //职位名称
+
+    private int age;        //年龄
+
     //与数据库无关字段
-//    private int age;        //年龄
-//
+
 //    private long houseNumber;        //门牌号	查询后从内存获取最新
-//
+
 //    private int proTypeId;                //	省简称ID
 
 }
