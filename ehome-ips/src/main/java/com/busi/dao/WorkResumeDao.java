@@ -601,8 +601,8 @@ public interface WorkResumeDao {
      * @param workDowRecord
      * @return
      */
-    @Insert("insert into workDowRecord(userId,companyId,resumeUserId,resumeId,addTime,name,sex,highestEducation,workExperience,highlights,jobType1,jobType2,jobProvince,corporateName,head,positionName,age) " +
-            "values (#{userId},#{companyId},#{resumeUserId},#{resumeId},#{addTime},#{name},#{sex},#{highestEducation},#{workExperience},#{highlights},#{jobType1},#{jobType2},#{jobProvince},#{corporateName},#{head},#{positionName},#{age})")
+    @Insert("insert into workDowRecord(userId,companyId,resumeUserId,resumeId,addTime,name,sex,highestEducation,workExperience,highlights,jobType1,jobType2,jobProvince,corporateName,head,positionName,age,jobCity,jobDistrict) " +
+            "values (#{userId},#{companyId},#{resumeUserId},#{resumeId},#{addTime},#{name},#{sex},#{highestEducation},#{workExperience},#{highlights},#{jobType1},#{jobType2},#{jobProvince},#{corporateName},#{head},#{positionName},#{age},#{jobCity},#{jobDistrict})")
     @Options(useGeneratedKeys = true)
     int addDow(WorkDowRecord workDowRecord);
 

@@ -960,6 +960,8 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
             workDowRecord.setHighestEducation(is.getHighestEducation());
             workDowRecord.setHighlights(is.getHighlights());
             workDowRecord.setJobProvince(is.getJobProvince());
+            workDowRecord.setJobCity(is.getJobCity());
+            workDowRecord.setJobDistrict(is.getJobDistrict());
             workDowRecord.setJobType1(is.getJobType1());
             workDowRecord.setJobType2(is.getJobType2());
             workDowRecord.setSex(is.getSex());

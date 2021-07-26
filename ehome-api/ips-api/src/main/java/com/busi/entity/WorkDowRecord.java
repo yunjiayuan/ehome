@@ -46,6 +46,10 @@ public class WorkDowRecord {
 
     private int jobProvince;        // 求职区域：省
 
+    private int jobCity;                // 求职区域：城市
+
+    private int jobDistrict;            // 求职区域：地区或县
+
     private String corporateName;    //公司名称
 
     private String head;        //简历头像
