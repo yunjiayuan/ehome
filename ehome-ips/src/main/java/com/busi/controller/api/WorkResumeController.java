@@ -182,9 +182,14 @@ public class WorkResumeController extends BaseController implements WorkResumeAp
         //更新完整度
         WorkResumeIntegrity wr = workResumeService.findIntegrity(workResume.getId(), workResume.getUserId());
         if (wr != null) {
-            wr.setPhoto(integrity2);
-            wr.setHighlights(integrity);
-            workResumeService.updateIntegrity(wr);
+            if (integrity == 1) {
+                wr.setHighlights(integrity);
+                workResumeService.updateIntegrity(wr);
+            }
+            if (integrity2 == 1) {
+                wr.setPhoto(integrity2);
+                workResumeService.updateIntegrity1(wr);
+            }
         } else {
             WorkResumeIntegrity integrity1 = new WorkResumeIntegrity();
             integrity1.setPhoto(integrity2);
