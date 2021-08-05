@@ -169,7 +169,7 @@ public enum StatusCode {
 	CODE_IPS_SHIPPINGADDRESS_TOPLIMIT(343,"收货地址数量达到上限"),
 	CODE_EXPRESS_TOPLIMIT(344,"快递方式数量达到上限"),
 	CODE_ORDER_TIMEOUT(345,"订单超时"),
-	CODE_POSITION_REPEAT(346,"您本周已投递过该公司了，请下周再来吧"),
+	CODE_POSITION_REPEAT(346,"职位申请失败，您本周已经申请过该职位了，下周再来试试吧！"),
 	CODE_RESUME_TOPLIMIT(347,"简历数量已达上限"),
 	CODE_RECRUIT_TOPLIMIT(348,"招聘数量已达上限"),
 	CODE_MATCHING_REPEAT(349,"您与要申请的职位不匹配，再看看其他的职位吧"),
