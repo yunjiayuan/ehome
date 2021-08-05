@@ -175,7 +175,7 @@ public class WorkRecruitController extends BaseController implements WorkRecruit
         if (record != null) {
             long refreshTime = record.getRefreshTime().getTime();//刷新时间
             if ((currentTime - days7) < refreshTime) {//合格状态下判断当前时间与刷新时间，刷新时间是不是在7天以内
-                return returnData(StatusCode.CODE_POSITION_REPEAT.CODE_VALUE, "新增职位申请失败！您本周已投递过该公司了，请下周再来吧!", new JSONObject());
+                return returnData(StatusCode.CODE_POSITION_REPEAT.CODE_VALUE, "职位申请失败，您本周已经申请过该职位了，下周再来试试吧！", new JSONObject());
             } else if ((currentTime - days90) < refreshTime) {//合格状态下判断当前时间与刷新时间，刷新时间是不是在7天以上90天以内，是则更新刷新时间，反之重新申请
                 if (record.getEmploymentStatus() > 1) {// 录用状态:0无状态 1通知面试 2录用  3不合格
                     return returnData(StatusCode.CODE_MATCHING_REPEAT.CODE_VALUE, "新增职位申请失败！您与要申请的职位不匹配，再看看其他的职位吧!", new JSONObject());
