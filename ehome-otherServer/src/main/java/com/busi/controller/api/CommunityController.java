@@ -869,6 +869,10 @@ public class CommunityController extends BaseController implements CommunityApiC
         pageBean.setPageNum(page);
         pageBean.setPageSize(count);
         pageBean.setList(commentList);
+        if (commentList != null && commentList.size() > 0) {
+            //更新消息状态
+            communityMessageService.updateState2(type, communityId, (CommonUtils.getMyId() + "").split(","));
+        }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }
 
