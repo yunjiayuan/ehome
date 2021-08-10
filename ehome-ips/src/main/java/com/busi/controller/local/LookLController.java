@@ -5,8 +5,10 @@ import com.busi.controller.BaseController;
 import com.busi.entity.Look;
 import com.busi.entity.LoveAndFriends;
 import com.busi.entity.ReturnData;
+import com.busi.entity.SearchGoods;
 import com.busi.service.LookService;
 import com.busi.service.LoveAndFriendsService;
+import com.busi.service.SearchGoodsService;
 import com.busi.utils.Constants;
 import com.busi.utils.RedisUtils;
 import com.busi.utils.StatusCode;
@@ -31,6 +33,9 @@ public class LookLController extends BaseController implements LookLocalControll
     LookService lookService;
 
     @Autowired
+    SearchGoodsService searchGoodsService;
+
+    @Autowired
     LoveAndFriendsService loveAndFriendsService;
 
     /***
@@ -42,7 +47,8 @@ public class LookLController extends BaseController implements LookLocalControll
     public ReturnData addLook(@RequestBody Look look) {
 
         look.setTime(new Date());
-        if (look.getAfficheType() == 1) {
+        int num = look.getAfficheType();
+        if (num == 1) {//婚恋交友
             //查询数据库
             LoveAndFriends andFriends = loveAndFriendsService.findUserById(look.getInfoId());
             if (andFriends == null) {
@@ -52,6 +58,17 @@ public class LookLController extends BaseController implements LookLocalControll
             loveAndFriendsService.updateSee(andFriends);
             //清除缓存中的信息
             redisUtils.expire(Constants.REDIS_KEY_IPS_LOVEANDFRIEND + andFriends.getId(), 0);
+        }
+        if (num == 3 || num == 4 || num == 5) {//寻人寻物失物招领
+            //查询数据库
+            SearchGoods andFriends = searchGoodsService.findUserById(look.getInfoId());
+            if (andFriends == null) {
+                return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", new JSONObject());
+            }
+            andFriends.setSeeNumber(andFriends.getSeeNumber() + 1);
+            searchGoodsService.updateSee(andFriends);
+            //清除缓存中的信息
+            redisUtils.expire(Constants.REDIS_KEY_IPS_SEARCHGOODS + andFriends.getId(), 0);
         }
         lookService.add(look);
 

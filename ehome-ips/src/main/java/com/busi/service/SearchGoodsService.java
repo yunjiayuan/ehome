@@ -143,4 +143,14 @@ public class SearchGoodsService {
 
         return PageUtils.getPageBean(p, list);
     }
+
+    /***
+     * 更新浏览量
+     * @param loveAndFriends
+     * @return
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateSee(SearchGoods loveAndFriends) {
+        return searchGoodsDao.updateSee(loveAndFriends);
+    }
 }

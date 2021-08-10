@@ -870,8 +870,12 @@ public class CommunityController extends BaseController implements CommunityApiC
         pageBean.setPageSize(count);
         pageBean.setList(commentList);
         if (commentList != null && commentList.size() > 0) {
-            //更新消息状态
-            communityMessageService.updateState2(type, communityId, (CommonUtils.getMyId() + "").split(","));
+            //获取未读消息数
+            long num = communityMessageService.getCount(type, communityId, CommonUtils.getMyId());
+            if (num > 0) {
+                //更新消息状态
+                communityMessageService.updateState2(type, communityId, (CommonUtils.getMyId() + "").split(","));
+            }
         }
         return returnData(StatusCode.CODE_SUCCESS.CODE_VALUE, "success", pageBean);
     }

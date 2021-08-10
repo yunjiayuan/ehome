@@ -221,4 +221,17 @@ public interface SearchGoodsDao {
             "</script>")
     List<SearchGoods> findUList(@Param("userId") long userId);
 
+    /***
+     * 更新浏览量
+     * @param loveAndFriends
+     * @return
+     */
+    @Update("<script>" +
+            "update SearchGoods set" +
+            " seeNumber=#{seeNumber}" +
+            " where id=#{id} and userId=#{userId} " +
+            " and auditType = 2 and deleteType = 1" +
+            "</script>")
+    int updateSee(SearchGoods loveAndFriends);
+
 }
